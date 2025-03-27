@@ -1,6 +1,7 @@
 node_modules
 pocketbase
-
+venv
+__pychache__
 # Output
 .output
 .vercel

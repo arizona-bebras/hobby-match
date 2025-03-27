@@ -14,12 +14,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "last_message_date": update.message.date.isoformat(),
         "first_message_date": update.message.date.isoformat()
     }
-    user = BotUser(user_data)
+    user = BotUser(user_data, pb)
     if not user.is_user_in_db():
         user.add_user_to_db()
 
 
-app = ApplicationBuilder().token("BOT_TOKEN").build()
+app = ApplicationBuilder().token('BOT_TOKEN').build()
 
 app.add_handler(CommandHandler("start", start))
 

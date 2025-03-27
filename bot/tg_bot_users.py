@@ -10,7 +10,7 @@ class BotUser:
     def add_user_to_db(self):
         
         try:
-            self.pb.admins.auth_with_password("maxi.solts@gmail.com", "ght23ht234")
+            self.pb.admins.auth_with_password("maxi.solts@gmail.com", 'DB_ADMIN_PASSWORD')
 
             result = self.pb.collection("tg_bot_users").create(self.data)
             print(result)
@@ -22,7 +22,7 @@ class BotUser:
         
     def is_user_in_db(self):
         try:
-            self.pb.admins.auth_with_password("maxi.solts@gmail.com", "ght23ht234")
+            self.pb.admins.auth_with_password("maxi.solts@gmail.com", 'DB_ADMIN_PASSWORD')
             
             result = self.pb.collection('tg_bot_users').get_list(1, 1, {
                 "filter": f"tg_id = '{self.data["tg_id"]}'"
