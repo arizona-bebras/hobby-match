@@ -5,3 +5,8 @@
 @import '@skeletonlabs/skeleton/themes/cerberus';
 
 @source '../node_modules/@skeletonlabs/skeleton-svelte/dist';
+@layer components {
+    .aboba{
+        @apply flex flex-col items-center gap-4;
+    }
+}
