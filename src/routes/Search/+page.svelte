@@ -1,4 +1,3 @@
-<script lang="ts">
-  let array = [1, 2, 3, 4, 5];
-</script>
 
+<p>Search page</p>
+<img src="person.jpg" alt="Person" class="w-full"/>

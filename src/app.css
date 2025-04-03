@@ -6,7 +6,10 @@
 
 @source '../node_modules/@skeletonlabs/skeleton-svelte/dist';
 @layer components {
-    .aboba{
-        @apply flex flex-col items-center gap-4;
+    .GameBox{
+        @apply flex gap-[12px] bg-[#c2c2c2] p-[10px] rounded-[20px] border-[2px] border-solid border-[#7c7c7c] mb-[8px] w-full;
+    }
+    .TextBox{
+        @apply border-l-[2px] w-[100%] mb-[8px];
     }
 }

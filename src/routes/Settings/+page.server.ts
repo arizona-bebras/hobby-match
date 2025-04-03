@@ -11,9 +11,8 @@ export const actions = {
         console.log(gameList);
         event.locals.user = JSON.stringify(gameList);
     },
-    Aboba: async (event) => {
+    Aboba: async () => {
         console.log("Форма \"Aboba\" принята")
-        const data = await event.request.formData();
     }
 
 } satisfies Actions;

@@ -3,10 +3,10 @@
   let selectedGame: string = $state('')
 </script>
 
-<main class="flex flex-col bg-white flex-1 items-start text-black">
+<main>
   <form class="flex flex-col" method="POST" action="?/Settings">
     <label class="label">
-      <span class="label-text">Input</span>
+      <span class="label-text">Steam link to profile</span>
       <input class="input" type="text" placeholder="Input" name="link"/>
       <button class="ig-btn preset-filled">Submit</button>
     </label>
