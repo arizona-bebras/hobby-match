@@ -4,7 +4,7 @@
 
 <div class="TextBox">
 <!--  <img src="alyaVideo.jpg" alt="video" class="pl-[10px]">-->
-  <video controls class="w-full h-49 pl-[10px] object-fill">
+  <video controls class="w-full max-h-screen pl-[10px] ">
     <source src="{video}" type="video/mp4">
   </video>
 </div>

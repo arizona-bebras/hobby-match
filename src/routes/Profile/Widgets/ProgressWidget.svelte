@@ -1,9 +1,9 @@
 <script>
-    let {progress, max} = $props();
+    let {label, progress, max} = $props();
 </script>
 
 <div class="GameBox flex-col">
-  <p class="font-[Inter] text-[20px] font-medium">&#9876; Эйсы в Valorant</p>
+  <p class="font-[Inter] text-[20px] font-medium">&#9876; {label}</p>
   <div class="w-full bg-gray-300 rounded-lg overflow-hidden relative">
     <div class="h-8.25 bg-gradient-to-r from-green-300 to-blue-500"
          style="

@@ -1,6 +1,7 @@
 <script>
     let { children } = $props();
     import "../app.css";
+    import { UserRoundPen, Search, Settings  } from '@lucide/svelte';
 
 </script>
 
@@ -10,8 +11,8 @@
   </div>
 
   <footer class="flex justify-between w-full">
-    <button type="button" class="btn preset-tonal-primary p-3 m-2"><a href="/Profile">Profile</a></button>
-    <button type="button" class="btn preset-tonal-primary p-3 m-2"><a href="/Search">Search</a></button>
-    <button type="button" class="btn preset-tonal-primary p-3 m-2"><a href="/Settings">Settings</a></button>
+    <button type="button" class="btn preset-outlined-surface-500 p-3 m-2"><a href="/Profile"><UserRoundPen/></a></button>
+    <button type="button" class="btn preset-outlined-surface-500 p-3 m-2"><a href="/Search"><Search/></a></button>
+    <button type="button" class="btn preset-outlined-surface-500 p-3 m-2"><a href="/Settings"><Settings/></a></button>
   </footer>
 </div>
