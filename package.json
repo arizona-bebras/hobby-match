@@ -28,6 +28,8 @@
 		"@lucide/svelte": "^0.483.0",
 		"@tailwindcss/vite": "^4.0.14",
 		"@telegram-apps/init-data-node": "^2.0.3",
+		"@telegram-apps/sdk": "^3.5.4",
+		"@telegram-apps/sdk-svelte": "^2.0.16",
 		"eslint": "^9.22.0",
 		"eslint-plugin-svelte": "^3.3.3",
 		"pocketbase": "^0.25.2",
