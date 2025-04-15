@@ -1,5 +1,5 @@
 export const actions = {
-    default: async (event) => {
+    default: async (event: any) => {
         const data = await event.request.formData();
         const name = data.get('name');
         if (typeof name === 'string') {
@@ -11,7 +11,7 @@ export const actions = {
 };
 
 
-export function load(event) {
+export function load(event: any) {
     return {
         name: event.locals.user,
     };

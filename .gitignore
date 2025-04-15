@@ -2,6 +2,7 @@ node_modules
 pocketbase
 venv
 __pychache__
+backend/pb_data
 # Output
 .output
 .vercel

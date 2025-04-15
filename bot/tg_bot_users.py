@@ -1,5 +1,11 @@
 from pocketbase import PocketBase
 from pocketbase.utils import ClientResponseError
+from dotenv import load_dotenv
+import os
+
+load_dotenv('.env')
+
+DB_ADMIN_PASSWORD = os.getenv('DB_ADMIN_PASSWORD')
 
 class BotUser:
 
@@ -10,9 +16,9 @@ class BotUser:
     def add_user_to_db(self):
         
         try:
-            self.pb.admins.auth_with_password("maxi.solts@gmail.com", 'DB_ADMIN_PASSWORD')
+            self.pb.admins.auth_with_password("maxi.solts@gmail.com", DB_ADMIN_PASSWORD)
 
-            result = self.pb.collection("tg_bot_users").create(self.data)
+            result = self.pb.collection("users").create(self.data)
             print(result)
         except ClientResponseError as e:
             print(e.data, "err1")
@@ -21,21 +27,15 @@ class BotUser:
 
         
     def is_user_in_db(self):
-        try:
-            self.pb.admins.auth_with_password("maxi.solts@gmail.com", 'DB_ADMIN_PASSWORD')
-            
-            result = self.pb.collection('tg_bot_users').get_list(1, 1, {
-                "filter": f"tg_id = '{self.data["tg_id"]}'"
-            })
-            
-            if result.total_items > 0:
-                print("Запись найдена:", result.items[0].__dict__)
-                return True
-            else:
-                print("Запись не найдена")
-                return False
-                
-        except ClientResponseError as e:
-            print(f"API ошибка: {e.status} - {e.message}")
-        except Exception as e:
-            print(f"Общая ошибка: {e}")
+        self.pb.admins.auth_with_password("maxi.solts@gmail.com", DB_ADMIN_PASSWORD)
+        
+        result = self.pb.collection('users').get_list(1, 1, {
+            "filter": f"telegram_id = '{self.data["telegram_id"]}'"
+        })
+        
+        if result.total_items > 0:
+            print("Запись найдена:", result.items[0].__dict__)
+            return True
+        else:
+            print("Запись не найдена")
+            return False

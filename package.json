@@ -18,6 +18,7 @@
 		"@sveltejs/adapter-cloudflare": "^6.0.1",
 		"@sveltejs/kit": "^2.16.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
+		"@types/telegram-web-app": "^7.10.1",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"typescript": "^5.0.0",
@@ -26,14 +27,15 @@
 	"dependencies": {
 		"@lucide/svelte": "^0.483.0",
 		"@tailwindcss/vite": "^4.0.14",
-		"pocketbase": "^0.25.2",
-		"tailwindcss": "^4.0.14",
-		"vite-plugin-mkcert": "^1.17.8",
+		"@telegram-apps/init-data-node": "^2.0.3",
 		"eslint": "^9.22.0",
 		"eslint-plugin-svelte": "^3.3.3",
-		"typescript-eslint": "^8.27.0"
+		"pocketbase": "^0.25.2",
+		"tailwindcss": "^4.0.14",
+		"typescript-eslint": "^8.27.0",
+		"vite-plugin-mkcert": "^1.17.8"
 	},
 	"optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.9.5"
-  }
+		"@rollup/rollup-linux-x64-gnu": "4.9.5"
+	}
 }
