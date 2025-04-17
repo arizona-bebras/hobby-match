@@ -1,4 +1,15 @@
 <script lang="ts">
+    import { openLink } from '@telegram-apps/sdk-svelte';
+    import { init } from '@telegram-apps/sdk-svelte';
+    import { isTMA } from '@telegram-apps/bridge';
+    import { browser } from '$app/environment';
+
+    console.log(browser);
+    if (browser) {
+        init();
+    }
+
+
     import { ArrowUpRight } from '@lucide/svelte';
 
     function GetCorrectForm(number: number, words_arr: string[] | string) {
@@ -12,23 +23,32 @@
 
     let SubscribersType = {
         'Youtube': [["подписчик", "подписчика", "подписчиков"], 'SocialMedia/Youtube.svg'],
-        'VK': [["подписчик", "подписчика", "подписчиков"], 'SocialMedia/VK.png'],
+        'VK': [["подписчик", "подписчика", "подписчиков"], 'SocialMedia/Vk.svg'],
         'Steam': [['уровень', 'уровень', 'уровень'], 'SocialMedia/Steam.svg'], // :))
-        'Twitch': [["подписчик", "подписчика", "подписчиков"], 'SocialMedia/Twitch.png'],
+        'Twitch': [["подписчик", "подписчика", "подписчиков"], 'SocialMedia/Twitch.svg'],
         'Twitter': [["читатель", "читателя", "читателей"], 'SocialMedia/Twitter.svg'],
     }
-    let { type, url, amountSubscribers }: {type:keyof typeof SubscribersType, url:string, amountSubscribers: number} = $props();
+    let { type, url, userName, amountSubscribers }: {type:keyof typeof SubscribersType, url:string, userName:string, amountSubscribers: number} = $props();
 </script>
 
-<a href="#">
+<button class="w-full" onclick={() => {
+    if (isTMA()) {
+      console.log(openLink.isAvailable());
+      if (openLink.isAvailable()) {
+          console.log(openLink.isAvailable());
+          openLink(url, {
+          tryBrowser: 'chrome',
+          tryInstantView: true,
+  });
+    }
+}
+}}>
   <div class="GameBox">
-    <img src="{SubscribersType[type][1]}" alt="Valorant Image" class="w-14.25 h-14.25 rounded-xl">
-    <div class="flex flex-col font-[Inter] font-medium">
-      <p class="text-[20px] max-w-60 truncate">{url}</p>
-      <p class="text-[19px]">{amountSubscribers} {GetCorrectForm(amountSubscribers, SubscribersType[type][0])}</p>
+    <img src="{SubscribersType[type][1]}" alt="Valorant Image" class="size-10 rounded-xl my-auto">
+    <div class="flex flex-col font-[Inter] font-medium text-start">
+      <p class="text-[16px] max-w-60 truncate">{userName}</p>
+      <p class="text-[14px]">{amountSubscribers} {GetCorrectForm(amountSubscribers, SubscribersType[type][0])}</p>
     </div>
-    <button class="self-center m-auto mr-0">
-      <ArrowUpRight/>
-    </button>
+      <ArrowUpRight class="self-center m-auto mr-0"></ArrowUpRight>
   </div>
-</a>
+</button>

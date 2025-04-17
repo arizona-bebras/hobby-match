@@ -8,6 +8,7 @@
   import ProgressWidget from "./Widgets/ProgressWidget.svelte";
   import InterestsWidget from "./Widgets/InterestsWidget.svelte";
   import ToDoWidget from "./Widgets/ToDoWidget.svelte";
+  import QuestionWidget from "./Widgets/QuestionWidget.svelte";
 
   let height = $state(380);
   $effect(() => {
@@ -33,17 +34,18 @@
     <TextWidget text='„Люблю играть в Valorant. Часто говорят что выгляжу как будто сгенерирована нейросетью“'/>
     <GameWidget img="Valorant.png" game="Valorant" hour={1445}/>
     <VideoWidget video="ValorantEdit.mp4"/>
-    <SocialWidget type="Youtube" url="twitch.tv/ilonalala" amountSubscribers={11}/>
-    <SocialWidget type="VK" url="twitch.tv/ilonalala" amountSubscribers={34}/>
-    <SocialWidget type="Steam" url="twitch.tv/ilonalala" amountSubscribers={1}/>
-    <SocialWidget type="Twitch" url="twitch.tv/ilonalala" amountSubscribers={42}/>
-    <SocialWidget type="Twitter" url="twitch.tv/ilonalala" amountSubscribers={12431}/>
+    <SocialWidget type="Youtube" url="https://www.youtube.com/@lowderplay/videos" userName="@lowderplay" amountSubscribers={11}/>
+    <SocialWidget type="VK" url="https://vk.com/id378488092" userName="Илья Спицын" amountSubscribers={34}/>
+    <SocialWidget type="Steam" url="https://steamcommunity.com/profiles/76561198295231108/" userName="I'M SCHIZOPHRENIC AND HAVE A GUN " amountSubscribers={1}/>
+    <SocialWidget type="Twitch" url="https://www.twitch.tv/shadowkekw" userName="shadowkekw" amountSubscribers={42}/>
+    <SocialWidget type="Twitter" url="https://x.com/elonmusk" userName="elonmusk" amountSubscribers={12431}/>
     <VideoWidget video="ValorantEdit2.mp4"/>
     <StickerWidget image="Stickers/Fire.svg" left={285} top={185} rotate={0} />
     <StickerWidget image="Stickers/Eyes.svg" left={15} top={315} rotate={-30}/>
     <ProgressWidget label="Эйсы в Valorant" progress={62} max={100}/>
     <InterestsWidget interests={[["🎮", "игры"], ["🚗", "развлечение"], ["✔️", "АХАХАХАХАХАХ"], ["🎮", "игры"], ["🎮", "игры"],["🎮", "игры"],["🎮", "игры"],["🎮", "игры"]]}/>
     <ToDoWidget tasks={["hello", "world", 25, 50, 75, 100]}/>
+    <QuestionWidget tasks={[["hello", 100], ["world", 25]]} votes={125}/>
   </div>
 
 
