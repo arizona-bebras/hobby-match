@@ -4,7 +4,7 @@
     import { tick } from 'svelte';
     console.log(pb.authStore.isValid)
     if (!pb.authStore.isValid) {
-        goto("/authError")
+    //    goto("/authError")
     }
 </script>
 <slot></slot>
