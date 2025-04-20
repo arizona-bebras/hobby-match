@@ -1,10 +1,10 @@
 export type BasicWidget = {
     telegram_id: string,
-    widget_position: number,
-    data : Audio | Video | Todo | ProgressBar | Geo | SocialMediaLink | SteamGame | Sticker | Survey | Text
+    order: number,
+    data : Audio | Video | Photo | Todo | ProgressBar | Geo | SocialMediaLink | SteamGame | Sticker | Survey | Text
 }
 
-export type Audio = {
+type Audio = {
         description: string,
         name: string,
         artist: string,
@@ -13,12 +13,12 @@ export type Audio = {
         link: string
 };
 
-export type Video = {
+type Video = {
     link: string,
-    platform: string
+    platform: "YouTube" | "VK"
 };
 
-export type Photo = {
+type Photo = {
     file_id: string
     width: number,
     height: number,
@@ -30,32 +30,34 @@ type Task = {
     isCompleted: boolean
 }
 
-export type Todo =  {
+type Todo =  {
     title: string,
     tasks: Task[]
 };
 
-export type ProgressBar =  { 
+type ProgressBar =  { 
     description: string,
     currentProgress: number,
     maxProgress: number
 };
 
-export type Geo =   {
-    cords: string
+type Geo =   {
+    id: string,
+    mapLink: string
 };
 
-export type SocialMediaLink = {
-    platform: string,
+type SocialMediaLink = {
+    platform: "YouTube" | "Twitch" | "VK" | "Steam" | "Twitter",
+    username: string,
     link: string
 };
 
-export type SteamGame =    {
+type SteamGame =    {
     game: string,
     steam_user_id: string
 };
 
-export type Sticker =   {
+type Sticker =   {
     sticker_id: string,
     cords: {
         x: number,
@@ -68,11 +70,11 @@ type Option = {
     votes: number
 }
 
-export type Survey =  {
+type Survey =  {
     options: Option[],
     SummuryVotes: number
 };
 
-export type Text =  {
+type Text =  {
     text: string
 };

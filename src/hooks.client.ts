@@ -7,7 +7,6 @@ if (browser) {
                 data: window.Telegram.WebApp.initData
             }
             }).then(res => {
-                console.log(res.record)
                 pb.authStore.save(res.token, res.record);
         });
     }

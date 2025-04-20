@@ -1,6 +1,17 @@
-<script>
+<script lang="ts">
+  import { pb } from '$lib/index'
+  import { goto } from '$app/navigation'
   let { children } = $props();
   import "./app.css";
+  async function getUser() {
+    //@ts-ignore 
+    let user = await pb.collection('users').getFirstListItem(`telegram_id = "${pb.authStore.record.telegram_id}"`);
+    console.log(user)
+    if (user.location == "" || user.birth_date == "") {
+      goto('./registration')
+    }
+  }
+  getUser();
 
 </script>
 

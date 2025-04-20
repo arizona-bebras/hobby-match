@@ -12,7 +12,6 @@
   let height = $state(380);
   $effect(() => {
       window.addEventListener('scroll', () => height = Math.max(300, 380 - window.scrollY * 0.5));
-      console.log(window.scrollY);
   })
 </script>
 
