@@ -1,8 +1,14 @@
 <script lang="ts">
   import { pb } from '$lib/index'
   import { goto } from '$app/navigation'
-  let { children } = $props();
+  import { UserRoundPen, Search, Settings  } from '@lucide/svelte';
+  import { init, themeParams , secondaryButton  } from '@telegram-apps/sdk-svelte';
+  import { browser } from '$app/environment';
   import "./app.css";
+  if (browser){
+        init();
+  }
+  let { children } = $props();
   async function getUser() {
     //@ts-ignore 
     let user = await pb.collection('users').getFirstListItem(`telegram_id = "${pb.authStore.record.telegram_id}"`);

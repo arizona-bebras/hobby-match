@@ -4,12 +4,20 @@
 @import '@skeletonlabs/skeleton/optional/presets';
 @import '@skeletonlabs/skeleton/themes/cerberus';
 
-@source '../node_modules/@skeletonlabs/skeleton-svelte/dist';
+@source '../../../node_modules/@skeletonlabs/skeleton-svelte/dist';
+@theme {
+    --color-accent-foreground: var(--tg-theme-accent-text-color, rgba(64, 167, 227));
+    --color-accent: var(--tg-theme-button-color, rgba(64, 167, 227))
+}
+
 @layer components {
     .GameBox{
-        @apply flex gap-[12px] bg-[#c2c2c2] p-[10px] rounded-[20px] border-[2px] border-solid border-[#7c7c7c] mb-[8px] w-full;
+        @apply flex gap-[12px] bg-accent/25 p-[10px] rounded-[12px] border-solid border-[#7c7c7c] mb-[8px] w-full;
     }
     .TextBox{
-        @apply border-l-[2px] w-[100%] mb-[8px];
+        @apply border-l-[2px] border-accent w-[100%] mb-[8px];
+    }
+    .ToDoBox{
+        @apply border-2 border-accent rounded-xl p-4 mb-[8px] flex flex-col;
     }
 }
