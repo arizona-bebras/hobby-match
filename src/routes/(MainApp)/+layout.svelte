@@ -1,23 +1,29 @@
 <script lang="ts">
-  import { pb } from '$lib/index'
-  import { goto } from '$app/navigation'
-  import { UserRoundPen, Search, Settings  } from '@lucide/svelte';
-  import { init, themeParams , secondaryButton  } from '@telegram-apps/sdk-svelte';
+  import { pb } from '$lib/index';
+  import { goto } from '$app/navigation';
+  import { UserRoundPen, Search, Settings } from '@lucide/svelte';
+  import {
+    init,
+    themeParams,
+    secondaryButton,
+  } from '@telegram-apps/sdk-svelte';
   import { browser } from '$app/environment';
-  import "./app.css";
-  if (browser){
-        init();
+  import './app.css';
+  if (browser) {
+    init();
   }
   let { children } = $props();
   async function getUser() {
-    //@ts-ignore 
-    let user = await pb.collection('users').getFirstListItem(`telegram_id = "${pb.authStore.record.telegram_id}"`);
-    if (user.location == "" || user.birth_date == "") {
-      //goto('./registration')
+    //@ts-ignore
+    let user = await pb
+      .collection('users')
+      .getFirstListItem(`telegram_id = "${pb.authStore.record.telegram_id}"`);
+    console.log(user);
+    if (user.location == '' || user.birth_date == '') {
+      goto('./registration');
     }
   }
   getUser();
-
 </script>
 
 <div class="w-screen max-w-full min-h-screen flex flex-col">

@@ -1,54 +1,88 @@
 <script lang="ts">
-    import { openLink } from '@telegram-apps/sdk-svelte';
-    import { init } from '@telegram-apps/sdk-svelte';
-    import { isTMA } from '@telegram-apps/bridge';
-    import { browser } from '$app/environment';
+  import { openLink } from '@telegram-apps/sdk-svelte';
+  import { init } from '@telegram-apps/sdk-svelte';
+  import { isTMA } from '@telegram-apps/bridge';
+  import { browser } from '$app/environment';
+  import Steam from '$lib/components/SocialMedia/Steam.svelte';
+  import Twitch from '$lib/components/SocialMedia/Twitch.svelte';
+  import Twitter from '$lib/components/SocialMedia/Twitter.svelte';
+  import Vk from '$lib/components/SocialMedia/Vk.svelte';
+  import Youtube from '$lib/components/SocialMedia/Youtube.svelte';
+  console.log(browser);
+  if (browser) {
+    init();
+  }
 
-    console.log(browser);
-    if (browser) {
-        init();
+  import { ArrowUpRight } from '@lucide/svelte';
+
+  function GetCorrectForm(number: number, words_arr: string[] | string) {
+    number = Math.abs(number);
+    if (Number.isInteger(number)) {
+      let options = [2, 0, 1, 1, 1, 2];
+      return words_arr[
+        number % 100 > 4 && number % 100 < 20
+          ? 2
+          : options[number % 10 < 5 ? number % 10 : 5]
+      ];
     }
+    return words_arr[1];
+  }
 
-
-    import { ArrowUpRight } from '@lucide/svelte';
-
-    function GetCorrectForm(number: number, words_arr: string[] | string) {
-        number = Math.abs(number);
-        if (Number.isInteger(number)) {
-            let options = [2, 0, 1, 1, 1, 2];
-            return words_arr[(number % 100 > 4 && number % 100 < 20) ? 2 : options[(number % 10 < 5) ? number % 10 : 5]];
-        }
-        return words_arr[1];
-    }
-
-    let SubscribersType = {
-        'Youtube': [["подписчик", "подписчика", "подписчиков"], 'SocialMedia/Youtube.svg'],
-        'VK': [["подписчик", "подписчика", "подписчиков"], 'SocialMedia/Vk.svg'],
-        'Steam': [['уровень', 'уровень', 'уровень'], 'SocialMedia/Steam.svg'], // :))
-        'Twitch': [["подписчик", "подписчика", "подписчиков"], 'SocialMedia/Twitch.svg'],
-        'Twitter': [["читатель", "читателя", "читателей"], 'SocialMedia/Twitter.svg'],
-    }
-    let { type, url, userName, amountSubscribers }: {type:keyof typeof SubscribersType, url:string, userName:string, amountSubscribers: number} = $props();
+  let SubscribersType = {
+    Youtube: [['подписчик', 'подписчика', 'подписчиков']],
+    VK: [['подписчик', 'подписчика', 'подписчиков']],
+    Steam: [['уровень', 'уровень', 'уровень']], // :))
+    Twitch: [['подписчик', 'подписчика', 'подписчиков']],
+    Twitter: [['читатель', 'читателя', 'читателей']],
+  };
+  const SocialIcons = {
+    Youtube: Youtube,
+    VK: Vk,
+    Steam: Steam,
+    Twitch: Twitch,
+    Twitter: Twitter,
+  };
+  let {
+    platform,
+    url,
+    username,
+    amountSubscribers,
+  }: {
+    platform: keyof typeof SubscribersType;
+    url: string;
+    username: string;
+    amountSubscribers: number;
+  } = $props();
+  const Icon = SocialIcons[platform];
 </script>
 
-<button class="w-full" onclick={() => {
+<button
+  class="w-full"
+  onclick={() => {
     if (isTMA()) {
       console.log(openLink.isAvailable());
       if (openLink.isAvailable()) {
-          console.log(openLink.isAvailable());
-          openLink(url, {
+        console.log(openLink.isAvailable());
+        openLink(url, {
           tryBrowser: 'chrome',
           tryInstantView: true,
-  });
+        });
+      }
     }
-}
-}}>
+  }}
+>
   <div class="GameBox">
-    <img src="{SubscribersType[type][1]}" alt="Valorant Image" class="size-10 rounded-xl my-auto">
-    <div class="flex flex-col font-[Inter] font-medium text-start">
-      <p class="text-[16px] max-w-60 truncate">{userName}</p>
-      <p class="text-[14px]">{amountSubscribers} {GetCorrectForm(amountSubscribers, SubscribersType[type][0])}</p>
+    <div class="size-10 rounded-xl my-auto h-fit fill-accent">
+      <!--      <svelte:component this={?Icon}></svelte:component>-->
+      <Icon></Icon>
     </div>
-      <ArrowUpRight class="self-center m-auto mr-0"></ArrowUpRight>
+    <div class="flex flex-col font-[Inter] font-medium text-start">
+      <p class="text-[16px] max-w-60 truncate">{username}</p>
+      <p class="text-[14px]">
+        {amountSubscribers}
+        {GetCorrectForm(amountSubscribers, SubscribersType[platform][0])}
+      </p>
+    </div>
+    <ArrowUpRight class="self-center m-auto mr-0"></ArrowUpRight>
   </div>
 </button>
