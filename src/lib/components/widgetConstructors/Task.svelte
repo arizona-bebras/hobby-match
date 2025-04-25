@@ -11,6 +11,9 @@
 </div>
 
 <style>
+    input {
+        outline: solid;
+    }
     .flex-column {
         display: flex;
         flex-direction: column;

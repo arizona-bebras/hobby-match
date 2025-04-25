@@ -1,14 +1,14 @@
 <script>
   import { Star } from '@lucide/svelte';
-  import GameWidget from "./Widgets/GameWidget.svelte";
-  import VideoWidget from "./Widgets/VideoWidget.svelte";
-  import TextWidget from "./Widgets/TextWidget.svelte";
-  import SocialWidget from "./Widgets/SocialWidget.svelte";
-  import StickerWidget from "./Widgets/StickerWidget.svelte";
-  import ProgressWidget from "./Widgets/ProgressWidget.svelte";
-  import InterestsWidget from "./Widgets/InterestsWidget.svelte";
-  import ToDoWidget from "./Widgets/ToDoWidget.svelte";
-  import QuestionWidget from "./Widgets/QuestionWidget.svelte";
+  import GameWidget from "../../../lib/components/widgets/GameWidget.svelte";
+  import VideoWidget from "../../../lib/components/widgets/VideoWidget.svelte";
+  import TextWidget from "../../../lib/components/widgets/TextWidget.svelte";
+  import SocialWidget from "../../../lib/components/widgets/SocialWidget.svelte";
+  import StickerWidget from "../../../lib/components/widgets/StickerWidget.svelte";
+  import ProgressWidget from "../../../lib/components/widgets/ProgressWidget.svelte";
+  import InterestsWidget from "../../../lib/components/widgets/InterestsWidget.svelte";
+  import ToDoWidget from "../../../lib/components/widgets/ToDoWidget.svelte";
+  import QuestionWidget from "../../../lib/components/widgets/QuestionWidget.svelte"; 
 
   let height = $state(380);
   $effect(() => {
