@@ -1,21 +1,19 @@
 <script lang="ts">
-    let { onRemove } = $props();
+  let { onRemove } = $props();
 </script>
 
 <div class="flex-column">
-    <p>Вариант ответа</p>
-    <input type="text">
-    <button onclick={onRemove}>
-		Remove
-	</button>
+  <p>Вариант ответа</p>
+  <input type="text" />
+  <button onclick={onRemove}> Remove </button>
 </div>
 
 <style>
-    input {
-        outline: solid;
-    }
-    .flex-column {
-        display: flex;
-        flex-direction: column;
-    }
+  input {
+    outline: solid;
+  }
+  .flex-column {
+    display: flex;
+    flex-direction: column;
+  }
 </style>

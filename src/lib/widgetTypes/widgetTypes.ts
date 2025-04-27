@@ -34,7 +34,7 @@ export type Audio = {
 
 export type Video = {
   link: string;
-  platform: 'YouTube' | 'VK' | 'Undefined';
+  platform: 'YouTube' | 'Rutube' | 'TikTok' | 'Undefined';
 };
 
 export type Photo = {
