@@ -30,11 +30,7 @@
 
     let selectedWidget = $state<(typeof widgetTypes)[number]>();
 
-    let widget: Widget = {
-        telegram_id: '',
-        order: 1,
-        data: {}
-    }
+    //widget constructor logic
 
     function removeTask(id: number) {
         tasksNumbers = tasksNumbers.filter(component => component.id !== id);
@@ -63,6 +59,7 @@
     function processText() : Object {
         const textArea = document.getElementById("input-widget-text");
         console.log(textArea)
+        //@ts-ignore
         const text = textArea?.value;
         return {
             text: text
@@ -70,6 +67,7 @@
     }
 
     function processAudio() : Object {
+        //@ts-ignore
         const link = document.getElementById("audio-link")?.value;
         return {
             link: link
@@ -78,6 +76,19 @@
 
     let widgetsStatus = $state<Array<boolean>>([]);
     let addedWidgets = $state(0)
+
+    async function getUserWidgets() {
+        const widgetList = await pb.collection('widgets').getFullList({
+            telegram_id: `${pb.authStore.record?.telegram_id}`,
+            sort: `+order`
+        })
+        for (let i = 0; i < widgetList.length; i++) {
+            widgetsStatus.push(false)
+        }
+        return widgetList;
+    }
+
+    //widgets logic
 
     async function createWidget() {
         console.log(selectedWidget?.widgetType)
@@ -89,23 +100,6 @@
         })
         addedWidgets++;
         widgetsStatus.push(false)
-    }
-
-
-    async function getUserWidgets() {
-        const widgetList = await pb.collection('widgets').getFullList({
-            telegram_id: `${pb.authStore.record?.telegram_id}`,
-            sort: `+order`
-        })
-        for (let i = 0; i < widgetList.length; i++) {
-            widgetsStatus.push(false)
-        }
-        widget = {
-            telegram_id: pb.authStore.record?.telegram_id,
-            order: widgetsStatus.length + 1,
-            data: {}
-        }
-        return widgetList;
     }
 
     async function updateWidgetsOrder(widgets:RecordModel[]) {
@@ -208,17 +202,18 @@
                     <TextWidget 
                         text = {widget.data.text}
                     />
+                    
                     <button onclick={deleteWidget(widgets, widget)}>X</button>
                 </div>
             {:else if (widget.type == "audio")}
                 <div 
-                        class={widgetsStatus[widget.order-1] ? "widget-container deleted" : "widget-container"}
-                    >
-                        <AudioWidget 
-                            link = {widget.data.link}
-                        />
-                        <button onclick={deleteWidget(widgets, widget)}>X</button>
-                    </div>
+                    class={widgetsStatus[widget.order-1] ? "widget-container deleted" : "widget-container"}
+                >
+                    <AudioWidget 
+                        link = {widget.data.link}
+                    />
+                    <button onclick={deleteWidget(widgets, widget)}>X</button>
+                </div>
             {/if}
         {/each}
     {/await}
