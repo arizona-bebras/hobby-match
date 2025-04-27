@@ -7,7 +7,9 @@
   import Task from '$lib/components/widgetConstructors/Task.svelte';
   import type { Widget } from '$lib/widgetTypes/widgetTypes';
   import type { RecordModel } from 'pocketbase';
+  import type { RequestHandler } from '@sveltejs/kit';
   import AudioWidget from '$lib/components/widgets/AudioWidget.svelte';
+  import { enhance } from '$app/forms';
   //import { processText } from '../../../lib/processWidgets'
 
   let tasksNumbers: Array<{ id: number }> = $state([{ id: 1 }]);
@@ -38,44 +40,18 @@
         }
     };
 
-  function removeOption(id: number) {
+    function removeOption(id: number) {
     surveyOptionsNumbers = surveyOptionsNumbers.filter(
-      (component) => component.id !== id,
+        (component) => component.id !== id,
     );
     for (let i = 0; i < surveyOptionsNumbers.length; i++) {
-      surveyOptionsNumbers[i].id = i + 1;
+        surveyOptionsNumbers[i].id = i + 1;
     }
-  }
-
-  function processWidgetData(): object {
-    if (selectedWidget?.widgetType == 'text') {
-      return processText();
-    }
-    if (selectedWidget?.widgetType == 'audio') {
-      return processAudio();
-    }
-    return {};
-  }
-
-    function processText() : Object {
-        const textArea = document.getElementById("input-widget-text");
-        console.log(textArea)
-        //@ts-ignore
-        const text = textArea?.value;
-        return {
-            text: text
-        };
     }
 
-    function processAudio() : Object {
-        //@ts-ignore
-        const link = document.getElementById("audio-link")?.value;
-        return {
-            link: link
-        };
-    }
-
+    let widgets = $state<Array<RecordModel>>([]);
     let widgetsStatus = $state<Array<boolean>>([]);
+    let widgetsChangeStatus = $state<Array<boolean>>([]);
     let addedWidgets = $state(0)
 
     async function getUserWidgets() {
@@ -85,22 +61,29 @@
         })
         for (let i = 0; i < widgetList.length; i++) {
             widgetsStatus.push(false)
+            widgetsChangeStatus.push(false)
         }
         return widgetList;
     }
 
+    async function loadWidgets() {
+        widgets = await getUserWidgets();
+   }
+
     //widgets logic
 
-    async function createWidget() {
-        console.log(selectedWidget?.widgetType)
-        const record = await pb.collection("widgets").create({
+    async function createWidget( { formData }: any ) {
+        const formValues = Object.fromEntries(formData);
+        await pb.collection("widgets").create({
             "telegram_id": pb.authStore.record?.telegram_id,
             "type": selectedWidget?.widgetType,
             "order" : widgetsStatus.length+1,
-            "data": processWidgetData()
+            "data": formValues
         })
         addedWidgets++;
         widgetsStatus.push(false)
+
+        return { status: 200 };
     }
 
     async function updateWidgetsOrder(widgets:RecordModel[]) {
@@ -113,30 +96,62 @@
         }
     }
 
-  async function deleteWidget(widgets: RecordModel[], widget: RecordModel) {
-    await pb.collection('widgets').delete(widget.id);
-    widgetsStatus[widget.order - 1] = true;
-    console.log(widgetsStatus);
-    const filtred = [];
-    for (let i = 0; i < widgetsStatus.length; i++) {
-      if (!widgetsStatus[i]) {
-        filtred.push(widgets[i]);
-      }
+    async function deleteWidget(widgets: RecordModel[], widget: RecordModel) {
+        await pb.collection('widgets').delete(widget.id);
+        widgetsStatus[widget.order - 1] = true;
+        console.log(widgetsStatus);
+        const filtred = [];
+        for (let i = 0; i < widgetsStatus.length; i++) {
+            if (!widgetsStatus[i]) {
+            filtred.push(widgets[i]);
+            }
+        }
+        widgets = filtred;
+        console.log(widgets);
+        updateWidgetsOrder(filtred);
     }
-    widgets = filtred;
-    console.log(widgets);
-    updateWidgetsOrder(filtred);
-  }
 
-  function saveChanges() {
-    window.location.reload();
-  }
+    async function updateWidget(widget: RecordModel) {
+        return async ({ formData } : any) => {
+            const formValues = Object.fromEntries(formData);
+            await pb.collection('widgets').update(widget.id, {
+            data: formValues
+            });
+        widgetsChangeStatus[widget.order-1] = false;
+        return { status: 200 };
+        };
+    }
 
-  const widgetsPromise = getUserWidgets();
+    async function changeWidgetPostion(widget: RecordModel, posChange: number) {
+        const record = await pb.collection('widgets').getFirstListItem(`telegram_id ~ "${pb.authStore.record?.telegram_id}"`, {
+            order: `${widget.order + posChange}`
+        }).then(record => record)
+        console.log(posChange)
+        await pb.collection('widgets').update(record.id, {
+            "order": record.order + (posChange * -1)
+        })
+        await pb.collection('widgets').update(widget.id, {
+            "order": widget.order + posChange
+        })
+    }
+
+    function showChangeWidgetField(widget: RecordModel) {
+        widgetsChangeStatus[widget.order-1] = !widgetsChangeStatus[widget.order-1];
+    };
+
+    function saveChanges() {
+        window.location.reload();
+    }
+
+    const widgetsPromise = getUserWidgets();
 </script>
 
 <main>
-  <form class="widget-form">
+  <form 
+    method="POST"
+    use:enhance={createWidget}
+    class="widget-form"
+    >
     <select bind:value={selectedWidget}>
       {#each widgetTypes as widget}
         <option value={widget}>
@@ -146,8 +161,8 @@
     </select>
     <br />
     {#if selectedWidget?.widgetType == 'audio'}
-      <p>Ссылка на sc</p>
-      <input type="text" id="audio-link" />
+      <p>Ссылка</p>
+      <input type="text" id="audio-link" name="link" />
     {:else if selectedWidget?.widgetType == 'video'}
       <p>Ссылка на видео</p>
       <input type="text" />
@@ -196,15 +211,15 @@
       >
     {:else if selectedWidget?.widgetType == 'text'}
       <p>Текст</p>
-      <textarea class="input-widget-text" id="input-widget-text"></textarea>
+      <textarea class="input-widget-text" id="input-widget-text" name="text"></textarea>
     {/if}
+    <button class="submit-btn" type="submit">Добавить виджет</button>
   </form>
-  <button class="submit-btn" onclick={createWidget}>Добавить виджет</button>
   <div>Добавлено виджетов: {addedWidgets}</div>
   <button onclick={saveChanges}>Сохранить изменения</button>
-  {#await widgetsPromise}
+  {#await loadWidgets()}
     <p>Загрузка виджетов...</p>
-  {:then widgets}
+  {:then _}
     {console.log(widgets)}
         {#each widgets as widget}
             {#if (widget.type == "text")}
@@ -215,8 +230,19 @@
                         text = {widget.data.text}
                     />
                     
-                    <button onclick={deleteWidget(widgets, widget)}>X</button>
+                    <button style="margin-right:15px" onclick={() => showChangeWidgetField(widget)}>
+                        {widgetsChangeStatus[widget.order-1] ? 'Отмена' : 'Изменить'}
+                    </button>
+                    <button onclick={() => deleteWidget(widgets, widget)}>X</button>
+                    <button onclick={() => changeWidgetPostion(widget, -1)}>^</button>
+                    <button onclick={() => changeWidgetPostion(widget, 1)}>v</button>
                 </div>
+                {#if (widgetsChangeStatus[widget.order-1] == true)} 
+                    <form method = "POST" use:enhance={() => updateWidget(widget)} style="margin-bottom:15px">
+                        <input type="text" name ="text">
+                        <button type="submit">Подтверить</button>
+                    </form>
+                {/if}
             {:else if (widget.type == "audio")}
                 <div 
                     class={widgetsStatus[widget.order-1] ? "widget-container deleted" : "widget-container"}
@@ -224,7 +250,9 @@
                     <AudioWidget 
                         link = {widget.data.link}
                     />
-                    <button onclick={deleteWidget(widgets, widget)}>X</button>
+                    <button onclick={() => deleteWidget(widgets, widget)}>X</button>
+                    <button onclick={() => changeWidgetPostion(widget, -1)}>^</button>
+                    <button onclick={() => changeWidgetPostion(widget, 1)}>v</button>
                 </div>
             {/if}
         {/each}
