@@ -1,122 +1,180 @@
 <script lang="ts">
-  import { Input } from '$lib/components/ui/input/index.js';
-  import { Textarea } from '$lib/components/ui/textarea/index.js';
-  import { Mars, Venus } from '@lucide/svelte';
-  let gender = $state('');
-  let { currentStage = $bindable() } = $props();
-
-  function getAppleEmogi(emoji: string) {
-    let code: string[] = [];
-    for (const codePoint of emoji) {
-      code.push(codePoint.codePointAt(0).toString(16));
-    }
-    return `https://cdnjs.cloudflare.com/ajax/libs/emoji-datasource-apple/15.1.2/img/apple/64/${code.join('-')}.png`;
-  }
-
-  import CalendarIcon from '@lucide/svelte/icons/calendar';
   import {
-    type DateValue,
     DateFormatter,
+    type DateValue,
     getLocalTimeZone,
   } from '@internationalized/date';
-  import { cn } from '$lib/utils.js';
-  import { Button } from '$lib/components/ui/button/index.js';
-  import { Calendar } from '$lib/components/ui/calendar/index.js';
-  import * as Popover from '$lib/components/ui/popover/index.js';
-
-  const df = new DateFormatter('en-US', {
-    dateStyle: 'long',
-  });
+  import SuperDebug, {
+    type Infer,
+    superForm,
+    type SuperValidated,
+  } from 'sveltekit-superforms';
+  import { zodClient } from 'sveltekit-superforms/adapters';
+  import {
+    type FormSchema,
+    informationSchema,
+  } from '$lib/components/registration/InformationFormShema';
+  import Emoji from '$lib/components/ui/emoji/emoji.svelte';
+  import { Input } from '$lib/components/ui/input';
+  import { Mars, Venus, CalendarIcon } from '@lucide/svelte';
+  import { Textarea } from '$lib/components/ui/textarea';
+  import DataPicker from '$lib/components/ui/dataPicker/DataPicker.svelte';
+  import * as Form from '$lib/components/ui/form/index.js';
+  import { photoSchema } from '$lib/components/registration/PhotoFormShema';
+  import { onDestroy } from 'svelte';
+  let gender = $state('');
 
   let value = $state<DateValue>();
+  // let dateOfBirth = $derived(
+  //   `${value?.day}-${value?.month.toString().padStart(2, '0')}-${value?.year}`,
+  // );
+  //
+  // $inspect(dateOfBirth);
+  let { form: information }: { form: SuperValidated<Infer<FormSchema>> } =
+    $props();
+
+  const form = superForm(information, {
+    validators: zodClient(informationSchema),
+    dataType: 'json',
+  });
+
+  const { form: formData, enhance, message, validateForm } = form;
+
+  window.Telegram.WebApp.MainButton.onClick(() => {
+    //currentStage = 'photo';
+    form.submit();
+  });
+  $effect(() => {
+    validateForm().then((response) => {
+      if (response.valid) {
+        window.Telegram.WebApp.MainButton.setParams({
+          color: window.Telegram.WebApp.themeParams.button_color,
+          is_active: true,
+          is_visible: true,
+        });
+      } else {
+        window.Telegram.WebApp.MainButton.setParams({
+          color: '#808080',
+          is_active: false,
+          is_visible: true,
+        });
+      }
+    });
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    $formData;
+  });
+  onDestroy(() => {
+    window.Telegram.WebApp.MainButton.hide();
+  });
 </script>
 
-<div class="h-21">
-  <div class="flex w-full">
-    <img src={getAppleEmogi('👋')} alt="emoji" class="size-6" />
-    <p class="text-xl">Привет! Я Shumi</p>
-  </div>
-  <p class="font-medium text-2xl">Давай познакомимся!</p>
-</div>
-
-<div class="flex flex-col gap-y-4">
-  <div>
-    <div class="flex w-full mb-2 items-center">
-      <img src={getAppleEmogi('😶‍🌫️')} alt="emoji" class="size-4" />
-      <p>Как тебя зовут?</p>
+<form method="POST" action="?/information" use:enhance>
+  <div class="h-21">
+    <div class="flex w-full">
+      <Emoji symbol="👋" size={6} />
+      <p class="text-xl">Привет! Я Shumi</p>
     </div>
-    <Input type="text" placeholder="Введи своё имя" />
+    <p class="font-medium text-2xl">Давай познакомимся!</p>
   </div>
-  <div>
-    <div class="flex w-full mb-2 items-center">
-      <img src={getAppleEmogi('👾')} alt="emoji" class="size-4" />
-      <p>Какого ты пола?</p>
+  <div class="flex flex-col gap-y-4">
+    <div>
+      <div class="flex w-full mb-2 items-center">
+        <Emoji symbol="😶‍🌫️" />
+        <p>Как тебя зовут?</p>
+      </div>
+      <Form.Field {form} name="username">
+        <Form.Control>
+          {#snippet children({ props })}
+            <Input
+              {...props}
+              placeholder="Введи своё имя"
+              bind:value={$formData.username}
+              name="username"
+            />
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
     </div>
-    <div class="flex">
-      <button
-        class="w-1/2 h-16.75 rounded-l-xl {gender === 'male'
-          ? 'bg-[#00A6FF]/50'
-          : 'bg-[#00A6FF]/20'}"
-        onclick={() => (gender = 'male')}
-      >
-        <Mars class="text-[#0CB9F8] mx-auto" />
-        <p class="text-[#40A7E3]">Мужской</p>
-      </button>
-      <button
-        class="w-1/2 h-16.75 rounded-r-xl {gender === 'female'
-          ? 'bg-[#F80CC9]/50'
-          : 'bg-[#F80CC9]/15'}"
-        onclick={() => (gender = 'female')}
-      >
-        <Venus class="text-[#F80CC9] mx-auto" />
-        <p class="text-[#F80CC9]">Женский</p>
-      </button>
+    <div>
+      <div class="flex w-full mb-2 items-center">
+        <Emoji symbol="👾" />
+        <p>Какого ты пола?</p>
+      </div>
+      <div class="flex">
+        <button
+          class="w-1/2 h-16.75 rounded-l-xl {$formData.gender === 'male'
+            ? 'bg-[#00A6FF]/50'
+            : 'bg-[#00A6FF]/20'}"
+          onclick={(e) => {
+            $formData.gender = 'male';
+            e.preventDefault();
+          }}
+        >
+          <div class="size-6 bg-white mx-auto rounded-full flex">
+            <Mars class="text-[#0CB9F8] m-auto size-3" />
+          </div>
+          <p class="text-[#40A7E3]">Мужской</p>
+        </button>
+        <button
+          class="w-1/2 h-16.75 rounded-r-xl {$formData.gender === 'female'
+            ? 'bg-[#F80CC9]/50'
+            : 'bg-[#F80CC9]/15'}"
+          onclick={(e) => {
+            $formData.gender = 'female';
+            e.preventDefault();
+          }}
+        >
+          <div class="size-6 bg-white mx-auto rounded-full flex">
+            <Venus class="text-[#F80CC9] m-auto size-3" />
+          </div>
+          <p class="text-[#F80CC9]">Женский</p>
+        </button>
+      </div>
+    </div>
+    <div>
+      <div class="flex w-full mb-2 items-center">
+        <Emoji symbol="📅" />
+        <p>Когда ты родился?</p>
+      </div>
+      <DataPicker bind:value={$formData.dateOfBirth} />
+    </div>
+    <div>
+      <div class="flex w-full mb-2 items-center">
+        <Emoji symbol="🌍" />
+        <p>Где ты живёшь?</p>
+      </div>
+      <Form.Field {form} name="city">
+        <Form.Control>
+          {#snippet children({ props })}
+            <Input
+              {...props}
+              placeholder="Начни вводить название города"
+              bind:value={$formData.city}
+            />
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+    </div>
+    <div>
+      <div class="flex w-full mb-2 items-center">
+        <Emoji symbol="💫" />
+        <p>Расскажи о себе</p>
+      </div>
+      <Form.Field {form} name="information">
+        <Form.Control>
+          {#snippet children({ props })}
+            <Textarea
+              {...props}
+              placeholder="Я люблю рисовать и ищу напарника для..."
+              bind:value={$formData.information}
+            />
+          {/snippet}
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
     </div>
   </div>
-  <div>
-    <div class="flex w-full mb-2 items-center">
-      <img src={getAppleEmogi('📅')} alt="emoji" class="size-4" />
-      <p>Когда ты родился?</p>
-    </div>
-    <Popover.Root>
-      <Popover.Trigger>
-        {#snippet child({ props })}
-          <Button
-            variant="outline"
-            class={cn(
-              'w-[280px] justify-start text-left font-normal',
-              !value && 'text-muted-foreground',
-            )}
-            {...props}
-          >
-            <CalendarIcon class="mr-2 size-4" />
-            {value
-              ? df.format(value.toDate(getLocalTimeZone()))
-              : 'Выберите дату'}
-          </Button>
-        {/snippet}
-      </Popover.Trigger>
-      <Popover.Content class="w-auto p-0">
-        <Calendar bind:value type="single" initialFocus />
-      </Popover.Content>
-    </Popover.Root>
-  </div>
-  <div>
-    <div class="flex w-full mb-2 items-center">
-      <img src={getAppleEmogi('🌍')} alt="emoji" class="size-4" />
-      <p>Где ты живёшь?</p>
-    </div>
-    <Input type="text" placeholder="Начни вводить название города" />
-  </div>
-  <div>
-    <div class="flex w-full mb-2 items-center">
-      <img src={getAppleEmogi('💫')} alt="emoji" class="size-4" />
-      <p>Расскажи о себе</p>
-    </div>
-    <Textarea placeholder="Я люблю рисовать и ищу напарника для..." />
-  </div>
-</div>
-<button
-  class="w-full h-12 bg-accent rounded-xl mt-12 text-white font-medium"
-  onclick={() => (currentStage = 'photo')}>Продолжить</button
->
+  <SuperDebug data={$formData} />
+</form>

@@ -74,6 +74,8 @@ export type SocialMediaLink = {
 export type SteamGame = {
   game: string;
   steam_user_id: string;
+  hours_played: number;
+  game_icon: string;
 };
 
 export type Sticker = {

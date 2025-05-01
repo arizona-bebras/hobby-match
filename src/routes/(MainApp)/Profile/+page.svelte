@@ -11,26 +11,27 @@
   import SurveyWidget from '$lib/components/Widgets/SurveyWidget.svelte';
   import PhotoWidget from '$lib/components/Widgets/PhotoWidget.svelte';
   import type { BasicWidget } from '$lib/widgetsTypes/widgetsTypes';
-  const widgets: BasicWidget[] = [
-    {
-      telegram_id: '123',
-      order: 123,
-      data: {
-        type: 'Video',
-        link: '1321',
-        platform: 'YouTube',
-      },
-    },
-    {
-      telegram_id: '123',
-      order: 123,
-      data: {
-        type: 'Video',
-        link: '1321',
-        platform: 'YouTube',
-      },
-    },
-  ];
+  // const widgets: BasicWidget[] = [
+  //   {
+  //     telegram_id: '123',
+  //     order: 123,
+  //     type: 'text',
+  //     data: {
+  //       text: '„Люблю играть в Valorant. Часто говорят что выгляжу как будто сгенерирована нейросетью“',
+  //     },
+  //   },
+  //   {
+  //     telegram_id: '123',
+  //     order: 123,
+  //     type: 'steam_game',
+  //     data: {
+  //       game: 'Valorant',
+  //       steam_user_id: 'https://steamcommunity.com/profiles/76561198295231108/',
+  //       hours_played: 1489,
+  //       //game_icon:
+  //     },
+  //   },
+  // ];
 
   let height = $state(380);
   $effect(() => {

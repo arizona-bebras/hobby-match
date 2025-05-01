@@ -1,11 +1,10 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @import '@skeletonlabs/skeleton';
 @import '@skeletonlabs/skeleton/optional/presets';
 @import '@skeletonlabs/skeleton/themes/cerberus';
 
-@source '../../../node_modules/@skeletonlabs/skeleton-svelte/dist';
-
+@source '../node_modules/@skeletonlabs/skeleton-svelte/dist';
 /*:root {*/
 /*  --background: 0 0% 100%;*/
 /*  --foreground: 222.2 84% 4.9%;*/
@@ -78,7 +77,7 @@
   /*--color-primary:*/
   /*--color-secondary:*/
   /*--color-destructive:*/
-  /*--color-ring:*/
+  --color-ring: white;
   /*--color-radius:*/
   /*--color-muted-foreground:*/
   /*--color-popover-foreground:*/

@@ -1,17 +1,10 @@
 <script lang="ts">
-  import { openLink } from '@telegram-apps/sdk-svelte';
-  import { init } from '@telegram-apps/sdk-svelte';
-  import { isTMA } from '@telegram-apps/bridge';
   import { browser } from '$app/environment';
   import Steam from '$lib/components/SocialMedia/Steam.svelte';
   import Twitch from '$lib/components/SocialMedia/Twitch.svelte';
   import Twitter from '$lib/components/SocialMedia/Twitter.svelte';
   import Vk from '$lib/components/SocialMedia/Vk.svelte';
   import Youtube from '$lib/components/SocialMedia/Youtube.svelte';
-  console.log(browser);
-  if (browser) {
-    init();
-  }
 
   import { ArrowUpRight } from '@lucide/svelte';
 

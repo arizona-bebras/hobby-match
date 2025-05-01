@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { symbol } = $props();
+  let { symbol, size = 4 } = $props();
   function getAppleEmogi(emoji: string) {
     let code: string[] = [];
     for (const codePoint of emoji) {
@@ -9,4 +9,10 @@
   }
 </script>
 
-<img src={getAppleEmogi(symbol)} alt={symbol} class="size-6 mr-2 inline" />
+<img
+  src={getAppleEmogi(symbol)}
+  alt={symbol}
+  class="mr-2 inline"
+  style:width="{size * 4}px"
+  style:height="{size * 4}px"
+/>
