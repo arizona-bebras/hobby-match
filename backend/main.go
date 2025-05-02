@@ -14,15 +14,16 @@ import (
 
 func main() {
 	app := pocketbase.New()
-	err := godotenv.Load()
-  	if err != nil {
-    	log.Fatal("Error loading .env file")
-  	}
+	godotenv.Load()
+  // ignoring for now (useful for docker)
+  //   	if err != nil {
+  //     	log.Fatal("Error loading .env file")
+  //   	}
 	token := os.Getenv("BOT_TOKEN")
 
 	// Setup tg auth for users collection
 	tgAuthPlugin.MustRegister(app, &tgAuthPlugin.Options{
-		BotToken: token, // Better to use ENV variable for that
+		BotToken: token,
 		CollectionKey: "users",
 	})
 
