@@ -1,4 +1,5 @@
 export type Widget = {
+  id: string;
   telegram_id: string;
   order: number;
   type:
@@ -8,7 +9,7 @@ export type Widget = {
     | 'todo'
     | 'progress_bar'
     | 'geo'
-    | 'socail_media'
+    | 'social_media'
     | 'steam_game'
     | 'sticker'
     | 'survey'
@@ -16,7 +17,7 @@ export type Widget = {
   data:
     | Audio
     | Video
-    | Photo
+    | Photos
     | Todo
     | ProgressBar
     | Geo
@@ -24,8 +25,7 @@ export type Widget = {
     | SteamGame
     | Sticker
     | Survey
-    | Text
-    | {};
+    | Text;
 };
 
 export type Audio = {
@@ -38,13 +38,18 @@ export type Video = {
 };
 
 export type Photo = {
-  file_id: string;
+  name: string;
   width: number;
   height: number;
   size: number;
 };
 
-type Task = {
+export type Photos = {
+  photos: Photo[];
+};
+
+export type Task = {
+  order: number;
   description: string;
   isCompleted: boolean;
 };
@@ -84,7 +89,7 @@ export type Sticker = {
   };
 };
 
-type Option = {
+export type Option = {
   description: string;
   votes: number;
 };
@@ -92,7 +97,7 @@ type Option = {
 export type Survey = {
   question: string;
   options: Option[];
-  SummuryVotes: number;
+  summuryVotes: number;
 };
 
 export type Text = {

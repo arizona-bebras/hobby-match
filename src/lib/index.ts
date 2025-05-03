@@ -17,15 +17,13 @@ export const swapElements = (
 
 export function diefinePlatofrm(url: string): string {
   const patterns = {
-    youtube: /(youtube\.com|youtu\.be)/i,
-    vimeo: /vimeo\.com/i,
-    tiktok: /tiktok\.com/i,
-    instagram: /instagram\.com/i,
-    twitter: /(twitter\.com|x\.com)/i,
-    rutube: /rutube\.ru/i,
-    vk: /(vk\.com|vkontakte\.ru)/i,
-    dzen: /dzen\.ru/i,
-    ok: /ok\.ru/i,
+    Youtube: /(youtube\.com|youtu\.be)/i,
+    Tiktok: /tiktok\.com/i,
+    Twitter: /(twitter\.com|x\.com)/i,
+    Rutube: /rutube\.ru/i,
+    VK: /(vk\.com|vkontakte\.ru)/i,
+    Steam: /(steamcommunity\.com|store\.steampowered\.com)/i,
+    SoundCloud: /soundcloud\.com/i,
   };
 
   for (const [platform, regex] of Object.entries(patterns)) {
@@ -49,4 +47,46 @@ export async function getImageDimensions(file: File) {
 
     img.src = url;
   });
+}
+
+export function getSocialMediaData(widget: Widget) {
+  const platform = widget.data.platform;
+  const link = widget.data.link;
+  if (platform == "Youtube") {
+    return getYoutubeChannelStats(getUsernameFromUrl(link));
+  }
+  if (platform == "Steam") {
+    return getSteamLevel(link);
+  }
+}
+
+export async function getYoutubeChannelStats(username: string) {
+  const res = await fetch('/api/youtube', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ username: username }),
+  });
+  const data = await res.json();
+  return data.subscribers;
+}
+
+export async function getSteamLevel(link: string) {
+  const res = await fetch('/api/steam', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ link: link }),
+  });
+  const data = await res.json();
+  console.log(data);
+  return data.player_level;
+}
+
+export function getUsernameFromUrl(url: string): string {
+  const platform = diefinePlatofrm(url);
+  if (platform == 'Youtube') return url.slice(25);
+  return '';
 }

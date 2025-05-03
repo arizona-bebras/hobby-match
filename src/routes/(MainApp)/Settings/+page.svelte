@@ -1,8 +1,8 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation';
   import { onMount } from 'svelte';
-  import { diefinePlatofrm, getImageDimensions, pb } from '$lib/index';
-  import { swapElements } from '$lib/index';
+  import { diefinePlatofrm, getImageDimensions, getUsernameFromUrl, getYoutubeChannelStats, pb } from '$lib/index';
+  import { getSocialMediaData } from '$lib/index';
   import TextWidget from '$lib/components/widgets/TextWidget.svelte';
   import SurveyOption from '$lib/components/widgetConstructors/SurveyOption.svelte';
   import Task from '$lib/components/widgetConstructors/Task.svelte';
@@ -14,7 +14,8 @@
   import VideoWidget from '$lib/components/widgets/VideoWidget.svelte';
   import PhotoWidget from '$lib/components/widgets/PhotoWidget.svelte';
   import ToDoWidget from '$lib/components/widgets/ToDoWidget.svelte';
-    import ProgressWidget from '$lib/components/widgets/ProgressWidget.svelte';
+  import ProgressWidget from '$lib/components/widgets/ProgressWidget.svelte';
+  import SocialWidget from '$lib/components/widgets/SocialWidget.svelte';
   //import { processText } from '../../../lib/processWidgets'
 
   let tasksNumbers: Array<{ id: number }> = $state([{ id: 1 }]);
@@ -73,7 +74,6 @@
     async function getUserWidgets() {
         let userWidgets: wid.Widget[] = []; 
         const widgetList = await pb.collection('widgets').getFullList({
-            telegram_id: `${pb.authStore.record?.telegram_id}`,
             sort: `+order`
         })
         for (let i = 0; i < widgetList.length; i++) {
@@ -111,6 +111,15 @@
 
         delete formValues.files;
 
+        if (selectedWidget?.widgetType == "audio") {
+          if (diefinePlatofrm(formValues.link) == "SoundCloud") {
+            formValues.platform = diefinePlatofrm(formValues.link);
+          }
+          else {
+            throw ("wrong link");
+          }
+        }
+
         if (selectedWidget?.widgetType == "video") { 
           formValues.platform = diefinePlatofrm(formValues.link);
         }
@@ -142,8 +151,24 @@
               delete formValues[key]
             }
           }
+          formValues.tasks.sort((a : wid.Task, b : wid.Task) => a.order - b.order)
         }
 
+        if (selectedWidget?.widgetType == "social_media") {
+          const platform = diefinePlatofrm(formValues.link)
+          console.log(platform)
+          if (platform == "Youtube") {
+            console.log(platform)
+            formValues.username = getUsernameFromUrl(formValues.link)
+            formValues.platform = platform
+          }
+          if (platform == "Steam") {
+            console.log(platform)
+            formValues.username = "###"
+            formValues.platform = platform
+            console.log(formValues)
+          }
+        }
         await pb.collection("widgets").create({
             "telegram_id": pb.authStore.record?.telegram_id,
             "type": selectedWidget?.widgetType,
@@ -227,7 +252,7 @@
 <main>
   <form 
     method="POST"
-    use:enhance={createWidget}
+    use:enhance={() => createWidget}
     enctype="multipart/form-data"
     class="widget-form"
     >
@@ -270,7 +295,7 @@
       <input type="text" name="maxProgress"/>
     {:else if selectedWidget?.widgetType == 'social_media'}
       <p>Ссылка на соц. сеть</p>
-      <input type="text" />
+      <input type="text" name="link"/>
     {:else if selectedWidget?.widgetType == 'steam_game'}
       <p>Ссылка на профиль Steam</p>
       <input type="text" />
@@ -372,6 +397,7 @@
                     <ToDoWidget 
                         title = {widget.data.title}
                         tasks = {widget.data.tasks}
+                        widgetId = {widget.id}
                     />
                     <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}>X</button>
                     <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
@@ -390,6 +416,24 @@
                     <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
                     <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button>
                 </div>
+              {:else if (widget.type == "social_media")}
+                {#await getSocialMediaData(widget)}
+                <p></p>
+                {:then subs}
+                <div 
+                    class={widgetsStatus[widget.order-1] ? "widget-container deleted" : "widget-container"}
+                >
+                    <SocialWidget 
+                        platform = {widget.data.platform}
+                        url = {widget.data.link}
+                        username = {widget.data.username}
+                        amountSubscribers = {subs}
+                    />
+                    <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}>X</button>
+                    <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
+                    <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button>
+                </div>
+                {/await}
             {/if}
         {/each}
     {/await}
