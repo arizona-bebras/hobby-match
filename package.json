@@ -37,12 +37,14 @@
 		"vite": "^6.0.0"
 	},
 	"dependencies": {
+		"@google-cloud/local-auth": "^2.1.0",
 		"@tailwindcss/vite": "^4.0.14",
 		"@telegram-apps/bridge": "^2.7.0",
 		"@telegram-apps/init-data-node": "^2.0.3",
 		"@telegram-apps/sdk-svelte": "^2.0.19",
 		"eslint": "^9.22.0",
 		"eslint-plugin-svelte": "^3.3.3",
+		"googleapis": "^105.0.0",
 		"pocketbase": "^0.25.2",
 		"siema": "^1.5.1",
 		"tailwindcss": "^4.0.14",
