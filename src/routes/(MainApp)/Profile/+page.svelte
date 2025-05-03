@@ -170,7 +170,6 @@
       ['🎮', 'игры'],
     ]}
   />
-  <!-- Чтобы отсортировать виджеты по месту положению(order) отсортировать массив widgets по order -->
   {#each sortedWidgets as widget}
     {#if widget.data.type === 'text'}
       <TextWidget data={widget.data} />
