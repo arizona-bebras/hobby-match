@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { pb } from '$lib/index';
+  import { pb } from '$lib';
   import { goto } from '$app/navigation';
 
   let data = {

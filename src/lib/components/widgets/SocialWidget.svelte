@@ -1,17 +1,10 @@
 <script lang="ts">
-  import { openLink } from '@telegram-apps/sdk-svelte';
-  import { init } from '@telegram-apps/sdk-svelte';
-  import { isTMA } from '@telegram-apps/bridge';
   import { browser } from '$app/environment';
   import Steam from '$lib/components/SocialMedia/Steam.svelte';
   import Twitch from '$lib/components/SocialMedia/Twitch.svelte';
   import Twitter from '$lib/components/SocialMedia/Twitter.svelte';
   import Vk from '$lib/components/SocialMedia/Vk.svelte';
   import Youtube from '$lib/components/SocialMedia/Youtube.svelte';
-  console.log(browser);
-  if (browser) {
-    init();
-  }
 
   import { ArrowUpRight } from '@lucide/svelte';
 
@@ -42,33 +35,39 @@
     Twitch: Twitch,
     Twitter: Twitter,
   };
-  let {
-    platform,
-    url,
-    username,
-    amountSubscribers,
-  }: {
-    platform: keyof typeof SubscribersType;
-    url: string;
-    username: string;
-    amountSubscribers: number;
-  } = $props();
+  let { data } = $props();
+  let platform: keyof typeof SubscribersType = data.platform;
+  let url: string = data.link;
+  let username: string = data.username;
+  let amountSubscribers: number = data.subscribers;
+  // let {
+  //   data.platform,
+  //   data.url,
+  //   data.username,
+  //   data.subscribers,
+  // }: {
+  //   platform: keyof typeof SubscribersType;
+  //   url: string;
+  //   username: string;
+  //   amountSubscribers: number;
+  // }
   const Icon = SocialIcons[platform];
 </script>
 
 <button
   class="w-full"
   onclick={() => {
-    if (isTMA()) {
-      console.log(openLink.isAvailable());
-      if (openLink.isAvailable()) {
-        console.log(openLink.isAvailable());
-        openLink(url, {
-          tryBrowser: 'chrome',
-          tryInstantView: true,
-        });
-      }
-    }
+    // if (isTMA()) {
+    //   console.log(openLink.isAvailable());
+    //   if (openLink.isAvailable()) {
+    //     console.log(openLink.isAvailable());
+    //     openLink(url, {
+    //       tryBrowser: 'chrome',
+    //       tryInstantView: true,
+    //     });
+    //   }
+    // }
+    window.Telegram.WebApp.openLink(url);
   }}
 >
   <div class="GameBox">

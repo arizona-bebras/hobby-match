@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { PageProps } from './$types';
+  import type { PageProps } from '../../../../.svelte-kit/types/src/routes';
 
   let { data }: PageProps = $props();
 </script>

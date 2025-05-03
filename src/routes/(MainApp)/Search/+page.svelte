@@ -1,22 +1,6 @@
 <script lang="ts">
-  import { themeParams, secondaryButton } from '@telegram-apps/sdk-svelte';
   import { Progress } from '@skeletonlabs/skeleton-svelte';
-  import { CircleCheck } from '@lucide/svelte';
-  if (secondaryButton.setParams.isAvailable()) {
-    secondaryButton.setParams({
-      backgroundColor: '#000000',
-      hasShineEffect: true,
-      isEnabled: true,
-      isLoaderVisible: true,
-      isVisible: true,
-      position: 'top',
-      text: 'My text',
-      textColor: '#ffffff',
-    });
-  }
-  secondaryButton.mount();
-  const currentColor = themeParams.backgroundColor(); // Например: "#ff0000" или undefined
-  console.log(currentColor); // Проверяем, что приходит от Telegram
+  import { Check } from '@lucide/svelte';
   let tasks = [1, 2, 3, 4];
   let selected = $state('');
 </script>

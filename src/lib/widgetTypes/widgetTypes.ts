@@ -74,11 +74,14 @@ export type SocialMediaLink = {
   platform: 'YouTube' | 'Twitch' | 'VK' | 'Steam' | 'Twitter' | 'Undefined';
   username: string;
   link: string;
+  subscribers: number;
 };
 
 export type SteamGame = {
   game: string;
   steam_user_id: string;
+  hours_played: number;
+  game_icon: string;
 };
 
 export type Sticker = {
