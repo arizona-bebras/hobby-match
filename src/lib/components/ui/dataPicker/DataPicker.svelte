@@ -12,8 +12,8 @@
   import { Calendar } from '$lib/components/ui/calendar/index.js';
   import * as Popover from '$lib/components/ui/popover/index.js';
 
-  const df = new DateFormatter('en-US', {
-    dateStyle: 'long',
+  const df = new DateFormatter('ru', {
+    dateStyle: 'short',
   });
   let { value = $bindable() } = $props();
   let dateValue = {
@@ -33,13 +33,13 @@
       <Button
         variant="outline"
         class={cn(
-          'w-[280px] justify-start text-left font-normal',
+          'w-full justify-start text-left font-normal',
           !value && 'text-muted-foreground',
         )}
         {...props}
       >
         <CalendarIcon class="mr-2 size-4" />
-        {value ? df.format(new Date(value)) : 'Select a date'}
+        {value ? df.format(new Date(value)) : 'Выбери дату'}
       </Button>
     {/snippet}
   </Popover.Trigger>

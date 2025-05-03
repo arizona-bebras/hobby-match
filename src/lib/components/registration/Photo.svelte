@@ -58,7 +58,7 @@
 <form method="POST" action="?/photo" enctype="multipart/form-data" use:enhance>
   <div class="flex flex-col gap-y-2">
     <div class="flex w-full mb-2 items-center">
-      <Emoji symbol="📷" size={6} />
+      <Emoji symbol="📷" class="size-6" />
       <p class="font-medium text-2xl h-10.25">Сфоткаемся?</p>
     </div>
     <button

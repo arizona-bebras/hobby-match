@@ -14,7 +14,7 @@
         destructive:
           'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline:
-          'border-input bg-background hover:bg-gray-200 hover:text-gray border',
+          'border-input bg-background hover:bg-outline-button hover:text-gray border',
         secondary:
           'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',

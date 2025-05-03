@@ -35,33 +35,39 @@
     Twitch: Twitch,
     Twitter: Twitter,
   };
-  let {
-    platform,
-    url,
-    username,
-    amountSubscribers,
-  }: {
-    platform: keyof typeof SubscribersType;
-    url: string;
-    username: string;
-    amountSubscribers: number;
-  } = $props();
+  let { data } = $props();
+  let platform: keyof typeof SubscribersType = data.platform;
+  let url: string = data.link;
+  let username: string = data.username;
+  let amountSubscribers: number = data.subscribers;
+  // let {
+  //   data.platform,
+  //   data.url,
+  //   data.username,
+  //   data.subscribers,
+  // }: {
+  //   platform: keyof typeof SubscribersType;
+  //   url: string;
+  //   username: string;
+  //   amountSubscribers: number;
+  // }
   const Icon = SocialIcons[platform];
 </script>
 
 <button
   class="w-full"
   onclick={() => {
-    if (isTMA()) {
-      console.log(openLink.isAvailable());
-      if (openLink.isAvailable()) {
-        console.log(openLink.isAvailable());
-        openLink(url, {
-          tryBrowser: 'chrome',
-          tryInstantView: true,
-        });
-      }
-    }
+    // if (isTMA()) {
+    //   console.log(openLink.isAvailable());
+    //   if (openLink.isAvailable()) {
+    //     console.log(openLink.isAvailable());
+    //     openLink(url, {
+    //       tryBrowser: 'chrome',
+    //       tryInstantView: true,
+    //     });
+    //   }
+    // }
+    window.Telegram.WebApp.openLink(url);
   }}
 >
   <div class="GameBox">

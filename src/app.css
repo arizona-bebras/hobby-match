@@ -67,17 +67,18 @@
   --color-accent-foreground: var(--tg-theme-accent-text-color, rgba(64, 167, 227));
   --color-accent: var(--tg-theme-button-color, rgba(64, 167, 227));
   /*var(--tg-theme-bg-color, rgba(64, 167, 227));*/
-  --color-background: white;
+  --color-background: var(--tg-theme-bg-color);
   --color-foreground: var(--tg-theme-button-text-color, rgba(64, 167, 227));
   /*--color-muted: var()*/
   /*--color-popover:*/
-  --color-card: white;
+  --color-card: var(--tg-theme-hint-color);
   /*--color-border: ;*/
-  --color-input: #E4E4E7;
+  --color-input: var(--tg-theme-hint-color);
   /*--color-primary:*/
   /*--color-secondary:*/
   /*--color-destructive:*/
-  --color-ring: white;
+  --color-outline-button: var(--tg-theme-secondary-bg-color); /* custom */
+  --color-ring: var(--tg-theme-hint-color);
   /*--color-radius:*/
   /*--color-muted-foreground:*/
   /*--color-popover-foreground:*/
@@ -86,9 +87,9 @@
   /*--color-secondary-foreground:*/
   /*--color-accent-foreground:*/
   /*--color-destructive-foreground:*/
-  --color-popover: black;
-  --color-popover-foreground: white;
-  --color-muted-foreground: #a9a9a9
+  --color-popover: var(--tg-theme-section-bg-color);
+  --color-popover-foreground: var(--tg-theme-text-color);
+  --color-muted-foreground: var(--tg-theme-subtitle-text-color);
 }
 /*@layer base {*/
 /*  * {*/
@@ -104,7 +105,7 @@
     @apply flex gap-[12px] bg-accent/25 p-[10px] rounded-[12px] border-solid border-[#7c7c7c] mb-[8px] w-full;
   }
   .TextBox{
-    @apply border-l-[2px] border-accent w-[100%] mb-[8px];
+    @apply border-l-[2px] border-accent w-[100%] mb-[8px] pl-2;
   }
   .ToDoBox{
     @apply border-2 border-accent rounded-xl p-4 mb-[8px] flex flex-col;

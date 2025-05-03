@@ -71,7 +71,7 @@
 <form method="POST" action="?/information" use:enhance>
   <div class="h-21">
     <div class="flex w-full">
-      <Emoji symbol="👋" size={6} />
+      <Emoji symbol="👋" class="size-6" />
       <p class="text-xl">Привет! Я Shumi</p>
     </div>
     <p class="font-medium text-2xl">Давай познакомимся!</p>

@@ -1,10 +1,11 @@
 <script lang="ts">
-  let { text } = $props();
+  let { data } = $props();
+  console.log('DATA:', data.text);
 </script>
 
 <div class="TextBox text-container">
   <p class="m-[10px] break-words font-[Inter] text-[16px] italic font-medium">
-    {text}
+    {data.text}
   </p>
 </div>
 

@@ -69,7 +69,7 @@ x
   <div class="flex flex-col gap-y-2">
     <div class="flex w-full mb-2 items-center">
       <p class="font-medium text-2xl h-15.25">
-        <Emoji symbol="💗" size={6} />Давай узнаем друг-друга поближе?
+        <Emoji symbol="💗" class="size-6" />Давай узнаем друг-друга поближе?
       </p>
     </div>
     <p>Выберите наиболее интересующие вас темы (максимум 5)</p>
