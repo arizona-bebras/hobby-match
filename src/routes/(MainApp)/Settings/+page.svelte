@@ -2,6 +2,8 @@
   import { invalidate } from '$app/navigation';
   import { onMount } from 'svelte';
   import { diefinePlatofrm, getImageDimensions, getUsernameFromUrl, getYoutubeChannelStats, pb } from '$lib/index';
+  import { createWidget, deleteWidget, updateWidget, changeWidgetPostion, updateWidgetsOrder } from '$lib/components/widgetConstructors/widgetsConstructor';
+  import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
   import { getSocialMediaData } from '$lib/index';
   import TextWidget from '$lib/components/widgets/TextWidget.svelte';
   import SurveyOption from '$lib/components/widgetConstructors/SurveyOption.svelte';
@@ -17,6 +19,12 @@
   import ProgressWidget from '$lib/components/widgets/ProgressWidget.svelte';
   import SocialWidget from '$lib/components/widgets/SocialWidget.svelte';
   //import { processText } from '../../../lib/processWidgets'
+
+  let { data } = $props();
+
+  let  { widgets } = $state(data);
+  console.log($state.snapshot(widgets))
+  updateWidgetsOrder(widgets);
 
   let tasksNumbers: Array<{ id: number }> = $state([{ id: 1 }]);
   let surveyOptionsNumbers: Array<{ id: number }> = $state([{ id: 1 }]);
@@ -35,7 +43,7 @@
     { widgetType: 'text', widgetDisplay: 'Текст' },
   ];
 
-  let selectedWidget = $state<(typeof widgetTypes)[number]>();
+  let selectedWidget = $state();
 
     //widget constructor logic
 
@@ -55,19 +63,8 @@
     }
     }
 
-    function converRecordToWidget(record: RecordModel) : wid.Widget {
-      let widget : wid.Widget = {
-          id: record.id,
-          telegram_id: record.telegram_id,
-          order: record.order,
-          type: record.type,
-          data: record.data
-      }
-      return widget;
-    }
-
-    let widgets = $state<Array<wid.Widget>>([]);
-    let widgetsStatus = $state<Array<boolean>>([]);
+    /*let widgets = $state<Array<wid.Widget>>([]);
+    let widgetsDeleteStatus = $state<Array<boolean>>([]);
     let widgetsChangeStatus = $state<Array<boolean>>([]);
     let addedWidgets = $state(0)
 
@@ -77,7 +74,7 @@
             sort: `+order`
         })
         for (let i = 0; i < widgetList.length; i++) {
-            widgetsStatus.push(false)
+            widgetsDeleteStatus.push(false)
             widgetsChangeStatus.push(false)
             userWidgets.push(converRecordToWidget(widgetList[i]))
         }
@@ -98,155 +95,17 @@
 
     async function loadWidgets() {
         widgets = await getUserWidgets();
-   }
-
-    //widgets logic
-
-    async function createWidget( { formData }: any ) {
-        
-        const uploadedFiles = formData.getAll('files') as File[];
-        let formValues = Object.fromEntries(formData);
-
-        console.log(formValues)
-
-        delete formValues.files;
-
-        if (selectedWidget?.widgetType == "audio") {
-          if (diefinePlatofrm(formValues.link) == "SoundCloud") {
-            formValues.platform = diefinePlatofrm(formValues.link);
-          }
-          else {
-            throw ("wrong link");
-          }
-        }
-
-        if (selectedWidget?.widgetType == "video") { 
-          formValues.platform = diefinePlatofrm(formValues.link);
-        }
-
-        if (selectedWidget?.widgetType == "photo") { 
-          formValues.photos = [];
-          for (const file of uploadedFiles) {
-            const { width, height } : any = await getImageDimensions(file);
-            formValues.photos.push({
-              name: file.name,
-              width : width,
-              height : height,
-              size : file.size
-            })
-          }
-        }
-
-        if (selectedWidget?.widgetType == "todo") {
-          const formValuesList = Object.entries(formValues);
-          formValues.tasks = [];
-          for (const [key, value] of formValuesList) {
-            if (key.includes("task")) {
-              let task : wid.Task = {
-                order: parseInt(key.slice(4)),
-                description: value,
-                isCompleted: false
-              }
-              formValues.tasks.push(task)
-              delete formValues[key]
-            }
-          }
-          formValues.tasks.sort((a : wid.Task, b : wid.Task) => a.order - b.order)
-        }
-
-        if (selectedWidget?.widgetType == "social_media") {
-          const platform = diefinePlatofrm(formValues.link)
-          console.log(platform)
-          if (platform == "Youtube") {
-            console.log(platform)
-            formValues.username = getUsernameFromUrl(formValues.link)
-            formValues.platform = platform
-          }
-          if (platform == "Steam") {
-            console.log(platform)
-            formValues.username = "###"
-            formValues.platform = platform
-            console.log(formValues)
-          }
-        }
-        await pb.collection("widgets").create({
-            "telegram_id": pb.authStore.record?.telegram_id,
-            "type": selectedWidget?.widgetType,
-            "order" : widgetsStatus.length+1,
-            "files" : uploadedFiles,
-            "data": formValues
-        })
-        addedWidgets++;
-        widgetsStatus.push(false)
-
-        return { status: 200 };
     }
-
-    async function updateWidgetsOrder(widgets:wid.Widget[]) {
-        for (let i = 1; i <= widgets.length; i++) {
-            await pb.collection('widgets').update(widgets[i-1].id, {
-                    "order": i
-                }
-            )
-            console.log(widgets[i-1].id)
-        }
-    }
-
-    async function deleteWidget(widgets: wid.Widget[], widget: wid.Widget) {
-        await pb.collection('widgets').delete(widget.id);
-        widgetsStatus[widget.order - 1] = true;
-        console.log(widgetsStatus);
-        const filtred = [];
-        for (let i = 0; i < widgetsStatus.length; i++) {
-            if (!widgetsStatus[i]) {
-            filtred.push(widgets[i]);
-            }
-        }
-        widgets = filtred;
-        console.log(widgets);
-        updateWidgetsOrder(filtred);
-    }
-
-    async function updateWidget(widget: wid.Widget) {
-        return async ({ formData } : any) => {
-            const formValues = Object.fromEntries(formData);
-            await pb.collection('widgets').update(widget.id, {
-            data: formValues
-            });
-        widgetsChangeStatus[widget.order-1] = false;
-        return { status: 200 };
-        };
-    }
-
-    async function changeWidgetPostion(widgets: wid.Widget[], widget: wid.Widget, posChange: number) {
-        const record = await pb.collection('widgets').getFullList({
-            filter: `telegram_id = "${pb.authStore.record?.telegram_id}" && order = "${widget.order + posChange}"`
-        }).then(record => record)
-
-        let widgetOrder = widget.order
-        let recordOrder = record[0].order
-        await pb.collection('widgets').update(record[0].id, {
-            "order": recordOrder + (posChange * -1)
-        })
-        await pb.collection('widgets').update(widget.id, {
-            "order": widgetOrder + posChange
-        })
-        const temp = widgets[recordOrder-1];
-        widgets[recordOrder-1].order += (posChange * -1);
-        widgets[recordOrder-1] = widgets[widgetOrder-1];
-        widgets[widgetOrder-1].order += posChange;
-        widgets[widgetOrder-1] = temp;
-    }
-
-    function showChangeWidgetField(widget: wid.Widget) {
-        widgetsChangeStatus[widget.order-1] = !widgetsChangeStatus[widget.order-1];
+    */
+    function showChangeWidgetField(widget: WidgetWithService) {
+        widget.changeStatus = !widget.changeStatus;
     };
 
-    function saveChanges() {
+    /*function saveChanges() {
         window.location.reload();
     }
 
-    const widgetsPromise = getUserWidgets();
+    const widgetsPromise = getUserWidgets();*/
 </script>
 
 <main>
@@ -256,24 +115,24 @@
     enctype="multipart/form-data"
     class="widget-form"
     >
-    <select bind:value={selectedWidget}>
+    <select name="type" bind:value={selectedWidget}>
       {#each widgetTypes as widget}
-        <option value={widget}>
+        <option value={widget.widgetType}>
           {widget.widgetDisplay}
         </option>
       {/each}
     </select>
     <br />
-    {#if selectedWidget?.widgetType == 'audio'}
+    {#if selectedWidget == 'audio'}
       <p>Ссылка</p>
       <input type="text" id="audio-link" name="link" />
-    {:else if selectedWidget?.widgetType == 'video'}
+    {:else if selectedWidget == 'video'}
       <p>Ссылка на видео</p>
       <input type="text" name="link"/>
-    {:else if selectedWidget?.widgetType == 'photo'}
+    {:else if selectedWidget == 'photo'}
       <p>Выберите до 3 фото</p>
       <input type="file" name="files" multiple/>
-    {:else if selectedWidget?.widgetType == 'todo'}
+    {:else if selectedWidget == 'todo'}
       <input type="text" name="title" />
       {#each tasksNumbers as task (task.id)}
         <Task 
@@ -286,23 +145,23 @@
           (tasksNumbers = [...tasksNumbers, { id: tasksNumbers.length + 1 }])}
         id="taskCreateButton" type="button">Добавить Цель</button
       >
-    {:else if selectedWidget?.widgetType == 'progress_bar'}
+    {:else if selectedWidget == 'progress_bar'}
       <p>Название цели</p>
       <input type="text" name="description"/>
       Текущий прогресс
       <input type="text" name="currentProgress"/>
       Максимальный прогресс
       <input type="text" name="maxProgress"/>
-    {:else if selectedWidget?.widgetType == 'social_media'}
+    {:else if selectedWidget == 'social_media'}
       <p>Ссылка на соц. сеть</p>
       <input type="text" name="link"/>
-    {:else if selectedWidget?.widgetType == 'steam_game'}
+    {:else if selectedWidget == 'steam_game'}
       <p>Ссылка на профиль Steam</p>
       <input type="text" />
-    {:else if selectedWidget?.widgetType == 'sticker'}
+    {:else if selectedWidget == 'sticker'}
       <p>Координаты</p>
       <input type="text" />
-    {:else if selectedWidget?.widgetType == 'survey'}
+    {:else if selectedWidget == 'survey'}
       <p>Название опроса</p>
       <input type="text" />
       {#each surveyOptionsNumbers as task (task.id)}
@@ -316,7 +175,7 @@
           ])}
         id="taskCreateButton">Добавить вариант ответа</button
       >
-    {:else if selectedWidget?.widgetType == 'text'}
+    {:else if selectedWidget == 'text'}
       <p>Текст</p>
       <textarea class="input-widget-text" id="input-widget-text" name="text"></textarea>
     {/if}
@@ -324,122 +183,94 @@
       <button type="submit">Добавить виджет</button>
     </div>
   </form>
-  <div>Добавлено виджетов: {addedWidgets}</div>
-  <button onclick={saveChanges}>Сохранить изменения</button>
-  {#await loadWidgets()}
-    <p>Загрузка виджетов...</p>
-  {:then _}
-    {console.log(widgets)}
-        {#each widgets as widget}
-            {#if (widget.type == "text")}
-                <div 
-                    class={widgetsStatus[widget.order-1] ? "widget-container deleted" : "widget-container"}
-                >
-                    <TextWidget 
-                        text = {widget.data.text}
-                    />
-                    
-                    <button style="margin-right:15px" onclick={() => showChangeWidgetField(widget)}>
-                        {widgetsChangeStatus[widget.order-1] ? 'Отмена' : 'Изменить'}
-                    </button>
-                    <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}>X</button>
-                    <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
-                    <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button>
-                </div>
-                {#if (widgetsChangeStatus[widget.order-1] == true)} 
-                    <form method = "POST" use:enhance={() => updateWidget(widget)} style="margin-bottom:15px">
-                        <input type="text" name ="text">
-                        <button type="submit">Подтверить</button>
-                    </form>
-                {/if}
-            {:else if (widget.type == "audio")}
-                <div 
-                    class={widgetsStatus[widget.order-1] ? "widget-container deleted" : "widget-container"}
-                >
-                    <AudioWidget 
-                        link = {widget.data.link}
-                    />
-                    <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}>X</button>
-                    <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
-                    <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button>
-                </div>
-              {:else if (widget.type == "video")}
-                <div 
-                    class={widgetsStatus[widget.order-1] ? "widget-container deleted" : "widget-container"}
-                >
-                    <VideoWidget 
-                        link = {widget.data.link}
-                        platform = {widget.data.platform}
-                    />
-                    <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}>X</button>
-                    <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
-                    <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button>
-                </div>
-              {:else if (widget.type == "photo")}
-                {#await getFilesURL(widget.id)}
-                  <p></p>
-                {:then photoUrls}
-                  <div 
-                      class={widgetsStatus[widget.order-1] ? "widget-container deleted" : "widget-container"}
-                  >
-                      <PhotoWidget
-                          data = {photoUrls}
-                      />
-                      <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}>X</button>
-                      <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
-                      <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button>
-                  </div>
-                {/await}
-              {:else if (widget.type == "todo")}
-                <div 
-                    class={widgetsStatus[widget.order-1] ? "widget-container deleted" : "widget-container"}
-                >
-                    <ToDoWidget 
-                        title = {widget.data.title}
-                        tasks = {widget.data.tasks}
-                        widgetId = {widget.id}
-                    />
-                    <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}>X</button>
-                    <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
-                    <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button>
-                </div>
-              {:else if (widget.type == "progress_bar")}
-                <div 
-                    class={widgetsStatus[widget.order-1] ? "widget-container deleted" : "widget-container"}
-                >
-                    <ProgressWidget 
-                        label = {widget.data.description}
-                        progress = {widget.data.currentProgress}
-                        max = {widget.data.maxProgress}
-                    />
-                    <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}>X</button>
-                    <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
-                    <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button>
-                </div>
-              {:else if (widget.type == "social_media")}
-                {#await getSocialMediaData(widget)}
-                <p></p>
-                {:then subs}
-                <div 
-                    class={widgetsStatus[widget.order-1] ? "widget-container deleted" : "widget-container"}
-                >
-                    <SocialWidget 
-                        platform = {widget.data.platform}
-                        url = {widget.data.link}
-                        username = {widget.data.username}
-                        amountSubscribers = {subs}
-                    />
-                    <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}>X</button>
-                    <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
-                    <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button>
-                </div>
-                {/await}
+    {#each widgets as widget}
+        {#if (widget.widget.data.type == "text")}
+            <div 
+                class={widget.deleteStatus ? "widget-container deleted" : "widget-container"}
+            >
+                <TextWidget 
+                    data = {widget.widget.data}
+                />
+                
+                <button style="margin-right:15px" onclick={() => showChangeWidgetField(widget)}>
+                    {widget.changeStatus ? 'Отмена' : 'Изменить'}
+                </button>
+                <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}>X</button>
+                <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
+                <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button>
+            </div>
+            {#if (widget.changeStatus == true)} 
+                <form method = "POST" use:enhance={() => updateWidget(widget)} style="margin-bottom:15px">
+                    <input type="text" name ="text">
+                    <button type="submit">Подтверить</button>
+                </form>
             {/if}
-        {/each}
-    {/await}
+        {:else if (widget.widget.data.type == "audio")}
+            <div 
+                class={widget.deleteStatus ? "widget-container deleted" : "widget-container"}
+            >
+                <AudioWidget 
+                    link = {widget.widget.data.link}
+                />
+                <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}>X</button>
+                <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
+                <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button>
+            </div>
+          {:else if (widget.widget.data.type == "video")}
+            <div 
+                class={widget.deleteStatus ? "widget-container deleted" : "widget-container"}
+            >
+                <VideoWidget 
+                    data = {widget.widget.data}
+                />
+                <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}>X</button>
+                <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
+                <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button>
+            </div>
+          {:else if (widget.widget.data.type == "todo")}
+            <div 
+                class={widget.deleteStatus ? "widget-container deleted" : "widget-container"}
+            >
+                <ToDoWidget 
+                    title = {widget.widget.data.title}
+                    tasks = {widget.widget.data.tasks}
+                    widgetId = {widget.widget.id}
+                />
+                <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}>X</button>
+                <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
+                <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button>
+            </div>
+          {:else if (widget.widget.data.type == "progress_bar")}
+            <div 
+                class={widget.deleteStatus ? "widget-container deleted" : "widget-container"}
+            >
+                <ProgressWidget 
+                    data = { widget.widget.data }
+                />
+                <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}>X</button>
+                <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
+                <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button>
+            </div>
+          {:else if (widget.widget.data.type == "social_media")}
+          <div 
+              class={widget.deleteStatus ? "widget-container deleted" : "widget-container"}
+          >
+              <SocialWidget 
+                  data = {widget.widget.data}
+                  socialMeidaData = {widget.additionalData.socialMeidaData}
+              />
+              <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}>X</button>
+              <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button>
+              <button class="ch-btn" onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button>
+          </div>
+        {/if}
+    {/each}
 </main>
 
 <style>
+  body{
+    color: black;
+  }
   input {
     outline: solid;
   }

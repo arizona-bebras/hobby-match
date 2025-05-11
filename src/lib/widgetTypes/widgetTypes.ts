@@ -2,18 +2,6 @@ export type Widget = {
   id: string;
   telegram_id: string;
   order: number;
-  type:
-    | 'audio'
-    | 'video'
-    | 'photo'
-    | 'todo'
-    | 'progress_bar'
-    | 'geo'
-    | 'social_media'
-    | 'steam_game'
-    | 'sticker'
-    | 'survey'
-    | 'text';
   data:
     | Audio
     | Video
@@ -25,14 +13,17 @@ export type Widget = {
     | SteamGame
     | Sticker
     | Survey
-    | Text;
+    | Text
+    | Empty;
 };
 
 export type Audio = {
+  type: 'audio';
   link: string;
 };
 
 export type Video = {
+  type: 'video';
   link: string;
   platform: 'YouTube' | 'Rutube' | 'TikTok' | 'Undefined';
 };
@@ -45,6 +36,7 @@ export type Photo = {
 };
 
 export type Photos = {
+  type: 'photo';
   photos: Photo[];
 };
 
@@ -55,22 +47,26 @@ export type Task = {
 };
 
 export type Todo = {
+  type: 'todo';
   title: string;
   tasks: Task[];
 };
 
 export type ProgressBar = {
+  type: 'progress_bar';
   description: string;
   currentProgress: number;
   maxProgress: number;
 };
 
 export type Geo = {
+  type: 'geo';
   id: string;
   mapLink: string;
 };
 
 export type SocialMediaLink = {
+  type: 'social_media';
   platform: 'YouTube' | 'Twitch' | 'VK' | 'Steam' | 'Twitter' | 'Undefined';
   username: string;
   link: string;
@@ -78,6 +74,7 @@ export type SocialMediaLink = {
 };
 
 export type SteamGame = {
+  type: 'steam_game';
   game: string;
   steam_user_id: string;
   hours_played: number;
@@ -85,6 +82,7 @@ export type SteamGame = {
 };
 
 export type Sticker = {
+  type: 'sticker';
   sticker_id: string;
   cords: {
     x: number;
@@ -98,11 +96,17 @@ export type Option = {
 };
 
 export type Survey = {
+  type: 'survey';
   question: string;
   options: Option[];
   summuryVotes: number;
 };
 
 export type Text = {
+  type: 'text';
   text: string;
+};
+
+export type Empty = {
+  type: 'empty';
 };

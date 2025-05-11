@@ -1,6 +1,16 @@
-import PocketBase from 'pocketbase';
+import PocketBase, { type RecordModel } from 'pocketbase';
 import type { Widget } from '$lib/widgetTypes/widgetTypes';
 export const pb = new PocketBase('http://127.0.0.1:8090');
+
+export function converRecordToWidget(record: RecordModel): Widget {
+  const widget: Widget = {
+    id: record.id,
+    telegram_id: record.telegram_id,
+    order: record.order,
+    data: record.data,
+  };
+  return widget;
+}
 
 export const swapElements = (
   widgets: Widget[],
@@ -35,7 +45,18 @@ export function diefinePlatofrm(url: string): string {
   return 'unknown';
 }
 
-export async function getImageDimensions(file: File) {
+export function getVideoPlatform(
+  platform: string,
+): 'YouTube' | 'Rutube' | 'TikTok' | 'Undefined' {
+  if (platform == 'YouTube') return 'YouTube';
+  if (platform == 'Rutube') return 'Rutube';
+  if (platform == 'TikTok') return 'TikTok';
+  return 'Undefined';
+}
+
+export async function getImageDimensions(
+  file: File,
+): Promise<{ width: number; height: number }> {
   return new Promise((resolve) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
@@ -52,10 +73,10 @@ export async function getImageDimensions(file: File) {
 export function getSocialMediaData(widget: Widget) {
   const platform = widget.data.platform;
   const link = widget.data.link;
-  if (platform == "Youtube") {
+  if (platform == 'Youtube') {
     return getYoutubeChannelStats(getUsernameFromUrl(link));
   }
-  if (platform == "Steam") {
+  if (platform == 'Steam') {
     return getSteamLevel(link);
   }
 }

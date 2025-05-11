@@ -13,8 +13,7 @@
     //@ts-ignore
     let user = await pb
       .collection('users')
-      .getFirstListItem(`telegram_id = "${pb.authStore.record.telegram_id}"`);
-    console.log(user);
+      .getFirstListItem(`telegram_id = "${pb.authStore.model?.telegram_id}"`);
     if (user.location == '' || user.birth_date == '') {
       goto('./registration');
     }
