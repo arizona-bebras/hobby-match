@@ -22,7 +22,7 @@
 </script>
 
 <div class="w-screen max-w-full min-h-screen flex flex-col">
-  <div class="flex flex-col bg-background flex-1 items-center text-foreground">
+  <div class="flex flex-col bg-background flex-1 items-center text-text-color">
     {@render children()}
   </div>
 

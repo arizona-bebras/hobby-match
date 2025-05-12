@@ -6,7 +6,7 @@
 
 <div class="GameBox flex-col">
   <p class="font-[Inter] text-[20px] font-medium">&#9876; {data.description}</p>
-  <div class="w-full bg-gray-300 rounded-lg overflow-hidden relative">
+  <div class="w-full bg-background rounded-lg overflow-hidden relative">
     <div
       class="h-8.25 bg-accent"
       style="
@@ -14,7 +14,7 @@
          clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);"
     ></div>
     <div
-      class="absolute inset-0 flex items-center justify-center font-bold text-white"
+      class="absolute inset-0 flex items-center justify-center font-bold text-text-color"
     >
       {data.currentProgress} / {data.maxProgress}
     </div>

@@ -4,7 +4,7 @@ import type { RequestHandler } from './$types';
 export const POST: RequestHandler = async ({ request }) => {
   const requestData = await request.json();
   const steamId = getSteamID(key, requestData.link);
-  console.log(steamId)
+  console.log(steamId);
   const data = await fetch(
     `https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=${key}&steamid=${steamId}`,
   ).then((result) => result.json());

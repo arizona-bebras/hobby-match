@@ -52,5 +52,5 @@
   {:else if currentStage === 'interests'}
     <Interests form={data.interests} />
   {/if}
-  <button onclick={() => console.log(complitedStages)}>ComplitedStages</button>
+  <!--  <button onclick={() => console.log(complitedStages)}>ComplitedStages</button>-->
 </div>

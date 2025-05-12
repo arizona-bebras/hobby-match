@@ -2,7 +2,7 @@
   import { pb } from '$lib/index';
   import { goto } from '$app/navigation';
   //if (pb.authStore.isValid) {
-  goto('/Settings');
+  goto('/registration');
   //}
 </script>
 

@@ -6,6 +6,7 @@
     getLocalTimeZone,
     parseAbsolute,
     today,
+    CalendarDate,
   } from '@internationalized/date';
   import { cn } from '$lib/utils.js';
   import { Button } from '$lib/components/ui/button/index.js';
@@ -15,7 +16,15 @@
   const df = new DateFormatter('ru', {
     dateStyle: 'short',
   });
-  let { value = $bindable() } = $props();
+  let {
+    value = $bindable(),
+    minValue,
+    maxValue,
+  }: {
+    value: string;
+    minValue?: DateValue | CalendarDate;
+    maxValue?: DateValue | CalendarDate;
+  } = $props();
   let dateValue = {
     get current(): DateValue {
       return value ? parseAbsolute(value, 'UTC') : today('UTC');
@@ -44,6 +53,12 @@
     {/snippet}
   </Popover.Trigger>
   <Popover.Content class="w-auto p-0">
-    <Calendar bind:value={dateValue.current} type="single" initialFocus />
+    <Calendar
+      bind:value={dateValue.current}
+      type="single"
+      initialFocus
+      {minValue}
+      {maxValue}
+    />
   </Popover.Content>
 </Popover.Root>

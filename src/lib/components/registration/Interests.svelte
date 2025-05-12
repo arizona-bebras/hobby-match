@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Input } from '$lib/components/ui/input/index.js';
   import { Plus } from '@lucide/svelte';
-  import Emoji from '$lib/components/ui/emoji/emoji.svelte';
+  import Emoji from '$lib/components/ui/emoji/emogi.svelte';
   import SuperDebug, {
     type Infer,
     superForm,
@@ -118,5 +118,5 @@ x
       </div>
     </div>
   </div>
-  <SuperDebug data={$formData} />
+  <!--  <SuperDebug data={$formData} />-->
 </form>

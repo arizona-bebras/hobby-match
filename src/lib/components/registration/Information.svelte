@@ -3,6 +3,7 @@
     DateFormatter,
     type DateValue,
     getLocalTimeZone,
+    today,
   } from '@internationalized/date';
   import SuperDebug, {
     type Infer,
@@ -14,7 +15,7 @@
     type FormSchema,
     informationSchema,
   } from '$lib/components/registration/InformationFormShema';
-  import Emoji from '$lib/components/ui/emoji/emoji.svelte';
+  import Emoji from '$lib/components/ui/emoji/emogi.svelte';
   import { Input } from '$lib/components/ui/input';
   import { Mars, Venus, CalendarIcon } from '@lucide/svelte';
   import { Textarea } from '$lib/components/ui/textarea';
@@ -111,7 +112,7 @@
             e.preventDefault();
           }}
         >
-          <div class="size-6 bg-white mx-auto rounded-full flex">
+          <div class="size-6 bg-background mx-auto rounded-full flex">
             <Mars class="text-[#0CB9F8] m-auto size-3" />
           </div>
           <p class="text-[#40A7E3]">Мужской</p>
@@ -125,7 +126,7 @@
             e.preventDefault();
           }}
         >
-          <div class="size-6 bg-white mx-auto rounded-full flex">
+          <div class="size-6 bg-background mx-auto rounded-full flex">
             <Venus class="text-[#F80CC9] m-auto size-3" />
           </div>
           <p class="text-[#F80CC9]">Женский</p>
@@ -137,7 +138,10 @@
         <Emoji symbol="📅" />
         <p>Когда ты родился?</p>
       </div>
-      <DataPicker bind:value={$formData.dateOfBirth} />
+      <DataPicker
+        bind:value={$formData.dateOfBirth}
+        maxValue={today(getLocalTimeZone())}
+      />
     </div>
     <div>
       <div class="flex w-full mb-2 items-center">
