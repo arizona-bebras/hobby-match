@@ -5,7 +5,7 @@ import { informationSchema } from '$lib/components/registration/InformationFormS
 import { interestsScheme } from '$lib/components/registration/InterestsFormShema';
 import { zod } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad } from './$types';
-import { goto } from '$app/navigation';
+//import { goto } from '$app/navigation';
 
 export const load: PageServerLoad = async () => {
   return {
@@ -31,7 +31,7 @@ export const actions: Actions = {
   photo: async (event: RequestEvent) => {
     //const photo = await superValidate(event, zod(photoSchema));
     const photo = await superValidate(event, zod(photoSchema));
-    console.log(photo.data.userPhoto);
+    console.log(photo.data.user_photo);
     if (!photo.valid) {
       return fail(400, {
         photo,

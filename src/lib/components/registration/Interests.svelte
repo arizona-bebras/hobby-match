@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { pb } from '$lib/index'
   import { Input } from '$lib/components/ui/input/index.js';
   import { Plus } from '@lucide/svelte';
   import Emoji from '$lib/components/ui/emoji/emoji.svelte';
@@ -36,8 +37,19 @@
   });
 
   const { form: formData, enhance, validateForm } = form;
-  window.Telegram.WebApp.MainButton.onClick(() => {
+
+  let fetchData = async () => {
+    //await console.log(formData);
+    //await pb.collection('users').update(pb.authStore.model?.id, $formData);
     form.submit();
+    //window.Telegram.WebApp.MainButton.offClick(fetchData);
+  }
+
+  window.Telegram.WebApp.MainButton.onClick(async () => { 
+    form.submit(); 
+    let f = () => this;
+    await pb.collection('users').update(pb.authStore.model?.id, $formData);
+    window.Telegram.WebApp.MainButton.offClick(f);
   });
   $effect(() => {
     validateForm().then((response) => {
@@ -58,6 +70,7 @@
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     $formData;
   });
+
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
   });

@@ -15,7 +15,7 @@ interface WidgetWithService {
 }
 
 export const load: PageLoad = async () => {
-  const telegram_id = JSON.parse(localStorage.pocketbase_auth).record
+  const telegram_id = JSON.parse(localStorage.pocketbase_auth).model
     .telegram_id;
   const widgetsRecords = await pb.collection('widgets').getFullList({
     filter: `telegram_id = "${telegram_id}"`,

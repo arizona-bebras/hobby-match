@@ -6,20 +6,19 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv('.env')
-
+DB_ADDRESS = os.getenv("DB_ADDRESS")
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-pb = PocketBase("http://localhost:8090")
+pb = PocketBase(DB_ADDRESS)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text(f'Start use app!')
-    print(update.message.date)
+    await update.message.reply_text(f'Приветствуем Вас в Shumi!')
     user_data =  {
         "telegram_id": update.message.from_user.id,
-        "first_name": update.message.from_user.first_name,
+        "telegram_first_name": update.message.from_user.first_name,
         "first_message_date": update.message.date.isoformat(),
         "telegram_username": update.message.from_user.username,
-        "password": "123",
-        "passwordConfirm" : "123"
+        "password": "useless_password",
+        "passwordConfirm" : "useless_password"
     }
     user = BotUser(user_data, pb)
     if not user.is_user_in_db():

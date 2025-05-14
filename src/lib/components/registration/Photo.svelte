@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { pb } from '$lib/index'
   import Emoji from '$lib/components/ui/emoji/emoji.svelte';
   let fileInput: HTMLInputElement;
   let tgImage = window.Telegram.WebApp.initDataUnsafe.user?.photo_url;
@@ -27,10 +28,21 @@
   });
 
   const { form: formData, enhance, validateForm } = form;
-  window.Telegram.WebApp.MainButton.onClick(() => {
+
+  let fetchData = async () => {
+    //await console.log(formData);
+    //await pb.collection('users').update(pb.authStore.model?.id, $formData);
     form.submit();
+    //window.Telegram.WebApp.MainButton.offClick(fetchData);
+  }
+
+  window.Telegram.WebApp.MainButton.onClick(async () => { 
+    form.submit(); 
+    let f = () => this;
+    await pb.collection('users').update(pb.authStore.model?.id, $formData);
+    window.Telegram.WebApp.MainButton.offClick(f);
   });
-  const file = fileProxy(form, 'userPhoto');
+  const file = fileProxy(form, 'user_photo');
   $effect(() => {
     validateForm().then((response) => {
       if (response.valid) {
@@ -50,6 +62,7 @@
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     $formData;
   });
+
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
   });
@@ -79,7 +92,7 @@
     />
     <p class="self-center">или</p>
     <button
-      onclick={() => ($formData.userPhoto = tgImage ?? '')}
+      onclick={() => ($formData.user_photo = tgImage ?? '')}
       class="w-full h-12 bg-accent rounded-xl text-white font-medium"
       >Взять текущую фотографию из Telegram</button
     >

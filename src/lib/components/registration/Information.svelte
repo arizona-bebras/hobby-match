@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { pb } from '$lib/index'
   import {
     DateFormatter,
     type DateValue,
@@ -40,9 +41,17 @@
 
   const { form: formData, enhance, message, validateForm } = form;
 
-  window.Telegram.WebApp.MainButton.onClick(() => {
-    //currentStage = 'photo';
-    form.submit();
+  let fetchData = async () => {
+    //await console.log(formData);
+    await pb.collection('users').update(pb.authStore.model?.id, $formData);
+    //window.Telegram.WebApp.MainButton.offClick(fetchData);
+  }
+
+  window.Telegram.WebApp.MainButton.onClick(async () => { 
+    form.submit(); 
+    let f = () => this;
+    await pb.collection('users').update(pb.authStore.model?.id, $formData);
+    window.Telegram.WebApp.MainButton.offClick(f);
   });
   $effect(() => {
     validateForm().then((response) => {
@@ -63,6 +72,7 @@
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     $formData;
   });
+
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
   });
@@ -82,13 +92,13 @@
         <Emoji symbol="😶‍🌫️" />
         <p>Как тебя зовут?</p>
       </div>
-      <Form.Field {form} name="username">
+      <Form.Field {form} name="miniapp_name">
         <Form.Control>
           {#snippet children({ props })}
             <Input
               {...props}
               placeholder="Введи своё имя"
-              bind:value={$formData.username}
+              bind:value={$formData.miniapp_name}
               name="username"
             />
           {/snippet}
@@ -137,20 +147,20 @@
         <Emoji symbol="📅" />
         <p>Когда ты родился?</p>
       </div>
-      <DataPicker bind:value={$formData.dateOfBirth} />
+      <DataPicker bind:value={$formData.birth_date} />
     </div>
     <div>
       <div class="flex w-full mb-2 items-center">
         <Emoji symbol="🌍" />
         <p>Где ты живёшь?</p>
       </div>
-      <Form.Field {form} name="city">
+      <Form.Field {form} name="location">
         <Form.Control>
           {#snippet children({ props })}
             <Input
               {...props}
               placeholder="Начни вводить название города"
-              bind:value={$formData.city}
+              bind:value={$formData.location}
             />
           {/snippet}
         </Form.Control>
@@ -162,13 +172,13 @@
         <Emoji symbol="💫" />
         <p>Расскажи о себе</p>
       </div>
-      <Form.Field {form} name="information">
+      <Form.Field {form} name="user_info">
         <Form.Control>
           {#snippet children({ props })}
             <Textarea
               {...props}
               placeholder="Я люблю рисовать и ищу напарника для..."
-              bind:value={$formData.information}
+              bind:value={$formData.user_info}
             />
           {/snippet}
         </Form.Control>

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const photoSchema = z.object({
-  userPhoto: z
+  user_photo: z
     .instanceof(File, { message: 'Please upload a file.' })
     .or(z.string().url()),
 });

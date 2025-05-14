@@ -74,6 +74,7 @@ export async function createWidget({
         link: '',
         platform: 'Undefined',
       };
+      widgetData.link = formValues.link as string;
       widgetData.platform = getVideoPlatform(
         diefinePlatofrm(formValues.link as string),
       );
@@ -130,17 +131,14 @@ export async function createWidget({
         link: '',
         subscribers: 0,
       };
-      let platform = diefinePlatofrm(formValues.link);
-      console.log(platform);
-      if (platform == 'Youtube') {
-        platform = getVideoPlatform(platform);
+      if (diefinePlatofrm(formValues.link as string) == 'Youtube') {
+        widgetData.link = formValues.link as string;
         widgetData.username = getUsernameFromUrl(formValues.link as string);
-        widgetData.platform = platform;
+        widgetData.platform = diefinePlatofrm(formValues.link as string);
       }
-      if (platform == 'Steam') {
-        console.log(platform);
+      if (diefinePlatofrm(formValues.link as string) == 'Steam') {
         widgetData.username = '###';
-        widgetData.platform = platform;
+        widgetData.platform = diefinePlatofrm(formValues.link as string);
         console.log(formValues);
       }
   }

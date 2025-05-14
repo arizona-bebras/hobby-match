@@ -1,6 +1,7 @@
 import PocketBase, { type RecordModel } from 'pocketbase';
 import type { Widget } from '$lib/widgetTypes/widgetTypes';
-export const pb = new PocketBase('http://127.0.0.1:8090');
+
+export const pb = new PocketBase('https://pb.shumi.space');
 
 export function converRecordToWidget(record: RecordModel): Widget {
   const widget: Widget = {
@@ -47,10 +48,10 @@ export function diefinePlatofrm(url: string): string {
 
 export function getVideoPlatform(
   platform: string,
-): 'YouTube' | 'Rutube' | 'TikTok' | 'Undefined' {
+): 'YouTube' | 'Rutube' | 'Tiktok' | 'Undefined' {
   if (platform == 'YouTube') return 'YouTube';
   if (platform == 'Rutube') return 'Rutube';
-  if (platform == 'TikTok') return 'TikTok';
+  if (platform == 'Tiktok') return 'Tiktok';
   return 'Undefined';
 }
 

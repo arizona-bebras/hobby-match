@@ -68,7 +68,7 @@
   --color-accent: var(--tg-theme-button-color, rgba(64, 167, 227));
   /*var(--tg-theme-bg-color, rgba(64, 167, 227));*/
   --color-background: var(--tg-theme-bg-color);
-  --color-foreground: var(--tg-theme-button-text-color, rgba(64, 167, 227));
+  /*--color-foreground: var(--tg-theme-button-text-color, rgba(64, 167, 227));
   /*--color-muted: var()*/
   /*--color-popover:*/
   --color-card: var(--tg-theme-hint-color);
