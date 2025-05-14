@@ -18,6 +18,19 @@
     color: '#808080',
   });
   let { data }: PageProps = $props();
+  $effect(() => {
+    if (currentStage === 'information') {
+      window.Telegram.WebApp.MainButton.onClick(() => {
+        currentStage = 'photo';
+        complitedStages.push('information');
+      });
+    } else if (currentStage === 'photo') {
+      window.Telegram.WebApp.MainButton.onClick(() => {
+        currentStage = 'interests';
+        complitedStages.push('photo');
+      });
+    }
+  });
 </script>
 
 <div class="p-4 w-full">
@@ -39,16 +52,8 @@
   {#if currentStage === 'information'}
     <!--    <Information bind:currentStage />-->
     <Information form={data.information} />
-    {window.Telegram.WebApp.MainButton.onClick(() => {
-      currentStage = 'photo';
-      complitedStages.push('information');
-    })}
   {:else if currentStage === 'photo'}
     <Photo form={data.photo} />
-    {window.Telegram.WebApp.MainButton.onClick(() => {
-      currentStage = 'interests';
-      complitedStages.push('photo');
-    })}
   {:else if currentStage === 'interests'}
     <Interests form={data.interests} />
   {/if}

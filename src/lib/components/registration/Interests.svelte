@@ -76,8 +76,6 @@
   });
 </script>
 
-x
-
 <form method="POST" action="?/interests" use:enhance>
   <div class="flex flex-col gap-y-2">
     <div class="flex w-full mb-2 items-center">

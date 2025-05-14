@@ -33,7 +33,6 @@
   //import { processText } from '../../../lib/processWidgets'
 
   let { data } = $props();
-
   let { widgets } = $state(data);
   console.log($state.snapshot(widgets));
   updateWidgetsOrder(widgets);

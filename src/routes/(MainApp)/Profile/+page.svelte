@@ -1,4 +1,12 @@
 <script lang="ts">
+  import {
+    createWidget,
+    deleteWidget,
+    updateWidget,
+    changeWidgetPostion,
+    updateWidgetsOrder,
+  } from '$lib/components/widgetConstructors/widgetsConstructor';
+
   import { Star, Plus } from '@lucide/svelte';
   import GameWidget from '$lib/components/Widgets/GameWidget.svelte';
   import VideoWidget from '$lib/components/Widgets/VideoWidget.svelte';
@@ -229,6 +237,41 @@
       () => (height = Math.max(300, 380 - window.scrollY * 0.5)),
     );
   });
+
+  let someTest = [
+    {
+      widget: {
+        telegram_id: '123',
+        order: 1,
+        data: {
+          type: 'text',
+          text: '„Люблю играть в Valorant. Часто говорят что выгляжу как будто сгенерирована нейросетью“',
+        },
+      },
+      deleteStatus: false,
+      changeStatus: false,
+      additionalData: {
+        socialMeidaData: 25,
+      },
+    },
+    {
+      widget: {
+        telegram_id: '123',
+        order: 11,
+        data: {
+          type: 'progress_bar',
+          description: 'Количество тренировок',
+          currentProgress: 65,
+          maxProgress: 100,
+        },
+      },
+      deleteStatus: false,
+      changeStatus: false,
+      additionalData: {
+        socialMeidaData: 25,
+      },
+    },
+  ];
 </script>
 
 {#if height - 90 <= 210}
@@ -279,7 +322,6 @@
   {#if showWidgetMenu}
     <WidgetsListMenu bind:showWidgetMenu bind:addedWidget bind:nextStage />
   {/if}
-
   {#if addedWidget === 'Видео'}
     <EditVideo bind:nextStage bind:addedWidget />
   {:else if addedWidget === 'Текст'}
@@ -289,12 +331,13 @@
   {:else if addedWidget === 'Телеграм Аккаунт'}
     <EditTgAccount bind:nextStage bind:addedWidget />
   {:else if addedWidget === 'Телеграм Пост'}
-    <EditTgAccount bind:nextStage bind:addedWidget />
+    <EditTgPost bind:nextStage bind:addedWidget />
   {/if}
+
   {#each sortedWidgets as widget}
     <div class="relative">
       {#if changeMode}
-        <Edit />
+        <Edit widgetType={widget.data.type} />
       {/if}
       {#if widget.data.type === 'text'}
         <TextWidget data={widget.data} />
