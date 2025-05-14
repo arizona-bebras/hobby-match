@@ -2,13 +2,12 @@
   import Siema from 'siema';
   import { onMount } from 'svelte';
 
-  let slider: Siema;
-  let select = 0;
+  let { data } = $props();
+  console.log(data)
 
-  const data = [
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPrTKoiNrYalIuLLSaFMro_QVvrmOD0MTDFQ&s',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPrTKoiNrYalIuLLSaFMro_QVvrmOD0MTDFQ&s',
-  ];
+  let slider: Siema;
+  let select = $state(0);
+
 
   onMount(() => {
     slider = new Siema({
@@ -46,9 +45,9 @@
 </script>
 
 <div class="relative">
-  <div class="siema">
+  <div class="siema" style="max-width:300px">
     {#each data as d}
-      <img src={d} class="w-full" />
+      <img src={d} class="siema-img" />
     {/each}
   </div>
 
@@ -73,6 +72,11 @@
     background-color: lightgrey;
     transition: 0.2s all linear;
     cursor: pointer;
+  }
+
+  .siema-img {
+    height: 250px;
+    width: 250px;
   }
 
   input:checked {

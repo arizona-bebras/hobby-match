@@ -42,10 +42,11 @@
 	"dependencies": {
 		"@google-cloud/local-auth": "^2.1.0",
 		"@tailwindcss/vite": "^4.0.14",
+		"@telegram-apps/sdk-svelte": "^2.0.23",
 		"eslint": "^9.22.0",
 		"eslint-plugin-svelte": "^3.3.3",
 		"googleapis": "^105.0.0",
-		"pocketbase": "^0.25.2",
+		"pocketbase": "^0.21.5",
 		"siema": "^1.5.1",
 		"tailwindcss": "^4.0.14",
 		"typescript-eslint": "^8.27.0",

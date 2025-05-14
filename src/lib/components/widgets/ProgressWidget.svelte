@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { ProgressBar } from '$lib/widgetTypes/widgetTypes';
 
-  let { data }: ProgressBar = $props();
+  let { data }: {data: ProgressBar} = $props();
 </script>
 
 <div class="GameBox flex-col">

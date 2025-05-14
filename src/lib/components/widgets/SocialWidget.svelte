@@ -35,11 +35,11 @@
     Twitch: Twitch,
     Twitter: Twitter,
   };
-  let { data } = $props();
+  let { data, socialMeidaData } = $props();
   let platform: keyof typeof SubscribersType = data.platform;
   let url: string = data.link;
   let username: string = data.username;
-  let amountSubscribers: number = data.subscribers;
+  let amountSubscribers: number = socialMeidaData;
   // let {
   //   data.platform,
   //   data.url,
