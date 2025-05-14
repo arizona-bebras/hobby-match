@@ -1,6 +1,6 @@
 <script lang="ts">
   import { pb } from '$lib/index'
-  import Emoji from '$lib/components/ui/emoji/emoji.svelte';
+  import Emoji from '$lib/components/ui/emoji/emogi.svelte';
   let fileInput: HTMLInputElement;
   let tgImage = window.Telegram.WebApp.initDataUnsafe.user?.photo_url;
   console.log(tgImage);
@@ -98,4 +98,4 @@
     >
   </div>
 </form>
-<SuperDebug data={$formData} />
+<!--<SuperDebug data={$formData} />-->

@@ -35,7 +35,7 @@
     </button>
   </div>
   <button
-    class="flex justify-self-center text-accent relative -top-7"
+    class="flex justify-self-center text-accent relative -top-11"
     onclick={() => (IsOpen = true)}
     class:hidden={IsOpen}>Развернуть</button
   >

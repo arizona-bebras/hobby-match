@@ -9,7 +9,7 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
   return {
-    information: await superValidate(zod(informationSchema)),
+    information: await superValidate(zod(informationSchema)), //{defaults=locals.}
     photo: await superValidate(zod(photoSchema)),
     interests: await superValidate(zod(interestsScheme)),
   };

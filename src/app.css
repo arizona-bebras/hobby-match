@@ -68,15 +68,16 @@
   --color-accent: var(--tg-theme-button-color, rgba(64, 167, 227));
   /*var(--tg-theme-bg-color, rgba(64, 167, 227));*/
   --color-background: var(--tg-theme-bg-color);
-  /*--color-foreground: var(--tg-theme-button-text-color, rgba(64, 167, 227));
+  --color-foreground: var(--tg-theme-button-text-color, rgba(64, 167, 227));
+  --color-text-color: var(--tg-theme-text-color);
   /*--color-muted: var()*/
   /*--color-popover:*/
   --color-card: var(--tg-theme-hint-color);
   /*--color-border: ;*/
   --color-input: var(--tg-theme-hint-color);
   /*--color-primary:*/
-  /*--color-secondary:*/
-  /*--color-destructive:*/
+  --color-secondary: #ffbfd4;
+  --color-destructive: #d8123c;
   --color-outline-button: var(--tg-theme-secondary-bg-color); /* custom */
   --color-ring: var(--tg-theme-hint-color);
   /*--color-radius:*/
