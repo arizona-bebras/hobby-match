@@ -5,10 +5,12 @@ import {
   getImageDimensions,
   getUsernameFromUrl,
   pb,
+  getSteamData,
 } from '$lib/index';
 
 export interface AdditionalData {
-  socialMeidaData?: number;
+  socialMediaData?: number;
+  steamUsername?: string;
 }
 
 export interface WidgetWithService {
@@ -18,11 +20,15 @@ export interface WidgetWithService {
   additionalData: AdditionalData;
 }
 
-export async function createWidget({
-  formData,
-}: {
-  formData: FormData;
-}): Promise<void> {
+export async function createWidget(
+  formData: wid.Widget,
+  numberOfWidgets: number,
+): Promise<void> {
+  let files: File[] = [];
+  if ('files' in formData) {
+    files = formData.files;
+  }
+  /*
   const uploadedFiles = formData.getAll('files') as File[];
 
   const formValues = Object.fromEntries(formData);
@@ -129,7 +135,6 @@ export async function createWidget({
         platform: 'Undefined',
         username: '',
         link: '',
-        subscribers: 0,
       };
       if (diefinePlatofrm(formValues.link as string) == 'Youtube') {
         widgetData.link = formValues.link as string;
@@ -137,18 +142,21 @@ export async function createWidget({
         widgetData.platform = diefinePlatofrm(formValues.link as string);
       }
       if (diefinePlatofrm(formValues.link as string) == 'Steam') {
-        widgetData.username = '###';
+        widgetData.link = formValues.link as string;
+        widgetData.username = (
+          await getSteamData(formValues.link as string)
+        ).steamUsername;
         widgetData.platform = diefinePlatofrm(formValues.link as string);
         console.log(formValues);
       }
   }
-
-  console.log(widgetData);
+  */
+  console.log(formData);
   await pb.collection('widgets').create({
     telegram_id: pb.authStore.model?.telegram_id,
-    order: 1000,
-    files: uploadedFiles,
-    data: widgetData,
+    order: numberOfWidgets,
+    files: files,
+    data: formData,
   });
 }
 
