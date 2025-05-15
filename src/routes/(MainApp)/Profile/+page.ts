@@ -1,21 +1,11 @@
 import { pb } from '$lib/index';
 import type { PageLoad } from './$types';
-import type { Widget } from '$lib/widgetTypes/widgetTypes';
+import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
 import { converRecordToWidget, getSocialMediaData } from '$lib/index';
 
-interface AdditionalData {
-  socialMeidaData?: number;
-}
-
-interface WidgetWithService {
-  widget: Widget;
-  deleteStatus: boolean;
-  changeStatus: boolean;
-  additionalData: AdditionalData;
-}
-
-export const load: PageLoad = async () => {
-  console.log(localStorage);
+export const load: PageLoad = async ({ data }) => {
+  //depends('user:widgets');
+  const { textForm } = data;
   const telegram_id = JSON.parse(localStorage.pocketbase_auth).model
     .telegram_id;
   const widgetsRecords = await pb.collection('widgets').getFullList({
@@ -36,5 +26,5 @@ export const load: PageLoad = async () => {
       );
     widgets.push(widget);
   }
-  return { widgets: structuredClone(widgets) };
+  return { widgets: structuredClone(widgets), textForm };
 };

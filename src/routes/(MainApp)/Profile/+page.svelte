@@ -30,192 +30,8 @@
   import Edit from '$lib/components/editor/Edit.svelte';
   import WidgetsListMenu from '$lib/components/editor/WidgetsListMenu.svelte';
   import { Input } from '$lib/components/ui/input';
-
-  const widgets: BasicWidget[] = [
-    {
-      telegram_id: '123',
-      order: 1,
-      data: {
-        type: 'text',
-        text: '„Люблю играть в Valorant. Часто говорят что выгляжу как будто сгенерирована нейросетью“',
-      },
-    },
-    {
-      telegram_id: '123',
-      order: 2,
-      data: {
-        game: 'Valorant',
-        type: 'steam_game',
-        steam_user_id: 'https://steamcommunity.com/profiles/76561198295231108/',
-        hours_played: 1489,
-        game_icon: 'Valorant.png',
-      },
-    },
-    {
-      telegram_id: '123',
-      order: 3,
-      type: 'video',
-      data: {
-        type: 'video',
-        link: 'https://www.tiktok.com/player/v1/7492189973605551366', // Нужно чтобы приходили последнии цифры
-        platform: 'TikTok',
-      },
-    },
-    // {
-    //   telegram_id: '123',
-    //   order: 4,
-    //   data: {
-    //     type: 'video',
-    //     link: 'https://www.youtube.com/embed/rs6Y4kZ8qtw?si=gtMMU8kaUHylKI32', // Нужно чтобы приходили последнии цифры
-    //     platform: 'YouTube',
-    //   },
-    // },
-    {
-      telegram_id: '123',
-      order: 5,
-      data: {
-        type: 'video',
-        link: 'https://rutube.ru/play/embed/af22ea10424506d17d00fd15ab79804f/', // Нужно чтобы приходили последнии цифры
-        platform: 'Rutube',
-      },
-    },
-    {
-      telegram_id: '123',
-      order: 6,
-      data: {
-        type: 'social_media',
-        platform: 'Youtube',
-        username: '@lowderplay',
-        link: 'https://www.youtube.com/@lowderplay/videos',
-        subscribers: 11,
-      },
-    },
-    {
-      telegram_id: '123',
-      order: 7,
-      data: {
-        type: 'social_media',
-        platform: 'Steam',
-        username: "I'M SCHIZOPHRENIC AND HAVE A GUN",
-        link: 'https://steamcommunity.com/profiles/76561198295231108/',
-        subscribers: 1,
-      },
-    },
-    {
-      telegram_id: '123',
-      order: 8,
-      data: {
-        type: 'social_media',
-        platform: 'Twitch',
-        username: 'shadowkekw',
-        link: 'https://www.twitch.tv/shadowkekw',
-        subscribers: 42,
-      },
-    },
-    {
-      telegram_id: '123',
-      order: 9,
-      data: {
-        type: 'social_media',
-        platform: 'Twitter',
-        username: 'elonmusk',
-        link: 'https://x.com/elonmusk',
-        subscribers: 1,
-      },
-    },
-    {
-      telegram_id: '123',
-      order: 10,
-      data: {
-        type: 'social_media',
-        platform: 'VK',
-        username: 'Илья Спицын',
-        link: 'https://vk.com/id378488092',
-        subscribers: 34,
-      },
-    },
-    {
-      telegram_id: '123',
-      order: 11,
-      data: {
-        type: 'progress_bar',
-        description: 'Количество тренировок',
-        currentProgress: 65,
-        maxProgress: 100,
-      },
-    },
-    {
-      telegram_id: '123',
-      order: 12,
-      data: {
-        type: 'photo',
-        photos: [
-          {
-            name: 'https://images.pexels.com/photos/1525041/pexels-photo-1525041.jpeg?cs=srgb&dl=pexels-francesco-ungaro-1525041.jpg&fm=jpg',
-            width: 150,
-            height: 200,
-            size: 25,
-          },
-          {
-            name: 'https://learn.zoner.com/wp-content/uploads/2018/08/how-to-place-one-photo-inside-another-create-your-own-photo-collage-using-layers.jpg',
-            width: 350,
-            height: 200,
-            size: 50,
-          },
-        ],
-      },
-    },
-    {
-      telegram_id: '123',
-      order: 13,
-      data: {
-        type: 'todo',
-        title: 'Список дней на день',
-        tasks: [
-          {
-            order: 1,
-            description: 'Проснуться',
-            isCompleted: true,
-          },
-          {
-            order: 1,
-            description: 'Сходить на пары',
-            isCompleted: false,
-          },
-          {
-            order: 1,
-            description: 'Позаниматься',
-            isCompleted: true,
-          },
-          {
-            order: 1,
-            description: 'Покушать :)',
-            isCompleted: true,
-          },
-        ],
-      },
-    },
-    {
-      telegram_id: '123',
-      order: 14,
-      data: {
-        type: 'survey',
-        question: 'Следующее видео',
-        options: [
-          {
-            description: 'Моя Косметичка',
-            votes: 125,
-          },
-          {
-            description: 'Диф. уравнения',
-            votes: 25,
-          },
-        ],
-        summuryVotes: 150,
-      },
-    },
-  ];
-  const sortedWidgets = [...widgets].sort((a, b) => a.order - b.order);
+  import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
+  import type { PageProps } from '../../../../.svelte-kit/types/src/routes/registration/$types';
 
   let changeMode = $state(false);
   $effect(() => {
@@ -230,48 +46,13 @@
   let addedWidget = $state('');
   let nextStage = $state(false); //dakdoawdkpowadkwapodkwapodkwadaopd)))))
 
-  let height = $state(380);
-  $effect(() => {
-    window.addEventListener(
-      'scroll',
-      () => (height = Math.max(300, 380 - window.scrollY * 0.5)),
-    );
-  });
+  import { scrollY } from 'svelte/reactivity/window';
 
-  let someTest = [
-    {
-      widget: {
-        telegram_id: '123',
-        order: 1,
-        data: {
-          type: 'text',
-          text: '„Люблю играть в Valorant. Часто говорят что выгляжу как будто сгенерирована нейросетью“',
-        },
-      },
-      deleteStatus: false,
-      changeStatus: false,
-      additionalData: {
-        socialMeidaData: 25,
-      },
-    },
-    {
-      widget: {
-        telegram_id: '123',
-        order: 11,
-        data: {
-          type: 'progress_bar',
-          description: 'Количество тренировок',
-          currentProgress: 65,
-          maxProgress: 100,
-        },
-      },
-      deleteStatus: false,
-      changeStatus: false,
-      additionalData: {
-        socialMeidaData: 25,
-      },
-    },
-  ];
+  let height = $derived(Math.max(300, 380 - (scrollY.current ?? 0) * 0.5));
+
+  let { data } = $props();
+  let widgets: WidgetWithService[] = $derived(data.widgets);
+  $inspect(widgets.length);
 </script>
 
 {#if height - 90 <= 210}
@@ -284,7 +65,7 @@
       <p class="font-semibold text-[16px]"><span>Махачкала, Россия</span></p>
     </div>
   </div>
-{/if}
+{/if}-+
 <img
   src="Girl.png"
   alt="person"
@@ -323,21 +104,26 @@
     <WidgetsListMenu bind:showWidgetMenu bind:addedWidget bind:nextStage />
   {/if}
   {#if addedWidget === 'Видео'}
-    <EditVideo bind:nextStage bind:addedWidget />
+    <EditVideo bind:nextStage />
   {:else if addedWidget === 'Текст'}
-    <EditText bind:nextStage bind:addedWidget />
+    <EditText bind:nextStage />
   {:else if addedWidget === 'Опрос'}
-    <EditSurvey bind:nextStage bind:addedWidget />
+    <EditSurvey bind:nextStage />
   {:else if addedWidget === 'Телеграм Аккаунт'}
-    <EditTgAccount bind:nextStage bind:addedWidget />
+    <EditTgAccount bind:nextStage />
   {:else if addedWidget === 'Телеграм Пост'}
-    <EditTgPost bind:nextStage bind:addedWidget />
+    <EditTgPost bind:nextStage />
   {/if}
 
-  {#each sortedWidgets as widget}
+  {#each widgets as { widget }}
     <div class="relative">
       {#if changeMode}
-        <Edit widgetType={widget.data.type} />
+        <Edit
+          widgetType={widget.data.type}
+          widgetId={widget.id}
+          {widgets}
+          form={data.textForm}
+        />
       {/if}
       {#if widget.data.type === 'text'}
         <TextWidget data={widget.data} />

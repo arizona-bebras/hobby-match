@@ -1,6 +1,7 @@
 <script lang="ts">
-  let { data } = $props();
-  console.log('DATA:', data.text);
+  import type { Text } from '$lib/widgetTypes/widgetTypes';
+
+  let { data }: { data: Text } = $props();
 </script>
 
 <div class="TextBox text-container">

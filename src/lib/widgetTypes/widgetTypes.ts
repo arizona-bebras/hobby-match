@@ -99,7 +99,7 @@ export type Survey = {
   type: 'survey';
   question: string;
   options: Option[];
-  summuryVotes: number;
+  summaryVotes: number;
 };
 
 export type Text = {
