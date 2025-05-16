@@ -2,7 +2,7 @@ import PocketBase, { type RecordModel } from 'pocketbase';
 import type { Widget } from '$lib/widgetTypes/widgetTypes';
 import type { AdditionalData } from './components/widgetConstructors/widgetsConstructor';
 
-export const pb = new PocketBase('https://pb.shumi.space');
+export const pb = new PocketBase('http://127.0.0.1:8090');
 
 export function converRecordToWidget(record: RecordModel): Widget {
   const widget: Widget = {

@@ -13,21 +13,27 @@
   import EditVideo from '$lib/components/editor/EditVideo.svelte';
   import { cn } from '$lib/utils';
   import { ArrowDown, ArrowUp, Pencil } from '@lucide/svelte';
-  let { class: className = '', widgetType } = $props();
+  import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
+  let {
+    class: className = '',
+    widgetType,
+    widgetId,
+    widgets,
+    form,
+  }: {
+    class: string;
+    widgetType: string;
+    widgetId: string;
+    widgets: WidgetWithService[];
+  } = $props();
   let nextStage = $state(false);
-
-  let someTest = {
-    widget: {
-      telegram_id: '123',
-      order: 1,
-      data: {
-        type: 'text',
-        text: '„Люблю играть в Valorant. Часто говорят что выгляжу как будто сгенерирована нейросетью“',
-      },
-    },
-    deleteStatus: false,
-  };
-
+  // Если тип виджета одинаковый, он берёт первый. Нужно сравнивать ещё id виджета
+  let selectedWidget: WidgetWithService = $derived(
+    widgets.find(
+      (widget) =>
+        widget.widget.data.type === widgetType && widget.widget.id === widgetId,
+    ),
+  );
   $effect(() => {
     if (nextStage) {
       window.Telegram.WebApp.MainButton.hide();
@@ -48,14 +54,24 @@
       nextStage = true;
     }}><Pencil class="size-4 text-white" /></button
   >
-  <button><ArrowUp class="size-4.5 text-white" /></button>
-  <button><ArrowDown class="size-4.5 text-white" /></button>
+  <button
+    onclick={() => {
+      changeWidgetPostion(widgets, selectedWidget, -1);
+      console.log($state.snapshot(widgets));
+    }}><ArrowUp class="size-4.5 text-white" /></button
+  >
+  <button
+    onclick={() => {
+      changeWidgetPostion(widgets, selectedWidget, 1);
+      console.log($state.snapshot(widgets));
+    }}><ArrowDown class="size-4.5 text-white" /></button
+  >
 
   {#if nextStage}
     {#if widgetType === 'video'}
       <EditVideo bind:nextStage />
     {:else if widgetType === 'text'}
-      <EditText bind:nextStage />
+      <EditText bind:nextStage {form} />
     {:else if widgetType === 'survey'}
       <EditSurvey bind:nextStage />
     {:else if widgetType === 'Телеграм Аккаунт'}

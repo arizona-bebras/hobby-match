@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { pb } from '$lib/index'
+  import { pb } from '$lib/index';
   import {
     DateFormatter,
     type DateValue,
@@ -42,18 +42,17 @@
 
   const { form: formData, enhance, message, validateForm } = form;
 
-  let fetchData = async () => {
-    //await console.log(formData);
-    await pb.collection('users').update(pb.authStore.model?.id, $formData);
-    //window.Telegram.WebApp.MainButton.offClick(fetchData);
-  }
-
-  window.Telegram.WebApp.MainButton.onClick(async () => { 
-    form.submit(); 
-    let f = () => this;
-    await pb.collection('users').update(pb.authStore.model?.id, $formData);
-    window.Telegram.WebApp.MainButton.offClick(f);
+  $effect(() => {
+    async function onClick() {
+      form.submit();
+      await pb.collection('users').update(pb.authStore.model?.id, $formData);
+    }
+    window.Telegram.WebApp.MainButton.onClick(onClick);
+    return () => {
+      window.Telegram.WebApp.MainButton.offClick(onClick);
+    };
   });
+
   $effect(() => {
     validateForm().then((response) => {
       if (response.valid) {

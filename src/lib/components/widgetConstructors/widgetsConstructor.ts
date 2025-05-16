@@ -5,12 +5,10 @@ import {
   getImageDimensions,
   getUsernameFromUrl,
   pb,
-  getSteamData,
 } from '$lib/index';
 
 export interface AdditionalData {
   socialMediaData?: number;
-  steamUsername?: string;
 }
 
 export interface WidgetWithService {
@@ -21,13 +19,10 @@ export interface WidgetWithService {
 }
 
 export async function createWidget(
-  formData: wid.Widget,
+  formData: wid.Widget['data'],
   numberOfWidgets: number,
+  files: File[] = [],
 ): Promise<void> {
-  let files: File[] = [];
-  if ('files' in formData) {
-    files = formData.files;
-  }
   /*
   const uploadedFiles = formData.getAll('files') as File[];
 

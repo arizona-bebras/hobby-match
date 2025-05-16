@@ -9,16 +9,16 @@
   //   console.log(initData.canSendAfter());
   // }
   let { children } = $props();
-  async function getUser() {
-    //@ts-ignore
-    let user = await pb
-      .collection('users')
-      .getFirstListItem(`telegram_id = "${pb.authStore.model?.telegram_id}"`);
-    if (user.location == '' || user.birth_date == '') {
-      goto('./registration');
-    }
-  }
-  getUser();
+  // async function getUser() {
+  //   //@ts-ignore
+  //   let user = await pb
+  //     .collection('users')
+  //     .getFirstListItem(`telegram_id = "${pb.authStore.model?.telegram_id}"`);
+  //   if (user.location == '' || user.birth_date == '') {
+  //     goto('./registration');
+  //   }
+  // }
+  //getUser();
 </script>
 
 <div class="w-screen max-w-full min-h-screen flex flex-col">
