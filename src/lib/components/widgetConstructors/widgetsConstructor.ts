@@ -1,11 +1,5 @@
 import * as wid from '$lib/widgetTypes/widgetTypes';
-import {
-  diefinePlatofrm,
-  getVideoPlatform,
-  getImageDimensions,
-  getUsernameFromUrl,
-  pb,
-} from '$lib/index';
+import { pb } from '$lib/index';
 
 export interface AdditionalData {
   socialMediaData?: number;
@@ -23,130 +17,6 @@ export async function createWidget(
   numberOfWidgets: number,
   files: File[] = [],
 ): Promise<void> {
-  /*
-  const uploadedFiles = formData.getAll('files') as File[];
-
-  const formValues = Object.fromEntries(formData);
-
-  const widgetType = formValues.type;
-
-  console.log(widgetType);
-
-  delete formValues.files;
-
-  let widgetData:
-    | wid.Audio
-    | wid.Video
-    | wid.Photos
-    | wid.Todo
-    | wid.ProgressBar
-    | wid.Geo
-    | wid.SocialMediaLink
-    | wid.SteamGame
-    | wid.Sticker
-    | wid.Survey
-    | wid.Text
-    | wid.Empty = {
-    type: 'empty',
-  };
-
-  switch (widgetType) {
-    case 'text':
-      widgetData = {
-        type: 'text',
-        text: formValues.text as string,
-      };
-      break;
-    case 'audio':
-      widgetData = {
-        type: 'audio',
-        link: '',
-      };
-      if (diefinePlatofrm(formValues.link as string) == 'SoundCloud') {
-        widgetData.link = formValues.link as string;
-      } else {
-        throw 'wrong link';
-      }
-      break;
-
-    case 'video':
-      widgetData = {
-        type: 'video',
-        link: '',
-        platform: 'Undefined',
-      };
-      widgetData.link = formValues.link as string;
-      widgetData.platform = getVideoPlatform(
-        diefinePlatofrm(formValues.link as string),
-      );
-      break;
-
-    case 'photo':
-      widgetData = {
-        type: 'photo',
-        photos: [],
-      };
-      for (const file of uploadedFiles) {
-        const { width, height } = await getImageDimensions(file);
-        widgetData.photos.push({
-          name: file.name,
-          width: width,
-          height: height,
-          size: file.size,
-        });
-      }
-      break;
-
-    case 'todo':
-      widgetData = {
-        type: 'todo',
-        title: '',
-        tasks: [],
-      };
-      for (const [key, value] of Object.entries(formValues)) {
-        if (key.includes('task')) {
-          const task: wid.Task = {
-            order: parseInt(key.slice(4)),
-            description: value as string,
-            isCompleted: false,
-          };
-          widgetData.tasks.push(task);
-          delete formValues[key];
-        }
-      }
-      widgetData.tasks.sort((a: wid.Task, b: wid.Task) => a.order - b.order);
-      break;
-    case 'progress_bar':
-      widgetData = {
-        type: 'progress_bar',
-        description: formValues.description as string,
-        currentProgress: parseInt(formValues.currentProgress as string),
-        maxProgress: parseInt(formValues.maxProgress as string),
-      };
-      break;
-    case 'social_media':
-      widgetData = {
-        type: 'social_media',
-        platform: 'Undefined',
-        username: '',
-        link: '',
-      };
-      if (diefinePlatofrm(formValues.link as string) == 'Youtube') {
-        widgetData.link = formValues.link as string;
-        widgetData.username = getUsernameFromUrl(formValues.link as string);
-        widgetData.platform = diefinePlatofrm(formValues.link as string);
-      }
-      if (diefinePlatofrm(formValues.link as string) == 'Steam') {
-        widgetData.link = formValues.link as string;
-        widgetData.username = (
-          await getSteamData(formValues.link as string)
-        ).steamUsername;
-        widgetData.platform = diefinePlatofrm(formValues.link as string);
-        console.log(formValues);
-      }
-  }
-  */
-  console.log(formData);
   await pb.collection('widgets').create({
     telegram_id: pb.authStore.model?.telegram_id,
     order: numberOfWidgets,
@@ -170,33 +40,30 @@ export async function deleteWidget(
 ): Promise<void> {
   await pb.collection('widgets').delete(widget.widget.id);
   widget.deleteStatus = true;
-  console.log(widget.deleteStatus);
-  const filtred = [];
+  const filtered = [];
   for (let i = 0; i < widgets.length; i++) {
     if (!widgets[i].deleteStatus) {
-      filtred.push(widgets[i]);
+      filtered.push(widgets[i]);
     }
   }
-  widgets = filtred;
-  console.log(widgets);
-  updateWidgetsOrder(filtred);
+  widgets = filtered;
+  updateWidgetsOrder(widgets);
 }
 
-export async function updateWidget(widget: WidgetWithService) {
-  return async ({ formData }: { formData: FormData }) => {
-    const formValues = Object.fromEntries(formData);
-    formValues.type = widget.widget.data.type;
-    await pb.collection('widgets').update(widget.widget.id, {
-      data: formValues,
-    });
-    widget.changeStatus = false;
-  };
+export async function updateWidget(
+  widget: WidgetWithService,
+  formData: wid.Widget,
+) {
+  await pb.collection('widgets').update(widget.widget.id, {
+    data: formData,
+  });
+  widget.changeStatus = false;
 }
 
-export async function changeWidgetPostion(
+export async function changeWidgetPosition(
   widgets: WidgetWithService[],
   widget: WidgetWithService,
-  posChange: number,
+  posChange: 1 | -1,
 ): Promise<void> {
   const record = await pb
     .collection('widgets')
