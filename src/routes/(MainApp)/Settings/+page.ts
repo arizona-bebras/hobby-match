@@ -1,18 +1,7 @@
 import { pb } from '$lib/index';
 import type { PageLoad } from './$types';
-import type { Widget } from '$lib/widgetTypes/widgetTypes';
 import { converRecordToWidget, getSocialMediaData } from '$lib/index';
-
-interface AdditionalData {
-  socialMeidaData?: number;
-}
-
-interface WidgetWithService {
-  widget: Widget;
-  deleteStatus: boolean;
-  changeStatus: boolean;
-  additionalData: AdditionalData;
-}
+import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
 
 export const load: PageLoad = async () => {
   const telegram_id = JSON.parse(localStorage.pocketbase_auth).model
@@ -30,9 +19,7 @@ export const load: PageLoad = async () => {
       additionalData: {},
     };
     if (widget.widget.data.type == 'social_media')
-      widget.additionalData.socialMeidaData = await getSocialMediaData(
-        widget.widget,
-      );
+      widget.additionalData = await getSocialMediaData(widget.widget);
     widgets.push(widget);
   }
   return { widgets: structuredClone(widgets) };

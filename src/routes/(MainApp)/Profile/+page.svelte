@@ -8,17 +8,17 @@
   } from '$lib/components/widgetConstructors/widgetsConstructor';
 
   import { Star, Plus } from '@lucide/svelte';
-  import GameWidget from '$lib/components/Widgets/GameWidget.svelte';
-  import VideoWidget from '$lib/components/Widgets/VideoWidget.svelte';
-  import TextWidget from '$lib/components/Widgets/TextWidget.svelte';
-  import SocialWidget from '$lib/components/Widgets/SocialWidget.svelte';
-  import StickerWidget from '$lib/components/Widgets/StickerWidget.svelte';
+  import GameWidget from '$lib/components/widgets/GameWidget.svelte';
+  import VideoWidget from '$lib/components/widgets/VideoWidget.svelte';
+  import TextWidget from '$lib/components/widgets/TextWidget.svelte';
+  import SocialWidget from '$lib/components/widgets/SocialWidget.svelte';
+  import StickerWidget from '$lib/components/widgets/StickerWidget.svelte';
   import * as Sheet from '$lib/components/ui/sheet/index.js';
-  import ProgressWidget from '$lib/components/Widgets/ProgressWidget.svelte';
-  import InterestsWidget from '$lib/components/Widgets/InterestsWidget.svelte';
-  import ToDoWidget from '$lib/components/Widgets/ToDoWidget.svelte';
-  import SurveyWidget from '$lib/components/Widgets/SurveyWidget.svelte';
-  import PhotoWidget from '$lib/components/Widgets/PhotoWidget.svelte';
+  import ProgressWidget from '$lib/components/widgets/ProgressWidget.svelte';
+  import InterestsWidget from '$lib/components/widgets/InterestsWidget.svelte';
+  import ToDoWidget from '$lib/components/widgets/ToDoWidget.svelte';
+  import SurveyWidget from '$lib/components/widgets/SurveyWidget.svelte';
+  import PhotoWidget from '$lib/components/widgets/PhotoWidget.svelte';
   import type { BasicWidget } from '$lib/widgetsTypes/widgetsTypes';
 
   import EditTgPost from '$lib/components/editor/EditTgPost.svelte';
@@ -346,7 +346,7 @@
       {:else if widget.data.type === 'video'}
         <VideoWidget data={widget.data} />
       {:else if widget.data.type === 'social_media'}
-        <SocialWidget data={widget.data} />
+        <SocialWidget data={widget.data} socialMediaData = {widget.additionalData.socialMediaData} />
       {:else if widget.data.type === 'progress_bar'}
         <ProgressWidget data={widget.data} />
         <!--{:else if widget.data.type === 'photo'}-->

@@ -1,5 +1,6 @@
 import PocketBase, { type RecordModel } from 'pocketbase';
 import type { Widget } from '$lib/widgetTypes/widgetTypes';
+import type { AdditionalData } from './components/widgetConstructors/widgetsConstructor';
 
 export const pb = new PocketBase('https://pb.shumi.space');
 
@@ -71,18 +72,22 @@ export async function getImageDimensions(
   });
 }
 
-export function getSocialMediaData(widget: Widget) {
+export function getSocialMediaData(
+  widget: Widget,
+): Promise<AdditionalData> | undefined {
   const platform = widget.data.platform;
   const link = widget.data.link;
   if (platform == 'Youtube') {
     return getYoutubeChannelStats(getUsernameFromUrl(link));
   }
   if (platform == 'Steam') {
-    return getSteamLevel(link);
+    return getSteamData(link);
   }
 }
 
-export async function getYoutubeChannelStats(username: string) {
+export async function getYoutubeChannelStats(
+  username: string,
+): Promise<AdditionalData> {
   const res = await fetch('/api/youtube', {
     method: 'POST',
     headers: {
@@ -91,10 +96,14 @@ export async function getYoutubeChannelStats(username: string) {
     body: JSON.stringify({ username: username }),
   });
   const data = await res.json();
-  return data.subscribers;
+  const youtubeStats: AdditionalData = {
+    socialMediaData: data.subscribers,
+  };
+  console.log(youtubeStats);
+  return youtubeStats;
 }
 
-export async function getSteamLevel(link: string) {
+export async function getSteamData(link: string) {
   const res = await fetch('/api/steam', {
     method: 'POST',
     headers: {
@@ -103,8 +112,12 @@ export async function getSteamLevel(link: string) {
     body: JSON.stringify({ link: link }),
   });
   const data = await res.json();
-  console.log(data);
-  return data.player_level;
+  const steamStats: AdditionalData = {
+    socialMediaData: data.player_level,
+    steamUsername: data.player_name,
+  };
+  console.log(steamStats);
+  return steamStats;
 }
 
 export function getUsernameFromUrl(url: string): string {

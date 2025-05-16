@@ -3,16 +3,22 @@ import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request }) => {
   const requestData = await request.json();
-  const steamId = getSteamID(key, requestData.link);
+  const steamId = await getSteamID(key, requestData.link);
   console.log(steamId);
-  const data = await fetch(
-    `https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=${key}&steamid=${steamId}`,
+  //const lvldata = await fetch(
+  //  `https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=${key}&steamid=${steamId}`,
+  //).then((result) => result.json());
+  const steamUserData = await fetch(
+    `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${key}&steamids=${steamId}`,
   ).then((result) => result.json());
-  const lvl = data.player_level;
-  console.log(lvl);
+  const username = steamUserData.personaname;
+  //const lvl = lvldata.player_level;
+  const lvl = "11";
+  console.log(steamUserData.response.players);
   return new Response(
     JSON.stringify({
       success: true,
+      player_name: username,
       player_level: parseInt(lvl),
     }),
     {
@@ -45,7 +51,7 @@ async function someFunc(url: string) {
 
 async function getSteamID(key: string, name: string) {
   const response = await fetch(
-    `http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${key}&vanityurl=${name}`,
+    `https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${key}&vanityurl=${name}`,
   );
   const json = await response.json();
   return json.response;

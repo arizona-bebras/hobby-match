@@ -318,7 +318,7 @@
       >
         <SocialWidget
           data={widget.widget.data}
-          socialMeidaData={widget.additionalData.socialMeidaData}
+          socialMediaData={widget.additionalData?.socialMediaData}
         />
         <button class="ch-btn" onclick={() => deleteWidget(widgets, widget)}
           >X</button

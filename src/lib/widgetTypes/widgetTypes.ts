@@ -70,7 +70,6 @@ export type SocialMediaLink = {
   platform: 'YouTube' | 'Twitch' | 'VK' | 'Steam' | 'Twitter' | 'Undefined';
   username: string;
   link: string;
-  subscribers: number;
 };
 
 export type SteamGame = {
