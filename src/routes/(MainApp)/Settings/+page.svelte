@@ -12,7 +12,7 @@
     createWidget,
     deleteWidget,
     updateWidget,
-    changeWidgetPostion,
+    changeWidgetPosition,
     updateWidgetsOrder,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
   import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';

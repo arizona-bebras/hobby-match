@@ -3,7 +3,7 @@
     createWidget,
     deleteWidget,
     updateWidget,
-    changeWidgetPostion,
+    changeWidgetPosition,
     updateWidgetsOrder,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
 
@@ -47,12 +47,14 @@
   let nextStage = $state(false); //dakdoawdkpowadkwapodkwapodkwadaopd)))))
 
   import { scrollY } from 'svelte/reactivity/window';
+  import EditImage from '$lib/components/editor/EditImage.svelte';
 
   let height = $derived(Math.max(300, 380 - (scrollY.current ?? 0) * 0.5));
 
   let { data } = $props();
   let widgets: WidgetWithService[] = $derived(data.widgets);
-  $inspect(widgets.length);
+
+  let widgetsLenght = $derived(widgets.length);
 </script>
 
 {#if height - 90 <= 210}
@@ -65,7 +67,7 @@
       <p class="font-semibold text-[16px]"><span>Махачкала, Россия</span></p>
     </div>
   </div>
-{/if}-+
+{/if}
 <img
   src="Girl.png"
   alt="person"
@@ -103,27 +105,25 @@
   {#if showWidgetMenu}
     <WidgetsListMenu bind:showWidgetMenu bind:addedWidget bind:nextStage />
   {/if}
+
   {#if addedWidget === 'Видео'}
-    <EditVideo bind:nextStage />
+    <EditVideo bind:nextStage numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Текст'}
-    <EditText bind:nextStage />
+    <EditText bind:nextStage numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Опрос'}
-    <EditSurvey bind:nextStage />
+    <EditSurvey bind:nextStage numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Телеграм Аккаунт'}
-    <EditTgAccount bind:nextStage />
+    <EditTgAccount bind:nextStage numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Телеграм Пост'}
-    <EditTgPost bind:nextStage />
+    <EditTgPost bind:nextStage numberOfWidgets={widgets.length} />
+  {:else if addedWidget === 'Изображение'}
+    <EditImage bind:nextStage numberOfWidgets={widgets.length} />
   {/if}
 
   {#each widgets as { widget }}
     <div class="relative">
       {#if changeMode}
-        <Edit
-          widgetType={widget.data.type}
-          widgetId={widget.id}
-          {widgets}
-          form={data.textForm}
-        />
+        <Edit widgetType={widget.data.type} widgetId={widget.id} {widgets} />
       {/if}
       {#if widget.data.type === 'text'}
         <TextWidget data={widget.data} />
@@ -132,7 +132,10 @@
       {:else if widget.data.type === 'video'}
         <VideoWidget data={widget.data} />
       {:else if widget.data.type === 'social_media'}
-        <SocialWidget data={widget.data} socialMediaData = {widget.additionalData.socialMediaData} />
+        <SocialWidget
+          data={widget.data}
+          socialMediaData={widget.additionalData.socialMediaData}
+        />
       {:else if widget.data.type === 'progress_bar'}
         <ProgressWidget data={widget.data} />
         <!--{:else if widget.data.type === 'photo'}-->
