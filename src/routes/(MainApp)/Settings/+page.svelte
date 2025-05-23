@@ -12,7 +12,7 @@
     createWidget,
     deleteWidget,
     updateWidget,
-    changeWidgetPostion,
+    changeWidgetPosition,
     updateWidgetsOrder,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
   import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
@@ -213,11 +213,11 @@
         >
         <button
           class="ch-btn"
-          onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button
+          onclick={() => changeWidgetPosition(widgets, widget, -1)}>^</button
         >
         <button
           class="ch-btn"
-          onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button
+          onclick={() => changeWidgetPosition(widgets, widget, 1)}>v</button
         >
       </div>
       {#if widget.changeStatus == true}
@@ -242,11 +242,11 @@
         >
         <button
           class="ch-btn"
-          onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button
+          onclick={() => changeWidgetPosition(widgets, widget, -1)}>^</button
         >
         <button
           class="ch-btn"
-          onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button
+          onclick={() => changeWidgetPosition(widgets, widget, 1)}>v</button
         >
       </div>
     {:else if widget.widget.data.type == 'video'}
@@ -261,11 +261,11 @@
         >
         <button
           class="ch-btn"
-          onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button
+          onclick={() => changeWidgetPosition(widgets, widget, -1)}>^</button
         >
         <button
           class="ch-btn"
-          onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button
+          onclick={() => changeWidgetPosition(widgets, widget, 1)}>v</button
         >
       </div>
     {:else if widget.widget.data.type == 'todo'}
@@ -284,11 +284,11 @@
         >
         <button
           class="ch-btn"
-          onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button
+          onclick={() => changeWidgetPosition(widgets, widget, -1)}>^</button
         >
         <button
           class="ch-btn"
-          onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button
+          onclick={() => changeWidgetPosition(widgets, widget, 1)}>v</button
         >
       </div>
     {:else if widget.widget.data.type == 'progress_bar'}
@@ -303,11 +303,11 @@
         >
         <button
           class="ch-btn"
-          onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button
+          onclick={() => changeWidgetPosition(widgets, widget, -1)}>^</button
         >
         <button
           class="ch-btn"
-          onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button
+          onclick={() => changeWidgetPosition(widgets, widget, 1)}>v</button
         >
       </div>
     {:else if widget.widget.data.type == 'social_media'}
@@ -325,11 +325,11 @@
         >
         <button
           class="ch-btn"
-          onclick={() => changeWidgetPostion(widgets, widget, -1)}>^</button
+          onclick={() => changeWidgetPosition(widgets, widget, -1)}>^</button
         >
         <button
           class="ch-btn"
-          onclick={() => changeWidgetPostion(widgets, widget, 1)}>v</button
+          onclick={() => changeWidgetPosition(widgets, widget, 1)}>v</button
         >
       </div>
     {/if}

@@ -3,7 +3,7 @@
     createWidget,
     deleteWidget,
     updateWidget,
-    changeWidgetPostion,
+    changeWidgetPosition,
     updateWidgetsOrder,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
 

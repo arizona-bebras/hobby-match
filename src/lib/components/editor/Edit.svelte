@@ -3,7 +3,7 @@
     createWidget,
     deleteWidget,
     updateWidget,
-    changeWidgetPostion,
+    changeWidgetPosition,
     updateWidgetsOrder,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
   import EditTgPost from '$lib/components/editor/EditTgPost.svelte';
@@ -56,13 +56,13 @@
   >
   <button
     onclick={() => {
-      changeWidgetPostion(widgets, selectedWidget, -1);
+      changeWidgetPosition(widgets, selectedWidget, -1);
       console.log($state.snapshot(widgets));
     }}><ArrowUp class="size-4.5 text-white" /></button
   >
   <button
     onclick={() => {
-      changeWidgetPostion(widgets, selectedWidget, 1);
+      changeWidgetPosition(widgets, selectedWidget, 1);
       console.log($state.snapshot(widgets));
     }}><ArrowDown class="size-4.5 text-white" /></button
   >

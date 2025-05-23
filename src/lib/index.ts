@@ -2,9 +2,9 @@ import PocketBase, { type RecordModel } from 'pocketbase';
 import type { Widget } from '$lib/widgetTypes/widgetTypes';
 import type { AdditionalData } from './components/widgetConstructors/widgetsConstructor';
 
-export const pb = new PocketBase('http://127.0.0.1:8090');
+export const pb = new PocketBase('https://pb.shumi.space');
 
-export function converRecordToWidget(record: RecordModel): Widget {
+export function convertRecordToWidget(record: RecordModel): Widget {
   const widget: Widget = {
     id: record.id,
     telegram_id: record.telegram_id,
@@ -27,7 +27,7 @@ export const swapElements = (
   widgets[widgetOrder - 1] = temp;
 };
 
-export function diefinePlatofrm(url: string): string {
+export function definePlatofrm(url: string): string {
   const patterns = {
     Youtube: /(youtube\.com|youtu\.be)/i,
     Tiktok: /tiktok\.com/i,
@@ -121,7 +121,7 @@ export async function getSteamData(link: string) {
 }
 
 export function getUsernameFromUrl(url: string): string {
-  const platform = diefinePlatofrm(url);
+  const platform = definePlatofrm(url);
   if (platform == 'Youtube') return url.slice(25);
   return '';
 }

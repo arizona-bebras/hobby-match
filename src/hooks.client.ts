@@ -10,8 +10,6 @@ if (browser) {
     console.log(res.record);
     pb.authStore.save(res.token, res.record);
   });
-  /*document.cookie = `telegram_id = ${pb.authStore.model?.telegram_id}`;*/
-  localStorage.setItem('tmp_userdata', JSON.stringify(pb.authStore.model));
 }
 /*
 if (browser) {

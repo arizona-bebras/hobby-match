@@ -5,7 +5,7 @@
     createWidget,
     deleteWidget,
     updateWidget,
-    changeWidgetPostion,
+    changeWidgetPosition,
     updateWidgetsOrder,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
   import * as Form from '$lib/components/ui/form/index.js';
