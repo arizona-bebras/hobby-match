@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { pb } from '$lib/index'
+  import { pb } from '$lib/index';
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';
   let fileInput: HTMLInputElement;
   let tgImage = window.Telegram.WebApp.initDataUnsafe.user?.photo_url;
@@ -34,10 +34,10 @@
     //await pb.collection('users').update(pb.authStore.model?.id, $formData);
     form.submit();
     //window.Telegram.WebApp.MainButton.offClick(fetchData);
-  }
+  };
 
-  window.Telegram.WebApp.MainButton.onClick(async () => { 
-    form.submit(); 
+  window.Telegram.WebApp.MainButton.onClick(async () => {
+    form.submit();
     let f = () => this;
     await pb.collection('users').update(pb.authStore.model?.id, $formData);
     window.Telegram.WebApp.MainButton.offClick(f);

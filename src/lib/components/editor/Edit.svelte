@@ -14,12 +14,12 @@
   import { cn } from '$lib/utils';
   import { ArrowDown, ArrowUp, Pencil } from '@lucide/svelte';
   import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
+  import EditImage from '$lib/components/editor/EditImage.svelte';
   let {
     class: className = '',
     widgetType,
     widgetId,
     widgets,
-    form,
   }: {
     class: string;
     widgetType: string;
@@ -71,13 +71,15 @@
     {#if widgetType === 'video'}
       <EditVideo bind:nextStage />
     {:else if widgetType === 'text'}
-      <EditText bind:nextStage {form} />
+      <EditText bind:nextStage />
     {:else if widgetType === 'survey'}
       <EditSurvey bind:nextStage />
     {:else if widgetType === 'Телеграм Аккаунт'}
       <EditTgAccount bind:nextStage />
     {:else if widgetType === 'Телеграм Пост'}
       <EditTgPost bind:nextStage />
+    {:else if widgetType === 'Изображение'}
+      <EditImage bind:nextStage />
     {/if}
   {/if}
 </div>
