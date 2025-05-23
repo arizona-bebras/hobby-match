@@ -1,4 +1,4 @@
-import * as wid from '$lib/widgetTypes/widgetTypes';
+import type { Widget } from '$lib/widgetTypes/widgetTypes';
 import { pb } from '$lib/index';
 
 export interface AdditionalData {
@@ -6,14 +6,14 @@ export interface AdditionalData {
 }
 
 export interface WidgetWithService {
-  widget: wid.Widget;
+  widget: Widget;
   deleteStatus: boolean;
   changeStatus: boolean;
   additionalData: AdditionalData;
 }
 
 export async function createWidget(
-  formData: wid.Widget['data'],
+  formData: Widget['data'],
   numberOfWidgets: number,
   files: File[] = [],
 ): Promise<void> {
@@ -34,11 +34,9 @@ export async function updateWidgetsOrder(widgets: WidgetWithService[]) {
   }
 }
 
-export async function deleteWidget(
-  widgets: WidgetWithService[],
-  widget: WidgetWithService,
-): Promise<void> {
-  await pb.collection('widgets').delete(widget.widget.id);
+export async function deleteWidget(widgetId: string): Promise<void> {
+  await pb.collection('widgets').delete(widgetId);
+  /*
   widget.deleteStatus = true;
   const filtered = [];
   for (let i = 0; i < widgets.length; i++) {
@@ -48,11 +46,12 @@ export async function deleteWidget(
   }
   widgets = filtered;
   updateWidgetsOrder(widgets);
+  */
 }
 
 export async function updateWidget(
   widget: WidgetWithService,
-  formData: wid.Widget,
+  formData: Widget,
 ) {
   await pb.collection('widgets').update(widget.widget.id, {
     data: formData,
@@ -65,12 +64,10 @@ export async function changeWidgetPosition(
   widget: WidgetWithService,
   posChange: 1 | -1,
 ): Promise<void> {
-  const record = await pb
-    .collection('widgets')
-    .getFullList({
-      filter: `telegram_id = "${pb.authStore.model?.telegram_id}" && order = "${widget.widget.order + posChange}"`,
-    })
-    .then((record) => record);
+  const record = await pb.collection('widgets').getFullList({
+    filter: `telegram_id = "${pb.authStore.model?.telegram_id}" && order = "${widget.widget.order + posChange}"`,
+  });
+  //.then((record) => record);
 
   const widgetOrder = widget.widget.order;
   const recordOrder = record[0].order;
