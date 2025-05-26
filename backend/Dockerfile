@@ -6,10 +6,12 @@ WORKDIR /usr/src/app
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY . .
+COPY *.go .
 RUN go build -v -o /usr/local/bin/app ./...
 
 WORKDIR /app
+
+COPY pb_hooks /app/pb_hooks
 
 EXPOSE 8080
 
