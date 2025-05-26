@@ -18,6 +18,7 @@ export async function createWidget(
   files: File[] = [],
 ): Promise<void> {
   await pb.collection('widgets').create({
+    user: pb.authStore.model?.id,
     telegram_id: pb.authStore.model?.telegram_id,
     order: numberOfWidgets,
     files: files,

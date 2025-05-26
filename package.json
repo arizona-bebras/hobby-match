@@ -44,6 +44,7 @@
 		"@splidejs/svelte-splide": "^0.2.9",
 		"@tailwindcss/vite": "^4.0.14",
 		"@telegram-apps/sdk-svelte": "^2.0.23",
+		"dotenv": "^16.5.0",
 		"eslint": "^9.22.0",
 		"eslint-plugin-svelte": "^3.3.3",
 		"googleapis": "^105.0.0",

@@ -15,6 +15,7 @@ export type Widget = {
     | Survey
     | Text
     | Empty;
+  additional_data: string;
 };
 
 export type Audio = {
