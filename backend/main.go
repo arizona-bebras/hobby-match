@@ -2,9 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
-	"fmt"
 
 	tgAuthPlugin "github.com/iamelevich/pocketbase-plugin-telegram-auth"
 
@@ -18,10 +18,10 @@ import (
 func main() {
 	app := pocketbase.New()
 	godotenv.Load()
-  // ignoring for now (useful for docker)
-  //   	if err != nil {
-  //     	log.Fatal("Error loading .env file")
-  //   	}
+	// ignoring for now (useful for docker)
+	//   	if err != nil {
+	//     	log.Fatal("Error loading .env file")
+	//   	}
 
 	token := os.Getenv("BOT_TOKEN")
 
@@ -29,7 +29,7 @@ func main() {
 	app.RootCmd.PersistentFlags().StringVar(
 		&hooksDir,
 		"hooksDir",
-		"",
+		"pb_hooks",
 		"the directory with the JS app hooks",
 	)
 
@@ -53,7 +53,7 @@ func main() {
 	app.RootCmd.PersistentFlags().StringVar(
 		&migrationsDir,
 		"migrationsDir",
-		"",
+		"pb_migrations",
 		"the directory with the user defined migrations",
 	)
 
@@ -63,14 +63,6 @@ func main() {
 		"automigrate",
 		true,
 		"enable/disable auto migrations",
-	)
-
-	var queryTimeout int
-	app.RootCmd.PersistentFlags().IntVar(
-		&queryTimeout,
-		"queryTimeout",
-		30,
-		"the default SELECT queries timeout in seconds",
 	)
 
 	app.RootCmd.ParseFlags(os.Args[1:])
@@ -84,7 +76,7 @@ func main() {
 
 	// Setup tg auth for users collection
 	tgAuthPlugin.MustRegister(app, &tgAuthPlugin.Options{
-		BotToken: token,
+		BotToken:      token,
 		CollectionKey: "users",
 	})
 
@@ -96,22 +88,22 @@ func main() {
 }
 
 type UserData struct {
-	Type     string `json: "type"`
-	Platform string `json: "platform"`
-	Username string `json: "username"`
-	Link     string `json: "link"`
+	Type     string `json:"type"`
+	Platform string `json:"platform"`
+	Username string `json:"username"`
+	Link     string `json:"link"`
 }
 
 func registerHooks(app *pocketbase.PocketBase) {
-	app.OnRecordViewRequest().Add(func(e *core.RecordViewEvent) error {
+	app.OnRecordEnrich("widgets").BindFunc(func(e *core.RecordEnrichEvent) error {
 		collectionName := e.Record.Collection().Name
 		log.Printf("[VIEW HOOK] Просмотр записи %s из коллекции %s", e.Record.Id, collectionName)
 
 		if collectionName == "widgets" {
-			e.Record.WithUnknownData(true);
+			e.Record.WithCustomData(true)
 			fmt.Println(e.Record)
 			data := UserData{}
-			json.Unmarshal([]byte(e.Record.GetString("data")), &data);
+			json.Unmarshal([]byte(e.Record.GetString("data")), &data)
 			username := data.Username
 			e.Record.Set("additional_data", youtubeRequest(username))
 			fmt.Println(youtubeRequest(username))
@@ -125,7 +117,7 @@ func registerHooks(app *pocketbase.PocketBase) {
 func youtubeRequest(username string) string {
 	response, err := fetch.Post("http://localhost:5173/api/youtube", &fetch.Config{
 		Body: map[string]interface{}{
-			"username":     username,
+			"username": username,
 		},
 	})
 	if err != nil {
@@ -133,10 +125,10 @@ func youtubeRequest(username string) string {
 		panic(err)
 	}
 
-	additionalData, err := response.JSON();
+	additionalData, err := response.JSON()
 
 	if err != nil {
 		panic(err)
 	}
-  return additionalData;
+	return additionalData
 }

@@ -3,8 +3,8 @@
 
 console.log('Loading hooks!');
 
-routerAdd('GET', '/hello/:name', (c) => {
-  const name = c.pathParam('name');
+routerAdd("GET", "/hello/{name}", (e) => {
+  let name = e.request.pathValue("name")
 
-  return c.json(200, { message: 'Hello ' + name });
-});
+  return e.json(200, { "message": "Hello " + name })
+})
