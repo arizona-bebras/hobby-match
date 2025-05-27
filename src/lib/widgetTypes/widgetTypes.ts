@@ -63,7 +63,7 @@ export type Geo = {
 
 export type SocialMediaLink = {
   type: 'social_media';
-  platform: 'YouTube' | 'Twitch' | 'VK' | 'Steam' | 'X';
+  platform: 'YouTube' | 'Twitch' | 'VK' | 'Steam' | 'X' | 'Telegram';
   link: string;
 };
 
@@ -81,6 +81,11 @@ export type SocialMediaData =
   | {
       type: 'VK';
       followers?: number;
+    }
+  | {
+      type: 'Steam';
+      level?: number;
+      username?: string;
     }
   | {
       type: 'X';
