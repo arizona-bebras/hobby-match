@@ -1,17 +1,13 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 
 	tgAuthPlugin "github.com/iamelevich/pocketbase-plugin-telegram-auth"
 
-	"github.com/go-zoox/fetch"
 	"github.com/joho/godotenv"
 	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/plugins/jsvm"
 )
 
@@ -80,55 +76,7 @@ func main() {
 		CollectionKey: "users",
 	})
 
-	registerHooks(app)
-
 	if err := app.Start(); err != nil {
 		log.Fatal(err)
 	}
-}
-
-type UserData struct {
-	Type     string `json:"type"`
-	Platform string `json:"platform"`
-	Username string `json:"username"`
-	Link     string `json:"link"`
-}
-
-func registerHooks(app *pocketbase.PocketBase) {
-	app.OnRecordEnrich("widgets").BindFunc(func(e *core.RecordEnrichEvent) error {
-		collectionName := e.Record.Collection().Name
-		log.Printf("[VIEW HOOK] Просмотр записи %s из коллекции %s", e.Record.Id, collectionName)
-
-		if collectionName == "widgets" {
-			e.Record.WithCustomData(true)
-			fmt.Println(e.Record)
-			data := UserData{}
-			json.Unmarshal([]byte(e.Record.GetString("data")), &data)
-			username := data.Username
-			e.Record.Set("additional_data", youtubeRequest(username))
-			fmt.Println(youtubeRequest(username))
-			fmt.Println(e.Record)
-		}
-
-		return nil
-	})
-}
-
-func youtubeRequest(username string) string {
-	response, err := fetch.Post("http://localhost:5173/api/youtube", &fetch.Config{
-		Body: map[string]interface{}{
-			"username": username,
-		},
-	})
-	if err != nil {
-		fmt.Println("request error")
-		panic(err)
-	}
-
-	additionalData, err := response.JSON()
-
-	if err != nil {
-		panic(err)
-	}
-	return additionalData
 }
