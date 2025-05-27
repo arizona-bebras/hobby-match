@@ -1,6 +1,5 @@
 export type Widget = {
   id: string;
-  telegram_id: string;
   order: number;
   data:
     | Audio
@@ -13,11 +12,11 @@ export type Widget = {
     | SteamGame
     | Sticker
     | Survey
-    | Text
-    | Empty;
-  additional_data: string;
+    | Text;
+  additionalData?: SocialMediaData | PhotoData;
 };
 
+// SoundCloud embed
 export type Audio = {
   type: 'audio';
   link: string;
@@ -26,23 +25,19 @@ export type Audio = {
 export type Video = {
   type: 'video';
   link: string;
-  platform: 'YouTube' | 'Rutube' | 'TikTok' | 'Undefined';
-};
-
-export type Photo = {
-  name: string;
-  width: number;
-  height: number;
-  size: number;
+  platform: 'YouTube' | 'Rutube' | 'TikTok';
 };
 
 export type Photos = {
   type: 'photo';
-  photos: Photo[];
+};
+
+export type PhotoData = {
+  type: 'photo';
+  urls: string[];
 };
 
 export type Task = {
-  order: number;
   description: string;
   isCompleted: boolean;
 };
@@ -68,22 +63,40 @@ export type Geo = {
 
 export type SocialMediaLink = {
   type: 'social_media';
-  platform: 'YouTube' | 'Twitch' | 'VK' | 'Steam' | 'Twitter' | 'Undefined';
-  username: string;
+  platform: 'YouTube' | 'Twitch' | 'VK' | 'Steam' | 'X';
   link: string;
 };
 
+export type SocialMediaData =
+  | {
+      type: 'YouTube';
+      title?: string;
+      subscribers?: number;
+    }
+  | {
+      type: 'Twitch';
+      title?: string;
+      followers?: number;
+    }
+  | {
+      type: 'VK';
+      followers?: number;
+    }
+  | {
+      type: 'X';
+      followers?: number;
+      tweets?: number;
+    };
+
 export type SteamGame = {
   type: 'steam_game';
-  game: string;
-  steam_user_id: string;
-  hours_played: number;
-  game_icon: string;
+  gameId: string;
+  accountLink: string;
 };
 
 export type Sticker = {
   type: 'sticker';
-  sticker_id: string;
+  stickerId: string;
   cords: {
     x: number;
     y: number;
@@ -92,21 +105,15 @@ export type Sticker = {
 
 export type Option = {
   description: string;
-  votes: number;
 };
 
 export type Survey = {
   type: 'survey';
   question: string;
   options: Option[];
-  summaryVotes: number;
 };
 
 export type Text = {
   type: 'text';
   text: string;
-};
-
-export type Empty = {
-  type: 'empty';
 };
