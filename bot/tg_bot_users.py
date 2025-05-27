@@ -7,6 +7,7 @@ load_dotenv('.env')
 
 DB_ADMIN_PASSWORD = os.getenv('DB_ADMIN_PASSWORD')
 
+print(DB_ADMIN_PASSWORD)
 class BotUser:
 
     def __init__(self, data: dict, pb: PocketBase):
@@ -30,7 +31,7 @@ class BotUser:
         self.pb.admins.auth_with_password("maxi.solts@gmail.com", DB_ADMIN_PASSWORD)
         
         result = self.pb.collection('users').get_list(1, 1, {
-            "filter": f"telegram_id = '{self.data["telegram_id"]}'"
+            "filter": f"telegram_id = '{self.data['telegram_id']}'"
         })
         
         if result.total_items > 0:
