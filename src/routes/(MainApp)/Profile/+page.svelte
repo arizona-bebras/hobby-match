@@ -143,7 +143,7 @@
       {:else if widget.data.type === 'todo'}
         <ToDoWidget data={widget.data} />
       {:else if widget.data.type === 'survey'}
-        <SurveyWidget data={widget.data} />
+        <SurveyWidget data={widget.data} surveyId = { widget.id } />
       {:else if widget.data.type === 'photo'}
         <PhotoWidget data={widget.data} />
       {/if}

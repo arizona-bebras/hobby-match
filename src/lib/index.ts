@@ -7,10 +7,9 @@ export const pb = new PocketBase('http://127.0.0.1:8090');
 export function convertRecordToWidget(record: RecordModel): Widget {
   const widget: Widget = {
     id: record.id,
-    telegram_id: record.telegram_id,
     order: record.order,
     data: record.data,
-    additional_data: record.additional_data,
+    additionalData: record.additional_data,
   };
   return widget;
 }

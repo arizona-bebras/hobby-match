@@ -1,8 +1,15 @@
 <script lang="ts">
   import { Check } from '@lucide/svelte';
   import { Progress } from '@skeletonlabs/skeleton-svelte';
-  let { data } = $props();
+  import { chooseOption } from '$lib/components/widgetConstructors/widgetsConstructor'
+  let { data, surveyId } = $props();
   let selected = $state('');
+
+  $effect(() => {
+    console.log(selected)
+    if (selected != '') 
+      chooseOption(surveyId, selected)
+  })
 </script>
 
 <div class="ToDoBox">

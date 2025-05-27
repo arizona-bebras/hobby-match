@@ -84,10 +84,10 @@ export async function changeWidgetPosition(
   widgets[widgetOrder - 1] = temp;
 }
 
-export async function chooseOption(survey: WidgetWithService, option: string) : Promise<void> {
+export async function chooseOption(surveyId: string, option: string) : Promise<void> {
   await pb.collection('votes').create({
     user: pb.authStore.model?.id,
-    survey: survey.widget.id,
-    option: option
+    survey: surveyId,
+    selected_option: option
   });
 }
