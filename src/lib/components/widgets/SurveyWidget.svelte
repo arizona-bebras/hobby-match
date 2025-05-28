@@ -1,14 +1,38 @@
 <script lang="ts">
+  import { pb } from '$lib/index'
   import { Check } from '@lucide/svelte';
   import { Progress } from '@skeletonlabs/skeleton-svelte';
   import { chooseOption } from '$lib/components/widgetConstructors/widgetsConstructor'
-  let { data, surveyId } = $props();
+    import { onMount } from 'svelte';
+  let { data, surveyId, surveyStats } = $props();
   let selected = $state('');
+
+  function countVotes(): number {
+    let count = 0
+    for (let option of data.options) {
+      count += surveyStats[option.description].length;
+    }
+    return count;
+  }
+
+  
+  function checkSelectedInDB(): boolean {
+    for (let option of data.options) {
+      if (surveyStats[option.description].includes(pb.authStore.model?.id)) {
+        console.log(option.description)
+        selected = option.description;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  let isSelectedInDB = checkSelectedInDB();
 
   $effect(() => {
     console.log(selected)
-    if (selected != '') 
-      chooseOption(surveyId, selected)
+    if (selected != '' && !isSelectedInDB) 
+      chooseOption(surveyId, selected);
   })
 </script>
 
@@ -16,7 +40,7 @@
   <div class="flex">
     <p class="pb-2.25 font-bold">{data.question}</p>
     {#if selected != ''}
-      <p class="ml-auto">{data.summuryVotes} проголосовали</p>
+      <p class="ml-auto">{countVotes()} проголосовали</p>
     {/if}
   </div>
   <!--  <div class="flex gap-2">-->
@@ -46,7 +70,7 @@
       />
       <p class="peer-checked:text-accent">{task.description}</p>
       {#if selected != ''}
-        <p class="ml-auto">{task.votes} голосов</p>
+        <p class="ml-auto">{surveyStats[task.description].length} голосов</p>
       {/if}
     </label>
     {#if selected != ''}

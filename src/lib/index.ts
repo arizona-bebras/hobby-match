@@ -9,7 +9,7 @@ export function convertRecordToWidget(record: RecordModel): Widget {
     id: record.id,
     order: record.order,
     data: record.data,
-    additionalData: record.additional_data,
+    additionalData: record.additionalData,
   };
   return widget;
 }

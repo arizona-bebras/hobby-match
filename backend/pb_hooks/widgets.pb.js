@@ -54,6 +54,22 @@ onRecordEnrich((e) => {
           break;
       }
       break;
+      case 'survey':
+        let surveyData = {};
+        for (let option of data.options) {
+          let exp = $dbx.hashExp({
+            "survey": e.record.getString("id"),
+            "selected_option": option.description
+          });
+          surveyData[option.description] = $app
+            .findAllRecords("votes", exp)
+            .map(record => record.getString("user"));
+        }
+        e.record.set("additionalData", {
+          type: 'survey',
+          stats: surveyData
+        })
+        break;
   }
 
   console.log(JSON.stringify(e.record));

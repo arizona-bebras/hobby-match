@@ -13,7 +13,7 @@ export type Widget = {
     | Sticker
     | Survey
     | Text;
-  additionalData?: SocialMediaData | PhotoData;
+  additionalData?: SocialMediaData | PhotoData | SurveyData;
 };
 
 // SoundCloud embed
@@ -117,6 +117,11 @@ export type Survey = {
   question: string;
   options: Option[];
 };
+
+export type SurveyData = {
+  type: 'survey'
+  stats: Object;
+}
 
 export type Text = {
   type: 'text';
