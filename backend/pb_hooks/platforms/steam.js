@@ -30,7 +30,7 @@ module.exports = {
       method: "GET",
       url: `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${$os.getenv("STEAMAPI_KEY")}&steamids=${id}`,
     });
-    if (!player.json.response.players || player.json.response.players.length !== 1) return null;
+    if (!player.json.response || !player.json.response.players || player.json.response.players.length !== 1) return null;
 
     return {
       level: level.json.response.player_level,
