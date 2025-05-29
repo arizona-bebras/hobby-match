@@ -65,7 +65,7 @@ export async function changeWidgetPosition(
   posChange: 1 | -1,
 ): Promise<void> {
   const record = await pb.collection('widgets').getFullList({
-    filter: `telegram_id = "${pb.authStore.model?.telegram_id}" && order = "${widget.widget.order + posChange}"`,
+    filter: `user = "${pb.authStore.model?.id}" && order = "${widget.widget.order + posChange}"`,
   });
   //.then((record) => record);
 
