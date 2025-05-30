@@ -40,9 +40,12 @@
   const { form: formData, enhance, validateForm } = form;
 
   async function handleTelegramButtonClick() {
-    console.log('1231231231312312312312312312312321312312312');
+    window.Telegram.WebApp.MainButton.showProgress();
+    await pb
+      .collection('users')
+      .update(pb.authStore.record!.id, $formData)
+      .finally(window.Telegram.WebApp.MainButton.hideProgress);
     form.submit();
-    await pb.collection('users').update(pb.authStore.model?.id, $formData);
   }
 
   useTelegramButton(handleTelegramButtonClick);
@@ -66,8 +69,10 @@
     $formData;
   });
   $effect(() => {
-    $formData.interests = pb.authStore.record!.interests;
-    selectedInterests = pb.authStore.record!.interests;
+    selectedInterests = pb.authStore.record!.interests ?? [];
+  });
+  $effect(() => {
+    $formData.interests = selectedInterests;
   });
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();

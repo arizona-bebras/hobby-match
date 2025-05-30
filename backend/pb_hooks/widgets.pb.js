@@ -76,3 +76,31 @@ onRecordEnrich((e) => {
 
   e.next();
 }, 'widgets');
+
+onRecordUpdate((e) => {
+  console.log(JSON.stringify(e, undefined, 2));
+  const url = e.record.getString('user_photo')
+  if (!url.startsWith('http')) return e.next();
+
+  const res = $http.send({
+    method:  "GET",
+    url,
+  });
+
+  const formats = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/svg+xml': 'svg',
+    'image/gif': 'gif',
+    'image/webp': 'webp',
+  };
+
+  const mime = res.headers['Content-Type'];
+  console.log(mime);
+  if(!(mime in formats)) return null;
+
+  const file = $filesystem.fileFromBytes(res.body, `avatar.${formats[mime]}`);
+
+  e.record.set('user_photo', file);
+  e.next();
+}, 'users');

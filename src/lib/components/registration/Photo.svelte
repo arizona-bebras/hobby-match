@@ -21,7 +21,11 @@
   import { object } from 'zod';
   import { onDestroy } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
-  let { form: photo }: { form: SuperValidated<Infer<FormSchema>> } = $props();
+  let {
+    form: photo,
+    nextStage,
+  }: { form: SuperValidated<Infer<FormSchema>>; nextStage: CallableFunction } =
+    $props();
 
   const form = superForm(photo, {
     validators: zodClient(photoSchema),
@@ -32,9 +36,13 @@
 
   const file = fileProxy(form, 'user_photo');
   async function handleTelegramButtonClick() {
-    console.log('1231231231312312312312312312312321312312312');
+    window.Telegram.WebApp.MainButton.showProgress();
+    await pb
+      .collection('users')
+      .update(pb.authStore.record!.id, $formData)
+      .finally(window.Telegram.WebApp.MainButton.hideProgress);
     form.submit();
-    await pb.collection('users').update(pb.authStore.model?.id, $formData);
+    nextStage();
   }
 
   useTelegramButton(handleTelegramButtonClick);
@@ -96,7 +104,7 @@
       class="hidden"
       bind:this={fileInput}
       bind:files={$file}
-      accept="image/png, image/jpeg"
+      accept="image/png, image/jpeg, image/svg+xml, image/gif, image/webp"
     />
     <p class="self-center">или</p>
     <button

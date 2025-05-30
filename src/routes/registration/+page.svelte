@@ -4,12 +4,13 @@
   import Interests from '$lib/components/registration/Interests.svelte';
   import type { PageProps } from '../../../.svelte-kit/types/src/routes/registration/$types';
   import { pb } from '$lib/index';
+  import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
   let stages: string[][] = [
     ['information', 'Информация'],
     ['photo', 'Фото'],
     ['interests', 'Интересы'],
   ];
-  let complitedStages: string[] = $state([]);
+  let completedStages: string[] = $state([]);
   let currentStage: string = $state('information');
   window.Telegram.WebApp.MainButton.setParams({
     has_shine_effect: true,
@@ -19,29 +20,29 @@
     color: '#808080',
   });
   let { data }: PageProps = $props();
-  $effect(() => {
-    if (currentStage === 'information') {
-      window.Telegram.WebApp.MainButton.onClick(() => {
+
+  function nextStage() {
+    switch (currentStage) {
+      case 'information':
         currentStage = 'photo';
-        if (!complitedStages.includes('information')) {
-          complitedStages.push('information');
-        }
-      });
-    } else if (currentStage === 'photo') {
-      window.Telegram.WebApp.MainButton.onClick(() => {
+        break;
+      case 'photo':
         currentStage = 'interests';
-        if (!complitedStages.includes('photo')) {
-          complitedStages.push('photo');
-        }
-      });
+        break;
+      case 'interests':
+        break;
     }
-  });
+
+    if (!completedStages.includes(currentStage)) {
+      completedStages.push(currentStage);
+    }
+  }
   $effect(() => {
     if (pb.authStore.record !== null) {
-      complitedStages = ['information', 'photo', 'interests'];
+      completedStages = ['information', 'photo', 'interests'];
     }
   });
-  $inspect(complitedStages);
+  $inspect(completedStages);
 </script>
 
 <div class="p-4 w-full">
@@ -49,9 +50,9 @@
     {#each stages as stage}
       <button
         onclick={() => {
-          if (complitedStages.includes(stage[0])) currentStage = stage[0];
+          if (completedStages.includes(stage[0])) currentStage = stage[0];
         }}
-        class="border-t-2 w-30.75 p-2.5 {complitedStages.includes(stage[0])
+        class="border-t-2 w-30.75 p-2.5 {completedStages.includes(stage[0])
           ? 'text-accent/50'
           : currentStage === stage[0]
             ? 'text-accent'
@@ -62,9 +63,9 @@
   </div>
   {#if currentStage === 'information'}
     <!--    <Information bind:currentStage />-->
-    <Information form={data.information} />
+    <Information form={data.information} {nextStage} />
   {:else if currentStage === 'photo'}
-    <Photo form={data.photo} />
+    <Photo form={data.photo} {nextStage} />
   {:else if currentStage === 'interests'}
     <Interests form={data.interests} />
   {/if}

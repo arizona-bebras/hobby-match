@@ -25,7 +25,7 @@ module.exports = {
       method: "GET",
       url: `https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=${$os.getenv("STEAMAPI_KEY")}&steamid=${id}`,
     });
-    if (level.json.response.player_level === undefined) return null;
+    if (level.json?.response.player_level === undefined) return null;
     const player = $http.send({
       method: "GET",
       url: `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${$os.getenv("STEAMAPI_KEY")}&steamids=${id}`,

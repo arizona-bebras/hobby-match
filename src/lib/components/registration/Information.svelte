@@ -33,7 +33,10 @@
   // );
   //
   // $inspect(dateOfBirth);
-  let { form: information }: { form: SuperValidated<Infer<FormSchema>> } =
+  let {
+    form: information,
+    nextStage,
+  }: { form: SuperValidated<Infer<FormSchema>>; nextStage: CallableFunction } =
     $props();
 
   const form = superForm(information, {
@@ -41,12 +44,16 @@
     dataType: 'json',
   });
 
-  const { form: formData, enhance, message, validateForm } = form;
+  const { form: formData, enhance, validateForm } = form;
 
   async function handleTelegramButtonClick() {
-    console.log('1231231231312312312312312312312321312312312');
+    window.Telegram.WebApp.MainButton.showProgress();
+    await pb
+      .collection('users')
+      .update(pb.authStore.record!.id, $formData)
+      .finally(window.Telegram.WebApp.MainButton.hideProgress);
     form.submit();
-    await pb.collection('users').update(pb.authStore.model?.id, $formData);
+    nextStage();
   }
 
   useTelegramButton(handleTelegramButtonClick);
