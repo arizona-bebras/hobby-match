@@ -1,13 +1,15 @@
 import { type Actions, fail, redirect, type RequestEvent } from '@sveltejs/kit';
-import { superValidate } from 'sveltekit-superforms';
+import { defaults, superValidate } from 'sveltekit-superforms';
 import { photoSchema } from '$lib/components/registration/PhotoFormShema';
 import { informationSchema } from '$lib/components/registration/InformationFormShema';
 import { interestsScheme } from '$lib/components/registration/InterestsFormShema';
 import { zod } from 'sveltekit-superforms/adapters';
+import { pb } from '$lib/index';
 import type { PageServerLoad } from './$types';
+import { z } from 'zod';
 //import { goto } from '$app/navigation';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ locals }) => {
   return {
     information: await superValidate(zod(informationSchema)), //{defaults=locals.}
     photo: await superValidate(zod(photoSchema)),

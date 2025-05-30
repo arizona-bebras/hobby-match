@@ -4,19 +4,22 @@ import type { WidgetWithService } from '$lib/components/widgetConstructors/widge
 import { convertRecordToWidget } from '$lib/index';
 
 export const load: PageLoad = async ({ data }) => {
-  //depends('user:widgets');
+  // depends('user:widgets');
   if (pb.authStore.isValid) {
     const { textForm } = data;
-    const telegram_id = JSON.parse(localStorage.pocketbase_auth).model
-      .telegram_id;
+    //
+    // const collection = await pb.collections.getOne('widgets');
+    // console.log(collection.schema);
+    console.log(pb.collection('widgets').getOne('20h66bx83j0s3ok'));
     const widgetsRecords = await pb.collection('widgets').getFullList({
-      //filter: `telegram_id = "${telegram_id}"`,
       sort: `+order`,
     });
+
     const widgets: WidgetWithService[] = [];
     for (const record of widgetsRecords) {
       const widget: WidgetWithService = {
-        widget: convertRecordToWidget(record),
+        // @ts-expect-error because
+        widget: record,
         deleteStatus: false,
         changeStatus: false,
         additionalData: {},

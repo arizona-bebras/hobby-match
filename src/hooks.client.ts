@@ -7,11 +7,10 @@ if (browser) {
       data: window.Telegram.WebApp.initData,
     },
   }).then((res) => {
-    console.log(res.record);
     pb.authStore.save(res.token, res.record);
   });
 }
-/*
+/* 
 if (browser) {
   if (!pb.authStore.isValid && window.Telegram?.WebApp?.initData) {
     const authData = await pb.send(

@@ -53,11 +53,11 @@
     {...restProps}
   >
     {@render children?.()}
-    <SheetPrimitive.Close
-      class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute right-4 top-3.5 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none p-2"
-    >
-      <Trash2 class="size-5 text-destructive" />
-      <span class="sr-only">Close</span>
-    </SheetPrimitive.Close>
+    <!--    <SheetPrimitive.Close-->
+    <!--      class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute right-4 top-3.5 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none p-2"-->
+    <!--    >-->
+    <!--      <Trash2 class="size-5 text-destructive" />-->
+    <!--      <span class="sr-only">Close</span>-->
+    <!--    </SheetPrimitive.Close>-->
   </SheetPrimitive.Content>
 </SheetPrimitive.Portal>

@@ -1,7 +1,20 @@
 <script lang="ts">
   import { Splide, SplideSlide } from '@splidejs/svelte-splide';
   import '@splidejs/svelte-splide/css';
-  let { data } = $props();
+  import type { PhotoData, Photos, Widget } from '$lib/widgetTypes/widgetTypes';
+  import { pb } from '$lib';
+  import type { RecordModel } from 'pocketbase';
+  let {
+    data,
+    additionalData,
+  }: { data: RecordModel; additionalData: PhotoData } = $props();
+  // console.log(
+  //   'ABOBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBB',
+  //   additionalData,
+  // );
+  let urls = $derived(
+    additionalData.urls.map((url) => pb.buildURL(`/api/files/${url}`)),
+  );
 </script>
 
 <Splide
@@ -9,14 +22,9 @@
   options={{ arrows: false }}
   aria-labelledby="My Favorite Images"
 >
-  {#each data.photos as photo}
-    <SplideSlide class="flex justify-center items-center">
-      <img
-        style:max-width="100%"
-        style:max-height="100%"
-        src={photo.name}
-        alt="Image 1"
-      />
+  {#each urls as src}
+    <SplideSlide class="flex justify-center items-center ">
+      <img {src} class="w-full aspect-video object-contain" alt="Image 1" />
     </SplideSlide>
   {/each}
 </Splide>

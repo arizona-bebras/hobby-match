@@ -69,17 +69,21 @@
 
   {#if nextStage}
     {#if widgetType === 'video'}
-      <EditVideo bind:nextStage />
+      <EditVideo bind:nextStage numberOfWidgets={widgets.length} {widgetId} />
     {:else if widgetType === 'text'}
-      <EditText bind:nextStage />
+      <EditText bind:nextStage numberOfWidgets={widgets.length} {widgetId} />
     {:else if widgetType === 'survey'}
-      <EditSurvey bind:nextStage />
-    {:else if widgetType === 'Телеграм Аккаунт'}
-      <EditTgAccount bind:nextStage />
-    {:else if widgetType === 'Телеграм Пост'}
-      <EditTgPost bind:nextStage />
-    {:else if widgetType === 'Изображение'}
-      <EditImage bind:nextStage />
+      <EditSurvey bind:nextStage numberOfWidgets={widgets.length} {widgetId} />
+    {:else if widgetType === 'social_media'}
+      <EditTgAccount
+        bind:nextStage
+        numberOfWidgets={widgets.length}
+        {widgetId}
+      />
+    {:else if widgetType === 'post'}
+      <EditTgPost bind:nextStage numberOfWidgets={widgets.length} {widgetId} />
+    {:else if widgetType === 'photo'}
+      <EditImage bind:nextStage numberOfWidgets={widgets.length} {widgetId} />
     {/if}
   {/if}
 </div>

@@ -24,6 +24,7 @@
   import * as Form from '$lib/components/ui/form/index.js';
   import { photoSchema } from '$lib/components/registration/PhotoFormShema';
   import { onDestroy } from 'svelte';
+  import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
   let gender = $state('');
 
   let value = $state<DateValue>();
@@ -42,17 +43,23 @@
 
   const { form: formData, enhance, message, validateForm } = form;
 
-  $effect(() => {
-    async function onClick() {
-      form.submit();
-      await pb.collection('users').update(pb.authStore.model?.id, $formData);
-    }
-    window.Telegram.WebApp.MainButton.onClick(onClick);
-    return () => {
-      window.Telegram.WebApp.MainButton.offClick(onClick);
-    };
-  });
+  async function handleTelegramButtonClick() {
+    console.log('1231231231312312312312312312312321312312312');
+    form.submit();
+    await pb.collection('users').update(pb.authStore.model?.id, $formData);
+  }
 
+  useTelegramButton(handleTelegramButtonClick);
+  // $effect(() => {
+  //   async function onClick() {
+  //     form.submit();
+  //     await pb.collection('users').update(pb.authStore.model?.id, $formData);
+  //   }
+  //   window.Telegram.WebApp.MainButton.onClick(onClick);
+  //   return () => {
+  //     window.Telegram.WebApp.MainButton.offClick(onClick);
+  //   };
+  // });
   $effect(() => {
     validateForm().then((response) => {
       if (response.valid) {
@@ -72,7 +79,15 @@
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     $formData;
   });
-
+  $effect(() => {
+    $formData.miniapp_name = pb.authStore.record!.miniapp_name;
+    $formData.gender = pb.authStore.record!.gender;
+    $formData.birth_date = new Date(
+      pb.authStore.record!.birth_date,
+    ).toISOString();
+    $formData.location = pb.authStore.record!.location;
+    $formData.user_info = pb.authStore.record!.user_info;
+  });
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
   });

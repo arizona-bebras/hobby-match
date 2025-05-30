@@ -1,17 +1,27 @@
 <script lang="ts">
   import * as Sheet from '$lib/components/ui/sheet/index.js';
   import { Textarea } from '$lib/components/ui/textarea';
-  import { createWidget } from '$lib/components/widgetConstructors/widgetsConstructor';
+  import {
+    createWidget,
+    deleteWidget,
+    updateWidget,
+  } from '$lib/components/widgetConstructors/widgetsConstructor';
   import * as Form from '$lib/components/ui/form/index.js';
   import { Input } from '$lib/components/ui/input/index.js';
   import { textSchema } from '$lib/components/editor/schemes/textSheme';
   import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
+  import { Trash2 } from '@lucide/svelte';
+  import { pb } from '$lib';
   let {
     nextStage: open = $bindable(),
     numberOfWidgets,
-  }: { nextStage: boolean; numberOfWidgets: number } = $props();
-
+    widgetId,
+  }: {
+    nextStage: boolean;
+    numberOfWidgets: number;
+    widgetId?: string;
+  } = $props();
   function onOpenChange() {
     setTimeout(() => {
       document.body.style.cssText = '';
@@ -26,18 +36,28 @@
     onSubmit: async ({ formData }) => {
       formData.set('type', 'text');
       const formValues = Object.fromEntries(formData);
-      await createWidget(formValues, numberOfWidgets + 1);
+      if (widgetId != undefined) {
+        await updateWidget(widgetId, formValues);
+      } else {
+        await createWidget(formValues, numberOfWidgets + 1);
+      }
     },
   });
 
   const { form: formData, enhance } = form;
+
+  if (widgetId !== undefined) {
+    pb.collection('widgets')
+      .getOne(widgetId)
+      .then((result) => ($formData.text = result.data.text));
+  }
 </script>
 
 <Sheet.Root bind:open {onOpenChange}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
       <form method="POST" use:enhance>
-        <p class="text-accent-foreground font-medium pb-2">Виджет "Текст"</p>
+        <p class="text-accent-foreground font-medium pb-4.5">Виджет "Текст"</p>
         <Form.Field {form} name="text">
           <Form.Control>
             {#snippet children({ props })}
@@ -51,6 +71,17 @@
           </Form.Control>
           <Form.FieldErrors />
         </Form.Field>
+        {#if widgetId !== undefined}
+          <Sheet.Close
+            onclick={() => {
+              deleteWidget(widgetId.toString());
+            }}
+            class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute right-4 top-3.5 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none p-2"
+          >
+            <Trash2 class="size-5 text-destructive" />
+            <span class="sr-only">Close</span>
+          </Sheet.Close>
+        {/if}
         <button
           onclick={() => {
             form.submit();

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { pb } from '$lib/index'
+  import { pb } from '$lib/index';
   import { Input } from '$lib/components/ui/input/index.js';
   import { Plus } from '@lucide/svelte';
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';
@@ -15,6 +15,7 @@
   import { zodClient } from 'sveltekit-superforms/adapters';
   import { onDestroy } from 'svelte';
   import { goto } from '$app/navigation';
+  import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
   let listOfInterests = $state([
     'Видеоигры',
     'Готовка',
@@ -38,19 +39,13 @@
 
   const { form: formData, enhance, validateForm } = form;
 
-  let fetchData = async () => {
-    //await console.log(formData);
-    //await pb.collection('users').update(pb.authStore.model?.id, $formData);
+  async function handleTelegramButtonClick() {
+    console.log('1231231231312312312312312312312321312312312');
     form.submit();
-    //window.Telegram.WebApp.MainButton.offClick(fetchData);
+    await pb.collection('users').update(pb.authStore.model?.id, $formData);
   }
 
-  window.Telegram.WebApp.MainButton.onClick(async () => { 
-    form.submit(); 
-    let f = () => this;
-    await pb.collection('users').update(pb.authStore.model?.id, $formData);
-    window.Telegram.WebApp.MainButton.offClick(f);
-  });
+  useTelegramButton(handleTelegramButtonClick);
   $effect(() => {
     validateForm().then((response) => {
       if (response.valid) {
@@ -70,10 +65,34 @@
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     $formData;
   });
-
+  $effect(() => {
+    $formData.interests = pb.authStore.record!.interests;
+    selectedInterests = pb.authStore.record!.interests;
+  });
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
   });
+  let suggestedWords = $state(['']);
+  $inspect(suggestedWords);
+  async function getWords(userInterest: string) {
+    suggestedWords = [];
+    await pb
+      .send('/worker/autocomplete', {
+        method: 'GET',
+        query: {
+          query: userInterest,
+        },
+      })
+      .then((response) =>
+        response['response']['matches'].forEach((element) =>
+          suggestedWords.push(element['metadata']['tag']),
+        ),
+      );
+    // console.log(result);
+  }
+  function handleInput() {
+    getWords(userInterest);
+  }
 </script>
 
 <form method="POST" action="?/interests" use:enhance>
@@ -89,13 +108,26 @@
         type="text"
         placeholder="Начните вводить"
         bind:value={userInterest}
+        oninput={handleInput}
         onkeydown={(e) => {
           if (e.key === 'Enter') {
-            listOfInterests.push(userInterest);
-            console.log(listOfInterests);
+            e.preventDefault();
           }
         }}
       />
+
+      {#if userInterest.length >= 1}
+        {#each suggestedWords as word}
+          <button
+            type="button"
+            class="bg-green-400 text-black"
+            onclick={() => {
+              listOfInterests.push(word);
+            }}>{word}</button
+          >
+        {/each}
+        <p>Предложенные интересы</p>
+      {/if}
       <div class="flex flex-row gap-2 w-full flex-wrap font-medium">
         {#each listOfInterests as element}
           <button
@@ -129,5 +161,5 @@
       </div>
     </div>
   </div>
-  <!--  <SuperDebug data={$formData} />-->
+  <SuperDebug data={$formData} />
 </form>

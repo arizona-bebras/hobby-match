@@ -1,25 +1,24 @@
 <script lang="ts">
-  import { pb } from '$lib/index'
+  import { pb } from '$lib/index';
   import { Check } from '@lucide/svelte';
   import { Progress } from '@skeletonlabs/skeleton-svelte';
-  import { chooseOption } from '$lib/components/widgetConstructors/widgetsConstructor'
-    import { onMount } from 'svelte';
+  import { chooseOption } from '$lib/components/widgetConstructors/widgetsConstructor';
+  import { onMount } from 'svelte';
   let { data, surveyId, surveyStats } = $props();
   let selected = $state('');
 
   function countVotes(): number {
-    let count = 0
+    let count = 0;
     for (let option of data.options) {
       count += surveyStats[option.description].length;
     }
     return count;
   }
 
-  
   function checkSelectedInDB(): boolean {
     for (let option of data.options) {
       if (surveyStats[option.description].includes(pb.authStore.model?.id)) {
-        console.log(option.description)
+        console.log(option.description);
         selected = option.description;
         return true;
       }
@@ -30,10 +29,10 @@
   let isSelectedInDB = checkSelectedInDB();
 
   $effect(() => {
-    console.log(selected)
-    if (selected != '' && !isSelectedInDB) 
-      chooseOption(surveyId, selected);
-  })
+    console.log(selected);
+    if (selected != '' && !isSelectedInDB) chooseOption(surveyId, selected);
+  });
+  $inspect(surveyStats);
 </script>
 
 <div class="ToDoBox">
@@ -54,7 +53,6 @@
   <!--    <p class:text-accent={isSelected}>Нет</p>-->
   <!--  </div>-->
   {#each data.options as task}
-    {console.log(task)}
     <label class="flex items-center space-x-2">
       <input
         type="radio"
@@ -76,8 +74,8 @@
     {#if selected != ''}
       <div class="ml-7.25">
         <Progress
-          value={task.votes}
-          max={data.summuryVotes}
+          value={1}
+          max={countVotes()}
           height="h-1"
           meterBg={selected === task.description ? 'bg-accent' : 'bg-black/40'}
           trackBg="bg-[#D9D9D9]"

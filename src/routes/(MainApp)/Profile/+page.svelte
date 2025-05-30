@@ -19,6 +19,7 @@
   import ToDoWidget from '$lib/components/widgets/ToDoWidget.svelte';
   import SurveyWidget from '$lib/components/widgets/SurveyWidget.svelte';
   import PhotoWidget from '$lib/components/widgets/PhotoWidget.svelte';
+  import TgPostWidget from '$lib/components/widgets/TgPostWidget.svelte';
   import type { BasicWidget } from '$lib/widgetsTypes/widgetsTypes';
 
   import EditTgPost from '$lib/components/editor/EditTgPost.svelte';
@@ -32,6 +33,7 @@
   import { Input } from '$lib/components/ui/input';
   import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
   import type { PageProps } from '../../../../.svelte-kit/types/src/routes/registration/$types';
+  import type { PhotoData } from '$lib/widgetTypes/widgetTypes';
 
   let changeMode = $state(false);
   $effect(() => {
@@ -53,18 +55,24 @@
 
   let { data } = $props();
   let widgets: WidgetWithService[] = $derived(data.widgets);
-
-  let widgetsLenght = $derived(widgets.length);
+  console.log(widgets);
 </script>
 
 {#if height - 90 <= 210}
   <div class="w-full h-16 bg-background fixed flex z-2">
     <img src="Girl.png" class="w-16 h-16 rounded-full p-2" alt="UserPhoto" />
-    <div class="container font-[Inter] p-[4px]">
+    <div class="container font-[Inter] p-[4px] w-fit">
       <p class="font-extrabold text-[16px] flex items-center">
         Илона Абудаби, 18<Star />
       </p>
       <p class="font-semibold text-[16px]"><span>Махачкала, Россия</span></p>
+    </div>
+    <div
+      class="w-24.5 h-8.5 bg-accent/25 rounded-[28px] font-[Inter] my-auto ml-auto flex items-center justify-center"
+    >
+      <a href="/registration" class="text-accent-foreground font-medium"
+        >Изменить</a
+      >
     </div>
   </div>
 {/if}
@@ -91,6 +99,7 @@
       ['🎮', 'игры'],
     ]}
   />
+  <!--  <TgPostWidget post="durov/68" />-->
 
   {#if changeMode}
     <button
@@ -112,7 +121,7 @@
     <EditText bind:nextStage numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Опрос'}
     <EditSurvey bind:nextStage numberOfWidgets={widgets.length} />
-  {:else if addedWidget === 'Телеграм Аккаунт'}
+  {:else if addedWidget === 'Социальная сеть'}
     <EditTgAccount bind:nextStage numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Телеграм Пост'}
     <EditTgPost bind:nextStage numberOfWidgets={widgets.length} />
@@ -121,8 +130,10 @@
   {/if}
 
   {#each widgets as { widget }}
+    <!--{console.log(widgets[2].additionalData)}-->
     <div class="relative">
       {#if changeMode}
+        {console.log(widget.data.type)}
         <Edit widgetType={widget.data.type} widgetId={widget.id} {widgets} />
       {/if}
       {#if widget.data.type === 'text'}
@@ -134,7 +145,7 @@
       {:else if widget.data.type === 'social_media'}
         <SocialWidget
           data={widget.data}
-          socialMediaData={widget.additionalData.socialMediaData}
+          socialMediaData={widget.additionalData}
         />
       {:else if widget.data.type === 'progress_bar'}
         <ProgressWidget data={widget.data} />
@@ -143,9 +154,15 @@
       {:else if widget.data.type === 'todo'}
         <ToDoWidget data={widget.data} />
       {:else if widget.data.type === 'survey'}
-        <SurveyWidget data={widget.data} surveyId = { widget.id } surveyStats = { widget.additionalData?.stats } />
-      {:else if widget.data.type === 'photo'}
-        <PhotoWidget data={widget.data} />
+        <SurveyWidget
+          data={widget.data}
+          surveyId={widget.id}
+          surveyStats={widget.additionalData?.stats}
+        />
+      {:else if widget.data.type === 'photo' && widget.additionalData?.type === 'photo'}
+        <PhotoWidget data={widget} additionalData={widget.additionalData} />
+      {:else if widget.data.type === 'post'}
+        <TgPostWidget data={widget.data} />
       {/if}
     </div>
   {/each}

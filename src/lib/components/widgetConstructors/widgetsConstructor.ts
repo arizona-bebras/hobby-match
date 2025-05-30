@@ -19,6 +19,7 @@ export async function createWidget(
 ): Promise<void> {
   await pb.collection('widgets').create({
     user: pb.authStore.model?.id,
+    //telegram_id: pb.authStore.model?.telegram_id,
     order: numberOfWidgets,
     files: files,
     data: formData,
@@ -49,14 +50,11 @@ export async function deleteWidget(widgetId: string): Promise<void> {
   */
 }
 
-export async function updateWidget(
-  widget: WidgetWithService,
-  formData: Widget,
-) {
-  await pb.collection('widgets').update(widget.widget.id, {
+export async function updateWidget(widgetId: string, formData: Widget['data']) {
+  await pb.collection('widgets').update(widgetId, {
     data: formData,
   });
-  widget.changeStatus = false;
+  //widget.changeStatus = false;
 }
 
 export async function changeWidgetPosition(
@@ -84,10 +82,13 @@ export async function changeWidgetPosition(
   widgets[widgetOrder - 1] = temp;
 }
 
-export async function chooseOption(surveyId: string, option: string) : Promise<void> {
+export async function chooseOption(
+  surveyId: string,
+  option: string,
+): Promise<void> {
   await pb.collection('votes').create({
     user: pb.authStore.model?.id,
     survey: surveyId,
-    selected_option: option
+    selected_option: option,
   });
 }

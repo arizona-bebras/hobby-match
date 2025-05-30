@@ -20,6 +20,7 @@
   import { informationSchema } from '$lib/components/registration/InformationFormShema';
   import { object } from 'zod';
   import { onDestroy } from 'svelte';
+  import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
   let { form: photo }: { form: SuperValidated<Infer<FormSchema>> } = $props();
 
   const form = superForm(photo, {
@@ -27,22 +28,16 @@
     dataType: 'json',
   });
 
-  const { form: formData, enhance, validateForm } = form;
+  const { form: formData, enhance, validateForm, submit } = form;
 
-  let fetchData = async () => {
-    //await console.log(formData);
-    //await pb.collection('users').update(pb.authStore.model?.id, $formData);
-    form.submit();
-    //window.Telegram.WebApp.MainButton.offClick(fetchData);
-  };
-
-  window.Telegram.WebApp.MainButton.onClick(async () => {
-    form.submit();
-    let f = () => this;
-    await pb.collection('users').update(pb.authStore.model?.id, $formData);
-    window.Telegram.WebApp.MainButton.offClick(f);
-  });
   const file = fileProxy(form, 'user_photo');
+  async function handleTelegramButtonClick() {
+    console.log('1231231231312312312312312312312321312312312');
+    form.submit();
+    await pb.collection('users').update(pb.authStore.model?.id, $formData);
+  }
+
+  useTelegramButton(handleTelegramButtonClick);
   $effect(() => {
     validateForm().then((response) => {
       if (response.valid) {
@@ -62,13 +57,26 @@
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     $formData;
   });
+  $effect(() => {
+    $formData.user_photo = pb.files.getURL(
+      pb.authStore.record!,
+      pb.authStore.record!.user_photo,
+    );
+  });
 
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
   });
+  let formElement: HTMLFormElement;
 </script>
 
-<form method="POST" action="?/photo" enctype="multipart/form-data" use:enhance>
+<form
+  method="POST"
+  action="?/photo"
+  bind:this={formElement}
+  enctype="multipart/form-data"
+  use:enhance
+>
   <div class="flex flex-col gap-y-2">
     <div class="flex w-full mb-2 items-center">
       <Emoji symbol="📷" class="size-6" />
@@ -98,4 +106,4 @@
     >
   </div>
 </form>
-<!--<SuperDebug data={$formData} />-->
+<SuperDebug data={$formData} />

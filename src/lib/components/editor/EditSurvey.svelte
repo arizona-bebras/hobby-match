@@ -2,13 +2,26 @@
   import * as Sheet from '$lib/components/ui/sheet/index.js';
   import * as Form from '$lib/components/ui/form/index.js';
   import { Input } from '$lib/components/ui/input';
-  import { X } from '@lucide/svelte';
+  import { Trash2, X } from '@lucide/svelte';
   import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
   import { surveyScheme } from '$lib/components/editor/schemes/surveySheme';
-  import { createWidget } from '$lib/components/widgetConstructors/widgetsConstructor';
+  import {
+    createWidget,
+    deleteWidget,
+    updateWidget,
+  } from '$lib/components/widgetConstructors/widgetsConstructor';
+  import { pb } from '$lib';
 
-  let { nextStage: open = $bindable(), numberOfWidgets } = $props();
+  let {
+    nextStage: open = $bindable(),
+    numberOfWidgets,
+    widgetId,
+  }: {
+    nextStage: boolean;
+    numberOfWidgets: number;
+    widgetId?: string;
+  } = $props();
   const form = superForm(defaults(zod(surveyScheme)), {
     SPA: true,
     validators: zodClient(surveyScheme),
@@ -19,7 +32,11 @@
         type: 'survey',
         summaryVotes: '0',
       };
-      await createWidget(formValues, numberOfWidgets + 1);
+      if (widgetId != undefined) {
+        await updateWidget(widgetId, formValues);
+      } else {
+        await createWidget(formValues, numberOfWidgets + 1);
+      }
     },
   });
 
@@ -43,14 +60,29 @@
     }
     return result;
   }
+  let array: string[] = $state([]);
   $inspect($formData.options);
+  if (widgetId !== undefined) {
+    pb.collection('widgets')
+      .getOne(widgetId)
+      .then((result) => {
+        console.log(result);
+        $formData.question = result.data.question;
+        result.data.options.forEach(
+          (element: { description: string; votes: number }) => {
+            $formData.options = [...$formData.options, element.description];
+          },
+        );
+      });
+    console.log($formData.options);
+  }
 </script>
 
 <Sheet.Root bind:open {onOpenChange}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
       <form method="POST" use:enhance>
-        <p class="text-accent-foreground font-medium pb-2">Виджет "Опрос"</p>
+        <p class="text-accent-foreground font-medium pb-4.5">Виджет "Опрос"</p>
         <Form.Field {form} name="question">
           <Form.Control>
             {#snippet children({ props })}
@@ -87,11 +119,24 @@
           type="button"
           class="text-accent-foreground font-bold underline underline-offset-3 decoration-2 flex"
           onclick={() => {
-            $formData.options[$formData.options.length] = '';
+            if ($formData.options.length <= 4) {
+              $formData.options[$formData.options.length] = '';
+            }
           }}
         >
           Добавить вариант
         </button>
+        {#if widgetId !== undefined}
+          <Sheet.Close
+            onclick={() => {
+              deleteWidget(widgetId.toString());
+            }}
+            class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute right-4 top-3.5 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none p-2"
+          >
+            <Trash2 class="size-5 text-destructive" />
+            <span class="sr-only">Close</span>
+          </Sheet.Close>
+        {/if}
         <button
           onclick={() => {
             form.submit();

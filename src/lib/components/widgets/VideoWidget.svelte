@@ -1,12 +1,19 @@
 <script lang="ts">
+  import { getYouTubeVideoId } from '$lib/components/editor/schemes/videoSheme';
+
   let { data } = $props();
+  let videId = getYouTubeVideoId(data.link);
+
+  let youtubeURL = `https://www.youtube.com/embed/${videId}`;
+  let rutubeURL = `https://rutube.ru/play/embed/${videId}`;
+  let tiktokURL = `https://www.tiktok.com/player/v1/${videId}`;
 </script>
 
 <div class="TextBox">
   {#if data.platform === 'YouTube'}
     <iframe
       class="w-full aspect-video"
-      src={data.link}
+      src={youtubeURL}
       title="YouTube Video"
       frameborder="0"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -17,13 +24,13 @@
     <iframe
       class="w-full aspect-video"
       title="Rutube Video"
-      src={data.link}
+      src={rutubeURL}
       frameBorder="0"
       allow="clipboard-write; autoplay"
       allowFullScreen
     ></iframe>
   {:else if data.platform === 'TikTok'}
-    <iframe class="w-full aspect-square" title="TikTok Video" src={data.link}
+    <iframe class="w-full aspect-square" title="TikTok Video" src={tiktokURL}
     ></iframe>
   {/if}
 </div>

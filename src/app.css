@@ -70,6 +70,7 @@
   --color-background: var(--tg-theme-bg-color);
   --color-foreground: var(--tg-theme-button-text-color, rgba(64, 167, 227));
   --color-text-color: var(--tg-theme-text-color);
+  --color-inactive: #808080;
   /*--color-muted: var()*/
   /*--color-popover:*/
   --color-card: var(--tg-theme-hint-color);
@@ -103,7 +104,7 @@
 
 @layer components {
   .GameBox{
-    @apply flex gap-[12px] bg-accent/25 p-[10px] rounded-[12px] border-solid border-[#7c7c7c] mb-[8px] w-full;
+    @apply flex bg-accent/25 p-[10px] rounded-[12px] border-solid border-[#7c7c7c] mb-[8px] w-full;
   }
   .TextBox{
     @apply border-l-[2px] border-accent w-[100%] mb-[8px] pl-2;

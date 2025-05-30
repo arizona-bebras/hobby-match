@@ -3,12 +3,13 @@
   import Photo from '$lib/components/registration/Photo.svelte';
   import Interests from '$lib/components/registration/Interests.svelte';
   import type { PageProps } from '../../../.svelte-kit/types/src/routes/registration/$types';
+  import { pb } from '$lib/index';
   let stages: string[][] = [
     ['information', 'Информация'],
     ['photo', 'Фото'],
     ['interests', 'Интересы'],
   ];
-  let complitedStages: string[] = [];
+  let complitedStages: string[] = $state([]);
   let currentStage: string = $state('information');
   window.Telegram.WebApp.MainButton.setParams({
     has_shine_effect: true,
@@ -22,15 +23,25 @@
     if (currentStage === 'information') {
       window.Telegram.WebApp.MainButton.onClick(() => {
         currentStage = 'photo';
-        complitedStages.push('information');
+        if (!complitedStages.includes('information')) {
+          complitedStages.push('information');
+        }
       });
     } else if (currentStage === 'photo') {
       window.Telegram.WebApp.MainButton.onClick(() => {
         currentStage = 'interests';
-        complitedStages.push('photo');
+        if (!complitedStages.includes('photo')) {
+          complitedStages.push('photo');
+        }
       });
     }
   });
+  $effect(() => {
+    if (pb.authStore.record !== null) {
+      complitedStages = ['information', 'photo', 'interests'];
+    }
+  });
+  $inspect(complitedStages);
 </script>
 
 <div class="p-4 w-full">
