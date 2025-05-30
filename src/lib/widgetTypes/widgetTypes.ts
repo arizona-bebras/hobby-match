@@ -119,9 +119,10 @@ export type Survey = {
 };
 
 export type SurveyData = {
-  type: 'survey'
-  stats: Object;
-}
+  type: 'survey';
+  stats: number[];
+  myVote?: number;
+};
 
 export type Text = {
   type: 'text';

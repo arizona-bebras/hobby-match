@@ -62,32 +62,29 @@ export async function changeWidgetPosition(
   widget: WidgetWithService,
   posChange: 1 | -1,
 ): Promise<void> {
-  const record = await pb.collection('widgets').getFullList({
-    filter: `user = "${pb.authStore.model?.id}" && order = "${widget.widget.order + posChange}"`,
-  });
+  const record = await pb
+    .collection('widgets')
+    .getFirstListItem(
+      `user = "${pb.authStore.model?.id}" && order = "${widget.widget.order + posChange}"`,
+    );
   //.then((record) => record);
 
   const widgetOrder = widget.widget.order;
-  const recordOrder = record[0].order;
-  await pb.collection('widgets').update(record[0].id, {
+  const recordOrder = record.order;
+  await pb.collection('widgets').update(record.id, {
     order: recordOrder + posChange * -1,
   });
   await pb.collection('widgets').update(widget.widget.id, {
     order: widgetOrder + posChange,
   });
-  const temp = widgets[recordOrder - 1];
-  widgets[recordOrder - 1].widget.order += posChange * -1;
-  widgets[recordOrder - 1] = widgets[widgetOrder - 1];
-  widgets[widgetOrder - 1].widget.order += posChange;
-  widgets[widgetOrder - 1] = temp;
 }
 
 export async function chooseOption(
   surveyId: string,
-  option: string,
+  option: number,
 ): Promise<void> {
   await pb.collection('votes').create({
-    user: pb.authStore.model?.id,
+    user: pb.authStore.record!.id,
     survey: surveyId,
     selected_option: option,
   });

@@ -54,20 +54,25 @@ onRecordEnrich((e) => {
           break;
       }
       break;
-      case 'survey':
-        let surveyData = {};
-        for (let option of data.options) {
+    case 'survey':
+        let surveyData = [];
+        let myVote = undefined;
+        for (let i = 0; i < data.options.length; i++) {
           let exp = $dbx.hashExp({
             "survey": e.record.getString("id"),
-            "selected_option": option.description
+            "selected_option": i
           });
-          surveyData[option.description] = $app
-            .findAllRecords("votes", exp)
-            .map(record => record.getString("user"));
+          surveyData.push($app.countRecords("votes", exp));
+
+          if ($app.countRecords("votes", exp, $dbx.hashExp({
+            "user": e.requestInfo.auth.id,
+          })) > 0)
+            myVote = i;
         }
         e.record.set("additionalData", {
           type: 'survey',
-          stats: surveyData
+          stats: surveyData,
+          myVote
         })
         break;
   }

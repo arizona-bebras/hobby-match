@@ -36,13 +36,23 @@
   import type { PhotoData } from '$lib/widgetTypes/widgetTypes';
 
   let changeMode = $state(false);
-  $effect(() => {
-    window.Telegram.WebApp.MainButton.setParams({
-      text: changeMode ? 'Сохранить' : 'Изменить анкету',
-      is_visible: true,
-    });
+
+  onMount(() => {
+    window.Telegram.WebApp.MainButton.show();
+    return () => {
+      window.Telegram.WebApp.MainButton.hide();
+    };
   });
-  window.Telegram.WebApp.MainButton.onClick(() => (changeMode = !changeMode));
+
+  useTelegramButton(() => {
+    changeMode = !changeMode;
+  });
+
+  $effect(() => {
+    window.Telegram.WebApp.MainButton.setText(
+      changeMode ? 'Сохранить' : 'Изменить анкету',
+    );
+  });
 
   let showWidgetMenu = $state(false);
   let addedWidget = $state('');
@@ -50,11 +60,17 @@
 
   import { scrollY } from 'svelte/reactivity/window';
   import EditImage from '$lib/components/editor/EditImage.svelte';
+  import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
+  import { onMount } from 'svelte';
 
   let height = $derived(Math.max(300, 380 - (scrollY.current ?? 0) * 0.5));
 
   let { data } = $props();
-  let widgets: WidgetWithService[] = $derived(data.widgets);
+  let widgets: WidgetWithService[] = $state(data.widgets);
+
+  $effect(() => {
+    widgets = data.widgets;
+  });
   console.log(widgets);
 </script>
 
@@ -129,12 +145,22 @@
     <EditImage bind:nextStage numberOfWidgets={widgets.length} />
   {/if}
 
-  {#each widgets as { widget }}
+  {#each widgets as { widget }, i}
     <!--{console.log(widgets[2].additionalData)}-->
     <div class="relative">
       {#if changeMode}
         {console.log(widget.data.type)}
-        <Edit widgetType={widget.data.type} widgetId={widget.id} {widgets} />
+        <Edit
+          widgetType={widget.data.type}
+          widgetId={widget.id}
+          {widgets}
+          onMove={(delta) => {
+            if ((delta < 0 && i <= 0) || (delta > 0 && i >= widgets.length - 1))
+              return;
+
+            [widgets[i + delta], widgets[i]] = [widgets[i], widgets[i + delta]];
+          }}
+        />
       {/if}
       {#if widget.data.type === 'text'}
         <TextWidget data={widget.data} />
@@ -153,11 +179,11 @@
         <!--  <ProgressWidget data={widget.data} />-->
       {:else if widget.data.type === 'todo'}
         <ToDoWidget data={widget.data} />
-      {:else if widget.data.type === 'survey'}
+      {:else if widget.data.type === 'survey' && widget.additionalData?.type === 'survey'}
         <SurveyWidget
           data={widget.data}
-          surveyId={widget.id}
-          surveyStats={widget.additionalData?.stats}
+          id={widget.id}
+          survey={widget.additionalData}
         />
       {:else if widget.data.type === 'photo' && widget.additionalData?.type === 'photo'}
         <PhotoWidget data={widget} additionalData={widget.additionalData} />

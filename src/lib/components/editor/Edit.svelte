@@ -15,16 +15,19 @@
   import { ArrowDown, ArrowUp, Pencil } from '@lucide/svelte';
   import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
   import EditImage from '$lib/components/editor/EditImage.svelte';
+  import { invalidate } from '$app/navigation';
   let {
     class: className = '',
     widgetType,
     widgetId,
     widgets,
+    onMove,
   }: {
     class: string;
     widgetType: string;
     widgetId: string;
     widgets: WidgetWithService[];
+    onMove: (delta: number) => void;
   } = $props();
   let nextStage = $state(false);
   // Если тип виджета одинаковый, он берёт первый. Нужно сравнивать ещё id виджета
@@ -55,14 +58,18 @@
     }}><Pencil class="size-4 text-white" /></button
   >
   <button
-    onclick={() => {
-      changeWidgetPosition(widgets, selectedWidget, -1);
+    onclick={async () => {
+      onMove(-1);
+      await changeWidgetPosition(widgets, selectedWidget, -1);
+      await invalidate('user:widgets');
       console.log($state.snapshot(widgets));
     }}><ArrowUp class="size-4.5 text-white" /></button
   >
   <button
-    onclick={() => {
-      changeWidgetPosition(widgets, selectedWidget, 1);
+    onclick={async () => {
+      onMove(1);
+      await changeWidgetPosition(widgets, selectedWidget, 1);
+      await invalidate('user:widgets');
       console.log($state.snapshot(widgets));
     }}><ArrowDown class="size-4.5 text-white" /></button
   >

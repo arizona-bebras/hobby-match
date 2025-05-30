@@ -11,7 +11,7 @@ function resolveSteamLink(link) {
       method: "GET",
       url: `https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${$os.getenv("STEAMAPI_KEY")}&vanityurl=${handle[2]}`,
     });
-    if(!vanity.json.response['steamid']) return null;
+    if(!vanity.json?.response['steamid']) return null;
     return vanity.json.response['steamid']
   } else {
     return null;
@@ -30,7 +30,7 @@ module.exports = {
       method: "GET",
       url: `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${$os.getenv("STEAMAPI_KEY")}&steamids=${id}`,
     });
-    if (!player.json.response || !player.json.response.players || player.json.response.players.length !== 1) return null;
+    if (!player.json?.response || !player.json.response.players || player.json.response.players.length !== 1) return null;
 
     return {
       level: level.json.response.player_level,
