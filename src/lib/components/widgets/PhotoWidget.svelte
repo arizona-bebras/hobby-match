@@ -19,11 +19,14 @@
 
 <Splide
   arrows={false}
-  options={{ arrows: false }}
+  options={{
+    arrows: false,
+    classes: { page: 'opacity-100! splide__pagination__page ' },
+  }}
   aria-labelledby="My Favorite Images"
 >
   {#each urls as src}
-    <SplideSlide class="flex justify-center items-center ">
+    <SplideSlide class="flex justify-center items-center">
       <img {src} class="w-full aspect-video object-contain" alt="Image 1" />
     </SplideSlide>
   {/each}
