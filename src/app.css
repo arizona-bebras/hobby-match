@@ -1,4 +1,4 @@
-@import 'tailwindcss/index.css';
+@import 'tailwindcss';
 
 @import '@skeletonlabs/skeleton';
 @import '@skeletonlabs/skeleton/optional/presets';
