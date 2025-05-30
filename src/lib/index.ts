@@ -1,8 +1,9 @@
 import PocketBase, { type RecordModel } from 'pocketbase';
 import type { Widget } from '$lib/widgetTypes/widgetTypes';
 import type { AdditionalData } from './components/widgetConstructors/widgetsConstructor';
+import { PUBLIC_PB_ENDPOINT } from '$env/static/public';
 
-export const pb = new PocketBase('http://127.0.0.1:8090');
+export const pb = new PocketBase(PUBLIC_PB_ENDPOINT ?? 'http://127.0.0.1:8090');
 
 export function convertRecordToWidget(record: RecordModel): Widget {
   const widget: Widget = {
