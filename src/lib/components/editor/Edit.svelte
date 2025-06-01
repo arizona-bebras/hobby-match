@@ -60,7 +60,7 @@
   <button
     onclick={async () => {
       onMove(-1);
-      await changeWidgetPosition(widgets, selectedWidget, -1);
+      await changeWidgetPosition(selectedWidget.widget, -1);
       await invalidate('user:widgets');
       console.log($state.snapshot(widgets));
     }}><ArrowUp class="size-4.5 text-white" /></button
@@ -68,7 +68,7 @@
   <button
     onclick={async () => {
       onMove(1);
-      await changeWidgetPosition(widgets, selectedWidget, 1);
+      await changeWidgetPosition(selectedWidget.widget, 1);
       await invalidate('user:widgets');
       console.log($state.snapshot(widgets));
     }}><ArrowDown class="size-4.5 text-white" /></button

@@ -109,3 +109,40 @@ onRecordUpdate((e) => {
   e.record.set('user_photo', file);
   e.next();
 }, 'users');
+
+onRecordUpdate((e) => {
+  e.next()
+
+
+  let userRecords = $app.findAllRecords('widgets', $dbx.hashExp({
+    "user": e.record.getString("user")
+  }))
+  userRecords.sort((a , b) => a.getInt("order") - b.getInt("order"))
+
+
+  let newOrder = e.record.getInt("order")
+  let missingOrder = 0;
+  for (let i = 0; i < userRecords.length; i++) {
+    let recordOrder = userRecords[i].getInt("order");
+    if (recordOrder != i + 1) {
+      missingOrder = i + 1
+      break;
+    }
+  }
+
+  if (missingOrder != 0) {
+    let wrongOrderRecord = $app.findAllRecords('widgets', 
+      $dbx.hashExp({
+        "user": e.record.getString("user"),
+        "order": newOrder
+      }), 
+      $dbx.not(
+        $dbx.hashExp({
+          "id": e.record.getString("id")
+        })
+      )
+    )[0]
+    wrongOrderRecord.set("order", missingOrder)
+    $app.save(wrongOrderRecord)
+  }
+}, 'widgets')

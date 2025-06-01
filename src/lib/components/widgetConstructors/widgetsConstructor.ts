@@ -58,24 +58,11 @@ export async function updateWidget(widgetId: string, formData: Widget['data']) {
 }
 
 export async function changeWidgetPosition(
-  widgets: WidgetWithService[],
-  widget: WidgetWithService,
+  widget: Widget,
   posChange: 1 | -1,
 ): Promise<void> {
-  const record = await pb
-    .collection('widgets')
-    .getFirstListItem(
-      `user = "${pb.authStore.model?.id}" && order = "${widget.widget.order + posChange}"`,
-    );
-  //.then((record) => record);
-
-  const widgetOrder = widget.widget.order;
-  const recordOrder = record.order;
-  await pb.collection('widgets').update(record.id, {
-    order: recordOrder + posChange * -1,
-  });
-  await pb.collection('widgets').update(widget.widget.id, {
-    order: widgetOrder + posChange,
+  await pb.collection('widgets').update(widget.id, {
+    order: widget.order + posChange,
   });
 }
 
