@@ -16,15 +16,15 @@
       <div
         class="flex gap-[8px] bg-accent/25 rounded-[28px] px-[12px] py-[8px]"
       >
-        <img
+        <!--<img
           class="size-4 my-auto"
           src="https://cdnjs.cloudflare.com/ajax/libs/emoji-datasource-apple/15.1.2/img/apple/64/{[
             ...interest[0],
           ]
             .map((cp) => cp.codePointAt(0).toString(16))
             .join('-')}.png"
-        />
-        <p class="text-accent">{interest[1]}</p>
+        />-->
+        <p class="text-accent">{interest}</p>
       </div>
     {/each}
     <button

@@ -7,6 +7,8 @@
     updateWidgetsOrder,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
 
+  import { pb } from '$lib/index'
+
   import { Star, Plus } from '@lucide/svelte';
   import GameWidget from '$lib/components/widgets/GameWidget.svelte';
   import VideoWidget from '$lib/components/widgets/VideoWidget.svelte';
@@ -34,6 +36,9 @@
   import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
   import type { PageProps } from '../../../../.svelte-kit/types/src/routes/registration/$types';
   import type { PhotoData } from '$lib/widgetTypes/widgetTypes';
+
+  import ProfileTopLayer from '$lib/components/profile/ProfileTopLayer.svelte';
+  import ProfileInfo from '$lib/components/profile/ProfileInfo.svelte';
 
   let changeMode = $state(false);
 
@@ -75,46 +80,16 @@
 </script>
 
 {#if height - 90 <= 210}
-  <div class="w-full h-16 bg-background fixed flex z-2">
-    <img src="Girl.png" class="w-16 h-16 rounded-full p-2" alt="UserPhoto" />
-    <div class="container font-[Inter] p-[4px] w-fit">
-      <p class="font-extrabold text-[16px] flex items-center">
-        Илона Абудаби, 18<Star />
-      </p>
-      <p class="font-semibold text-[16px]"><span>Махачкала, Россия</span></p>
-    </div>
-    <div
-      class="w-24.5 h-8.5 bg-accent/25 rounded-[28px] font-[Inter] my-auto ml-auto flex items-center justify-center"
-    >
-      <a href="/registration" class="text-accent-foreground font-medium"
-        >Изменить</a
-      >
-    </div>
-  </div>
+  <ProfileTopLayer data = { data } />
 {/if}
 <img
-  src="Girl.png"
+  src={pb.files.getURL(pb.authStore.record!, data.user_photo)}
   alt="person"
   class="w-full h-95 rounded-b-[24px] object-cover"
   style="height: {height}px"
 />
 <div class="container font-[Inter] p-[16px] w-full max-w-full relative">
-  <p class="font-extrabold text-[32px] flex items-center">
-    Илона Абудаби, 18<Star />
-  </p>
-  <p class="font-semibold text-[20px]"><span>Екатеринбург, Россия</span></p>
-  <InterestsWidget
-    interests={[
-      ['🎮', 'Игры'],
-      ['🚗', 'Развлечения'],
-      ['💅', 'Красота'],
-      ['🧮', 'Математика'],
-      ['🎮', 'Кодинг'],
-      ['🎮', 'игры'],
-      ['🎮', 'игры'],
-      ['🎮', 'игры'],
-    ]}
-  />
+  <ProfileInfo data = { data } />
   <!--  <TgPostWidget post="durov/68" />-->
 
   {#if changeMode}
