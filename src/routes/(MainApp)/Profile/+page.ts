@@ -21,7 +21,10 @@ export const load: PageLoad = async ({ data, depends }) => {
       changeStatus: false,
       additionalData: {},
     }));
-    return { widgets: structuredClone(widgets), textForm };
+    return { 
+      widgets: structuredClone(widgets), 
+      textForm 
+    };
   }
   throw new Error('Data validation error');
 };
