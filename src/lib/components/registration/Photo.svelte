@@ -70,8 +70,9 @@
       pb.authStore.record!,
       pb.authStore.record!.user_photo,
     );
+    console.log('EFFECT autofields');
   });
-
+  $inspect($formData.user_photo);
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
   });

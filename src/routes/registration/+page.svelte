@@ -42,7 +42,7 @@
       completedStages = ['information', 'photo', 'interests'];
     }
   });
-  $inspect(completedStages);
+  $inspect(currentStage);
 </script>
 
 <div class="p-4 w-full">

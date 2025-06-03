@@ -93,7 +93,7 @@
         <p class="text-accent-foreground font-medium pb-2">
           Виджет "Социальная сеть"
         </p>
-        <p>Вы можете ввести ссылку на канал или личный аккаунт</p>
+        <p class="pb-2">Вы можете ввести ссылку на канал или личный аккаунт</p>
         <Form.Field {form} name="link">
           <Form.Control>
             {#snippet children({ props })}
@@ -127,10 +127,10 @@
           disabled={!isButtonActive}
           class="w-full h-12 {isButtonActive
             ? 'bg-accent'
-            : 'bg-inactive'} rounded-xl">Сохранить</button
+            : 'bg-inactive'} rounded-xl mt-9">Сохранить</button
         >
       </form>
     </Sheet.Header>
-    <SuperDebug data={$formData} />
+    <!--    <SuperDebug data={$formData} />-->
   </Sheet.Content>
 </Sheet.Root>

@@ -12,6 +12,7 @@
   import {
     createWidget,
     deleteWidget,
+    updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
   import type { Photo } from '$lib/widgetTypes/widgetTypes';
   import { pb } from '$lib';
@@ -35,9 +36,44 @@
       const formValues = {
         type: 'photo' as const,
       };
-      await createWidget(formValues, numberOfWidgets + 1, images);
+      if (widgetId != undefined) {
+        console.log('ВИДЖЕТ УСПЕШНО ОБНОВЛЁН', formData.get('files'));
+        await updateWidget(widgetId, formValues, formData.get('files'));
+      } else {
+        console.log('ВИДЖЕТ УСПЕШНО СОЗДАН', images);
+        await createWidget(formValues, numberOfWidgets + 1, images);
+      }
     },
   });
+
+  let imageUrls: string[] = $state([]);
+  if (widgetId !== undefined) {
+    pb.collection('widgets')
+      .getOne(widgetId!)
+      .then((record) =>
+        record.files.forEach((element) =>
+          imageUrls.push(pb.files.getURL(record, element)),
+        ),
+      );
+    // pb.collection('widgets')
+    //   .getOne(widgetId)
+    //   .then((result) =>
+    //     result.files.forEach((element) =>
+    //       console.log(pb.buildURL(`/api/files/${element}`)),
+    //     ),
+    //   );
+    // pb.
+    //console.log(pb.buildURL(`/api/files/${result.files}`))
+    // let test = getRecords();
+    //   getRecords();
+  }
+
+  // async function getRecords(titleImages: ):{
+  //   const record = await pb.collection('widgets').getOne(widgetId!);
+  //   console.log(
+  //     pb.files.getURL(record, 'hero_falling_left_sprite_list_ipeux570cb.png'),
+  //   );
+  // }
 
   function onOpenChange() {
     setTimeout(() => {
@@ -59,8 +95,17 @@
     }
     return result;
   }
-  const { form: formData, enhance } = form;
+  const { form: formData, enhance, validateForm } = form;
   const files = filesProxy(form, 'files');
+  let isButtonActive = $state(false);
+  $effect(() => {
+    validateForm().then((response) => {
+      isButtonActive = response.valid;
+    });
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    $formData;
+  });
+  // $inspect(images);
   //$inspect($files.item);
 </script>
 
@@ -69,13 +114,23 @@
     <Sheet.Content side="bottom">
       <Sheet.Header>
         <form method="POST" enctype="multipart/form-data" use:enhance>
-          <p class="text-accent-foreground font-medium pb-2">
+          <p class="text-accent-foreground font-medium pb-4">
             Виджет "Изображения"
           </p>
-
           <div class="overflow-auto h-75">
+            {#if widgetId !== undefined}
+              {#each imageUrls as url}
+                <div
+                  class="w-full h-auto bg-accent/45 rounded-2xl relative mb-4"
+                >
+                  <img src={url} class="p-4" alt="loadedImage" />
+                  <button onclick={() => images.splice(index, 1)} type="button">
+                    <Plus class="rotate-45 absolute right-3 top-3 text-black" />
+                  </button>
+                </div>
+              {/each}
+            {/if}
             {#each images as element, index}
-              {console.log(URL.createObjectURL(element), index)}
               <div class="w-full h-auto bg-accent/45 rounded-2xl relative mb-4">
                 <img
                   src={URL.createObjectURL(element)}
@@ -87,6 +142,26 @@
                 </button>
               </div>
             {/each}
+
+            <!--{#each images as element, index}-->
+            <!--  {console.log(URL.createObjectURL(element), index)}-->
+            <!--  <div class="w-full h-auto bg-accent/45 rounded-2xl relative mb-4">-->
+            <!--    {#if widgetId !== undefined}-->
+            <!--      {console.log(454545454)}-->
+            <!--      <img src={imageUrls[0]} class="p-4" alt="loadedImage" />-->
+            <!--    {:else}-->
+            <!--      {console.log(100)}-->
+            <!--      <img-->
+            <!--        src={URL.createObjectURL(element)}-->
+            <!--        class="p-4"-->
+            <!--        alt="loadedImage"-->
+            <!--      />-->
+            <!--    {/if}-->
+            <!--    <button onclick={() => images.splice(index, 1)} type="button">-->
+            <!--      <Plus class="rotate-45 absolute right-3 top-3 text-black" />-->
+            <!--    </button>-->
+            <!--  </div>-->
+            <!--{/each}-->
           </div>
           <button
             onclick={() => {
@@ -124,12 +199,18 @@
           <button
             type="button"
             onclick={() => {
-              form.submit();
-              images = [];
               open = false;
               onOpenChange();
+              if (widgetId !== undefined && images.length === 0) {
+                //pass
+              } else {
+                form.submit();
+              }
             }}
-            class="w-full h-10 bg-accent rounded-xl">Сохранить</button
+            disabled={!isButtonActive}
+            class="w-full h-12 {isButtonActive
+              ? 'bg-accent'
+              : 'bg-inactive'} rounded-xl mt-2">Сохранить</button
           >
         </form>
       </Sheet.Header>

@@ -7,7 +7,6 @@
     updateWidgetsOrder,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
   import EditTgPost from '$lib/components/editor/EditTgPost.svelte';
-  import EditTgAccount from '$lib/components/editor/EditTgAccount.svelte';
   import EditSurvey from '$lib/components/editor/EditSurvey.svelte';
   import EditText from '$lib/components/editor/EditText.svelte';
   import EditVideo from '$lib/components/editor/EditVideo.svelte';
@@ -16,6 +15,7 @@
   import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
   import EditImage from '$lib/components/editor/EditImage.svelte';
   import { invalidate } from '$app/navigation';
+  import EditSocial from '$lib/components/editor/EditSocial.svelte';
   let {
     class: className = '',
     widgetType,
@@ -82,11 +82,7 @@
     {:else if widgetType === 'survey'}
       <EditSurvey bind:nextStage numberOfWidgets={widgets.length} {widgetId} />
     {:else if widgetType === 'social_media'}
-      <EditTgAccount
-        bind:nextStage
-        numberOfWidgets={widgets.length}
-        {widgetId}
-      />
+      <EditSocial bind:nextStage numberOfWidgets={widgets.length} {widgetId} />
     {:else if widgetType === 'post'}
       <EditTgPost bind:nextStage numberOfWidgets={widgets.length} {widgetId} />
     {:else if widgetType === 'photo'}

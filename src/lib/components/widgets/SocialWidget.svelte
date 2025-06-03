@@ -25,6 +25,17 @@
     return words_arr[1];
   }
 
+  function formatNumber(num: number): string {
+    const absNum = Math.abs(num);
+
+    if (absNum >= 1000000) {
+      return Math.round(absNum / 100000) / 10 + ' млн.';
+    }
+    if (absNum >= 1000) {
+      return Math.round(absNum / 100) / 10 + ' тыс.';
+    }
+    return num.toString();
+  }
   // const SocialIcons = {
   //   YouTube: Youtube,
   //   VK: Vk,
@@ -67,7 +78,11 @@
 <button
   class="w-full"
   onclick={() => {
-    window.Telegram.WebApp.openLink(data.link);
+    if (data.platform === 'Telegram') {
+      window.Telegram.WebApp.openTelegramLink(data.link);
+    } else {
+      window.Telegram.WebApp.openLink(data.link);
+    }
   }}
 >
   <div class="GameBox">
@@ -114,7 +129,7 @@
             'уровень',
           ])}
         {:else if socialMediaData.type === 'YouTube'}
-          {socialMediaData.subscribers}
+          {formatNumber(socialMediaData.subscribers)}
           {getCorrectForm(socialMediaData.subscribers ?? 0, [
             'подписчик',
             'подписчика',

@@ -25,7 +25,6 @@
   import type { BasicWidget } from '$lib/widgetsTypes/widgetsTypes';
 
   import EditTgPost from '$lib/components/editor/EditTgPost.svelte';
-  import EditTgAccount from '$lib/components/editor/EditTgAccount.svelte';
   import EditSurvey from '$lib/components/editor/EditSurvey.svelte';
   import EditText from '$lib/components/editor/EditText.svelte';
   import EditVideo from '$lib/components/editor/EditVideo.svelte';
@@ -67,6 +66,7 @@
   import EditImage from '$lib/components/editor/EditImage.svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
   import { onMount } from 'svelte';
+  import EditSocial from '$lib/components/editor/EditSocial.svelte';
 
   let height = $derived(Math.max(300, 380 - (scrollY.current ?? 0) * 0.5));
 
@@ -115,7 +115,7 @@
   {:else if addedWidget === 'Социальная сеть'}
     <EditTgAccount bind:nextStage numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Телеграм Пост'}
-    <EditTgPost bind:nextStage numberOfWidgets={widgets.length} />
+    <EditSocial bind:nextStage numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Изображение'}
     <EditImage bind:nextStage numberOfWidgets={widgets.length} />
   {/if}

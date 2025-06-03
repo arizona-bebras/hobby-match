@@ -21,4 +21,6 @@
   };
 </script>
 
-<div style="width: 100%;" use:telegramIframe></div>
+{#key data}
+  <div style="width: 100%;" use:telegramIframe></div>
+{/key}

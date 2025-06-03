@@ -50,9 +50,15 @@ export async function deleteWidget(widgetId: string): Promise<void> {
   */
 }
 
-export async function updateWidget(widgetId: string, formData: Widget['data']) {
+export async function updateWidget(
+  widgetId: string,
+  formData: Widget['data'],
+  files: File[] = [],
+) {
+  console.log(files);
   await pb.collection('widgets').update(widgetId, {
     data: formData,
+    'files+': files,
   });
   //widget.changeStatus = false;
 }

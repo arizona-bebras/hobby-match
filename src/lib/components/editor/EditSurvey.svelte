@@ -40,7 +40,15 @@
     },
   });
 
-  const { form: formData, enhance } = form;
+  const { form: formData, enhance, validateForm } = form;
+  let isButtonActive = $state(false);
+  $effect(() => {
+    validateForm().then((response) => {
+      isButtonActive = response.valid;
+    });
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    $formData;
+  });
 
   function onOpenChange() {
     setTimeout(() => {
@@ -61,6 +69,7 @@
     return result;
   }
   let array: string[] = $state([]);
+
   $inspect($formData.options);
   if (widgetId !== undefined) {
     pb.collection('widgets')
@@ -102,7 +111,7 @@
             <Input
               name="options"
               bind:value={$formData.options[index]}
-              placeholder={`Вариант ${index}`}
+              placeholder={`Вариант ${index + 1}`}
               class=""
             />
             <button
@@ -143,11 +152,12 @@
             open = false;
             onOpenChange();
           }}
-          class="w-full h-12 bg-accent rounded-xl"
+          disabled={!isButtonActive}
+          class="w-full h-12 {isButtonActive
+            ? 'bg-accent'
+            : 'bg-inactive'} rounded-xl mt-9">Сохранить</button
         >
-          Сохранить
-        </button>
-        <SuperDebug data={$formData} />
+        <!--        <SuperDebug data={$formData} />-->
       </form>
     </Sheet.Header>
   </Sheet.Content>

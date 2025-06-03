@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const textSchema = z.object({
-  text: z.string(),
+  text: z.string().min(1),
 });
 
 export type FormSchema = typeof textSchema;

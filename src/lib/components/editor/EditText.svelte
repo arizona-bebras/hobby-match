@@ -13,6 +13,7 @@
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
   import { Trash2 } from '@lucide/svelte';
   import { pb } from '$lib';
+  import { invalidate } from '$app/navigation';
   let {
     nextStage: open = $bindable(),
     numberOfWidgets,
@@ -44,13 +45,21 @@
     },
   });
 
-  const { form: formData, enhance } = form;
+  const { form: formData, enhance, validateForm } = form;
 
   if (widgetId !== undefined) {
     pb.collection('widgets')
       .getOne(widgetId)
       .then((result) => ($formData.text = result.data.text));
   }
+  let isButtonActive = $state(false);
+  $effect(() => {
+    validateForm().then((response) => {
+      isButtonActive = response.valid;
+    });
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    $formData;
+  });
 </script>
 
 <Sheet.Root bind:open {onOpenChange}>
@@ -73,10 +82,11 @@
         </Form.Field>
         {#if widgetId !== undefined}
           <Sheet.Close
-            onclick={() => {
-              deleteWidget(widgetId.toString());
+            onclick={async () => {
+              await deleteWidget(widgetId.toString());
+              await invalidate('user:widgets');
             }}
-            class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute right-4 top-3.5 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none p-2"
+            class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute right-4 top-2 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none p-2"
           >
             <Trash2 class="size-5 text-destructive" />
             <span class="sr-only">Close</span>
@@ -88,9 +98,12 @@
             open = false;
             onOpenChange();
           }}
-          class="w-full h-12 bg-accent rounded-xl">Сохранить</button
+          disabled={!isButtonActive}
+          class="w-full h-12 {isButtonActive
+            ? 'bg-accent'
+            : 'bg-inactive'} rounded-xl mt-9">Сохранить</button
         >
-        <SuperDebug data={$formData} />/
+        <!--        <SuperDebug data={$formData} />-->
       </form>
     </Sheet.Header>
   </Sheet.Content>

@@ -15,6 +15,10 @@
   let urls = $derived(
     additionalData.urls.map((url) => pb.buildURL(`/api/files/${url}`)),
   );
+  // let test = $derived(
+  //   additionalData.urls.map((url) => pb.files.getURL(data, url)),
+  // );
+  console.log(additionalData.urls);
 </script>
 
 <Splide

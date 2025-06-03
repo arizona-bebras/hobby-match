@@ -24,8 +24,8 @@
   const form = superForm(defaults(zod(postScheme)), {
     SPA: true,
     validators: zodClient(postScheme),
-    onSubmit: async ({ formData }) => {
-      let url = formData.get('link') as string;
+    onSubmit: async () => {
+      let url = $formData.link;
       const formValues = {
         type: 'post' as const,
         link: url.match(/(?<=https:\/\/t\.me\/).*/)![0],
@@ -86,7 +86,7 @@
             onclick={() => {
               deleteWidget(widgetId.toString());
             }}
-            class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute right-4 top-3.5 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none p-2"
+            class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute right-4 top-3 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none p-2"
           >
             <Trash2 class="size-5 text-destructive" />
             <span class="sr-only">Close</span>
@@ -106,6 +106,6 @@
         >
       </form>
     </Sheet.Header>
-    <SuperDebug data={$formData} />
+    <!--    <SuperDebug data={$formData} />-->
   </Sheet.Content>
 </Sheet.Root>
