@@ -16,6 +16,9 @@
   } from '$lib/components/widgetConstructors/widgetsConstructor';
   import type { Photo } from '$lib/widgetTypes/widgetTypes';
   import { pb } from '$lib';
+  import { invalidate } from '$app/navigation';
+  import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
+  import SaveButton from '$lib/components/editor/SaveButton.svelte';
 
   let {
     nextStage: open = $bindable(),
@@ -39,6 +42,7 @@
       if (widgetId != undefined) {
         console.log('ВИДЖЕТ УСПЕШНО ОБНОВЛЁН', formData.get('files'));
         await updateWidget(widgetId, formValues, formData.get('files'));
+        await invalidate('user:widgets');
       } else {
         console.log('ВИДЖЕТ УСПЕШНО СОЗДАН', images);
         await createWidget(formValues, numberOfWidgets + 1, images);
@@ -98,6 +102,7 @@
   const { form: formData, enhance, validateForm } = form;
   const files = filesProxy(form, 'files');
   let isButtonActive = $state(false);
+  let isImageDeleted = $state(false);
   $effect(() => {
     validateForm().then((response) => {
       isButtonActive = response.valid;
@@ -124,7 +129,16 @@
                   class="w-full h-auto bg-accent/45 rounded-2xl relative mb-4"
                 >
                   <img src={url} class="p-4" alt="loadedImage" />
-                  <button onclick={() => images.splice(index, 1)} type="button">
+                  <button
+                    onclick={async () => {
+                      isImageDeleted = true;
+                      await invalidate('user:widgets');
+                      await pb.collection('widgets').update(widgetId, {
+                        'files-': [url.split('/').pop()],
+                      });
+                    }}
+                    type="button"
+                  >
                     <Plus class="rotate-45 absolute right-3 top-3 text-black" />
                   </button>
                 </div>
@@ -186,28 +200,23 @@
             }}
           />
           {#if widgetId !== undefined}
-            <Sheet.Close
-              onclick={() => {
-                deleteWidget(widgetId.toString());
-              }}
-              class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute right-4 top-3.5 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none p-2"
-            >
-              <Trash2 class="size-5 text-destructive" />
-              <span class="sr-only">Close</span>
-            </Sheet.Close>
+            <DeleteButton {widgetId} />
           {/if}
           <button
             type="button"
             onclick={() => {
               open = false;
               onOpenChange();
-              if (widgetId !== undefined && images.length === 0) {
+              if (
+                (widgetId !== undefined && images.length === 0) ||
+                isImageDeleted
+              ) {
                 //pass
               } else {
                 form.submit();
               }
             }}
-            disabled={!isButtonActive}
+            disabled={!isButtonActive || isImageDeleted}
             class="w-full h-12 {isButtonActive
               ? 'bg-accent'
               : 'bg-inactive'} rounded-xl mt-2">Сохранить</button

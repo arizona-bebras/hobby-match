@@ -14,6 +14,8 @@
   import { Trash2 } from '@lucide/svelte';
   import { pb } from '$lib';
   import { invalidate } from '$app/navigation';
+  import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
+  import SaveButton from '$lib/components/editor/SaveButton.svelte';
   let {
     nextStage: open = $bindable(),
     numberOfWidgets,
@@ -81,28 +83,17 @@
           <Form.FieldErrors />
         </Form.Field>
         {#if widgetId !== undefined}
-          <Sheet.Close
-            onclick={async () => {
-              await deleteWidget(widgetId.toString());
-              await invalidate('user:widgets');
-            }}
-            class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute right-4 top-2 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none p-2"
-          >
-            <Trash2 class="size-5 text-destructive" />
-            <span class="sr-only">Close</span>
-          </Sheet.Close>
+          <DeleteButton {widgetId} />
         {/if}
-        <button
-          onclick={() => {
+
+        <SaveButton
+          onClick={() => {
             form.submit();
             open = false;
             onOpenChange();
           }}
-          disabled={!isButtonActive}
-          class="w-full h-12 {isButtonActive
-            ? 'bg-accent'
-            : 'bg-inactive'} rounded-xl mt-9">Сохранить</button
-        >
+          {isButtonActive}
+        />
         <!--        <SuperDebug data={$formData} />-->
       </form>
     </Sheet.Header>
