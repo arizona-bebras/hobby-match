@@ -71,16 +71,17 @@
   $effect(() => {
     selectedInterests = pb.authStore.record!.interests ?? [];
   });
-  $effect(() => {
-    $formData.interests = selectedInterests;
-  });
+  // $effect(() => {
+  //   $formData.interests = selectedInterests;
+  // });
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
   });
   let suggestedWords = $state(['']);
   $inspect(suggestedWords);
   async function getWords(userInterest: string) {
-    suggestedWords = [];
+    // ГОООООООООООООООООООООООООООООООООООООООООООООООООООЛ
+    suggestedWords = [...selectedInterests];
     await pb
       .send('/worker/autocomplete', {
         method: 'GET',
@@ -89,14 +90,18 @@
         },
       })
       .then((response) =>
-        response['response']['matches'].forEach((element) =>
-          suggestedWords.push(element['metadata']['tag']),
-        ),
+        response['response']['matches'].forEach((element) => {
+          if (!suggestedWords.includes(element['metadata']['tag'])) {
+            suggestedWords.push(element['metadata']['tag']);
+          }
+        }),
       );
     // console.log(result);
   }
   function handleInput() {
-    getWords(userInterest);
+    if (userInterest.length >= 1) {
+      getWords(userInterest);
+    }
   }
 </script>
 
@@ -121,49 +126,88 @@
         }}
       />
 
-      {#if userInterest.length >= 1}
-        {#each suggestedWords as word}
-          <button
-            type="button"
-            class="bg-green-400 text-black"
-            onclick={() => {
-              listOfInterests.push(word);
-            }}>{word}</button
-          >
-        {/each}
-        <p>Предложенные интересы</p>
-      {/if}
-      <div class="flex flex-row gap-2 w-full flex-wrap font-medium">
-        {#each listOfInterests as element}
-          <button
-            onclick={(e) => {
-              if (selectedInterests.includes(element)) {
-                selectedInterests.splice(selectedInterests.indexOf(element), 1);
-              } else {
-                selectedInterests.push(element);
-              }
-              $formData.interests = selectedInterests;
-              e.preventDefault();
-            }}
-            class="{selectedInterests.includes(element)
-              ? 'bg-accent'
-              : 'bg-accent/25'} rounded-3xl flex flex-row items-center justify-center px-3 py-2 gap-1.5"
-          >
-            <Plus
+      {#if userInterest.length >= 1 || selectedInterests.length >= 1}
+        <div class="flex flex-row gap-2 w-full flex-wrap font-medium">
+          {#each suggestedWords as element}
+            <button
+              onclick={(e) => {
+                if (selectedInterests.includes(element)) {
+                  selectedInterests.splice(
+                    selectedInterests.indexOf(element),
+                    1,
+                  );
+                } else {
+                  selectedInterests.push(element);
+                }
+                $formData.interests = selectedInterests;
+                e.preventDefault();
+              }}
               class="{selectedInterests.includes(element)
-                ? 'text-white rotate-45'
-                : 'text-accent-foreground'} w-4 h-5 stroke-3"
-            />
-            <p
-              class="text-accent-foreground {selectedInterests.includes(element)
-                ? 'text-white'
-                : 'text-accent-foreground'}"
+                ? 'bg-accent'
+                : 'bg-accent/25'} rounded-3xl flex flex-row items-center justify-center px-3 py-2 gap-1.5"
             >
-              {element}
-            </p>
-          </button>
-        {/each}
-      </div>
+              <Plus
+                class="{selectedInterests.includes(element)
+                  ? 'text-white rotate-45'
+                  : 'text-accent-foreground'} w-4 h-5 stroke-3"
+              />
+              <p
+                class="text-accent-foreground {selectedInterests.includes(
+                  element,
+                )
+                  ? 'text-white'
+                  : 'text-accent-foreground'}"
+              >
+                {element}
+              </p>
+            </button>
+          {/each}
+        </div>
+      {/if}
+
+      <!--{#if userInterest.length >= 1}-->
+      <!--  {#each suggestedWords as word}-->
+      <!--    <button-->
+      <!--      type="button"-->
+      <!--      class="bg-green-400 text-black"-->
+      <!--      onclick={() => {-->
+      <!--        listOfInterests.push(word);-->
+      <!--      }}>{word}</button-->
+      <!--    >-->
+      <!--  {/each}-->
+      <!--  <p>Предложенные интересы</p>-->
+      <!--{/if}-->
+      <!--      <div class="flex flex-row gap-2 w-full flex-wrap font-medium">-->
+      <!--        {#each listOfInterests as element}-->
+      <!--          <button-->
+      <!--            onclick={(e) => {-->
+      <!--              if (selectedInterests.includes(element)) {-->
+      <!--                selectedInterests.splice(selectedInterests.indexOf(element), 1);-->
+      <!--              } else {-->
+      <!--                selectedInterests.push(element);-->
+      <!--              }-->
+      <!--              $formData.interests = selectedInterests;-->
+      <!--              e.preventDefault();-->
+      <!--            }}-->
+      <!--            class="{selectedInterests.includes(element)-->
+      <!--              ? 'bg-accent'-->
+      <!--              : 'bg-accent/25'} rounded-3xl flex flex-row items-center justify-center px-3 py-2 gap-1.5"-->
+      <!--          >-->
+      <!--            <Plus-->
+      <!--              class="{selectedInterests.includes(element)-->
+      <!--                ? 'text-white rotate-45'-->
+      <!--                : 'text-accent-foreground'} w-4 h-5 stroke-3"-->
+      <!--            />-->
+      <!--            <p-->
+      <!--              class="text-accent-foreground {selectedInterests.includes(element)-->
+      <!--                ? 'text-white'-->
+      <!--                : 'text-accent-foreground'}"-->
+      <!--            >-->
+      <!--              {element}-->
+      <!--            </p>-->
+      <!--          </button>-->
+      <!--        {/each}-->
+      <!--      </div>-->
     </div>
   </div>
   <SuperDebug data={$formData} />
