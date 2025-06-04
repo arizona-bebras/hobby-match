@@ -28,6 +28,7 @@
   import EditSurvey from '$lib/components/editor/EditSurvey.svelte';
   import EditText from '$lib/components/editor/EditText.svelte';
   import EditVideo from '$lib/components/editor/EditVideo.svelte';
+  import EditAudio from '$lib/components/editor/EditAudio.svelte'
   import type { Option } from '$lib/widgetTypes/widgetTypes';
   import Edit from '$lib/components/editor/Edit.svelte';
   import WidgetsListMenu from '$lib/components/editor/WidgetsListMenu.svelte';
@@ -69,6 +70,7 @@
   import EditSocial from '$lib/components/editor/EditSocial.svelte';
   import EditToDo from '$lib/components/editor/EditToDo.svelte';
   import EditProgress from '$lib/components/editor/EditProgress.svelte';
+    import AudioWidget from '$lib/components/widgets/AudioWidget.svelte';
 
   let height = $derived(Math.max(300, 380 - (scrollY.current ?? 0) * 0.5));
 
@@ -124,6 +126,8 @@
     <EditToDo bind:nextStage numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Прогресс'}
     <EditProgress bind:nextStage numberOfWidgets={widgets.length} />
+  {:else if addedWidget === 'Аудио'}
+    <EditAudio bind:nextStage numberOfWidgets={widgets.length} />
   {/if}
 
   {#each widgets as { widget }, i}
@@ -145,6 +149,8 @@
       {/if}
       {#if widget.data.type === 'text'}
         <TextWidget data={widget.data} />
+      {:else if widget.data.type === 'audio'}
+        <AudioWidget data={widget.data} />
       {:else if widget.data.type === 'steam_game'}
         <GameWidget data={widget.data} />
       {:else if widget.data.type === 'video'}

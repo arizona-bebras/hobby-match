@@ -8,6 +8,7 @@
     nextStage = $bindable(),
   } = $props();
   let widgetsNames = [
+    'Аудио',
     'Видео',
     'Социальная сеть',
     'Опрос',

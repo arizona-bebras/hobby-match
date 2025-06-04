@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { link } = $props();
+  let { data } = $props();
 
   async function getEmbedCode(trackUrl: string) {
     const response = await fetch(
@@ -25,7 +25,7 @@
     return iframe.outerHTML;
   }
 
-  let trackIframePromise = getEmbedCode(link);
+  let trackIframePromise = getEmbedCode(data.link);
 </script>
 
 {#await trackIframePromise}
