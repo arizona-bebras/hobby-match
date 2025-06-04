@@ -15,6 +15,7 @@
     'Телеграм Пост',
     'Изображение',
     'Список задач',
+    'Прогресс',
   ];
   window.Telegram.WebApp.MainButton.hide();
 

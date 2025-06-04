@@ -68,6 +68,7 @@
   import { onMount } from 'svelte';
   import EditSocial from '$lib/components/editor/EditSocial.svelte';
   import EditToDo from '$lib/components/editor/EditToDo.svelte';
+  import EditProgress from '$lib/components/editor/EditProgress.svelte';
 
   let height = $derived(Math.max(300, 380 - (scrollY.current ?? 0) * 0.5));
 
@@ -121,6 +122,8 @@
     <EditImage bind:nextStage numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Список задач'}
     <EditToDo bind:nextStage numberOfWidgets={widgets.length} />
+  {:else if addedWidget === 'Прогресс'}
+    <EditProgress bind:nextStage numberOfWidgets={widgets.length} />
   {/if}
 
   {#each widgets as { widget }, i}

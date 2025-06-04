@@ -17,6 +17,7 @@
   import { invalidate } from '$app/navigation';
   import EditSocial from '$lib/components/editor/EditSocial.svelte';
   import EditToDo from '$lib/components/editor/EditToDo.svelte';
+  import EditProgress from '$lib/components/editor/EditProgress.svelte';
   let {
     class: className = '',
     widgetType,
@@ -90,6 +91,12 @@
       <EditImage bind:nextStage numberOfWidgets={widgets.length} {widgetId} />
     {:else if widgetType === 'todo'}
       <EditToDo bind:nextStage numberOfWidgets={widgets.length} {widgetId} />
+    {:else if widgetType === 'progress_bar'}
+      <EditProgress
+        bind:nextStage
+        numberOfWidgets={widgets.length}
+        {widgetId}
+      />
     {/if}
   {/if}
 </div>
