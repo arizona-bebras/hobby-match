@@ -7,7 +7,7 @@
     updateWidgetsOrder,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
 
-  import { pb } from '$lib/index'
+  import { pb } from '$lib/index';
 
   import { Star, Plus } from '@lucide/svelte';
   import GameWidget from '$lib/components/widgets/GameWidget.svelte';
@@ -67,6 +67,7 @@
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
   import { onMount } from 'svelte';
   import EditSocial from '$lib/components/editor/EditSocial.svelte';
+  import EditToDo from '$lib/components/editor/EditToDo.svelte';
 
   let height = $derived(Math.max(300, 380 - (scrollY.current ?? 0) * 0.5));
 
@@ -80,7 +81,7 @@
 </script>
 
 {#if height - 90 <= 210}
-  <ProfileTopLayer data = { data } />
+  <ProfileTopLayer {data} />
 {/if}
 <img
   src={pb.files.getURL(pb.authStore.record!, data.user_photo)}
@@ -89,7 +90,7 @@
   style="height: {height}px"
 />
 <div class="container font-[Inter] p-[16px] w-full max-w-full relative">
-  <ProfileInfo data = { data } />
+  <ProfileInfo {data} />
   <!--  <TgPostWidget post="durov/68" />-->
 
   {#if changeMode}
@@ -118,6 +119,8 @@
     <EditSocial bind:nextStage numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Изображение'}
     <EditImage bind:nextStage numberOfWidgets={widgets.length} />
+  {:else if addedWidget === 'Список задач'}
+    <EditToDo bind:nextStage numberOfWidgets={widgets.length} />
   {/if}
 
   {#each widgets as { widget }, i}
