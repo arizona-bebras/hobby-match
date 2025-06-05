@@ -1,7 +1,6 @@
-import { pb } from '$lib/index';
+import { pb } from '$lib';
 import type { PageLoad } from './$types';
 import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
-import { convertRecordToWidget } from '$lib/index';
 
 export const load: PageLoad = async ({ data, depends }) => {
   depends('user:widgets');
@@ -26,8 +25,8 @@ export const load: PageLoad = async ({ data, depends }) => {
       miniapp_name: pb.authStore.record!.miniapp_name,
       location: pb.authStore.record!.location,
       interests: pb.authStore.record!.interests,
-      widgets: structuredClone(widgets), 
-      textForm 
+      widgets: structuredClone(widgets),
+      textForm,
     };
   }
   throw new Error('Data validation error');

@@ -1,5 +1,5 @@
 import type { Widget } from '$lib/widgetTypes/widgetTypes';
-import { pb } from '$lib/index';
+import { pb } from '$lib';
 
 export interface AdditionalData {
   socialMediaData?: number;
@@ -68,7 +68,7 @@ export async function changeWidgetPosition(
   posChange: 1 | -1,
 ): Promise<void> {
   await pb.collection('widgets').update(widget.id, {
-    order: widget.order + posChange,
+    'order+': posChange,
   });
 }
 

@@ -111,38 +111,34 @@ onRecordUpdate((e) => {
 }, 'users');
 
 onRecordUpdate((e) => {
-  e.next()
+  const oldOrder = $app.unsafeWithoutHooks().findRecordById('widgets', e.record.id).getInt('order');
 
+  if (oldOrder !== e.record.getInt('order')) {
+    const [conflict] = $app.findRecordsByFilter('widgets',
+      'user = {:user} && order = {:order} && id != {:id}', 'order', 1, 0, {
+        "user": e.record.getString("user"),
+        "order": e.record.getInt("order"),
+        "id": e.record.getInt("id"),
+      });
 
-  let userRecords = $app.findAllRecords('widgets', $dbx.hashExp({
-    "user": e.record.getString("user")
-  }))
-  userRecords.sort((a , b) => a.getInt("order") - b.getInt("order"))
-
-
-  let newOrder = e.record.getInt("order")
-  let missingOrder = 0;
-  for (let i = 0; i < userRecords.length; i++) {
-    let recordOrder = userRecords[i].getInt("order");
-    if (recordOrder != i + 1) {
-      missingOrder = i + 1
-      break;
+    console.log("conflict", oldOrder, e.record.getInt('order'), JSON.stringify(conflict, null, 2));
+    if (conflict) {
+      conflict.set("order", oldOrder);
+      $app.unsafeWithoutHooks().save(conflict);
     }
   }
+  e.next()
 
-  if (missingOrder != 0) {
-    let wrongOrderRecord = $app.findAllRecords('widgets', 
-      $dbx.hashExp({
-        "user": e.record.getString("user"),
-        "order": newOrder
-      }), 
-      $dbx.not(
-        $dbx.hashExp({
-          "id": e.record.getString("id")
-        })
-      )
-    )[0]
-    wrongOrderRecord.set("order", missingOrder)
-    $app.save(wrongOrderRecord)
+  let userRecords = $app.unsafeWithoutHooks().findRecordsByFilter('widgets',
+    '', 'order', 0, 0, {
+      "user": e.record.getString("user")
+    });
+
+  for (let i = 0; i < userRecords.length; i++) {
+    let record = userRecords[i];
+    if (record.getInt("order") !== i) {
+      record.set("order", i);
+      $app.unsafeWithoutHooks().save(record);
+    }
   }
 }, 'widgets')
