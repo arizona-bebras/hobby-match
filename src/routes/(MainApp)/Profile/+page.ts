@@ -23,6 +23,7 @@ export const load: PageLoad = async ({ data, depends }) => {
     return {
       user_photo: pb.authStore.record!.user_photo,
       miniapp_name: pb.authStore.record!.miniapp_name,
+      age: pb.authStore.record!.age,
       location: pb.authStore.record!.location,
       interests: pb.authStore.record!.interests,
       widgets: structuredClone(widgets),

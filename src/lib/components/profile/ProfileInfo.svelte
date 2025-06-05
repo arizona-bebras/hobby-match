@@ -4,7 +4,7 @@
 </script>
 
 <p class="font-extrabold text-[32px] flex items-center">
-    {data.miniapp_name}, 18
+    {data.miniapp_name}, {data.age}
 </p>
 <p class="font-semibold text-[20px]"><span>{data.location}</span></p>
 <InterestsWidget

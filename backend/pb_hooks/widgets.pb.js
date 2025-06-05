@@ -5,6 +5,16 @@ console.log("Loading widget hooks!");
 
 onRecordEnrich((e) => {
   e.record.withCustomData(true);
+  const currentDate = new Date().getTime();
+  const birthDate = new Date(e.record.getString("birth_date")).getTime();
+  const age = currentDate - birthDate;
+  e.record.set('age', Math.floor(age / 31557600000));
+  console.log(Math.floor(age / 31557600000));
+  e.next();
+}, 'users')
+
+onRecordEnrich((e) => {
+  e.record.withCustomData(true);
   const data = JSON.parse(e.record.get('data'));
 
   switch (data.type) {
