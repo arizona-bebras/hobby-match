@@ -8,7 +8,7 @@
     photoSchema,
     type FormSchema,
   } from '$lib/components/registration/PhotoFormShema';
-  import {
+  import SuperDebug, {
     type SuperValidated,
     type Infer,
     superForm,
@@ -45,9 +45,17 @@
   $effect(() => {
     validateForm().then((response) => {
       if (response.valid) {
-        window.Telegram.WebApp.MainButton.enable();
+        window.Telegram.WebApp.MainButton.setParams({
+          color: window.Telegram.WebApp.themeParams.button_color,
+          is_active: true,
+          is_visible: true,
+        });
       } else {
-        window.Telegram.WebApp.MainButton.disable();
+        window.Telegram.WebApp.MainButton.setParams({
+          color: '#808080',
+          is_active: false,
+          is_visible: true,
+        });
       }
     });
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -96,4 +104,4 @@
     >
   </div>
 </form>
-<!--<SuperDebug data={$formData} />-->
+<SuperDebug data={$formData} />

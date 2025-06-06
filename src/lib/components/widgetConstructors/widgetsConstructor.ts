@@ -1,5 +1,6 @@
 import type { Widget } from '$lib/widgetTypes/widgetTypes';
 import { pb } from '$lib';
+import { invalidate } from '$app/navigation';
 
 export interface AdditionalData {
   socialMediaData?: number;
@@ -33,11 +34,11 @@ export async function updateWidget(
   formData: Widget['data'],
   files: File[] = [],
 ) {
-  console.log(files);
   await pb.collection('widgets').update(widgetId, {
     data: formData,
     'files+': files,
   });
+  await invalidate('user:widgets');
   //widget.changeStatus = false;
 }
 
