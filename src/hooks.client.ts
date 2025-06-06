@@ -16,7 +16,7 @@ if (browser) {
       !res.record.location ||
       !res.record.user_info ||
       !res.record.user_photo ||
-      !res.record.interests
+      res.record.interests.length < 3
     ) {
       goto('/registration');
     } else {
