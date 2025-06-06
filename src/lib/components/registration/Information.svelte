@@ -89,9 +89,9 @@
   $effect(() => {
     $formData.miniapp_name = pb.authStore.record!.miniapp_name;
     $formData.gender = pb.authStore.record!.gender;
-    $formData.birth_date = new Date(
-      pb.authStore.record!.birth_date,
-    ).toISOString();
+    $formData.birth_date = pb.authStore.record?.birth_date
+      ? new Date(pb.authStore.record?.birth_date).toISOString()
+      : '';
     $formData.location = pb.authStore.record!.location;
     $formData.user_info = pb.authStore.record!.user_info;
   });

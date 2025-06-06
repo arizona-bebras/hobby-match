@@ -4,6 +4,7 @@
   import Interests from '$lib/components/registration/Interests.svelte';
   import type { PageProps } from '../../../.svelte-kit/types/src/routes/registration/$types';
   import { pb } from '$lib/index';
+  import { onMount } from 'svelte';
 
   let stages: string[][] = [
     ['information', 'Информация'],
@@ -36,9 +37,9 @@
       completedStages.push(currentStage);
     }
   }
-  $effect(() => {
+  onMount(() => {
     if (
-      pb.authStore.record?.mini_app_name &&
+      pb.authStore.record?.miniapp_name &&
       pb.authStore.record?.gender &&
       pb.authStore.record?.birth_date &&
       pb.authStore.record?.location &&
