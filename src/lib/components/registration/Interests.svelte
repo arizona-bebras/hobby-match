@@ -14,20 +14,12 @@
   } from '$lib/components/registration/InterestsFormShema';
   import { zodClient } from 'sveltekit-superforms/adapters';
   import { onDestroy } from 'svelte';
-  import { goto } from '$app/navigation';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
-  let listOfInterests = $state([
-    'Видеоигры',
-    'Готовка',
-    'Музыка',
-    'Фотография',
-    'Кино',
-    'Авто',
-    'Рисование',
-    'Дизайн',
-    'Кодинг',
-  ]);
-  let selectedInterests: string[] = $state([]);
+  type Word = {
+    id: string;
+    tag: string;
+  };
+  let selectedInterests: Word[] = $state([]);
   let userInterest: string = $state('');
   let { form: interests }: { form: SuperValidated<Infer<FormSchema>> } =
     $props();
@@ -77,25 +69,29 @@
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
   });
-  let suggestedWords = $state(['']);
+  let suggestedWords: Word[] = $state([]);
   $inspect(suggestedWords);
   async function getWords(userInterest: string) {
-    // ГОООООООООООООООООООООООООООООООООООООООООООООООООООЛ
-    suggestedWords = [...selectedInterests];
-    await pb
-      .send('/worker/autocomplete', {
-        method: 'GET',
-        query: {
-          query: userInterest,
-        },
-      })
-      .then((response) =>
-        response['response']['matches'].forEach((element) => {
-          if (!suggestedWords.includes(element['metadata']['tag'])) {
-            suggestedWords.push(element['metadata']['tag']);
-          }
-        }),
-      );
+    const result = await pb.send('/worker/autocomplete', {
+      method: 'GET',
+      query: {
+        query: userInterest,
+      },
+    });
+    suggestedWords = result.response.matches.map(
+      (element: { id: string; metadata: { tag: string } }) => ({
+        id: element.id,
+        tag: element.metadata.tag,
+      }),
+    );
+    // response['response']['matches'].forEach((element) => {
+    //   if (!suggestedWords.includes(element['metadata']['tag'])) {
+    //     suggestedWords.push({
+    //       id: element.id,
+    //       tag: element['metadata']['tag'],
+    //     });
+    //   }
+    // }),
     // console.log(result);
   }
   function handleInput() {
@@ -103,6 +99,16 @@
       getWords(userInterest);
     }
   }
+  $inspect(suggestedWords);
+  let showingInterests = $derived([
+    ...selectedInterests.map((element) => ({ ...element, selected: true })),
+    ...suggestedWords
+      .filter(
+        (element) =>
+          !selectedInterests.find((selected) => selected.id === element.id),
+      )
+      .map((element) => ({ ...element, selected: false })),
+  ]);
 </script>
 
 <form method="POST" action="?/interests" use:enhance>
@@ -128,37 +134,44 @@
 
       {#if userInterest.length >= 1 || selectedInterests.length >= 1}
         <div class="flex flex-row gap-2 w-full flex-wrap font-medium">
-          {#each suggestedWords as element}
+          {#each showingInterests as element, i}
             <button
               onclick={(e) => {
-                if (selectedInterests.includes(element)) {
-                  selectedInterests.splice(
-                    selectedInterests.indexOf(element),
-                    1,
-                  );
-                } else {
+                if (!element.selected) {
                   selectedInterests.push(element);
+                } else {
+                  selectedInterests.splice(i, 1);
                 }
-                $formData.interests = selectedInterests;
+                $formData.interests = selectedInterests.map(
+                  (element) => element.id,
+                );
+                // if (selectedInterests.includes (element['id'])) {
+                //   selectedInterests.splice(
+                //     selectedInterests.indexOf(element['id']),
+                //
+                //     1,
+                //   );
+                // } else {
+                //   selectedInterests.push(element['id']);
+                // }
+                // $formData.interests = selectedInterests;
                 e.preventDefault();
               }}
-              class="{selectedInterests.includes(element)
+              class="{element.selected
                 ? 'bg-accent'
                 : 'bg-accent/25'} rounded-3xl flex flex-row items-center justify-center px-3 py-2 gap-1.5"
             >
               <Plus
-                class="{selectedInterests.includes(element)
+                class="{element.selected
                   ? 'text-white rotate-45'
                   : 'text-accent-foreground'} w-4 h-5 stroke-3"
               />
               <p
-                class="text-accent-foreground {selectedInterests.includes(
-                  element,
-                )
+                class="text-accent-foreground {element.selected
                   ? 'text-white'
                   : 'text-accent-foreground'}"
               >
-                {element}
+                {element['tag']}
               </p>
             </button>
           {/each}

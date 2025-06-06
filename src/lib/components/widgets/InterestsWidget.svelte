@@ -1,20 +1,20 @@
 <script lang="ts">
   import { ChevronUp } from '@lucide/svelte';
   import { fade } from 'svelte/transition';
-  let { interests } = $props();
-  let IsOpen = $state(false);
+  let { interests }: { interests: { id: string; tag: string }[] } = $props();
+  let isOpen = $state(false);
 </script>
 
-<div class="w-full h-30 p-[10px] transition-all" class:h-fit={IsOpen}>
+<div class="w-full h-30 p-[10px] transition-all" class:h-fit={isOpen}>
   <div
     class="flex flex-row w-fit gap-[8px] flex-wrap h-30 transition-all overflow-hidden"
-    class:overflow-visible={IsOpen}
-    class:h-fit={IsOpen}
-    class:test={!IsOpen}
+    class:overflow-visible={isOpen}
+    class:h-fit={isOpen}
+    class:test={!isOpen}
   >
     {#each interests as interest}
       <div
-        class="flex gap-[8px] bg-accent/25 rounded-[28px] px-[12px] py-[8px]"
+        class="flex gap-[8px] h-fit bg-accent/25 rounded-[28px] px-[12px] py-[8px]"
       >
         <!--<img
           class="size-4 my-auto"
@@ -22,22 +22,24 @@
             ...interest[0],
           ]
             .map((cp) => cp.codePointAt(0).toString(16))
-            .join('-')}.png"
+            .join('-')}.png" 
         />-->
-        <p class="text-accent">{interest}</p>
+        <p class="text-accent">{interest.tag}</p>
       </div>
     {/each}
-    <button
-      class="flex gap-[8px] bg-accent/25 rounded-[28px] px-[12px] py-[8px]"
-    >
-      <p class="text-accent"><ChevronUp /></p>
-      <p class="text-accent" onclick={() => (IsOpen = false)}>Свернуть</p>
-    </button>
+    {#if isOpen}
+      <button
+        class="flex gap-[8px] bg-accent/25 rounded-[28px] h-fit px-[12px] py-[8px]"
+      >
+        <p class="text-accent"><ChevronUp /></p>
+        <p class="text-accent" onclick={() => (isOpen = false)}>Свернуть</p>
+      </button>
+    {/if}
   </div>
   <button
     class="flex justify-self-center text-accent relative -top-11"
-    onclick={() => (IsOpen = true)}
-    class:hidden={IsOpen}>Развернуть</button
+    onclick={() => (isOpen = true)}
+    class:hidden={isOpen}>Развернуть</button
   >
 </div>
 

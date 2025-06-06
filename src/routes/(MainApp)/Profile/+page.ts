@@ -11,6 +11,7 @@ export const load: PageLoad = async ({ data, depends }) => {
     // console.log(collection.schema);
     const widgetsRecords = await pb.collection('widgets').getFullList({
       sort: `+order`,
+      requestKey: null,
     });
 
     // @ts-expect-error because
@@ -25,7 +26,11 @@ export const load: PageLoad = async ({ data, depends }) => {
       miniapp_name: pb.authStore.record!.miniapp_name,
       age: pb.authStore.record!.age,
       location: pb.authStore.record!.location,
-      interests: pb.authStore.record!.interests,
+      interests: await pb.collection('users').getOne(pb.authStore.record!.id, {
+        fields: 'expand',
+        expand: 'interests',
+        requestKey: null,
+      }),
       widgets: structuredClone(widgets),
       textForm,
     };

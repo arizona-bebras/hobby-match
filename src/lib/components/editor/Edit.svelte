@@ -100,6 +100,12 @@
         numberOfWidgets={widgets.length}
         {widgetId}
       />
+    {:else if widgetType === 'steam_game'}
+      <EditSteamGame
+        bind:nextStage
+        numberOfWidgets={widgets.length}
+        {widgetId}
+      />
     {/if}
   {/if}
 </div>

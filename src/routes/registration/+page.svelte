@@ -22,6 +22,9 @@
   let { data }: PageProps = $props();
 
   function nextStage() {
+    if (!completedStages.includes(currentStage)) {
+      completedStages.push(currentStage);
+    }
     switch (currentStage) {
       case 'information':
         currentStage = 'photo';
@@ -31,10 +34,6 @@
         break;
       case 'interests':
         break;
-    }
-
-    if (!completedStages.includes(currentStage)) {
-      completedStages.push(currentStage);
     }
   }
   onMount(() => {
@@ -50,11 +49,14 @@
     if (pb.authStore.record?.user_photo) {
       completedStages.push('photo');
     }
-    if (pb.authStore.record?.interests) {
+    if (pb.authStore.record?.interests.length >= 1) {
       completedStages.push('interests');
     }
+    console.log(pb.authStore.record?.user_photo);
+    console.log(pb.authStore.record?.interests);
   });
   $inspect(currentStage);
+  $inspect(completedStages);
 </script>
 
 <div class="p-4 w-full">
