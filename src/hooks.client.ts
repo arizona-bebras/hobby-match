@@ -10,13 +10,13 @@ if (browser) {
   }).then((res) => {
     pb.authStore.save(res.token, res.record);
     if (
-      !pb.authStore.record?.mini_app_name ||
-      !pb.authStore.record?.gender ||
-      !pb.authStore.record?.birth_date ||
-      !pb.authStore.record?.location ||
-      !pb.authStore.record?.user_info ||
-      !pb.authStore.record?.photo ||
-      !pb.authStore.record?.interests
+      !res.record.mini_app_name ||
+      !res.record.gender ||
+      !res.record.birth_date ||
+      !res.record.location ||
+      !res.record.user_info ||
+      !res.record.user_photo ||
+      !res.record.interests
     ) {
       goto('/registration');
     } else {
