@@ -9,7 +9,7 @@ onRecordEnrich((e) => {
     const currentDate = new Date().getTime() / 1000;
     const birthDate = e.record.getDateTime("birth_date").unix();
     const age = currentDate - birthDate;
-    e.record.set('age', Math.floor(age / (60 * 60 * 24 * 365)));
+    e.record.set('age', Math.floor(age / (60 * 60 * 24 * 365.25)));
   }
   e.next();
 }, 'users')
