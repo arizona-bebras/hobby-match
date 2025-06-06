@@ -1,13 +1,10 @@
 from pocketbase import PocketBase
 from pocketbase.utils import ClientResponseError
-from dotenv import load_dotenv
 import os
 
-load_dotenv('.env')
-
 DB_ADMIN_PASSWORD = os.getenv('DB_ADMIN_PASSWORD')
+DB_ADMIN_LOGIN = os.getenv('DB_ADMIN_LOGIN')
 
-print(DB_ADMIN_PASSWORD)
 class BotUser:
 
     def __init__(self, data: dict, pb: PocketBase):
@@ -17,7 +14,7 @@ class BotUser:
     def add_user_to_db(self):
         
         try:
-            self.pb.admins.auth_with_password("maxi.solts@gmail.com", DB_ADMIN_PASSWORD)
+            self.pb.admins.auth_with_password(DB_ADMIN_LOGIN, DB_ADMIN_PASSWORD)
 
             result = self.pb.collection("users").create(self.data)
             print(result)
@@ -28,7 +25,7 @@ class BotUser:
 
         
     def is_user_in_db(self):
-        self.pb.admins.auth_with_password("maxi.solts@gmail.com", DB_ADMIN_PASSWORD)
+        self.pb.admins.auth_with_password(DB_ADMIN_LOGIN, DB_ADMIN_PASSWORD)
         
         result = self.pb.collection('users').get_list(1, 1, {
             "filter": f"telegram_id = '{self.data['telegram_id']}'"
