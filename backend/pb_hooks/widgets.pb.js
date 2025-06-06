@@ -141,7 +141,7 @@ onRecordUpdate((e) => {
   e.next()
 
   let userRecords = $app.unsafeWithoutHooks().findRecordsByFilter('widgets',
-    '', 'order', 0, 0, {
+    'user = {:user}', 'order', 0, 0, {
       "user": e.record.getString("user")
     });
 
