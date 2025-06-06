@@ -10,7 +10,7 @@ if (browser) {
   }).then((res) => {
     pb.authStore.save(res.token, res.record);
     if (
-      !res.record.mini_app_name ||
+      !res.record.miniapp_name ||
       !res.record.gender ||
       !res.record.birth_date ||
       !res.record.location ||
