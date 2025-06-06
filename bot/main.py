@@ -1,11 +1,12 @@
+from dotenv import load_dotenv
+load_dotenv('.env')
+
 from telegram import Update, WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 from tg_bot_users import BotUser
 from pocketbase import PocketBase
-from dotenv import load_dotenv
 import os
 
-load_dotenv('.env')
 DB_ADDRESS = os.getenv("DB_ADDRESS")
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 pb = PocketBase(DB_ADDRESS)
