@@ -28,7 +28,7 @@
   import EditSurvey from '$lib/components/editor/EditSurvey.svelte';
   import EditText from '$lib/components/editor/EditText.svelte';
   import EditVideo from '$lib/components/editor/EditVideo.svelte';
-  import EditAudio from '$lib/components/editor/EditAudio.svelte'
+  import EditAudio from '$lib/components/editor/EditAudio.svelte';
   import type { Option } from '$lib/widgetTypes/widgetTypes';
   import Edit from '$lib/components/editor/Edit.svelte';
   import WidgetsListMenu from '$lib/components/editor/WidgetsListMenu.svelte';
@@ -61,7 +61,6 @@
 
   let showWidgetMenu = $state(false);
   let addedWidget = $state('');
-  let nextStage = $state(false); //dakdoawdkpowadkwapodkwapodkwadaopd)))))
 
   import { scrollY } from 'svelte/reactivity/window';
   import EditImage from '$lib/components/editor/EditImage.svelte';
@@ -70,7 +69,7 @@
   import EditSocial from '$lib/components/editor/EditSocial.svelte';
   import EditToDo from '$lib/components/editor/EditToDo.svelte';
   import EditProgress from '$lib/components/editor/EditProgress.svelte';
-    import AudioWidget from '$lib/components/widgets/AudioWidget.svelte';
+  import AudioWidget from '$lib/components/widgets/AudioWidget.svelte';
 
   let height = $derived(Math.max(300, 380 - (scrollY.current ?? 0) * 0.5));
 
@@ -81,6 +80,10 @@
     widgets = data.widgets;
   });
   console.log(widgets);
+
+  function onEditClose() {
+    addedWidget = '';
+  }
 </script>
 
 {#if height - 90 <= 210}
@@ -99,7 +102,7 @@
   {#if changeMode}
     <button
       class="my-2 w-full h-12 bg-[#34C759] rounded-xl flex justify-center items-center gap-3"
-      onclick={() => (showWidgetMenu = !showWidgetMenu)}
+      onclick={() => (showWidgetMenu = true)}
     >
       <Plus class="size-5" />
       <p class="font-medium">Добавить виджет</p>
@@ -107,27 +110,33 @@
   {/if}
 
   {#if showWidgetMenu}
-    <WidgetsListMenu bind:showWidgetMenu bind:addedWidget bind:nextStage />
+    <WidgetsListMenu
+      onClick={(name) => {
+        showWidgetMenu = false;
+        console.log(name);
+        addedWidget = name;
+      }}
+    />
   {/if}
 
   {#if addedWidget === 'Видео'}
-    <EditVideo bind:nextStage numberOfWidgets={widgets.length} />
+    <EditVideo numberOfWidgets={widgets.length} onClose={onEditClose} />
   {:else if addedWidget === 'Текст'}
-    <EditText bind:nextStage numberOfWidgets={widgets.length} />
+    <EditText numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Опрос'}
-    <EditSurvey bind:nextStage numberOfWidgets={widgets.length} />
+    <EditSurvey numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Социальная сеть'}
-    <EditTgAccount bind:nextStage numberOfWidgets={widgets.length} />
+    <EditTgAccount numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Телеграм Пост'}
-    <EditSocial bind:nextStage numberOfWidgets={widgets.length} />
+    <EditSocial numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Изображение'}
-    <EditImage bind:nextStage numberOfWidgets={widgets.length} />
+    <EditImage numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Список задач'}
-    <EditToDo bind:nextStage numberOfWidgets={widgets.length} />
+    <EditToDo numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Прогресс'}
-    <EditProgress bind:nextStage numberOfWidgets={widgets.length} />
+    <EditProgress numberOfWidgets={widgets.length} />
   {:else if addedWidget === 'Аудио'}
-    <EditAudio bind:nextStage numberOfWidgets={widgets.length} />
+    <EditAudio numberOfWidgets={widgets.length} />
   {/if}
 
   {#each widgets as { widget }, i}
