@@ -71,10 +71,10 @@ server.get('/resolveVanityUrl',
     async (request, reply) => {
         const key = request.query.key
         const vanityurl = request.query.vanityurl
-        if (!cache.has('id')) {
-            cache.set('id', await resolveVanityUrl(key, vanityurl));
+        if (!cache.has(`id-${vanityurl}`)) {
+            cache.set(`id-${vanityurl}`, await resolveVanityUrl(key, vanityurl));
         }
-        return { 'id': cache.get('id') }
+        return { id: cache.get(`id-${vanityurl}`) }
     }
 )
 
