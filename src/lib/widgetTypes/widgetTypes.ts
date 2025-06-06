@@ -12,9 +12,12 @@ export type Widget = {
     | SteamGame
     | Sticker
     | Survey
-    | Text;
+    | Text
+    | Post;
   additionalData?: SocialMediaData | PhotoData | SurveyData;
 };
+
+export type WidgetType = Widget['data']['type'];
 
 // SoundCloud embed
 export type Audio = {
@@ -127,4 +130,9 @@ export type SurveyData = {
 export type Text = {
   type: 'text';
   text: string;
+};
+
+export type Post = {
+  type: 'post';
+  link: string;
 };

@@ -2,47 +2,49 @@
   import * as Sheet from '$lib/components/ui/sheet/index.js';
   import * as Form from '$lib/components/ui/form/index.js';
   import { Input } from '$lib/components/ui/input';
-  import { Trash2, X } from '@lucide/svelte';
-  import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
+  import { X } from '@lucide/svelte';
+  import { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
   import { surveyScheme } from '$lib/components/editor/schemes/surveySheme';
   import {
     createWidget,
-    deleteWidget,
     updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
+  import type { Survey } from '$lib/widgetTypes/widgetTypes';
 
   let {
-    nextStage: open = $bindable(),
-    numberOfWidgets,
     widgetId,
+    onClose,
+    open = $bindable(false),
   }: {
-    nextStage: boolean;
-    numberOfWidgets: number;
+    open: boolean;
     widgetId?: string;
+    onClose: CallableFunction;
   } = $props();
   const form = superForm(defaults(zod(surveyScheme)), {
     SPA: true,
     validators: zodClient(surveyScheme),
-    onSubmit: async ({ formData }) => {
-      const formValues = {
-        question: formData.get('question'),
-        options: transformOptionsToAPI(formData.getAll('options')),
+    onSubmit: async () => {
+      const widget: Survey = {
         type: 'survey',
-        summaryVotes: '0',
+        question: $formData.question,
+        options: $formData.options.map((description) => ({
+          description,
+        })),
       };
-      if (widgetId != undefined) {
-        await updateWidget(widgetId, formValues);
+      if (widgetId) {
+        await updateWidget(widgetId, widget);
       } else {
-        await createWidget(formValues, numberOfWidgets + 1);
+        await createWidget(widget);
       }
+      onClose();
     },
   });
 
-  const { form: formData, enhance, validateForm } = form;
+  const { form: formData, enhance, validateForm, reset } = form;
   let isButtonActive = $state(false);
   $effect(() => {
     validateForm().then((response) => {
@@ -52,44 +54,27 @@
     $formData;
   });
 
-  function onOpenChange() {
-    setTimeout(() => {
-      document.body.style.cssText = '';
-      console.log('Компонент уничтожен');
-      window.Telegram.WebApp.MainButton.show();
-    }, 10);
-  }
-
-  function transformOptionsToAPI(options: FormDataEntryValue[]): object[] {
-    let result: object[] = $state([]);
-    for (const element of options) {
-      result.push({
-        description: element,
-        votes: 0,
-      });
-    }
-    return result;
-  }
-  let array: string[] = $state([]);
-
   $inspect($formData.options);
-  if (widgetId !== undefined) {
-    pb.collection('widgets')
-      .getOne(widgetId)
-      .then((result) => {
-        console.log(result);
-        $formData.question = result.data.question;
-        result.data.options.forEach(
-          (element: { description: string; votes: number }) => {
-            $formData.options = [...$formData.options, element.description];
-          },
-        );
-      });
-    console.log($formData.options);
-  }
+  $effect(() => {
+    if (widgetId) {
+      pb.collection('widgets')
+        .getOne(widgetId)
+        .then((result) => {
+          console.log(result);
+          $formData.question = result.data.question;
+          result.data.options.forEach(
+            (element: { description: string; votes: number }) => {
+              $formData.options = [...$formData.options, element.description];
+            },
+          );
+        });
+    } else {
+      reset();
+    }
+  });
 </script>
 
-<Sheet.Root bind:open {onOpenChange}>
+<Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
       <form method="POST" use:enhance>
@@ -108,7 +93,7 @@
           <Form.FieldErrors />
         </Form.Field>
 
-        {#each $formData.options as element, index}
+        {#each $formData.options as _, index}
           <div class="flex justify-center items-center mb-2">
             <Input
               name="options"
@@ -143,8 +128,6 @@
         <SaveButton
           onClick={() => {
             form.submit();
-            open = false;
-            onOpenChange();
           }}
           {isButtonActive}
         />

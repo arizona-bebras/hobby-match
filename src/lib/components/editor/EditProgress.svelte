@@ -1,63 +1,62 @@
 <script lang="ts">
   import * as Sheet from '$lib/components/ui/sheet/index.js';
-  import { Textarea } from '$lib/components/ui/textarea';
   import {
     createWidget,
-    deleteWidget,
     updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
   import * as Form from '$lib/components/ui/form/index.js';
   import { Input } from '$lib/components/ui/input/index.js';
   import { progressScheme } from '$lib/components/editor/schemes/progressScheme';
-  import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
+  import { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
-  import { Trash2 } from '@lucide/svelte';
   import { pb } from '$lib';
-  import { invalidate } from '$app/navigation';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
+  import type { ProgressBar } from '$lib/widgetTypes/widgetTypes';
   let {
-    nextStage: open = $bindable(),
-    numberOfWidgets,
+    open = $bindable(),
+    onClose,
     widgetId,
   }: {
-    nextStage: boolean;
-    numberOfWidgets: number;
+    onClose: CallableFunction;
+    open: boolean;
     widgetId?: string;
   } = $props();
-  function onOpenChange() {
-    setTimeout(() => {
-      document.body.style.cssText = '';
-      console.log('Компонент уничтожен');
-      window.Telegram.WebApp.MainButton.show();
-    }, 10);
-  }
 
   const form = superForm(defaults(zod(progressScheme)), {
     SPA: true,
     validators: zodClient(progressScheme),
-    onSubmit: async ({ formData }) => {
-      formData.set('type', 'progress_bar');
-      const formValues = Object.fromEntries(formData);
+    onSubmit: async () => {
+      const widget: ProgressBar = {
+        type: 'progress_bar',
+        currentProgress: $formData.currentProgress,
+        description: $formData.description,
+        maxProgress: $formData.maxProgress,
+      };
       if (widgetId != undefined) {
-        await updateWidget(widgetId, formValues);
+        await updateWidget(widgetId, widget);
       } else {
-        await createWidget(formValues, numberOfWidgets + 1);
+        await createWidget(widget);
       }
+      onClose();
     },
   });
 
-  const { form: formData, enhance, validateForm, allErrors } = form;
+  const { form: formData, enhance, validateForm, allErrors, reset } = form;
 
-  if (widgetId !== undefined) {
-    pb.collection('widgets')
-      .getOne(widgetId)
-      .then((result) => {
-        $formData.description = result.data.description;
-        $formData.currentProgress = parseInt(result.data.currentProgress);
-        $formData.maxProgress = parseInt(result.data.maxProgress);
-      });
-  }
+  $effect(() => {
+    if (widgetId) {
+      pb.collection('widgets')
+        .getOne(widgetId)
+        .then((result) => {
+          $formData.description = result.data.description;
+          $formData.currentProgress = parseInt(result.data.currentProgress);
+          $formData.maxProgress = parseInt(result.data.maxProgress);
+        });
+    } else {
+      reset();
+    }
+  });
   let isButtonActive = $state(false);
   $effect(() => {
     validateForm().then((response) => {
@@ -68,7 +67,7 @@
   });
 </script>
 
-<Sheet.Root bind:open {onOpenChange}>
+<Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
       <form method="POST" use:enhance>
@@ -142,12 +141,10 @@
         <SaveButton
           onClick={() => {
             form.submit();
-            open = false;
-            onOpenChange();
           }}
           {isButtonActive}
         />
-        <SuperDebug data={$formData} />
+        <!--        <SuperDebug data={$formData} />-->
       </form>
     </Sheet.Header>
   </Sheet.Content>

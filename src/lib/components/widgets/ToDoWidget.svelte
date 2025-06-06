@@ -1,6 +1,9 @@
 <script lang="ts">
-  let { data } = $props();
-  import { Check } from '@lucide/svelte'; //
+  import { updateWidget } from '$lib/components/widgetConstructors/widgetsConstructor';
+
+  let { data, widgetId }: { data: Todo; widgetId: string } = $props();
+  import { Check } from '@lucide/svelte';
+  import type { Todo } from '$lib/widgetTypes/widgetTypes';
 </script>
 
 <div class="ToDoBox">
@@ -13,6 +16,10 @@
           class="appearance-none rounded-full size-5.25 border-2 border-[#D9D9D9]
      cursor-pointer checked:bg-accent checked:border-accent peer"
           checked={task.isCompleted}
+          onchange={async (e) => {
+            task.isCompleted = e.currentTarget.checked;
+            await updateWidget(widgetId, data);
+          }}
         />
         <Check
           class="absolute size-3.5 left-5.5 stroke-white invisible peer-checked:visible"

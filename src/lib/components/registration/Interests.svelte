@@ -61,7 +61,16 @@
     $formData;
   });
   $effect(() => {
-    selectedInterests = pb.authStore.record!.interests ?? [];
+    pb.collection('users')
+      .getOne(pb.authStore.record!.id, {
+        fields: 'expand',
+        expand: 'interests',
+        requestKey: null,
+      })
+      .then((user) => {
+        selectedInterests = user.expand?.interests;
+        $formData.interests = selectedInterests.map((i) => i.id);
+      });
   });
   // $effect(() => {
   //   $formData.interests = selectedInterests;

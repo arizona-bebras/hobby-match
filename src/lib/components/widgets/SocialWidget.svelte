@@ -36,43 +36,11 @@
     }
     return num.toString();
   }
-  // const SocialIcons = {
-  //   YouTube: Youtube,
-  //   VK: Vk,
-  //   Steam: Steam,
-  //   Twitch: Twitch,
-  //   Twitter: Twitter,
-  // };
+
   let {
     data,
     socialMediaData,
   }: { data: SocialMediaLink; socialMediaData: SocialMediaData } = $props();
-
-  // let SubscribersType = {
-  //   YouTube: [['подписчик', 'подписчика', 'подписчиков']],
-  //   VK: [['подписчик', 'подписчика', 'подписчиков']],
-  //   Steam: [['уровень', 'уровень', 'уровень']], // :))
-  //   Twitch: [['подписчик', 'подписчика', 'подписчиков']],
-  //   X: [['читатель', 'читателя', 'читателей']],
-  //   Telegram: [['подписчик', 'подписчика', 'подписчиков']],
-  // };
-  //
-  // let platform: keyof typeof SubscribersType = data.platform;
-  // let url: string = data.link;
-  // let username: string = socialMediaData.title;
-  // let amountSubscribers: number = socialMeidaData;
-  // let {
-  //   data.platform,
-  //   data.url,
-  //   data.username,
-  //   data.subscribers,
-  // }: {
-  //   platform: keyof typeof SubscribersType;
-  //   url: string;
-  //   username: string;
-  //   amountSubscribers: number;
-  // }
-  // const Icon = SocialIcons[platform];
 </script>
 
 <button
@@ -129,7 +97,7 @@
             'уровень',
           ])}
         {:else if socialMediaData.type === 'YouTube'}
-          {formatNumber(socialMediaData.subscribers)}
+          {formatNumber(socialMediaData.subscribers ?? 0)}
           {getCorrectForm(socialMediaData.subscribers ?? 0, [
             'подписчик',
             'подписчика',

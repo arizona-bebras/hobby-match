@@ -1,15 +1,6 @@
 <script lang="ts">
   import * as Sheet from '$lib/components/ui/sheet/index.js';
   import { Input } from '$lib/components/ui/input';
-  let {
-    numberOfWidgets,
-    widgetId,
-    onClose,
-  }: {
-    numberOfWidgets: number;
-    widgetId?: string;
-    onClose: CallableFunction;
-  } = $props();
   import * as Form from '$lib/components/ui/form/index.js';
 
   import { superForm, defaults } from 'sveltekit-superforms';
@@ -22,25 +13,34 @@
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
+  let {
+    widgetId,
+    onClose,
+    open = $bindable(false),
+  }: {
+    open: boolean;
+    widgetId?: string;
+    onClose: CallableFunction;
+  } = $props();
 
   const form = superForm(defaults(zod(videoSchema)), {
     SPA: true,
     validators: zodClient(videoSchema),
-    onSubmit: async ({ formData }) => {
-      const formValues = {
+    onSubmit: async () => {
+      const widget = {
         type: 'video' as const,
-        platform: getPlatformType(formData.get('link') as string)!,
-        link: formData.get('link') as string,
+        platform: getPlatformType($formData.link)!,
+        link: $formData.link,
       };
-      if (widgetId !== undefined) {
-        await updateWidget(widgetId, formValues);
+      if (widgetId) {
+        await updateWidget(widgetId, widget);
       } else {
-        await createWidget(formValues, numberOfWidgets + 1);
+        await createWidget(widget);
       }
       onClose();
     },
   });
-  const { form: formData, enhance, validateForm } = form;
+  const { form: formData, enhance, validateForm, reset } = form;
 
   let isButtonActive = $state(false);
   $effect(() => {
@@ -51,11 +51,15 @@
     $formData;
   });
 
-  if (widgetId !== undefined) {
-    pb.collection('widgets')
-      .getOne(widgetId)
-      .then((result) => ($formData.link = result.data.link));
-  }
+  $effect(() => {
+    if (widgetId) {
+      pb.collection('widgets')
+        .getOne(widgetId)
+        .then((result) => ($formData.link = result.data.link));
+    } else {
+      reset();
+    }
+  });
 
   function getPlatformType(url: string) {
     const domain = url.match(/https?:\/\/([^/]+)/)![1].toLowerCase();
@@ -69,7 +73,7 @@
   }
 </script>
 
-<Sheet.Root open={true}>
+<Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
       <form method="POST" use:enhance>

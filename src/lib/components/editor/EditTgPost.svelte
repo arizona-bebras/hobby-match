@@ -1,5 +1,5 @@
 <script lang="ts">
-  import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
+  import { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
   import { postScheme } from '$lib/components/editor/schemes/postSheme';
   import * as Sheet from '$lib/components/ui/sheet/index.js';
@@ -7,39 +7,37 @@
   import { Input } from '$lib/components/ui/input';
   import {
     createWidget,
-    deleteWidget,
     updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
-  import { Trash2 } from '@lucide/svelte';
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
   let {
-    nextStage: open = $bindable(),
-    numberOfWidgets,
     widgetId,
+    onClose,
+    open = $bindable(false),
   }: {
-    nextStage: boolean;
-    numberOfWidgets: number;
+    open: boolean;
     widgetId?: string;
+    onClose: CallableFunction;
   } = $props();
   const form = superForm(defaults(zod(postScheme)), {
     SPA: true,
     validators: zodClient(postScheme),
     onSubmit: async () => {
-      let url = $formData.link;
-      const formValues = {
+      const widget = {
         type: 'post' as const,
-        link: url.match(/(?<=https:\/\/t\.me\/).*/)![0],
+        link: $formData.link.match(/(?<=https:\/\/t\.me\/).*/)![0],
       };
-      if (widgetId != undefined) {
-        await updateWidget(widgetId, formValues);
+      if (widgetId) {
+        await updateWidget(widgetId, widget);
       } else {
-        await createWidget(formValues, numberOfWidgets + 1);
+        await createWidget(widget);
       }
+      onClose();
     },
   });
-  const { form: formData, enhance, validateForm } = form;
+  const { form: formData, enhance, validateForm, reset } = form;
   let isButtonActive = $state(false);
   $effect(() => {
     validateForm().then((response) => {
@@ -48,21 +46,20 @@
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     $formData;
   });
-  if (widgetId !== undefined) {
-    pb.collection('widgets')
-      .getOne(widgetId)
-      .then((result) => ($formData.link = `https://t.me/${result.data.link}`));
-  }
-  function onOpenChange() {
-    setTimeout(() => {
-      document.body.style.cssText = '';
-      console.log('Компонент уничтожен');
-      window.Telegram.WebApp.MainButton.show();
-    }, 10);
-  }
+  $effect(() => {
+    if (widgetId) {
+      pb.collection('widgets')
+        .getOne(widgetId)
+        .then(
+          (result) => ($formData.link = `https://t.me/${result.data.link}`),
+        );
+    } else {
+      reset();
+    }
+  });
 </script>
 
-<Sheet.Root bind:open {onOpenChange}>
+<Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
       <form method="POST" use:enhance>
@@ -89,8 +86,6 @@
         <SaveButton
           onClick={() => {
             form.submit();
-            open = false;
-            onOpenChange();
           }}
           {isButtonActive}
         />

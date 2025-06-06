@@ -3,7 +3,7 @@ import { z } from 'zod';
 const platformRegex = {
   youtube: /^https:\/\/(www\.)?youtube\.com\/@[\w-]+$/,
   twitch: /^https:\/\/(www\.)?twitch\.tv\/[a-zA-Z0-9_]{4,25}$/,
-  vk: /^https:\/\/vk\.com\/[a-zA-Z0-9_\.]+$/,
+  vk: /^https:\/\/vk\.com\/[a-zA-Z0-9_.]+$/,
   steam:
     /^https:\/\/steamcommunity\.com\/(profiles\/[0-9]{17}|id\/[a-zA-Z0-9_-]+)\/?$/,
   twitter: /^https:\/\/(x\.com|twitter\.com)\/[a-zA-Z0-9_]{1,15}$/,

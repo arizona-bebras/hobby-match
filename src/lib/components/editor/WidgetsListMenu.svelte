@@ -1,27 +1,40 @@
 <script lang="ts">
   import * as Dialog from '$lib/components/ui/dialog/index.js';
-  let { onClick }: { onClick: (name: string) => void } = $props();
-  let widgetsNames = [
-    'Аудио',
-    'Видео',
-    'Социальная сеть',
-    'Опрос',
-    'Текст',
-    'Телеграм Пост',
-    'Изображение',
-    'Список задач',
-    'Прогресс',
-    'Время игры',
-  ];
+  import type { WidgetType } from '$lib/widgetTypes/widgetTypes';
+  let {
+    onClick,
+    open = $bindable(),
+  }: { onClick: (name?: WidgetType) => void; open: boolean } = $props();
+  let widgetNames: Partial<Record<WidgetType, string>> = {
+    audio: 'Аудио',
+    post: 'Телеграм пост',
+    // geo: 'Маршрут',
+    photo: 'Изображение',
+    progress_bar: 'Прогресс',
+    social_media: 'Социальная сеть',
+    steam_game: 'Время в игре',
+    // sticker: 'Стикер',
+    survey: 'Опрос',
+    text: 'Текст',
+    todo: 'Список задач',
+    video: 'Видео',
+  } as const;
 </script>
 
-<Dialog.Root open={true}>
+<Dialog.Root bind:open onOpenChange={(state) => !state && onClick()}>
   <Dialog.Content>
     <Dialog.Header>
-      {#each widgetsNames as name}
-        <Dialog.Title
-          ><button onclick={() => onClick(name)}>{name}</button></Dialog.Title
-        >
+      {#each Object.entries(widgetNames) as [type, name]}
+        <Dialog.Title>
+          <button
+            onclick={() => {
+              // @ts-expect-error object entries sucks
+              onClick(type);
+            }}
+          >
+            {name}
+          </button>
+        </Dialog.Title>
       {/each}
     </Dialog.Header>
   </Dialog.Content>

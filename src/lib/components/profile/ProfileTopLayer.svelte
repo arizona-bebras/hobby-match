@@ -1,11 +1,17 @@
 <script lang="ts">
   import { pb } from '$lib/index';
-  let { data } = $props();
+  import { cn } from '$lib/utils';
+  let { data, fixed = true } = $props();
 </script>
 
-<div class="w-full h-16 bg-background fixed flex z-2">
+<div
+  class={cn(
+    'w-full h-16 bg-background flex z-2',
+    fixed ? 'fixed' : 'sticky top-0',
+  )}
+>
   <img
-    src={pb.files.getURL(pb.authStore.record!, data.user_photo)}
+    src={pb.files.getURL(pb.authStore.record ?? {}, data.user_photo)}
     class="w-16 h-16 rounded-full p-2"
     alt="UserPhoto"
   />

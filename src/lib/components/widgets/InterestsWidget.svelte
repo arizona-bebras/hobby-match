@@ -32,7 +32,7 @@
     {/if}
   </div>
   <button
-    class="justify-center justify-self-center text-accent z-10 absolute bottom-4 left-0 right-0"
+    class="justify-center justify-self-center text-accent absolute bottom-4 left-0 right-0"
     onclick={() => (isOpen = true)}
     class:hidden={isOpen}>Развернуть</button
   >

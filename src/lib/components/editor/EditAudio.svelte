@@ -1,45 +1,45 @@
 <script lang="ts">
-  import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
+  import { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
-  import { audioScheme } from '$lib/components/editor/schemes/audioScheme'
+  import { audioScheme } from '$lib/components/editor/schemes/audioScheme';
   import * as Sheet from '$lib/components/ui/sheet/index.js';
   import * as Form from '$lib/components/ui/form/index.js';
   import { Input } from '$lib/components/ui/input';
   import {
     createWidget,
-    deleteWidget,
     updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
-  import { Trash2 } from '@lucide/svelte';
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
+  import type { Audio } from '$lib/widgetTypes/widgetTypes';
   let {
-    nextStage: open = $bindable(),
-    numberOfWidgets,
     widgetId,
+    onClose,
+    open = $bindable(false),
   }: {
-    nextStage: boolean;
-    numberOfWidgets: number;
+    open: boolean;
     widgetId?: string;
+    onClose: CallableFunction;
   } = $props();
   const form = superForm(defaults(zod(audioScheme)), {
     SPA: true,
     validators: zodClient(audioScheme),
     onSubmit: async () => {
       let url = $formData.link;
-      const formValues = {
-        type: 'audio' as const,
+      const widget: Audio = {
+        type: 'audio',
         link: url,
       };
       if (widgetId != undefined) {
-        await updateWidget(widgetId, formValues);
+        await updateWidget(widgetId, widget);
       } else {
-        await createWidget(formValues, numberOfWidgets + 1);
+        await createWidget(widget);
       }
+      onClose();
     },
   });
-  const { form: formData, enhance, validateForm } = form;
+  const { form: formData, enhance, validateForm, reset } = form;
   let isButtonActive = $state(false);
   $effect(() => {
     validateForm().then((response) => {
@@ -48,33 +48,28 @@
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     $formData;
   });
-  if (widgetId !== undefined) {
-    pb.collection('widgets')
-      .getOne(widgetId)
-      .then((result) => ($formData.link = `https://t.me/${result.data.link}`));
-  }
-  function onOpenChange() {
-    setTimeout(() => {
-      document.body.style.cssText = '';
-      console.log('Компонент уничтожен');
-      window.Telegram.WebApp.MainButton.show();
-    }, 10);
-  }
+  $effect(() => {
+    if (widgetId !== undefined) {
+      pb.collection('widgets')
+        .getOne(widgetId)
+        .then((result) => ($formData.link = result.data.link));
+    } else {
+      reset();
+    }
+  });
 </script>
 
-<Sheet.Root bind:open {onOpenChange}>
+<Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
       <form method="POST" use:enhance>
-        <p class="text-accent-foreground font-medium pb-4.5">
-          Виджет "Аудио"
-        </p>
-        <p class="pb-2">Введите ссылку на SoundCloud .</p>
+        <p class="text-accent-foreground font-medium pb-4.5">Виджет "Аудио"</p>
+        <p class="pb-2">Введите ссылку на SoundCloud</p>
         <Form.Field {form} name="link">
           <Form.Control>
             {#snippet children({ props })}
               <Input
-                placeholder="https://t.me/..."
+                placeholder="https://soundcloud.com/..."
                 class="mb-9"
                 {...props}
                 bind:value={$formData.link}
@@ -89,8 +84,6 @@
         <SaveButton
           onClick={() => {
             form.submit();
-            open = false;
-            onOpenChange();
           }}
           {isButtonActive}
         />

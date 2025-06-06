@@ -4,6 +4,7 @@ import type { WidgetWithService } from '$lib/components/widgetConstructors/widge
 
 export const load: PageLoad = async ({ data, depends }) => {
   depends('user:widgets');
+  console.log('RELOADED!!!');
   if (pb.authStore.isValid) {
     const { textForm } = data;
     //

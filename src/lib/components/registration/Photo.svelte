@@ -4,21 +4,17 @@
   let fileInput: HTMLInputElement;
   let tgImage = window.Telegram.WebApp.initDataUnsafe.user?.photo_url;
   console.log(tgImage);
-  import * as Form from '$lib/components/ui/form/index.js';
-  import { Input } from '$lib/components/ui/input/index.js';
   import {
     photoSchema,
     type FormSchema,
   } from '$lib/components/registration/PhotoFormShema';
-  import SuperDebug, {
+  import {
     type SuperValidated,
     type Infer,
     superForm,
     fileProxy,
   } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
-  import { informationSchema } from '$lib/components/registration/InformationFormShema';
-  import { object } from 'zod';
   import { onDestroy } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
   let {
@@ -32,7 +28,7 @@
     dataType: 'json',
   });
 
-  const { form: formData, enhance, validateForm, submit } = form;
+  const { form: formData, enhance, validateForm } = form;
 
   const file = fileProxy(form, 'user_photo');
   async function handleTelegramButtonClick() {
@@ -49,17 +45,9 @@
   $effect(() => {
     validateForm().then((response) => {
       if (response.valid) {
-        window.Telegram.WebApp.MainButton.setParams({
-          color: window.Telegram.WebApp.themeParams.button_color,
-          is_active: true,
-          is_visible: true,
-        });
+        window.Telegram.WebApp.MainButton.enable();
       } else {
-        window.Telegram.WebApp.MainButton.setParams({
-          color: '#808080',
-          is_active: false,
-          is_visible: true,
-        });
+        window.Telegram.WebApp.MainButton.disable();
       }
     });
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -76,16 +64,9 @@
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
   });
-  let formElement: HTMLFormElement;
 </script>
 
-<form
-  method="POST"
-  action="?/photo"
-  bind:this={formElement}
-  enctype="multipart/form-data"
-  use:enhance
->
+<form method="POST" action="?/photo" enctype="multipart/form-data" use:enhance>
   <div class="flex flex-col gap-y-2">
     <div class="flex w-full mb-2 items-center">
       <Emoji symbol="📷" class="size-6" />
@@ -115,4 +96,4 @@
     >
   </div>
 </form>
-<SuperDebug data={$formData} />
+<!--<SuperDebug data={$formData} />-->

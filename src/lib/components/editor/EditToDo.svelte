@@ -1,82 +1,62 @@
 <script lang="ts">
   import * as Sheet from '$lib/components/ui/sheet/index.js';
-  import { Textarea } from '$lib/components/ui/textarea';
   import {
     createWidget,
-    deleteWidget,
     updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
   import * as Form from '$lib/components/ui/form/index.js';
   import { Input } from '$lib/components/ui/input/index.js';
-  import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
+  import { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
   import { toDoScheme } from '$lib/components/editor/schemes/toDoScheme';
   import { pb } from '$lib';
-  import { invalidate } from '$app/navigation';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
   import { X } from '@lucide/svelte';
-  import type { Task } from '$lib/widgetTypes/widgetTypes';
+  import type { Todo } from '$lib/widgetTypes/widgetTypes';
   let {
-    nextStage: open = $bindable(),
-    numberOfWidgets,
     widgetId,
+    onClose,
+    open = $bindable(false),
   }: {
-    nextStage: boolean;
-    numberOfWidgets: number;
+    open: boolean;
     widgetId?: string;
+    onClose: CallableFunction;
   } = $props();
-  function onOpenChange() {
-    setTimeout(() => {
-      document.body.style.cssText = '';
-      console.log('Компонент уничтожен');
-      window.Telegram.WebApp.MainButton.show();
-    }, 10);
-  }
 
   const form = superForm(defaults(zod(toDoScheme)), {
     SPA: true,
     validators: zodClient(toDoScheme),
-    onSubmit: async ({ formData }) => {
-      const formValues = {
-        type: 'todo' as const,
-        title: formData.get('title'),
-        tasks: transformTasksToAPI(formData.getAll('options')),
+    onSubmit: async () => {
+      const widget: Todo = {
+        type: 'todo',
+        title: $formData.title,
+        tasks: $formData.tasks,
       };
-      if (widgetId != undefined) {
-        await updateWidget(widgetId, formValues);
+      if (widgetId) {
+        await updateWidget(widgetId, widget);
       } else {
-        await createWidget(formValues, numberOfWidgets + 1);
+        await createWidget(widget);
       }
+      onClose();
     },
   });
 
-  function transformTasksToAPI(tasks: FormDataEntryValue[]): Task[] {
-    let result: Task[] = $state([]);
-    for (const element of tasks) {
-      result.push({
-        description: element,
-        isCompleted: false,
-      });
+  const { form: formData, enhance, validateForm, reset } = form;
+
+  $effect(() => {
+    if (widgetId) {
+      pb.collection('widgets')
+        .getOne(widgetId)
+        .then((result) => {
+          $formData.title = result.data.title;
+          $formData.tasks = result.data.tasks;
+        });
+    } else {
+      reset();
     }
-    return result;
-  }
+  });
 
-  const { form: formData, enhance, validateForm } = form;
-
-  if (widgetId !== undefined) {
-    pb.collection('widgets')
-      .getOne(widgetId)
-      .then((result) => {
-        $formData.title = result.data.title;
-        result.data.tasks.forEach(
-          (task: { description: string; isCompleted: boolean }) => {
-            console.log(task.description);
-            $formData.tasks = [...$formData.tasks, task.description];
-          },
-        );
-      });
-  }
   let isButtonActive = $state(false);
   $effect(() => {
     validateForm().then((response) => {
@@ -87,7 +67,7 @@
   });
 </script>
 
-<Sheet.Root bind:open {onOpenChange}>
+<Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
       <form method="POST" use:enhance>
@@ -100,18 +80,18 @@
               <Input
                 {...props}
                 bind:value={$formData.title}
-                placeholder="Напишите что-нибудь, предположим, о себе"
+                placeholder="Я хочу..."
                 class="mb-6.75"
               />
             {/snippet}
           </Form.Control>
           <Form.FieldErrors />
         </Form.Field>
-        {#each $formData.tasks as element, index}
+        {#each $formData.tasks as value, index}
           <div class="flex justify-center items-center mb-2">
             <Input
               name="options"
-              bind:value={$formData.tasks[index]}
+              bind:value={value.description}
               placeholder={`Вариант ${index + 1}`}
               class=""
             />
@@ -130,7 +110,10 @@
           class="text-accent-foreground font-bold underline underline-offset-3 decoration-2 flex pb-4"
           onclick={() => {
             if ($formData.tasks.length < 8) {
-              $formData.tasks[$formData.tasks.length] = '';
+              $formData.tasks = [
+                ...$formData.tasks,
+                { description: '', isCompleted: false },
+              ];
             }
           }}
         >
@@ -143,12 +126,10 @@
         <SaveButton
           onClick={() => {
             form.submit();
-            open = false;
-            onOpenChange();
           }}
           {isButtonActive}
         />
-        <SuperDebug data={$formData} />
+        <!--        <SuperDebug data={$formData} />-->
       </form>
     </Sheet.Header>
   </Sheet.Content>

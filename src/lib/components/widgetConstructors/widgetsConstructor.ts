@@ -14,40 +14,18 @@ export interface WidgetWithService {
 
 export async function createWidget(
   formData: Widget['data'],
-  numberOfWidgets: number,
   files: File[] = [],
 ): Promise<void> {
   await pb.collection('widgets').create({
-    user: pb.authStore.model?.id,
-    //telegram_id: pb.authStore.model?.telegram_id,
-    order: numberOfWidgets,
+    user: pb.authStore.record?.id,
+    order: -1,
     files: files,
     data: formData,
   });
 }
 
-export async function updateWidgetsOrder(widgets: WidgetWithService[]) {
-  for (let i = 1; i <= widgets.length; i++) {
-    await pb.collection('widgets').update(widgets[i - 1].widget.id, {
-      order: i,
-    });
-    console.log(widgets[i - 1].widget.id);
-  }
-}
-
 export async function deleteWidget(widgetId: string): Promise<void> {
   await pb.collection('widgets').delete(widgetId);
-  /*
-  widget.deleteStatus = true;
-  const filtered = [];
-  for (let i = 0; i < widgets.length; i++) {
-    if (!widgets[i].deleteStatus) {
-      filtered.push(widgets[i]);
-    }
-  }
-  widgets = filtered;
-  updateWidgetsOrder(widgets);
-  */
 }
 
 export async function updateWidget(

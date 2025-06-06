@@ -3,57 +3,55 @@
   import { Textarea } from '$lib/components/ui/textarea';
   import {
     createWidget,
-    deleteWidget,
     updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
   import * as Form from '$lib/components/ui/form/index.js';
-  import { Input } from '$lib/components/ui/input/index.js';
   import { textSchema } from '$lib/components/editor/schemes/textSheme';
-  import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
+  import { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
-  import { Trash2 } from '@lucide/svelte';
   import { pb } from '$lib';
-  import { invalidate } from '$app/navigation';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
+  import type { Text } from '$lib/widgetTypes/widgetTypes';
   let {
-    nextStage: open = $bindable(),
-    numberOfWidgets,
     widgetId,
+    onClose,
+    open = $bindable(false),
   }: {
-    nextStage: boolean;
-    numberOfWidgets: number;
+    open: boolean;
     widgetId?: string;
+    onClose: CallableFunction;
   } = $props();
-  function onOpenChange() {
-    setTimeout(() => {
-      document.body.style.cssText = '';
-      console.log('Компонент уничтожен');
-      window.Telegram.WebApp.MainButton.show();
-    }, 10);
-  }
 
   const form = superForm(defaults(zod(textSchema)), {
     SPA: true,
     validators: zodClient(textSchema),
-    onSubmit: async ({ formData }) => {
-      formData.set('type', 'text');
-      const formValues = Object.fromEntries(formData);
+    onSubmit: async () => {
+      const widget: Text = {
+        type: 'text',
+        text: $formData.text,
+      };
       if (widgetId != undefined) {
-        await updateWidget(widgetId, formValues);
+        await updateWidget(widgetId, widget);
       } else {
-        await createWidget(formValues, numberOfWidgets + 1);
+        await createWidget(widget);
       }
+      onClose();
     },
   });
 
-  const { form: formData, enhance, validateForm } = form;
+  const { form: formData, enhance, validateForm, reset } = form;
 
-  if (widgetId !== undefined) {
-    pb.collection('widgets')
-      .getOne(widgetId)
-      .then((result) => ($formData.text = result.data.text));
-  }
+  $effect(() => {
+    if (widgetId) {
+      pb.collection('widgets')
+        .getOne(widgetId)
+        .then((result) => ($formData.text = result.data.text));
+    } else {
+      reset();
+    }
+  });
+
   let isButtonActive = $state(false);
   $effect(() => {
     validateForm().then((response) => {
@@ -64,7 +62,7 @@
   });
 </script>
 
-<Sheet.Root bind:open {onOpenChange}>
+<Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
       <form method="POST" use:enhance>
@@ -89,8 +87,6 @@
         <SaveButton
           onClick={() => {
             form.submit();
-            open = false;
-            onOpenChange();
           }}
           {isButtonActive}
         />
