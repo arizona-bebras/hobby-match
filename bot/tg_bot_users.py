@@ -12,10 +12,7 @@ class BotUser:
         self.pb = pb
 
     def add_user_to_db(self):
-        
         try:
-            self.pb.admins.auth_with_password(DB_ADMIN_LOGIN, DB_ADMIN_PASSWORD)
-
             result = self.pb.collection("users").create(self.data)
             print(result)
         except ClientResponseError as e:
@@ -25,15 +22,10 @@ class BotUser:
 
         
     def is_user_in_db(self):
-        self.pb.admins.auth_with_password(DB_ADMIN_LOGIN, DB_ADMIN_PASSWORD)
-        
-        result = self.pb.collection('users').get_list(1, 1, {
-            "filter": f"telegram_id = '{self.data['telegram_id']}'"
-        })
-        
-        if result.total_items > 0:
-            print("Запись найдена:", result.items[0].__dict__)
-            return True
-        else:
+        try:
+          result = self.pb.collection('users').get_first_list_item(f"telegram_id = '{self.data['telegram_id']}'")
+          print("Запись найдена:", result)
+          return True
+        except ClientResponseError:
             print("Запись не найдена")
             return False

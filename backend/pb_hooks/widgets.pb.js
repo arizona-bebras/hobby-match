@@ -4,12 +4,13 @@
 console.log("Loading widget hooks!");
 
 onRecordEnrich((e) => {
-  e.record.withCustomData(true);
-  const currentDate = new Date().getTime();
-  const birthDate = new Date(e.record.getString("birth_date")).getTime();
-  const age = currentDate - birthDate;
-  e.record.set('age', Math.floor(age / 31557600000));
-  console.log(Math.floor(age / 31557600000));
+  if(e.record.getDateTime("birth_date")) {
+    e.record.withCustomData(true);
+    const currentDate = new Date().getTime() / 1000;
+    const birthDate = e.record.getDateTime("birth_date").unix();
+    const age = currentDate - birthDate;
+    e.record.set('age', Math.floor(age / (60 * 60 * 24 * 365)));
+  }
   e.next();
 }, 'users')
 
