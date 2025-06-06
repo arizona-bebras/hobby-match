@@ -10,10 +10,10 @@ server.get('/getPlayerUsername',
     async (request, reply) => {
         const key = request.query.key;
         const id = request.query.id;
-        if (!cache.has('username')) {
-            cache.set('username', await getPlayerUsername(key, id));
+        if (!cache.has(`username-${id}`)) {
+            cache.set(`username-${id}`, await getPlayerUsername(key, id));
         }
-        return { username: cache.get('username') }
+        return { username: cache.get(`username-${id}`) }
     }
 )
 
@@ -22,10 +22,17 @@ server.get('/getOwnedGames',
     async (request, reply) => {
         const key = request.query.key
         const id = request.query.id
-        if (!cache.has('games')) {
-            cache.set('games', await getOwnedGames(key, id));
+        if (!cache.has(`games-${id}`)) {
+            const games = await getOwnedGames(key, id)
+                cache.set(`games-${id}`, games);
+                for (let game of games) {
+                    cache.set(`game-${id}-${game.appid}`, {
+                        game_name: game.name,
+                        hours: Math.floor(game.playtime_forever / 60)
+                    })
+                }
         }
-        return { games: cache.get('games') }
+        return { games: cache.get(`games-${id}`) }
     }
 )
 
@@ -34,17 +41,18 @@ server.get('/getGameHours',
         const key = request.query.key
         const id = request.query.id
         const appid = request.query.appid
-        if (!cache.has('games')) {
-                cache.set('games', await getOwnedGames(key, id));
+        if (!cache.has(`games-${id}`)) {
+                const games = await getOwnedGames(key, id)
+                cache.set(`games-${id}`, games);
+                for (let game of games) {
+                    cache.set(`game-${id}-${game.appid}`, {
+                        game_name: game.name,
+                        hours: Math.floor(game.playtime_forever / 60)
+                    })
+                }
             }
-        let app = cache.get('games').find(game => game.appid == parseInt(appid));
-        if (!cache.has(`game-${app.appid}`)) {
-            cache.set(`game-${app.appid}`, {
-                app_name: app.name,
-                hours: Math.floor(app.playtime_forever / 60)
-            })
-        }
-        return { game: cache.get(`game-${app.appid}`)}
+        console.log(cache)
+        return { game: cache.get(`game-${id}-${appid}`)}
     }
 )
 
@@ -52,10 +60,10 @@ server.get('/getSteamLevel',
     async (request, reply) => {
         const key = request.query.key
         const id = request.query.id
-        if (!cache.has('level')) {
-            cache.set('level', await getSteamLevel(key, id));
+        if (!cache.has(`level-${id}`)) {
+            cache.set(`level-${id}`, await getSteamLevel(key, id));
         }
-        return { level: cache.get('level') }
+        return { level: cache.get(`level-${id}`) }
     }
 )
 
