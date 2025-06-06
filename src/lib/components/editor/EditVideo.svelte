@@ -2,34 +2,23 @@
   import * as Sheet from '$lib/components/ui/sheet/index.js';
   import { Input } from '$lib/components/ui/input';
   let {
-    nextStage: open = $bindable(),
     numberOfWidgets,
     widgetId,
+    onClose,
   }: {
-    nextStage: boolean;
     numberOfWidgets: number;
     widgetId?: string;
+    onClose: CallableFunction;
   } = $props();
   import * as Form from '$lib/components/ui/form/index.js';
 
-  // АААААА), он не уничтожаеться ))))))))
-  // onDestroy(() => {
-  //
-  //   addedWidget = '';
-  //
-  // });
-  import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
+  import { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
-  import {
-    videoSchema,
-    getYouTubeVideoId,
-  } from '$lib/components/editor/schemes/videoSheme';
+  import { videoSchema } from '$lib/components/editor/schemes/videoSheme';
   import {
     createWidget,
-    deleteWidget,
     updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
-  import { Trash2 } from '@lucide/svelte';
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
@@ -40,17 +29,17 @@
     onSubmit: async ({ formData }) => {
       const formValues = {
         type: 'video' as const,
-        platform: getPlatformType(formData.get('link')!),
-        link: formData.get('link'),
+        platform: getPlatformType(formData.get('link') as string)!,
+        link: formData.get('link') as string,
       };
       if (widgetId !== undefined) {
         await updateWidget(widgetId, formValues);
       } else {
         await createWidget(formValues, numberOfWidgets + 1);
       }
+      onClose();
     },
   });
-  let platformType = $state('');
   const { form: formData, enhance, validateForm } = form;
 
   let isButtonActive = $state(false);
@@ -68,29 +57,19 @@
       .then((result) => ($formData.link = result.data.link));
   }
 
-  function getPlatformType(url: FormDataEntryValue): string {
-    const domain = url.match(/https?:\/\/([^/]+)/)[1].toLowerCase();
+  function getPlatformType(url: string) {
+    const domain = url.match(/https?:\/\/([^/]+)/)![1].toLowerCase();
     if (domain.includes('youtube')) {
-      return 'YouTube';
+      return 'YouTube' as const;
     } else if (domain.includes('rutube')) {
-      return 'Rutube';
+      return 'Rutube' as const;
     } else if (domain.includes('tiktok')) {
-      return 'TikTok';
-    } else {
-      return 'Undefined';
+      return 'TikTok' as const;
     }
-  }
-
-  function onOpenChange() {
-    setTimeout(() => {
-      document.body.style.cssText = '';
-      console.log('Компонент уничтожен');
-      window.Telegram.WebApp.MainButton.show();
-    }, 10);
   }
 </script>
 
-<Sheet.Root bind:open {onOpenChange}>
+<Sheet.Root open={true}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
       <form method="POST" use:enhance>
@@ -113,10 +92,7 @@
         {/if}
         <SaveButton
           onClick={() => {
-            platformType = getPlatformType($formData.link);
             form.submit();
-            open = false;
-            onOpenChange();
           }}
           {isButtonActive}
         />

@@ -9,7 +9,10 @@ import os
 
 DB_ADDRESS = os.getenv("DB_ADDRESS")
 BOT_TOKEN = os.getenv('BOT_TOKEN')
+DB_ADMIN_PASSWORD = os.getenv('DB_ADMIN_PASSWORD')
+DB_ADMIN_LOGIN = os.getenv('DB_ADMIN_LOGIN')
 pb = PocketBase(DB_ADDRESS)
+pb.admins.auth_with_password(DB_ADMIN_LOGIN, DB_ADMIN_PASSWORD)
 app_url = os.getenv("APP_URL")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

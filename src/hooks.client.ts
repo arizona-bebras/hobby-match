@@ -1,5 +1,6 @@
 import { pb } from '$lib/index';
 import { browser } from '$app/environment';
+import { goto } from '$app/navigation';
 if (browser) {
   pb.send('/api/collections/users/auth-with-telegram', {
     method: 'POST',
@@ -8,6 +9,19 @@ if (browser) {
     },
   }).then((res) => {
     pb.authStore.save(res.token, res.record);
+    if (
+      !res.record.miniapp_name ||
+      !res.record.gender ||
+      !res.record.birth_date ||
+      !res.record.location ||
+      !res.record.user_info ||
+      !res.record.user_photo ||
+      !res.record.interests
+    ) {
+      goto('/registration');
+    } else {
+      goto('/Profile');
+    }
   });
 }
 /* 

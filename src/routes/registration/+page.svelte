@@ -4,7 +4,8 @@
   import Interests from '$lib/components/registration/Interests.svelte';
   import type { PageProps } from '../../../.svelte-kit/types/src/routes/registration/$types';
   import { pb } from '$lib/index';
-  import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
+  import { onMount } from 'svelte';
+
   let stages: string[][] = [
     ['information', 'Информация'],
     ['photo', 'Фото'],
@@ -13,7 +14,6 @@
   let completedStages: string[] = $state([]);
   let currentStage: string = $state('information');
   window.Telegram.WebApp.MainButton.setParams({
-    has_shine_effect: true,
     is_active: false,
     is_visible: true,
     text: 'Продолжить',
@@ -37,9 +37,21 @@
       completedStages.push(currentStage);
     }
   }
-  $effect(() => {
-    if (pb.authStore.record !== null) {
-      completedStages = ['information', 'photo', 'interests'];
+  onMount(() => {
+    if (
+      pb.authStore.record?.miniapp_name &&
+      pb.authStore.record?.gender &&
+      pb.authStore.record?.birth_date &&
+      pb.authStore.record?.location &&
+      pb.authStore.record?.user_info
+    ) {
+      completedStages.push('information');
+    }
+    if (pb.authStore.record?.user_photo) {
+      completedStages.push('photo');
+    }
+    if (pb.authStore.record?.interests) {
+      completedStages.push('interests');
     }
   });
   $inspect(currentStage);
