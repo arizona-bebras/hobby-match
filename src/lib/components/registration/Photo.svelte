@@ -26,25 +26,32 @@
   const form = superForm(photo, {
     validators: zodClient(photoSchema),
     dataType: 'json',
+    onSubmit: async () => {
+      await pb
+        .collection('users')
+        .update(pb.authStore.record!.id, $formData)
+        .finally(window.Telegram.WebApp.MainButton.hideProgress);
+      nextStage();
+    },
   });
 
   const { form: formData, enhance, validateForm } = form;
 
   const file = fileProxy(form, 'user_photo');
   async function handleTelegramButtonClick() {
-    window.Telegram.WebApp.MainButton.showProgress();
-    await pb
-      .collection('users')
-      .update(pb.authStore.record!.id, $formData)
-      .finally(window.Telegram.WebApp.MainButton.hideProgress);
-    form.submit();
-    nextStage();
+    if (!hasPhoto) {
+      window.Telegram.WebApp.MainButton.showProgress();
+      form.submit();
+    } else {
+      nextStage();
+    }
   }
 
+  let hasPhoto: boolean = $derived(!!pb.authStore.record!.user_photo);
   useTelegramButton(handleTelegramButtonClick);
   $effect(() => {
     validateForm().then((response) => {
-      if (response.valid) {
+      if (response.valid || hasPhoto) {
         window.Telegram.WebApp.MainButton.setParams({
           color: window.Telegram.WebApp.themeParams.button_color,
           is_active: true,
@@ -61,14 +68,6 @@
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     $formData;
   });
-  $effect(() => {
-    $formData.user_photo = pb.files.getURL(
-      pb.authStore.record!,
-      pb.authStore.record!.user_photo,
-    );
-    console.log('EFFECT autofields');
-  });
-  $inspect($formData.user_photo);
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
   });
