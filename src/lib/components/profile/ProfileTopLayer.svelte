@@ -17,7 +17,7 @@
   />
   <div class="container font-[Inter] p-[4px] w-fit">
     <p class="font-extrabold text-[16px] flex items-center">
-      {data.miniapp_name}, 18
+      {data.miniapp_name}, {data.age}
     </p>
     <p class="font-semibold text-[16px]"><span>{data.location}</span></p>
   </div>

@@ -9,10 +9,11 @@ function resolveSteamLink(link) {
   } else if (handle[1] === 'id') {
     const vanity = $http.send({
       method: "GET",
-      url: `https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${$os.getenv("STEAMAPI_KEY")}&vanityurl=${handle[2]}`,
+      url: `${$os.getenv("CACHED_STEAM_API")}/resolveVanityUrl?key=${$os.getenv("STEAM_API_KEY")}&vanityurl=${handle[2]}`,
     });
-    if(!vanity.json?.response['steamid']) return null;
-    return vanity.json.response['steamid']
+    console.log(JSON.stringify(vanity))
+    if(!vanity.json.id) return null;
+    return vanity.json.id
   } else {
     return null;
   }
@@ -21,20 +22,24 @@ function resolveSteamLink(link) {
 module.exports = {
   getUserInfo: (link) => {
     const id = resolveSteamLink(link);
+    console.log(`${$os.getenv("CACHED_STEAM_API")}/getSteamLevel?key=${$os.getenv("STEAM_API_KEY")}&id=${id}`)
     const level = $http.send({
       method: "GET",
-      url: `https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=${$os.getenv("STEAMAPI_KEY")}&steamid=${id}`,
+      url: `${$os.getenv("CACHED_STEAM_API")}/getSteamLevel?key=${$os.getenv("STEAM_API_KEY")}&id=${id}`,
     });
-    if (level.json?.response.player_level === undefined) return null;
+    console.log(JSON.stringify(level))
+    console.log('-------------------------------------')
+    console.log(level.json.level)
+    if (level.json.level === undefined) return null;
     const player = $http.send({
       method: "GET",
-      url: `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${$os.getenv("STEAMAPI_KEY")}&steamids=${id}`,
+      url: `${$os.getenv("CACHED_STEAM_API")}/getPlayerUsername?key=${$os.getenv("STEAM_API_KEY")}&id=${id}`,
     });
-    if (!player.json?.response || !player.json.response.players || player.json.response.players.length !== 1) return null;
+    if (!player.json.username) return null;
 
     return {
-      level: level.json.response.player_level,
-      username: player.json.response.players[0]['personaname'],
+      level: level.json.level,
+      username: player.json.username,
     };
   },
 };
