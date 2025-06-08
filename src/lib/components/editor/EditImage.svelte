@@ -22,8 +22,11 @@
     onClose: CallableFunction;
   } = $props();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let photoFiles: FileList | undefined = $state();
+  $effect(() => {
+    console.log(photoInput, photoFiles);
+  });
+
   let photoInput: HTMLInputElement;
 
   const form = superForm(defaults(zod(imageScheme)), {
@@ -72,7 +75,7 @@
         <p class="text-accent-foreground font-medium pb-4">
           Виджет "Изображения"
         </p>
-        <div class="overflow-auto h-75">
+        <div class="overflow-auto max-h-80">
           {#if widgetId !== undefined}
             {#each imageUrls as url, i}
               <div class="w-full h-auto bg-accent/45 rounded-2xl relative mb-4">
@@ -124,11 +127,12 @@
         <input
           name="files"
           type="file"
-          multiple
           class="hidden"
+          bind:files={photoFiles}
           bind:this={photoInput}
           accept="image/png, image/jpeg"
           oninput={() => {
+            console.log(photoInput.files);
             Array.from(photoInput.files ?? []).forEach(
               (element: File) =>
                 ($formData.files = [...$formData.files, element]),
