@@ -68,7 +68,7 @@
         requestKey: null,
       })
       .then((user) => {
-        selectedInterests = user.expand?.interests;
+        selectedInterests = user.expand?.interests ?? [];
         $formData.interests = selectedInterests.map((i) => i.id);
       });
   });
