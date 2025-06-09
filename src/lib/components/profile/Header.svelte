@@ -1,22 +1,35 @@
 <script lang="ts">
   import ProfileTopLayer from '$lib/components/profile/ProfileTopLayer.svelte';
   import { pb } from '$lib';
-  import InterestsWidget from '$lib/components/widgets/InterestsWidget.svelte';
-  let {
-    height,
-    data,
-    changeMode,
-  }: { height: number; data: any; changeMode: boolean } = $props();
+  import { scrollY } from 'svelte/reactivity/window';
+  let { data, changeMode }: { data: any; changeMode: boolean } = $props();
+
+  let image: HTMLImageElement | undefined = $state();
+  let width = $derived(image?.width ?? 300);
+  let height = $derived(
+    Math.max(width - 100, width - (scrollY.current ?? 0) * 0.5),
+  );
+  let topLayer: boolean = $derived((scrollY.current ?? 0) > height);
+  let topLayerContainer: HTMLDivElement | undefined = $state();
 </script>
 
-{#if height - 90 <= 210 || changeMode}
-  <ProfileTopLayer {data} fixed={!changeMode} />
-{/if}
-{#if !changeMode}
-  <img
-    src={pb.files.getURL(pb.authStore.record ?? {}, data.user_photo)}
-    alt="person"
-    class="w-full h-95 rounded-b-[24px] object-cover"
-    style="height: {height}px"
+{#if topLayer || changeMode}
+  <ProfileTopLayer
+    {data}
+    shadow={!changeMode}
+    bind:container={topLayerContainer}
   />
 {/if}
+{#if changeMode}
+  <div
+    class="transition-[height] duration-500"
+    style="height: {changeMode ? topLayerContainer?.clientHeight : 0}px"
+  ></div>
+{/if}
+<img
+  src={pb.files.getURL(pb.authStore.record ?? {}, data.user_photo)}
+  alt="person"
+  class="w-full rounded-b-3xl object-cover transition-[height]"
+  style="height: {!changeMode ? height : 0}px"
+  bind:this={image}
+/>

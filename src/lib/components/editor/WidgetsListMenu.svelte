@@ -39,5 +39,4 @@
       {/each}
     </Dialog.Header>
   </Dialog.Content>
-  <Dialog.Close />
 </Dialog.Root>

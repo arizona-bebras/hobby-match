@@ -5,7 +5,7 @@
   let isOpen = $state(false);
 </script>
 
-<div class="w-full p-[10px] transition-all relative" class:h-fit={isOpen}>
+<div class="w-full py-2 transition-all relative" class:h-fit={isOpen}>
   <div
     class={cn(
       'flex flex-row w-fit gap-[8px] flex-wrap transition-all overflow-hidden',

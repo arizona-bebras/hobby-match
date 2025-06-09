@@ -39,7 +39,7 @@
 
   const file = fileProxy(form, 'user_photo');
   async function handleTelegramButtonClick() {
-    if (!hasPhoto) {
+    if (!hasPhoto || formValid) {
       window.Telegram.WebApp.MainButton.showProgress();
       form.submit();
     } else {
@@ -48,9 +48,11 @@
   }
 
   let hasPhoto: boolean = $derived(!!pb.authStore.record!.user_photo);
+  let formValid: boolean = $state(false);
   useTelegramButton(handleTelegramButtonClick);
   $effect(() => {
     validateForm().then((response) => {
+      formValid = response.valid;
       if (response.valid || hasPhoto) {
         window.Telegram.WebApp.MainButton.setParams({
           color: window.Telegram.WebApp.themeParams.button_color,
@@ -70,6 +72,19 @@
   });
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
+  });
+  let previewSrc = $derived.by(() => {
+    if (!hasPhoto || formValid) {
+      if (!$formData.user_photo) return null;
+      return typeof $formData.user_photo === 'string'
+        ? $formData.user_photo
+        : URL.createObjectURL($formData.user_photo);
+    } else {
+      return pb.files.getURL(
+        pb.authStore.record ?? {},
+        pb.authStore.record?.user_photo,
+      );
+    }
   });
 </script>
 
@@ -97,10 +112,18 @@
     />
     <p class="self-center">или</p>
     <button
+      type="button"
       onclick={() => ($formData.user_photo = tgImage ?? '')}
       class="w-full h-12 bg-accent rounded-xl text-white font-medium"
       >Взять текущую фотографию из Telegram</button
     >
+    {#if previewSrc}
+      <img
+        src={previewSrc}
+        class="rounded-3xl object-cover aspect-square my-2"
+        alt="аватарка"
+      />
+    {/if}
   </div>
 </form>
 <SuperDebug data={$formData} />

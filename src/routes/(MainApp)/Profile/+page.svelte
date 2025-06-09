@@ -1,15 +1,5 @@
 <script lang="ts">
-  import { pb } from '$lib/index';
   import { Plus } from '@lucide/svelte';
-  import GameWidget from '$lib/components/widgets/GameWidget.svelte';
-  import VideoWidget from '$lib/components/widgets/VideoWidget.svelte';
-  import TextWidget from '$lib/components/widgets/TextWidget.svelte';
-  import SocialWidget from '$lib/components/widgets/SocialWidget.svelte';
-  import ProgressWidget from '$lib/components/widgets/ProgressWidget.svelte';
-  import ToDoWidget from '$lib/components/widgets/ToDoWidget.svelte';
-  import SurveyWidget from '$lib/components/widgets/SurveyWidget.svelte';
-  import PhotoWidget from '$lib/components/widgets/PhotoWidget.svelte';
-  import TgPostWidget from '$lib/components/widgets/TgPostWidget.svelte';
   import EditTgPost from '$lib/components/editor/EditTgPost.svelte';
   import EditSurvey from '$lib/components/editor/EditSurvey.svelte';
   import EditText from '$lib/components/editor/EditText.svelte';
@@ -17,17 +7,13 @@
   import type { WidgetType } from '$lib/widgetTypes/widgetTypes';
   import Edit from '$lib/components/editor/Edit.svelte';
   import WidgetsListMenu from '$lib/components/editor/WidgetsListMenu.svelte';
-  import { scrollY } from 'svelte/reactivity/window';
   import EditImage from '$lib/components/editor/EditImage.svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
   import EditSocial from '$lib/components/editor/EditSocial.svelte';
   import EditToDo from '$lib/components/editor/EditToDo.svelte';
   import EditProgress from '$lib/components/editor/EditProgress.svelte';
-  import AudioWidget from '$lib/components/widgets/AudioWidget.svelte';
   import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
-  import ProfileTopLayer from '$lib/components/profile/ProfileTopLayer.svelte';
   import EditAudio from '$lib/components/editor/EditAudio.svelte';
-  import InterestsWidget from '$lib/components/widgets/InterestsWidget.svelte';
   import EditSteamGame from '$lib/components/editor/EditSteamGame.svelte';
   import Header from '$lib/components/profile/Header.svelte';
   import UserInfo from '$lib/components/profile/UserInfo.svelte';
@@ -42,7 +28,7 @@
 
   $effect(() => {
     window.Telegram.WebApp.MainButton.setText(
-      changeMode ? 'Сохранить' : 'Изменить анкету',
+      changeMode ? 'Сохранить' : 'Изменить виджеты',
     );
   });
 
@@ -59,8 +45,6 @@
     };
   });
 
-  let height = $derived(Math.max(300, 380 - (scrollY.current ?? 0) * 0.5));
-
   let { data }: { data: PageData } = $props();
   console.log(data);
   let widgets: WidgetWithService[] = $state(data.widgets);
@@ -75,8 +59,8 @@
   }
 </script>
 
-<Header {height} {data} {changeMode} />
-<div class="font-[Inter] p-4 w-full max-w-full relative">
+<Header {data} {changeMode} />
+<div class="font-[Inter] px-4 w-full max-w-full relative">
   <UserInfo {data} {changeMode} />
 
   {#if changeMode}

@@ -107,7 +107,7 @@
     @apply flex bg-accent/25 p-[10px] rounded-[12px] border-solid border-[#7c7c7c] mb-[8px] w-full;
   }
   .TextBox{
-    @apply border-l-[2px] border-accent w-[100%] mb-[8px] pl-2;
+    @apply border-l-[2px] border-accent w-[100%] pl-2;
   }
   .ToDoBox{
     @apply border-2 border-accent rounded-xl p-4 mb-[8px] flex flex-col;

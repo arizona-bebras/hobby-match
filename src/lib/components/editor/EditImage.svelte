@@ -61,6 +61,7 @@
   let isButtonActive = $state(false);
   $effect(() => {
     validateForm().then((response) => {
+      console.log(response);
       isButtonActive = response.valid;
     });
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
