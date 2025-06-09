@@ -3,7 +3,6 @@
   import { Textarea } from '$lib/components/ui/textarea';
   import {
     createWidget,
-    deleteWidget,
     updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
   import * as Form from '$lib/components/ui/form/index.js';
@@ -12,41 +11,25 @@
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
   import * as Select from '$lib/components/ui/select/index.js';
   import { gameScheme } from '$lib/components/editor/schemes/gameScheme';
-  import { Trash2 } from '@lucide/svelte';
   import { pb } from '$lib';
-  import { invalidate } from '$app/navigation';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
-  let testGames = [
-    {
-      appid: 10,
-      name: 'Counter-Strike',
-      playtime_forever: 21563,
-      img_icon_url:
-        'https://media.steampowered.com/steamcommunity/public/images/apps/10/6b0312cda02f5f777efa2f3318c307ff9acafbb5.jpg',
-    },
-    {
-      appid: 80,
-      name: 'Counter-Strike: Condition Zero',
-      playtime_forever: 0,
-      img_icon_url:
-        'https://media.steampowered.com/steamcommunity/public/images/apps/80/077b050ef3e89cd84e2c5a575d78d53b54058236.jpg',
-    },
-  ];
-  type Game = {
-    appid: string;
-    name: string;
-    playtime_forever: string;
+  import type { SteamGame } from '$lib/widgetTypes/widgetTypes';
+  interface steamGames {
+    appid: number;
     img_icon_url: string;
-  };
+    name: string;
+    playtime_forever: number;
+    [key: string]: any;
+  }
   let {
-    nextStage: open = $bindable(),
-    numberOfWidgets,
     widgetId,
+    onClose,
+    open = $bindable(false),
   }: {
-    nextStage: boolean;
-    numberOfWidgets: number;
+    open: boolean;
     widgetId?: string;
+    onClose: CallableFunction;
   } = $props();
   function onOpenChange() {
     setTimeout(() => {
@@ -59,26 +42,38 @@
   const form = superForm(defaults(zod(gameScheme)), {
     SPA: true,
     validators: zodClient(gameScheme),
-    onSubmit: async ({ formData }) => {
-      formData.set('type', 'steam_game');
-      const formValues = Object.fromEntries(formData);
-      console.log(formValues);
-      if (widgetId != undefined) {
-        await updateWidget(widgetId, formValues);
+    onSubmit: async () => {
+      const widget: SteamGame = {
+        type: 'steam_game',
+        accountLink: $formData.accountLink,
+        gameId: $formData.gameId,
+      };
+      if (widgetId) {
+        await updateWidget(widgetId, widget);
       } else {
-        await createWidget(formValues, numberOfWidgets + 1);
+        await createWidget(widget);
       }
     },
   });
 
-  const { form: formData, enhance, validateForm } = form;
+  const { form: formData, enhance, validateForm, reset, validate } = form;
 
-  if (widgetId !== undefined) {
-    pb.collection('widgets')
-      .getOne(widgetId)
-      .then((result) => ($formData.text = result.data.text));
-  }
+  $effect(() => {
+    if (widgetId) {
+      pb.collection('widgets')
+        .getOne(widgetId)
+        .then((result) => {
+          $formData.accountLink = result.data.accountLink;
+          $formData.gameId = result.data.gameId;
+        });
+    } else {
+      reset();
+    }
+  });
   let isButtonActive = $state(false);
+  let isSteamUrlCorrect = $state(false);
+  let userSteamUrl = $state('');
+
   $effect(() => {
     validateForm().then((response) => {
       isButtonActive = response.valid;
@@ -86,14 +81,44 @@
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     $formData;
   });
-  let steamGames: Game[] = $state([]);
-  async function getUserGames() {
-    const games = await fetch(
-      '/api/steam?link=https%3A%2F%2Fsteamcommunity.com%2Fid%2Fxrystikonelove%2F',
-    );
-    return await games.json();
-  }
+  $inspect($formData.accountLink);
 
+  $effect(() => {
+    $formData.accountLink = userSteamUrl;
+    validate('accountLink', { update: false }).then((responce) => {
+      isSteamUrlCorrect = responce === undefined;
+    });
+  });
+
+  $effect(() => {
+    if (isSteamUrlCorrect && !widgetId) {
+      console.log('Запрос отправлен');
+      getUserGames(userSteamUrl);
+    }
+  });
+
+  let steamGames: steamGames[] = $state([]);
+  async function getUserGames(accountLink: string) {
+    const steamRegex =
+      /^(?:https:\/\/)?steamcommunity\.com\/((?:id)|(?:profiles))\/(\w+)/gm;
+    const match = steamRegex.exec(accountLink);
+    let steamID = match![2];
+
+    if (match![1] === 'profiles') {
+      console.log('Выполнение поиска по profile');
+      steamID = match![2];
+    } else if (match![1] === 'id') {
+      console.log('Выполнение поиска по id');
+      let result = await pb.send(`/steam/vanityurl?vanityurl=${steamID}`, {});
+      steamID = result.response.id;
+      console.log(steamID);
+    }
+
+    console.log('Полученный steamID:', steamID);
+    const games = await pb.send(`/steam/games?id=${steamID}`, {});
+    steamGames = games.response.games;
+    console.log(steamGames);
+  }
   // $effect(() => {
   //   if (isButtonActive) {
   //     getUserGames().then((result) => {
@@ -104,7 +129,7 @@
   // });
 </script>
 
-<Sheet.Root bind:open {onOpenChange}>
+<Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
       <form method="POST" use:enhance>
@@ -117,43 +142,47 @@
             {#snippet children({ props })}
               <Input
                 {...props}
-                bind:value={$formData.accountLink}
-                placeholder="https://steamcommunity.com/id/..."
+                bind:value={userSteamUrl}
+                placeholder="https://steamcommunity.com/..."
                 class="mb-6.75"
               />
             {/snippet}
           </Form.Control>
           <Form.FieldErrors />
         </Form.Field>
-        {#if isButtonActive}
+        {#if isSteamUrlCorrect}
           <Select.Root
             type="single"
             bind:value={$formData.gameId}
             name="gameId"
           >
             <Select.Trigger class="w-fit mb-9"
-              >{testGames.length >= 1
-                ? testGames.find(
+              >{steamGames.length >= 1
+                ? steamGames.find(
                     (game) => game.appid === parseInt($formData.gameId),
                   )?.name || 'Выберите игру'
                 : '2'}</Select.Trigger
             >
             <Select.Content class="h-[50vh]">
-              {#each testGames as game}
+              {#each steamGames as game}
                 <div class="flex">
-                  <img src={game.img_icon_url} />
+                  <img
+                    src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`}
+                  />
                   <Select.Item value={game.appid.toString()}
                     >{game.name}</Select.Item
                   >
                 </div>
               {/each}
-              <Select.Item value="light">Light</Select.Item>
-              <Select.Item value="dark">Dark</Select.Item>
-              <Select.Item value="system">System</Select.Item>
+              <!--              <Select.Item value="light">Light</Select.Item>-->
+              <!--              <Select.Item value="dark">Dark</Select.Item>-->
+              <!--              <Select.Item value="system">System</Select.Item>-->
             </Select.Content>
           </Select.Root>
         {/if}
-
+        {#if widgetId !== undefined}
+          <DeleteButton {widgetId} />
+        {/if}
         <SaveButton
           onClick={() => {
             form.submit();

@@ -86,6 +86,14 @@ onRecordEnrich((e) => {
           myVote
         })
         break;
+    // case 'steam_game':
+    //   e.record.set("additionalData", {
+    //     type: 'steam_game',
+    //     icon:
+    //     title:
+    //     hours_played:
+    //   })
+    //   break;
   }
 
   console.log(JSON.stringify(e.record));

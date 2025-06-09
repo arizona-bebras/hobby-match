@@ -28,6 +28,7 @@
   import ProfileTopLayer from '$lib/components/profile/ProfileTopLayer.svelte';
   import EditAudio from '$lib/components/editor/EditAudio.svelte';
   import InterestsWidget from '$lib/components/widgets/InterestsWidget.svelte';
+  import EditSteamGame from '$lib/components/editor/EditSteamGame.svelte';
 
   let changeMode = $state(false);
 
@@ -154,7 +155,11 @@
     onClose={onEditClose}
     widgetId={addedWidget === 'audio' ? editingWidget : undefined}
   />
-
+  <EditSteamGame
+    open={addedWidget === 'steam_game'}
+    onClose={onEditClose}
+    widgetId={addedWidget === 'steam_game' ? editingWidget : undefined}
+  />
   {#each widgets as { widget }, i (widget.id)}
     <div class="relative mb-2">
       {#if changeMode}

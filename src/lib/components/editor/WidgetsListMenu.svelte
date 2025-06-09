@@ -21,6 +21,7 @@
   } as const;
 </script>
 
+<!--if (!state) onClick()-->
 <Dialog.Root bind:open onOpenChange={(state) => !state && onClick()}>
   <Dialog.Content>
     <Dialog.Header>
