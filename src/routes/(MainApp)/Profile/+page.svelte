@@ -29,6 +29,10 @@
   import EditAudio from '$lib/components/editor/EditAudio.svelte';
   import InterestsWidget from '$lib/components/widgets/InterestsWidget.svelte';
   import EditSteamGame from '$lib/components/editor/EditSteamGame.svelte';
+  import Header from '$lib/components/profile/Header.svelte';
+  import UserInfo from '$lib/components/profile/UserInfo.svelte';
+  import RenderWidget from '$lib/components/profile/RenderWidget.svelte';
+  import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
 
   let changeMode = $state(false);
 
@@ -57,13 +61,13 @@
 
   let height = $derived(Math.max(300, 380 - (scrollY.current ?? 0) * 0.5));
 
-  let { data } = $props();
+  let { data }: { data: PageData } = $props();
+  console.log(data);
   let widgets: WidgetWithService[] = $state(data.widgets);
 
   $effect(() => {
     widgets = data.widgets;
   });
-  console.log(widgets);
 
   function onEditClose() {
     addedWidget = undefined;
@@ -71,26 +75,9 @@
   }
 </script>
 
-{#if height - 90 <= 210 || changeMode}
-  <ProfileTopLayer {data} fixed={!changeMode} />
-{/if}
-{#if !changeMode}
-  <img
-    src={pb.files.getURL(pb.authStore.record ?? {}, data.user_photo)}
-    alt="person"
-    class="w-full h-95 rounded-b-[24px] object-cover"
-    style="height: {height}px"
-  />
-{/if}
-
+<Header {height} {data} {changeMode} />
 <div class="font-[Inter] p-4 w-full max-w-full relative">
-  {#if !changeMode}
-    <p class="font-extrabold text-[32px] flex items-center">
-      {data.miniapp_name}, {data.age}
-    </p>
-    <p class="font-semibold text-[20px]"><span>{data.location}</span></p>
-    <InterestsWidget interests={data.interests.expand?.interests} />
-  {/if}
+  <UserInfo {data} {changeMode} />
 
   {#if changeMode}
     <button
@@ -177,34 +164,36 @@
           }}
         />
       {/if}
-      {#if widget.data.type === 'text'}
-        <TextWidget data={widget.data} />
-      {:else if widget.data.type === 'audio'}
-        <AudioWidget data={widget.data} />
-      {:else if widget.data.type === 'steam_game'}
-        <GameWidget data={widget.data} />
-      {:else if widget.data.type === 'video'}
-        <VideoWidget data={widget.data} />
-      {:else if widget.data.type === 'social_media' && widget.additionalData?.type !== 'photo' && widget.additionalData?.type !== 'survey' && widget.additionalData?.type !== undefined}
-        <SocialWidget
-          data={widget.data}
-          socialMediaData={widget.additionalData}
-        />
-      {:else if widget.data.type === 'progress_bar'}
-        <ProgressWidget data={widget.data} />
-      {:else if widget.data.type === 'todo'}
-        <ToDoWidget data={widget.data} widgetId={widget.id} />
-      {:else if widget.data.type === 'survey' && widget.additionalData?.type === 'survey'}
-        <SurveyWidget
-          data={widget.data}
-          id={widget.id}
-          survey={widget.additionalData}
-        />
-      {:else if widget.data.type === 'photo' && widget.additionalData?.type === 'photo'}
-        <PhotoWidget additionalData={widget.additionalData} />
-      {:else if widget.data.type === 'post'}
-        <TgPostWidget data={widget.data} />
-      {/if}
+      <RenderWidget {widget} />
+      <!--      -->
+      <!--      {#if widget.data.type === 'text'}-->
+      <!--        <TextWidget data={widget.data} />-->
+      <!--      {:else if widget.data.type === 'audio'}-->
+      <!--        <AudioWidget data={widget.data} />-->
+      <!--      {:else if widget.data.type === 'steam_game'}-->
+      <!--        <GameWidget data={widget.data} />-->
+      <!--      {:else if widget.data.type === 'video'}-->
+      <!--        <VideoWidget data={widget.data} />-->
+      <!--      {:else if widget.data.type === 'social_media' && widget.additionalData?.type !== 'photo' && widget.additionalData?.type !== 'survey' && widget.additionalData?.type !== undefined}-->
+      <!--        <SocialWidget-->
+      <!--          data={widget.data}-->
+      <!--          socialMediaData={widget.additionalData}-->
+      <!--        />-->
+      <!--      {:else if widget.data.type === 'progress_bar'}-->
+      <!--        <ProgressWidget data={widget.data} />-->
+      <!--      {:else if widget.data.type === 'todo'}-->
+      <!--        <ToDoWidget data={widget.data} widgetId={widget.id} />-->
+      <!--      {:else if widget.data.type === 'survey' && widget.additionalData?.type === 'survey'}-->
+      <!--        <SurveyWidget-->
+      <!--          data={widget.data}-->
+      <!--          id={widget.id}-->
+      <!--          survey={widget.additionalData}-->
+      <!--        />-->
+      <!--      {:else if widget.data.type === 'photo' && widget.additionalData?.type === 'photo'}-->
+      <!--        <PhotoWidget additionalData={widget.additionalData} />-->
+      <!--      {:else if widget.data.type === 'post'}-->
+      <!--        <TgPostWidget data={widget.data} />-->
+      <!--      {/if}-->
     </div>
   {/each}
 </div>

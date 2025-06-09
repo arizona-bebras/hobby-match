@@ -1,6 +1,7 @@
 import { pb } from '$lib';
 import type { PageLoad } from './$types';
 import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
+import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
 
 export const load: PageLoad = async ({ data, depends }) => {
   depends('user:widgets');
@@ -22,7 +23,7 @@ export const load: PageLoad = async ({ data, depends }) => {
       changeStatus: false,
       additionalData: {},
     }));
-    return {
+    const pageData: PageData = {
       user_photo: pb.authStore.record!.user_photo,
       miniapp_name: pb.authStore.record!.miniapp_name,
       age: pb.authStore.record!.age,
@@ -35,6 +36,7 @@ export const load: PageLoad = async ({ data, depends }) => {
       widgets: structuredClone(widgets),
       textForm,
     };
+    return pageData;
   }
   throw new Error('Data validation error');
 };
