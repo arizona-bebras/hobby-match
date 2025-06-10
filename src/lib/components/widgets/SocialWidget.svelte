@@ -76,6 +76,8 @@
           {socialMediaData.title}
         {:else if socialMediaData.type === 'Steam'}
           {socialMediaData.username}
+        {:else if socialMediaData.type === 'VK'}
+          {socialMediaData.name}
         {:else}
           dev
         {/if}

@@ -48,8 +48,8 @@ onRecordEnrich((e) => {
         case 'VK':
           e.record.set("additionalData", {
             type: data.platform,
-            followers: 1337,
-            // ...require(`${__hooks}/platforms/vk.js`).getUserInfo(data.link)
+            // followers: 1337,
+            ...require(`${__hooks}/platforms/vk.js`).getUserInfo(data.link)
           });
           break;
         case 'X':
