@@ -1,9 +1,8 @@
 <script lang="ts">
   import InterestsWidget from '$lib/components/widgets/InterestsWidget.svelte';
-  import TextWidget from '$lib/components/widgets/TextWidget.svelte';
-  import type { Text } from '$lib/widgetTypes/widgetTypes';
   import { pb } from '$lib';
-  let { data, changeMode }: { data: any; changeMode: boolean } = $props();
+  import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
+  let { data, changeMode }: { data: PageData; changeMode: boolean } = $props();
   // let userDescription: Text = {
   //   type: 'text',
   //   text: pb.authStore.record!.user_info,

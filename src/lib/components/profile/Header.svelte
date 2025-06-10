@@ -2,7 +2,8 @@
   import ProfileTopLayer from '$lib/components/profile/ProfileTopLayer.svelte';
   import { pb } from '$lib';
   import { scrollY } from 'svelte/reactivity/window';
-  let { data, changeMode }: { data: any; changeMode: boolean } = $props();
+  import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
+  let { data, changeMode }: { data: PageData; changeMode: boolean } = $props();
 
   let image: HTMLImageElement | undefined = $state();
   let width = $derived(image?.width ?? 300);
