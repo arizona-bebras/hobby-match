@@ -148,16 +148,10 @@ onRecordUpdate((e) => {
   }
   e.next()
 
-  let userRecords = $app.unsafeWithoutHooks().findRecordsByFilter('widgets',
-    'user = {:user}', 'order', 0, 0, {
-      "user": e.record.getString("user")
-    });
-
-  for (let i = 0; i < userRecords.length; i++) {
-    let record = userRecords[i];
-    if (record.getInt("order") !== i) {
-      record.set("order", i);
-      $app.unsafeWithoutHooks().save(record);
-    }
-  }
+  require(`${__hooks}/widgets.js`).reorder(e.record.getString('user'));
 }, 'widgets')
+
+onRecordCreate((e) => {
+  e.next();
+  require(`${__hooks}/widgets.js`).reorder(e.record.getString('user'));
+}, 'widgets');
