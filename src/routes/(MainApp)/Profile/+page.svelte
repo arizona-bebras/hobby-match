@@ -44,7 +44,6 @@
       window.Telegram.WebApp.MainButton.hide();
     };
   });
-
   let { data }: { data: PageData } = $props();
   console.log(data);
   let widgets: WidgetWithService[] = $state(data.widgets);

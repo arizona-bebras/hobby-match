@@ -19,7 +19,7 @@
 {:else if widget.data.type === 'audio'}
   <AudioWidget data={widget.data} />
 {:else if widget.data.type === 'steam_game'}
-  <GameWidget data={widget.data} />
+  <GameWidget data={widget.additionalData} />
 {:else if widget.data.type === 'video'}
   <VideoWidget data={widget.data} />
 {:else if widget.data.type === 'social_media' && widget.additionalData?.type !== 'photo' && widget.additionalData?.type !== 'survey' && widget.additionalData?.type !== undefined}

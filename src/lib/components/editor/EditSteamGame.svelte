@@ -168,6 +168,7 @@
                 <div class="flex">
                   <img
                     src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`}
+                    alt="image"
                   />
                   <Select.Item value={game.appid.toString()}
                     >{game.name}</Select.Item

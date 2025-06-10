@@ -14,7 +14,7 @@ export type Widget = {
     | Survey
     | Text
     | Post;
-  additionalData?: SocialMediaData | PhotoData | SurveyData;
+  additionalData?: SocialMediaData | PhotoData | SurveyData | SteamGameData;
 };
 
 export type WidgetType = Widget['data']['type'];
@@ -100,6 +100,13 @@ export type SteamGame = {
   type: 'steam_game';
   gameId: string;
   accountLink: string;
+};
+
+export type SteamGameData = {
+  type: 'steam_game';
+  hours_played: number;
+  icon: string;
+  title: string;
 };
 
 export type Sticker = {
