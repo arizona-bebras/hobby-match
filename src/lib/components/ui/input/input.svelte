@@ -48,5 +48,6 @@
     {type}
     bind:value
     {...restProps}
+    autocomplete="off"
   />
 {/if}
