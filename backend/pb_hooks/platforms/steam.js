@@ -49,7 +49,7 @@ module.exports = {
     console.log(JSON.stringify(gameData));
     if (!gameData.json?.game?.game_name) return null;
     return {
-      icon: `https://media.steampowered.com/steamcommunity/public/images/apps/${appid}/${gameData.json.img_icon_url}.jpg`,
+      icon: `https://media.steampowered.com/steamcommunity/public/images/apps/${appid}/${gameData.json.game.icon}.jpg`,
       title: gameData.json.game.game_name,
       hours_played: gameData.json.game.hours,
     }

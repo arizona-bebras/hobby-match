@@ -30,6 +30,7 @@ server.get('/getOwnedGames', async (request, reply) => {
       cache.set(`game-${id}-${game.appid}`, {
         game_name: game.name,
         hours: Math.floor(game.playtime_forever / 60),
+        icon: game.img_icon_url
       });
     }
   }
@@ -47,6 +48,7 @@ server.get('/getGameHours', async (request, reply) => {
       cache.set(`game-${id}-${game.appid}`, {
         game_name: game.name,
         hours: Math.floor(game.playtime_forever / 60),
+        icon: game.img_icon_url
       });
     }
   }
