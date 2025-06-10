@@ -23,6 +23,7 @@ export async function createWidget(
     files: files,
     data: formData,
   });
+  await invalidate('user:widgets');
 }
 
 export async function deleteWidget(widgetId: string): Promise<void> {
