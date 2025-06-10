@@ -15,8 +15,12 @@
 	},
 	"vectorize": [
 		{
-			"binding": "VECTORIZE",
+			"binding": "TAGS_VEC",
 			"index_name": "shumi-tags"
+		},
+		{
+			"binding": "PROFILES_VEC",
+			"index_name": "shumi-profiles"
 		}
 	]
 	/**

@@ -4,16 +4,16 @@
 	"private": true,
 	"scripts": {
 		"deploy": "wrangler deploy",
-		"dev": "wrangler dev",
+		"dev": "wrangler dev --experimental-vectorize-bind-to-prod",
 		"start": "wrangler dev",
 		"test": "vitest",
 		"cf-typegen": "wrangler types"
 	},
 	"devDependencies": {
-		"@cloudflare/vitest-pool-workers": "^0.8.19",
-		"typescript": "^5.5.2",
-		"vitest": "~3.0.7",
-		"wrangler": "^4.16.1"
+		"@cloudflare/vitest-pool-workers": "^0.8.36",
+		"typescript": "^5.8.3",
+		"vitest": "~3.2.3",
+		"wrangler": "^4.19.1"
 	},
 	"dependencies": {
 		"itty-router": "^5.0.18"

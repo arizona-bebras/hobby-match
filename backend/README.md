@@ -36,3 +36,11 @@ const result = await pb.send('/worker/autocomplete', {
   }
 }
 ```
+
+- `/worker/feed`:
+```typescript
+const result = await pb.send('/worker/feed', {
+  method: 'GET',
+});
+```
+не нужны параметры, возвращает несколько анкет со всеми данными

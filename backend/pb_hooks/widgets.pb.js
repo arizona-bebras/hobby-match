@@ -87,8 +87,6 @@ onRecordEnrich((e) => {
         })
         break;
     case 'steam_game':
-      console.log('UPLOADING GAME DATA')
-      console.log(require(`${__hooks}/platforms/steam.js`).getGameInfo(data.accountLink, data.gameId))
       e.record.set("additionalData", {
         type: 'steam_game',
         ...require(`${__hooks}/platforms/steam.js`).getGameInfo(data.accountLink, data.gameId)
@@ -96,13 +94,10 @@ onRecordEnrich((e) => {
       break;
   }
 
-  console.log(JSON.stringify(e.record));
-
   e.next();
 }, 'widgets');
 
 onRecordUpdate((e) => {
-  console.log(JSON.stringify(e, undefined, 2));
   const url = e.record.getString('user_photo')
   if (!url.startsWith('http')) return e.next();
 
@@ -120,7 +115,6 @@ onRecordUpdate((e) => {
   };
 
   const mime = res.headers['Content-Type'];
-  console.log(mime);
   if(!(mime in formats)) return null;
 
   const file = $filesystem.fileFromBytes(res.body, `avatar.${formats[mime]}`);
@@ -140,7 +134,6 @@ onRecordUpdate((e) => {
         "id": e.record.getInt("id"),
       });
 
-    console.log("conflict", oldOrder, e.record.getInt('order'), JSON.stringify(conflict, null, 2));
     if (conflict) {
       conflict.set("order", oldOrder);
       $app.unsafeWithoutHooks().save(conflict);

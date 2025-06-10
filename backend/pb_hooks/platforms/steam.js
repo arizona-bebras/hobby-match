@@ -11,7 +11,6 @@ function resolveSteamLink(link) {
       method: "GET",
       url: `${$os.getenv("CACHED_STEAM_API")}/resolveVanityUrl?key=${$os.getenv("STEAM_API_KEY")}&vanityurl=${handle[2]}`,
     });
-    console.log(JSON.stringify(vanity))
     if(!vanity.json.id) return null;
     return vanity.json.id
   } else {
@@ -22,7 +21,6 @@ function resolveSteamLink(link) {
 module.exports = {
   getUserInfo: (link) => {
     const id = resolveSteamLink(link);
-    console.log(`${$os.getenv("CACHED_STEAM_API")}/getSteamLevel?key=${$os.getenv("STEAM_API_KEY")}&id=${id}`)
     const level = $http.send({
       method: "GET",
       url: `${$os.getenv("CACHED_STEAM_API")}/getSteamLevel?key=${$os.getenv("STEAM_API_KEY")}&id=${id}`,
@@ -45,8 +43,6 @@ module.exports = {
       method: "GET",
       url: `${$os.getenv("CACHED_STEAM_API")}/getGameHours?key=${$os.getenv("STEAM_API_KEY")}&id=${id}&appid=${appid}`,
     })
-    console.log('-------------------------------------')
-    console.log(JSON.stringify(gameData));
     if (!gameData.json?.game?.game_name) return null;
     return {
       icon: `https://media.steampowered.com/steamcommunity/public/images/apps/${appid}/${gameData.json.game.icon}.jpg`,
