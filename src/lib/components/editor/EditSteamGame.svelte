@@ -53,20 +53,24 @@
       } else {
         await createWidget(widget);
       }
+      onClose();
     },
   });
 
   const { form: formData, enhance, validateForm, reset, validate } = form;
 
   $effect(() => {
+    console.log('Сработало');
     if (widgetId) {
       pb.collection('widgets')
         .getOne(widgetId)
         .then((result) => {
-          $formData.accountLink = result.data.accountLink;
+          console.log(result.data.accountLink);
+          userSteamUrl = result.data.accountLink;
           $formData.gameId = result.data.gameId;
         });
     } else {
+      console.log('Сработал RESET');
       reset();
     }
   });
@@ -81,17 +85,22 @@
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     $formData;
   });
-  $inspect($formData.accountLink);
 
   $effect(() => {
     $formData.accountLink = userSteamUrl;
     validate('accountLink', { update: false }).then((responce) => {
+      console.log('Проверка валидации!');
       isSteamUrlCorrect = responce === undefined;
+      console.log(isSteamUrlCorrect);
     });
   });
 
   $effect(() => {
-    if (isSteamUrlCorrect && !widgetId) {
+    console.log(
+      'Попытка отправить запрос на получении игр пользователя',
+      isSteamUrlCorrect,
+    );
+    if (isSteamUrlCorrect && open) {
       console.log('Запрос отправлен');
       getUserGames(userSteamUrl);
     }
@@ -99,6 +108,7 @@
 
   let steamGames: steamGames[] = $state([]);
   async function getUserGames(accountLink: string) {
+    console.log('ЗАПУСК ФУНКЦИИ getUserGames');
     const steamRegex =
       /^(?:https:\/\/)?steamcommunity\.com\/((?:id)|(?:profiles))\/(\w+)/gm;
     const match = steamRegex.exec(accountLink);
@@ -116,20 +126,24 @@
 
     console.log('Полученный steamID:', steamID);
     const games = await pb.send(`/steam/games?id=${steamID}`, {});
-    steamGames = games.response.games;
-    console.log(steamGames);
+    steamGames = games.response.games.sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
   }
-  // $effect(() => {
-  //   if (isButtonActive) {
-  //     getUserGames().then((result) => {
-  //       console.log(result);
-  //       steamGames = result;
-  //     });
-  //   }
-  // });
+  $effect(() => {
+    if (!open) {
+      userSteamUrl = '';
+    }
+  });
 </script>
 
-<Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
+<Sheet.Root
+  bind:open
+  onOpenChange={(state) => {
+    console.log('ЗАПУСК ФУНКЦИИ!');
+    if (!state) onClose();
+  }}
+>
   <Sheet.Content side="bottom">
     <Sheet.Header>
       <form method="POST" use:enhance>
@@ -168,7 +182,7 @@
                 <div class="flex">
                   <img
                     src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`}
-                    alt="image"
+                    alt="Game"
                   />
                   <Select.Item value={game.appid.toString()}
                     >{game.name}</Select.Item
@@ -181,14 +195,12 @@
             </Select.Content>
           </Select.Root>
         {/if}
-        {#if widgetId !== undefined}
+        {#if !!widgetId}
           <DeleteButton {widgetId} />
         {/if}
         <SaveButton
           onClick={() => {
             form.submit();
-            open = false;
-            onOpenChange();
           }}
           {isButtonActive}
         />

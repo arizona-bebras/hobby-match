@@ -18,7 +18,6 @@ module.exports = {
     const id = info.json.data[0].id;
     const title = info.json.data[0]['display_name'];
 
-    console.log(JSON.stringify(info.json));
     const followers = $http.send({
       method: "GET",
       url: `https://api.twitch.tv/helix/channels/followers?broadcaster_id=${id}`,
