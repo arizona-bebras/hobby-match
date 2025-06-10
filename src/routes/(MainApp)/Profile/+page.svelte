@@ -148,35 +148,8 @@
         />
       {/if}
       <RenderWidget {widget} />
-      <!--      -->
-      <!--      {#if widget.data.type === 'text'}-->
-      <!--        <TextWidget data={widget.data} />-->
-      <!--      {:else if widget.data.type === 'audio'}-->
-      <!--        <AudioWidget data={widget.data} />-->
-      <!--      {:else if widget.data.type === 'steam_game'}-->
-      <!--        <GameWidget data={widget.data} />-->
-      <!--      {:else if widget.data.type === 'video'}-->
-      <!--        <VideoWidget data={widget.data} />-->
-      <!--      {:else if widget.data.type === 'social_media' && widget.additionalData?.type !== 'photo' && widget.additionalData?.type !== 'survey' && widget.additionalData?.type !== undefined}-->
-      <!--        <SocialWidget-->
-      <!--          data={widget.data}-->
-      <!--          socialMediaData={widget.additionalData}-->
-      <!--        />-->
-      <!--      {:else if widget.data.type === 'progress_bar'}-->
-      <!--        <ProgressWidget data={widget.data} />-->
-      <!--      {:else if widget.data.type === 'todo'}-->
-      <!--        <ToDoWidget data={widget.data} widgetId={widget.id} />-->
-      <!--      {:else if widget.data.type === 'survey' && widget.additionalData?.type === 'survey'}-->
-      <!--        <SurveyWidget-->
-      <!--          data={widget.data}-->
-      <!--          id={widget.id}-->
-      <!--          survey={widget.additionalData}-->
-      <!--        />-->
-      <!--      {:else if widget.data.type === 'photo' && widget.additionalData?.type === 'photo'}-->
-      <!--        <PhotoWidget additionalData={widget.additionalData} />-->
-      <!--      {:else if widget.data.type === 'post'}-->
-      <!--        <TgPostWidget data={widget.data} />-->
-      <!--      {/if}-->
     </div>
   {/each}
+  <!--Нужно чтобы нормально работал footer-->
+  <div class="h-16.5 w-full"></div>
 </div>
