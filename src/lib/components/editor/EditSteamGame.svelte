@@ -116,17 +116,10 @@
 
     console.log('Полученный steamID:', steamID);
     const games = await pb.send(`/steam/games?id=${steamID}`, {});
-    steamGames = games.response.games;
-    console.log(steamGames);
+    steamGames = games.response.games.sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
   }
-  // $effect(() => {
-  //   if (isButtonActive) {
-  //     getUserGames().then((result) => {
-  //       console.log(result);
-  //       steamGames = result;
-  //     });
-  //   }
-  // });
 </script>
 
 <Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
@@ -168,7 +161,7 @@
                 <div class="flex">
                   <img
                     src={`https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`}
-                    alt="image"
+                    alt="Game"
                   />
                   <Select.Item value={game.appid.toString()}
                     >{game.name}</Select.Item
