@@ -27,9 +27,6 @@ module.exports = {
       method: "GET",
       url: `${$os.getenv("CACHED_STEAM_API")}/getSteamLevel?key=${$os.getenv("STEAM_API_KEY")}&id=${id}`,
     });
-    console.log(JSON.stringify(level))
-    console.log('-------------------------------------')
-    console.log(level.json.level)
     if (level.json.level === undefined) return null;
     const player = $http.send({
       method: "GET",
@@ -42,4 +39,19 @@ module.exports = {
       username: player.json.username,
     };
   },
+  getGameInfo: (link, appid) => {
+    const id = resolveSteamLink(link);
+    const gameData = $http.send({
+      method: "GET",
+      url: `${$os.getenv("CACHED_STEAM_API")}/getGameHours?key=${$os.getenv("STEAM_API_KEY")}&id=${id}&appid=${appid}`,
+    })
+    console.log('-------------------------------------')
+    console.log(JSON.stringify(gameData));
+    if (!gameData.json?.game?.game_name) return null;
+    return {
+      icon: `https://media.steampowered.com/steamcommunity/public/images/apps/${appid}/${gameData.json.img_icon_url}.jpg`,
+      title: gameData.json.game.game_name,
+      hours_played: gameData.json.game.hours,
+    }
+  }
 };

@@ -86,14 +86,14 @@ onRecordEnrich((e) => {
           myVote
         })
         break;
-    // case 'steam_game':
-    //   e.record.set("additionalData", {
-    //     type: 'steam_game',
-    //     icon:
-    //     title:
-    //     hours_played:
-    //   })
-    //   break;
+    case 'steam_game':
+      console.log('UPLOADING GAME DATA')
+      console.log(require(`${__hooks}/platforms/steam.js`).getGameInfo(data.accountLink, data.gameId))
+      e.record.set("additionalData", {
+        type: 'steam_game',
+        ...require(`${__hooks}/platforms/steam.js`).getGameInfo(data.accountLink, data.gameId)
+      })
+      break;
   }
 
   console.log(JSON.stringify(e.record));
