@@ -21,7 +21,7 @@ export async function resolveVanityUrl(key, vanityurl) {
 
 export async function getOwnedGames(key, id) {
   let response = await fetch(
-    `http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${key}&steamid=${id}&include_appinfo=true&format=json`,
+    `http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${key}&steamid=${id}&include_appinfo=true&include_played_free_games=true&format=json`,
   ).then((response) => response.json());
   return response.response.games;
 }
