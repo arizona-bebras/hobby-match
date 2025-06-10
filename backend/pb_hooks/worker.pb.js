@@ -52,7 +52,7 @@ function upsertUser(e) {
 }
 
 routerAdd("GET", "/worker/feed", (e) => {
-  const views = $app.findRecordsByFilter('viewCount', 'viewer = {:id}', '', 100, 0, {
+  const views = $app.findRecordsByFilter('viewCount', 'viewer = {:id}', 'most_recent_view', 100, 0, {
     id: e.auth.id,
   });
 
@@ -63,6 +63,7 @@ routerAdd("GET", "/worker/feed", (e) => {
   if(response.statusCode !== 200) return e.json(response.statusCode, { response: response.json });
   const matches = response.json?.matches;
   if(!matches) return e.json(500, {error: 'failed to get feed'});
+  console.log(JSON.stringify(matches));
 
   let collection = $app.findCollectionByNameOrId("views");
   for (const match of matches) {
