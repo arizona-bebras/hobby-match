@@ -7,7 +7,7 @@ import {
 import fastify from 'fastify';
 import NodeCache from 'node-cache';
 
-const server = fastify({ logger: false });
+const server = fastify({ logger: true });
 
 const cache = new NodeCache({ stdTTL: 86400, checkperiod: 120 });
 
@@ -30,7 +30,7 @@ server.get('/getOwnedGames', async (request, reply) => {
       cache.set(`game-${id}-${game.appid}`, {
         game_name: game.name,
         hours: Math.floor(game.playtime_forever / 60),
-        icon: game.img_icon_url
+        icon: game.img_icon_url,
       });
     }
   }
@@ -48,7 +48,7 @@ server.get('/getGameHours', async (request, reply) => {
       cache.set(`game-${id}-${game.appid}`, {
         game_name: game.name,
         hours: Math.floor(game.playtime_forever / 60),
-        icon: game.img_icon_url
+        icon: game.img_icon_url,
       });
     }
   }
@@ -74,4 +74,4 @@ server.get('/resolveVanityUrl', async (request, reply) => {
   return { id: cache.get(`id-${vanityurl}`) };
 });
 
-server.listen({ port: 1488 });
+server.listen({ port: 1488, host: '0.0.0.0' });
