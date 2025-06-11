@@ -22,7 +22,9 @@
 </script>
 
 <div class="w-screen max-w-full h-screen flex flex-col">
-  <div class="flex-1 flex flex-col bg-background items-center text-text-color">
+  <div
+    class="flex-1 flex flex-col bg-background items-center text-text-color overflow-hidden"
+  >
     {@render children()}
   </div>
   <!--  <footer class="flex justify-between w-full fixed bottom-0 bg-background z-2">-->

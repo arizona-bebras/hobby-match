@@ -1,8 +1,11 @@
 <script lang="ts">
   import { ChevronUp } from '@lucide/svelte';
   import { cn } from '$lib/utils';
-  let { interests }: { interests: { id: string; tag: string }[] } = $props();
+  import type { InterestType } from '$lib/questionnaireTypes/questionnaireTypes';
+
+  let { interests }: { interests: InterestType[] } = $props();
   let isOpen = $state(false);
+  console.log('Interests:', interests);
 </script>
 
 <div class="w-full py-2 transition-all relative" class:h-fit={isOpen}>

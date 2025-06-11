@@ -1,9 +1,14 @@
 <script lang="ts">
   import { pb } from '$lib/index';
   import { cn } from '$lib/utils';
+  import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
   import Pencil from '@lucide/svelte/icons/pencil';
   import { Plus } from '@lucide/svelte';
-  let { data, shadow = true, container = $bindable() } = $props();
+  let {
+    data,
+    shadow = true,
+    container = $bindable(),
+  }: { data: PageData; shadow: true } = $props();
 </script>
 
 <div
@@ -13,6 +18,7 @@
   )}
   bind:this={container}
 >
+  <!--    src={pb.files.getURL(pb.authStore.record ?? {}, data.user_photo)}-->
   <img
     src={pb.files.getURL(pb.authStore.record ?? {}, data.user_photo)}
     class="w-14 h-14 rounded-full object-cover"

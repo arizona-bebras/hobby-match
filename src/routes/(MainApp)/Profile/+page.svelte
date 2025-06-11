@@ -49,7 +49,7 @@
     // };
   });
   let { data }: { data: PageData } = $props();
-  $inspect(data);
+
   let widgets: WidgetWithService[] = $state(data.widgets);
 
   $effect(() => {
@@ -62,103 +62,111 @@
   }
 </script>
 
-<Header {data} {changeMode} />
-<div class="font-[Inter] px-4 w-full max-w-full relative">
-  <button
-    onclick={() => (changeMode = !changeMode)}
-    class="bg-accent/50 size-10 fixed right-0 bottom-0 z-2 mb-2 mr-2 flex items-center justify-center rounded-lg
-"
-  >
-    <Pencil class="size-5 text-accent-foreground" />
-  </button>
-  <UserInfo {data} {changeMode} />
-
-  {#if changeMode}
+<div class="w-full h-full overflow-y-auto">
+  <Header {data} {changeMode} />
+  <div class="font-[Inter] px-4 w-full max-w-full relative">
     <button
-      class="my-2 w-full h-12 bg-[#34C759] rounded-xl flex justify-center items-center gap-3 font-medium"
-      onclick={() => (showWidgetMenu = true)}
+      onclick={() => (changeMode = !changeMode)}
+      class="bg-accent size-12.5 fixed right-6.5 bottom-5 z-2 flex items-center justify-center rounded-xl
+"
     >
-      <Plus class="size-5" />
-      Добавить виджет
+      <Pencil class="size-6 text-accent-foreground" />
     </button>
-  {/if}
+    <UserInfo {data} {changeMode} />
 
-  <WidgetsListMenu
-    open={showWidgetMenu}
-    onClick={(name) => {
-      showWidgetMenu = false;
-      addedWidget = name;
-    }}
-  />
+    {#if changeMode}
+      <button
+        class="my-2 w-full h-12 bg-[#34C759] rounded-xl flex justify-center items-center gap-3 font-medium"
+        onclick={() => (showWidgetMenu = true)}
+      >
+        <Plus class="size-5" />
+        Добавить виджет
+      </button>
+    {/if}
 
-  <EditVideo
-    open={addedWidget === 'video'}
-    onClose={onEditClose}
-    widgetId={addedWidget === 'video' ? editingWidget : undefined}
-  />
-  <EditProgress
-    open={addedWidget === 'progress_bar'}
-    onClose={onEditClose}
-    widgetId={addedWidget === 'progress_bar' ? editingWidget : undefined}
-  />
-  <EditText
-    open={addedWidget === 'text'}
-    onClose={onEditClose}
-    widgetId={addedWidget === 'text' ? editingWidget : undefined}
-  />
-  <EditSurvey
-    open={addedWidget === 'survey'}
-    onClose={onEditClose}
-    widgetId={addedWidget === 'survey' ? editingWidget : undefined}
-  />
-  <EditSocial
-    open={addedWidget === 'social_media'}
-    onClose={onEditClose}
-    widgetId={addedWidget === 'social_media' ? editingWidget : undefined}
-  />
-  <EditTgPost
-    open={addedWidget === 'post'}
-    onClose={onEditClose}
-    widgetId={addedWidget === 'post' ? editingWidget : undefined}
-  />
-  <EditImage
-    open={addedWidget === 'photo'}
-    onClose={onEditClose}
-    widgetId={addedWidget === 'photo' ? editingWidget : undefined}
-  />
-  <EditToDo
-    open={addedWidget === 'todo'}
-    onClose={onEditClose}
-    widgetId={addedWidget === 'todo' ? editingWidget : undefined}
-  />
-  <EditAudio
-    open={addedWidget === 'audio'}
-    onClose={onEditClose}
-    widgetId={addedWidget === 'audio' ? editingWidget : undefined}
-  />
-  <EditSteamGame
-    open={addedWidget === 'steam_game'}
-    onClose={onEditClose}
-    widgetId={addedWidget === 'steam_game' ? editingWidget : undefined}
-  />
-  {#each widgets as { widget }, i (widget.id)}
-    <div class="relative mb-2">
-      {#if changeMode}
-        <Edit
-          {widget}
-          onEdit={() => {
-            addedWidget = widget.data.type;
-            editingWidget = widget.id;
-          }}
-          onMove={(delta) => {
-            if ((delta < 0 && i <= 0) || (delta > 0 && i >= widgets.length - 1))
-              return;
+    <WidgetsListMenu
+      open={showWidgetMenu}
+      onClick={(name) => {
+        showWidgetMenu = false;
+        addedWidget = name;
+      }}
+    />
 
-            [widgets[i + delta], widgets[i]] = [widgets[i], widgets[i + delta]];
-          }}
-        />
-      {/if}
-      <RenderWidget {widget} />
-    </div>
-  {/each}
+    <EditVideo
+      open={addedWidget === 'video'}
+      onClose={onEditClose}
+      widgetId={addedWidget === 'video' ? editingWidget : undefined}
+    />
+    <EditProgress
+      open={addedWidget === 'progress_bar'}
+      onClose={onEditClose}
+      widgetId={addedWidget === 'progress_bar' ? editingWidget : undefined}
+    />
+    <EditText
+      open={addedWidget === 'text'}
+      onClose={onEditClose}
+      widgetId={addedWidget === 'text' ? editingWidget : undefined}
+    />
+    <EditSurvey
+      open={addedWidget === 'survey'}
+      onClose={onEditClose}
+      widgetId={addedWidget === 'survey' ? editingWidget : undefined}
+    />
+    <EditSocial
+      open={addedWidget === 'social_media'}
+      onClose={onEditClose}
+      widgetId={addedWidget === 'social_media' ? editingWidget : undefined}
+    />
+    <EditTgPost
+      open={addedWidget === 'post'}
+      onClose={onEditClose}
+      widgetId={addedWidget === 'post' ? editingWidget : undefined}
+    />
+    <EditImage
+      open={addedWidget === 'photo'}
+      onClose={onEditClose}
+      widgetId={addedWidget === 'photo' ? editingWidget : undefined}
+    />
+    <EditToDo
+      open={addedWidget === 'todo'}
+      onClose={onEditClose}
+      widgetId={addedWidget === 'todo' ? editingWidget : undefined}
+    />
+    <EditAudio
+      open={addedWidget === 'audio'}
+      onClose={onEditClose}
+      widgetId={addedWidget === 'audio' ? editingWidget : undefined}
+    />
+    <EditSteamGame
+      open={addedWidget === 'steam_game'}
+      onClose={onEditClose}
+      widgetId={addedWidget === 'steam_game' ? editingWidget : undefined}
+    />
+    {#each widgets as { widget }, i (widget.id)}
+      <div class="relative mb-2">
+        {#if changeMode}
+          <Edit
+            {widget}
+            onEdit={() => {
+              addedWidget = widget.data.type;
+              editingWidget = widget.id;
+            }}
+            onMove={(delta) => {
+              if (
+                (delta < 0 && i <= 0) ||
+                (delta > 0 && i >= widgets.length - 1)
+              )
+                return;
+
+              [widgets[i + delta], widgets[i]] = [
+                widgets[i],
+                widgets[i + delta],
+              ];
+            }}
+          />
+        {/if}
+        <RenderWidget {widget} />
+      </div>
+    {/each}
+  </div>
 </div>

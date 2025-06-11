@@ -27,15 +27,16 @@
 
   let { data }: { data: PageData } = $props();
   console.log(data);
-  let widgets: WidgetWithService[] = $state(data.widgets);
-
+  let widgets = $state(data.widgets);
+  console.log('Data', data);
+  console.log('Widgets:', widgets);
   useTelegramButton(() => {
     changeMode = !changeMode;
   });
 
   $effect(() => {
     window.Telegram.WebApp.MainButton.setText(
-      changeMode ? 'Сохранить' : 'Изменить виджеты',
+      changeMode ? 'Сохранить' : 'Моя анкета',
     );
   });
 
@@ -130,7 +131,7 @@
     onClose={onEditClose}
     widgetId={addedWidget === 'steam_game' ? editingWidget : undefined}
   />
-  {#each widgets as { widget }, i (widget.id)}
+  {#each widgets as widget, i (widget.id)}
     <div class="relative mb-2">
       {#if changeMode}
         <Edit
