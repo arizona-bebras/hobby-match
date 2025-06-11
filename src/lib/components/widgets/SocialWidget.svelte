@@ -85,14 +85,14 @@
 
       <p class="text-[14px]">
         {#if socialMediaData.type === 'VK' || socialMediaData.type === 'Twitch'}
-          {socialMediaData.followers}
+          {formatNumber(socialMediaData.followers ?? 0)}
           {getCorrectForm(socialMediaData.followers ?? 0, [
             'подписчик',
             'подписчика',
             'подписчиков',
           ])}
         {:else if socialMediaData.type === 'Steam'}
-          {socialMediaData.level}
+          {formatNumber(socialMediaData.level ?? 0)}
           {getCorrectForm(socialMediaData.level ?? 0, [
             'уровень',
             'уровень',

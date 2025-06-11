@@ -83,7 +83,7 @@ export type SocialMediaData =
     }
   | {
       type: 'VK';
-      name?: string,
+      name?: string;
       followers?: number;
     }
   | {

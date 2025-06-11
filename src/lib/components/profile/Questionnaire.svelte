@@ -19,38 +19,34 @@
   import UserInfo from '$lib/components/profile/UserInfo.svelte';
   import RenderWidget from '$lib/components/profile/RenderWidget.svelte';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
-  import Pencil from '@lucide/svelte/icons/pencil';
-  import { goto } from '$app/navigation';
 
   let changeMode = $state(false);
-
-  // useTelegramButton(() => {
-  //   changeMode = !changeMode;
-  // });
-
-  window.Telegram.WebApp.MainButton.setText(
-    // changeMode ? 'Сохранить' : 'Изменить виджеты',
-    'Просмотр Анкет',
-  );
-
-  useTelegramButton(() => {
-    goto('/Search');
-  });
   let showWidgetMenu = $state(false);
   let addedWidget: WidgetType | undefined = $state(undefined);
   let editingWidget: string | undefined = $state(undefined);
+
+  let { data }: { data: PageData } = $props();
+  console.log(data);
+  let widgets: WidgetWithService[] = $state(data.widgets);
+
+  useTelegramButton(() => {
+    changeMode = !changeMode;
+  });
+
+  $effect(() => {
+    window.Telegram.WebApp.MainButton.setText(
+      changeMode ? 'Сохранить' : 'Изменить виджеты',
+    );
+  });
 
   $effect(() => {
     if (!addedWidget && !showWidgetMenu)
       window.Telegram.WebApp.MainButton.show();
     else window.Telegram.WebApp.MainButton.hide();
-    // return () => {
-    //   window.Telegram.WebApp.MainButton.hide();
-    // };
+    return () => {
+      window.Telegram.WebApp.MainButton.hide();
+    };
   });
-  let { data }: { data: PageData } = $props();
-  $inspect(data);
-  let widgets: WidgetWithService[] = $state(data.widgets);
 
   $effect(() => {
     widgets = data.widgets;
@@ -64,13 +60,6 @@
 
 <Header {data} {changeMode} />
 <div class="font-[Inter] px-4 w-full max-w-full relative">
-  <button
-    onclick={() => (changeMode = !changeMode)}
-    class="bg-accent/50 size-10 fixed right-0 bottom-0 z-2 mb-2 mr-2 flex items-center justify-center rounded-lg
-"
-  >
-    <Pencil class="size-5 text-accent-foreground" />
-  </button>
   <UserInfo {data} {changeMode} />
 
   {#if changeMode}
