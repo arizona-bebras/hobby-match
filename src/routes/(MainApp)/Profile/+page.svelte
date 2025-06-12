@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Plus } from '@lucide/svelte';
+  import { Plus, Pencil, Save } from '@lucide/svelte';
   import EditTgPost from '$lib/components/editor/EditTgPost.svelte';
   import EditSurvey from '$lib/components/editor/EditSurvey.svelte';
   import EditText from '$lib/components/editor/EditText.svelte';
@@ -19,7 +19,7 @@
   import UserInfo from '$lib/components/profile/UserInfo.svelte';
   import RenderWidget from '$lib/components/profile/RenderWidget.svelte';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
-  import Pencil from '@lucide/svelte/icons/pencil';
+
   import { goto } from '$app/navigation';
 
   let changeMode = $state(false);
@@ -36,6 +36,7 @@
   useTelegramButton(() => {
     goto('/Search');
   });
+
   let showWidgetMenu = $state(false);
   let addedWidget: WidgetType | undefined = $state(undefined);
   let editingWidget: string | undefined = $state(undefined);
@@ -49,7 +50,7 @@
     // };
   });
   let { data }: { data: PageData } = $props();
-
+  console.log(data);
   let widgets: WidgetWithService[] = $state(data.widgets);
 
   $effect(() => {
@@ -70,7 +71,11 @@
       class="bg-accent size-12.5 fixed right-6.5 bottom-5 z-2 flex items-center justify-center rounded-xl
 "
     >
-      <Pencil class="size-6 text-accent-foreground" />
+      {#if !changeMode}
+        <Pencil class="size-6 text-text-color" />
+      {:else}
+        <Save class="size-6 text-text-color" />
+      {/if}
     </button>
     <UserInfo {data} {changeMode} />
 
