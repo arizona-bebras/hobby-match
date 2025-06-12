@@ -3,8 +3,10 @@
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
   import { goto } from '$app/navigation';
   import Questionnaire from '$lib/components/profile/Questionnaire.svelte';
+  import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
+  import { onMount } from 'svelte';
 
-  const userProfiles = [
+  const userProfiles: PageData[] = [
     {
       age: 0,
       gender: 'male',
@@ -236,12 +238,45 @@
   ];
   let firstProfile = userProfiles[0];
   let secondProfile = userProfiles[1];
-  window.Telegram.WebApp.MainButton.setText(
-    // changeMode ? 'Сохранить' : 'Изменить виджеты',
-    'Редактировать анкету',
-  );
+  let thirdProfile = userProfiles[2];
+  let currentProfile = $state(0);
+  let isMousePress = $state(false);
+  let container: HTMLDivElement = $state();
+  let profileRef: HTMLDivElement[] = $state([]);
+  let profiles: PageData[] = $state([firstProfile, thirdProfile]);
   useTelegramButton(() => goto('/Profile'));
-  // window.Telegram.WebApp.MainButton.show();
+
+  let testProfiles = ['A', 'B', 'C', 'D'];
+
+  function updateCurrentSection() {
+    // const scrollLeft = container.scrollTop;
+    // const sectionWidth = container.offsetHeight;
+    // console.log(scrollLeft, sectionWidth, container);
+    // console.log(document.body.offsetHeight);
+    // console.log(
+    //   container.scrollTop,
+    //   profileRef[0].offsetHeight,
+    //   profileRef[1].offsetHeight,
+    // );
+    if (isMousePress) return;
+    console.log(
+      `${container.scrollTop + document.body.offsetHeight - 160} / ${
+        profileRef[0].offsetHeight + document.body.offsetHeight / 2
+      } = ${(container.scrollTop + document.body.offsetHeight - 160) / (profileRef[0].offsetHeight + document.body.offsetHeight / 2)}`,
+    );
+    currentProfile = Math.trunc(
+      (container.scrollTop + document.body.offsetHeight - 160) /
+        (profileRef[0].offsetHeight + document.body.offsetHeight / 2),
+    );
+  }
+
+  onMount(() => {
+    window.Telegram.WebApp.MainButton.setText(
+      // changeMode ? 'Сохранить' : 'Изменить виджеты',
+      'Моя анкета',
+    );
+  });
+  $inspect(isMousePress);
 </script>
 
 <!--<div class="bg-green-500 w-full h-screen">123</div>-->
@@ -251,16 +286,70 @@
 <!--  <div class="w-full h-[600px] bg-green-600">2</div>-->
 <!--</div>-->
 
-<div class="snap-y snap-mandatory w-full h-full overflow-y-auto space-y-40">
-  <div class="snap-start">
-    <Questionnaire data={firstProfile} />
+<div
+  class="snap-y snap-mandatory w-full h-full overflow-y-auto space-y-40"
+  bind:this={container}
+  onscroll={updateCurrentSection}
+  onmousedown={() => (isMousePress = true)}
+  onmouseup={() => (isMousePress = false)}
+>
+  <!--  <button-->
+  <!--    onclick={() => {-->
+  <!--      profiles.splice(0, 1);-->
+  <!--      profiles.push(thirdProfile);-->
+  <!--      console.log(profiles);-->
+  <!--    }}-->
+  <!--    class="fixed size-25 bg-purple-500">123</button-->
+  <!--  >-->
+  <button
+    onclick={() => {
+      profiles.push(userProfiles[0]);
+      profiles.splice(0, 1);
+      container.scrollTop = 0;
+      console.log(profiles);
+      // profileRef.forEach((element: HTMLDivElement) =>
+      //   console.log(element.offsetHeight),
+      // );
+    }}
+    class="fixed right-0 size-25 bg-purple-500 z-100 flex">Check state</button
+  >
+  <div class="fixed size-25 bg-purple-500">
+    Текущий профиль: {currentProfile}
   </div>
-  <div class="snap-start">
-    <Questionnaire data={secondProfile} />
-  </div>
+
+  {#each profiles as profile, i}
+    <div class="snap-start" bind:this={profileRef[i]}>
+      <Questionnaire data={profile} />
+    </div>
+  {/each}
+
+  <!--  <div class="snap-start">-->
+  <!--    <Questionnaire data={secondProfile} />-->
+  <!--  </div>-->
+  <!--  <div class="snap-start">-->
+  <!--    <Questionnaire data={firstProfile} />-->
+  <!--  </div>-->
+  <!--  <div class="snap-start">-->
+  <!--    <Questionnaire data={firstProfile} />-->
+  <!--  </div>-->
+  <!--  <div-->
+  <!--    class="snap-start bg-purple-600 w-full h-300 flex items-center justify-center text-8xl"-->
+  <!--  >-->
+  <!--    1-->
+  <!--  </div>-->
   <!--  <div-->
   <!--    class="snap-start bg-purple-600 w-full h-300 flex items-center justify-center text-8xl"-->
   <!--  >-->
   <!--    2-->
+  <!--  </div>-->
+  <!--  <div-->
+  <!--    class="snap-start bg-purple-600 w-full h-300 flex items-center justify-center text-8xl"-->
+  <!--  >-->
+  <!--    3-->
+  <!--  </div>-->
+  <!--  <div-->
+  <!--    class="snap-start bg-purple-600 w-full h-300 flex items-center justify-center text-8xl"-->
+  <!--  >-->
+  <!--    4-->
   <!--  </div>-->
 </div>
