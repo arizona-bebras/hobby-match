@@ -2,8 +2,8 @@
 /* eslint-disable */
 
 module.exports = {
-  request: function (method, endpoint, data) {
-    const baseUrl = `${$os.getenv('CACHED_API')}/${endpoint}?key=${$os.getenv('STEAM_API_KEY')}&${data}`;
+  request: function (method, data) {
+    const baseUrl = `${$os.getenv('CACHED_API')}/youtube/getChannelInfo?key=${$os.getenv('YOUTUBE_API_KEY')}&${data}`;
     return $http.send({
       method,
       url: baseUrl,

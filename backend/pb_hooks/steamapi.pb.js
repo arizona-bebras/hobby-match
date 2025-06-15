@@ -5,7 +5,7 @@ routerAdd(
     const id = e.requestInfo().query['id'];
     const response = require(`${__hooks}/steamapi.js`).request(
       'GET',
-      'getPlayerUsername',
+      'getSteamUsername',
       `id=${id}`,
     );
 
