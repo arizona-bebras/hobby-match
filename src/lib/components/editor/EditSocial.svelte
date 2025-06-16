@@ -80,7 +80,10 @@
         <p class="text-accent-foreground font-medium pb-2">
           Виджет "Социальная сеть"
         </p>
-        <p class="pb-2">Вы можете ввести ссылку на канал или личный аккаунт</p>
+        <p class="pb-1">Вы можете ввести ссылку на канал или личный аккаунт</p>
+        <p class="pb-2 text-gray-400">
+          Платформы: YouTube, Twitch, VK, Steam, Telegram
+        </p>
         <Form.Field {form} name="link">
           <Form.Control>
             {#snippet children({ props })}
