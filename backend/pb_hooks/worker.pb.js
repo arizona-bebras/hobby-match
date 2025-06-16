@@ -66,28 +66,26 @@ routerAdd("GET", "/worker/feed", (e) => {
           WHERE u.id != {:current_user_id}
           GROUP BY u.id
       ),
-           ordered_users AS (
-               SELECT
-                   pageOwner,
-                   view_count,
-                   RANK() OVER (ORDER BY view_count ASC) AS view_rank
-               FROM view_counts
+           min_view_count AS (
+               SELECT MIN(view_count) AS min_count FROM view_counts
            ),
-           cumulative AS (
-               SELECT *,
-                      SUM(COUNT(*)) OVER (ORDER BY view_count ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cumulative_count
-               FROM ordered_users
-               GROUP BY pageOwner, view_count, view_rank
+           lowest_group AS (
+               SELECT vc.*
+               FROM view_counts vc
+                        JOIN min_view_count mv ON vc.view_count = mv.min_count
+           ),
+           final_selection AS (
+               SELECT * FROM lowest_group
+               UNION ALL
+               SELECT *
+               FROM view_counts
+               WHERE pageOwner NOT IN (SELECT pageOwner FROM lowest_group)
+               ORDER BY view_count ASC, RANDOM()
+               LIMIT GREATEST(3 - (SELECT COUNT(*) FROM lowest_group), 0)
            )
-      SELECT pageOwner, view_count
-      FROM cumulative
-      WHERE cumulative_count <= 3
-         OR view_rank = (
-          SELECT MIN(view_rank)
-          FROM cumulative
-          WHERE cumulative_count >= 3
-      )
-      LIMIT 100;
+      SELECT *
+      FROM final_selection
+      ORDER BY view_count ASC;
 `).bind({"current_user_id": e.auth.id}).all(views);
 
   const response = require(`${__hooks}/worker.js`).request("POST", "feed/query", {
