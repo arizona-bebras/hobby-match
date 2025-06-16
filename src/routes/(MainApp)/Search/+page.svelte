@@ -8,7 +8,8 @@
   import { pb } from '$lib';
 
   let isMousePress = $state(false);
-  let container: HTMLDivElement | undefined = $state();
+  let profileContainer: HTMLDivElement | undefined = $state();
+  let screenContainer: HTMLDivElement | undefined = $state();
   let offeredProfiles: PageData[] = $state([]);
   let currentProfile = $state(0);
   useTelegramButton(() => goto('/Profile'));
@@ -24,16 +25,19 @@
   });
   let elementSize = $state(0);
   let isProfileEnd = $state(false);
+  let touchStartPosition: { x: number; y: number } | null = $state(null);
   let transitionScroll = $state(0);
   // let scrollY = $derived(container.scrollTop);
   // $inspect(scrollY);
   $effect(() => {
-    if (elementSize >= 80 && !isMousePress) {
+    if (touchStartPosition === null) {
+      if (elementSize >= 108) {
+        screenContainer?.scrollTo(0, 0);
+        console.log('Опа! Загружаем новую страницу');
+        currentProfile += 1;
+        offeredProfiles.shift();
+      }
       elementSize = 0;
-      container?.scrollTo(0, 0);
-      console.log('Опа! Загружаем новую страницу');
-      currentProfile += 1;
-      offeredProfiles.shift();
     }
   });
   $effect(() => {
@@ -42,11 +46,16 @@
         (response) => (offeredProfiles = [...offeredProfiles, ...response]),
       );
     }
-
-    // if (amountViewedProfiles >= 2) {
-    //   amountViewedProfiles = 0;
-    //   console.log(4455);
-    // }
+  });
+  $effect(() => {
+    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAA');
+    if (
+      profileContainer &&
+      screenContainer &&
+      profileContainer.offsetHeight <= screenContainer.offsetHeight
+    ) {
+      isProfileEnd = true;
+    }
   });
   async function getProfiles(): Promise<PageData[]> {
     const response = await pb.send('/worker/feed', {
@@ -59,74 +68,67 @@
   }
 
   $inspect(isProfileEnd);
+  $inspect(touchStartPosition);
 </script>
 
 <div
   class="overflow-y-auto"
-  bind:this={container}
-  onmousedown={() => (isMousePress = true)}
-  onmouseup={() => (isMousePress = false)}
-  ontouchstart={() => (isMousePress = true)}
-  ontouchend={() => (isMousePress = false)}
-  role="button"
-  tabindex="0"
-  onscroll={() => {
-    // console.log('СКРОЛ)');
-    if (isProfileEnd && isMousePress) {
-      // Нужно какое-то условие, которое выполнит этот код 1 раз
-      if (transitionScroll === 0) {
-        transitionScroll = container.scrollTop;
-        //console.log('ВЫПОЛНИЛОСЬ!');
-      }
-      // console.log((container.scrollTop - doubleScroll) * 1.2, elementSize);
-      elementSize = Math.max(0, (container.scrollTop - transitionScroll) * 1.2);
-      console.log(container.scrollTop - transitionScroll);
-
-      // elementSize += ;
-      // elementSize = Math.min(80, elementSize);
-
-      //   if (!isMousePress) {
-      //     console.log(4455);
-      //   }
-      // } else {
-      //   elementSize = 0;
-      // }
-      // else {
-      //     doubleScroll = container.scrollTop;
-    } else {
-      console.log('Обнуление размеров компонента');
-      transitionScroll = 0;
+  bind:this={screenContainer}
+  ontouchstart={(e) => {
+    console.log(e, isProfileEnd);
+    if (isProfileEnd) {
+      touchStartPosition = {
+        x: e.changedTouches[0].clientX,
+        y: e.changedTouches[0].clientY,
+      };
     }
+  }}
+  ontouchend={() => {
+    touchStartPosition = null;
+  }}
+  ontouchmove={(e) => {
+    if (touchStartPosition) {
+      elementSize = Math.max(
+        0,
+        (touchStartPosition?.y - e.changedTouches[0].clientY) * 0.5,
+      );
+      screenContainer?.scrollTo(0, screenContainer?.scrollHeight);
+      //console.log(e.changedTouches[0].clientY, touchStartPosition?.y);
+    }
+  }}
+  onwheel={(e) => {
+    if (isProfileEnd) {
+      if (e.deltaY > 0) {
+        elementSize += e.deltaY / 10;
+      } else {
+        elementSize = 0;
+      }
 
+      screenContainer?.scrollTo(0, screenContainer?.scrollHeight);
+      console.log(elementSize, e.deltaY / 10);
+    } else {
+      elementSize = 0;
+    }
+  }}
+  onscroll={() => {
+    if (!screenContainer || !profileContainer) {
+      return;
+    }
+    console.log(111);
     isProfileEnd =
-      container?.children[0].offsetHeight - document.body.offsetHeight <=
-      container?.scrollTop - 8;
-
-    // console.log(elementSize);
-    // console.log(
-    //   container.children[0].offsetHeight - document.body.offsetHeight,
-    //   isProfileEnd,
-    //   container.scrollTop - 8,
-    // );
+      screenContainer.scrollTop + screenContainer.offsetHeight - 8 >=
+      profileContainer.offsetHeight;
   }}
 >
-  <!--  <button-->
-  <!--    class="bg-purple-400 fixed"-->
-  <!--    onclick={() => {-->
-  <!--      doubleScroll = container.scrollTop;-->
-  <!--    }}-->
-  <!--  >-->
-  <!--    Начать отслеживание-->
-  <!--  </button>-->
   {#if offeredProfiles.length <= 0}
     <p>Загрузка</p>
   {:else}
-    <p>Загрузилось {offeredProfiles}</p>
-    <Questionnaire data={offeredProfiles[0]} />
-
-    {#if isProfileEnd && isMousePress}
+    <div bind:this={profileContainer}>
+      <Questionnaire data={offeredProfiles[0]} />
+    </div>
+    {#if isProfileEnd}
       <div
-        class="bg-accent/25 max-w-15 max-h-27 rounded-full mx-auto"
+        class="bg-accent/25 max-w-15 max-h-27 rounded-full mx-auto overflow-hidden"
         style:width="{elementSize}px"
         style:height="{elementSize}px"
       >
@@ -140,13 +142,9 @@
           )}
           alt="userImage"
         />
-        <!--        <p style:font-size="min(20px, {elementSize}px)">Testdasdasdsadasdas</p>-->
       </div>
     {/if}
   {/if}
-  <!--  <div>-->
-  <!--    <Questionnaire data={offeredProfiles[0]} />-->
-  <!--  </div>-->
 </div>
 
 <!--<div-->
