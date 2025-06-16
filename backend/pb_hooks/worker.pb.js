@@ -57,38 +57,37 @@ routerAdd("GET", "/worker/feed", (e) => {
     "view_count": 0,
   }))
   $app.db().newQuery(`
-WITH view_counts AS (
-  SELECT
-    u.id AS pageOwner,
-    COALESCE(COUNT(v.viewer), 0) AS view_count
-  FROM users u
-  LEFT JOIN views v ON v.pageOwner = u.id AND v.viewer = {:current_user_id}
-  WHERE u.id != {:current_user_id}
-  GROUP BY u.id
-),
-ranked_users AS (
-  SELECT
-      pageOwner,
-    view_count,
-    RANK() OVER (ORDER BY view_count ASC) AS view_rank
-  FROM view_counts
-)
-SELECT
-  ru.pageOwner,
-  ru.view_count
-FROM ranked_users ru
-WHERE ru.view_rank <= (
-  SELECT MIN(view_rank)
-  FROM (
-    SELECT view_rank
-    FROM ranked_users
-    GROUP BY view_rank
-    HAVING COUNT(*) >= 3
-    ORDER BY view_rank
-    LIMIT 1
-  ) AS sub
-)
-LIMIT 100;
+      WITH view_counts AS (
+          SELECT
+              u.id AS pageOwner,
+              COALESCE(COUNT(v.viewer), 0) AS view_count
+          FROM users u
+                   LEFT JOIN views v ON v.pageOwner = u.id AND v.viewer = {:current_user_id}
+          WHERE u.id != {:current_user_id}
+          GROUP BY u.id
+      ),
+           ordered_users AS (
+               SELECT
+                   pageOwner,
+                   view_count,
+                   RANK() OVER (ORDER BY view_count ASC) AS view_rank
+               FROM view_counts
+           ),
+           cumulative AS (
+               SELECT *,
+                      SUM(COUNT(*)) OVER (ORDER BY view_count ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cumulative_count
+               FROM ordered_users
+               GROUP BY pageOwner, view_count, view_rank
+           )
+      SELECT pageOwner, view_count
+      FROM cumulative
+      WHERE cumulative_count <= 3
+         OR view_rank = (
+          SELECT MIN(view_rank)
+          FROM cumulative
+          WHERE cumulative_count >= 3
+      )
+      LIMIT 100;
 `).bind({"current_user_id": e.auth.id}).all(views);
 
   const response = require(`${__hooks}/worker.js`).request("POST", "feed/query", {
