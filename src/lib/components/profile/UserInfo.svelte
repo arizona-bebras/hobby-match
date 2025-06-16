@@ -2,7 +2,8 @@
   import InterestsWidget from '$lib/components/widgets/InterestsWidget.svelte';
   import { pb } from '$lib';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
-  let { data, changeMode }: { data: PageData; changeMode: boolean } = $props();
+  let { data, changeMode = false }: { data: PageData; changeMode?: boolean } =
+    $props();
   // let userDescription: Text = {
   //   type: 'text',
   //   text: pb.authStore.record!.user_info,
@@ -15,8 +16,9 @@
   </p>
   <p class="font-semibold text-[20px]"><span>{data.location}</span></p>
 {/if}
+<!--<InterestsWidget interests={data.interests.expand?.interests} />-->
 <InterestsWidget interests={data.interests} />
 <div class="TextBox text-container my-2">
   <b>О себе: </b>
-  <p class="break-words italic">{pb.authStore.record?.user_info}</p>
+  <p class="break-words italic">{data.user_info}</p>
 </div>

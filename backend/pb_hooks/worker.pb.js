@@ -119,7 +119,9 @@ LIMIT 100;
       miniapp_name: r.getString('miniapp_name'),
       age: r.getInt('age'),
       gender: r.getString('gender'),
+      location: r.getString('location'),
       user_photo: r.getString('user_photo'),
+      user_info: r.getString('user_info'),
       interests: r.expandedAll("interests"),
       widgets
     };

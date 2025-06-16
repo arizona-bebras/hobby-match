@@ -21,6 +21,7 @@
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
 
   let { data }: { data: PageData } = $props();
+  console.log(data);
 </script>
 
 <Header {data} />
