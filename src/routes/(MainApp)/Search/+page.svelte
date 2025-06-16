@@ -99,14 +99,21 @@
     if (isProfileEnd) {
       if (e.deltaY > 0) {
         elementSize += e.deltaY / 10;
+        if (elementSize > 108) {
+          touchStartPosition = null;
+        } else {
+          touchStartPosition = { x: 0, y: 0 };
+        }
       } else {
         elementSize = 0;
+        touchStartPosition = null;
       }
 
       screenContainer?.scrollTo(0, screenContainer?.scrollHeight);
       console.log(elementSize, e.deltaY / 10);
     } else {
       elementSize = 0;
+      touchStartPosition = null;
     }
   }}
   onscroll={() => {
