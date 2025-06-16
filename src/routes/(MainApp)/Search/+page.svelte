@@ -88,12 +88,11 @@
   }}
   ontouchmove={(e) => {
     if (touchStartPosition) {
-      elementSize = Math.max(
-        0,
-        (touchStartPosition?.y - e.changedTouches[0].clientY) * 0.5,
-      );
-      screenContainer?.scrollTo(0, screenContainer?.scrollHeight);
-      //console.log(e.changedTouches[0].clientY, touchStartPosition?.y);
+      const delta = (touchStartPosition?.y - e.changedTouches[0].clientY) * 0.5;
+      if (delta > 0) {
+        elementSize = delta;
+        screenContainer?.scrollTo(0, screenContainer?.scrollHeight);
+      }
     }
   }}
   onwheel={(e) => {

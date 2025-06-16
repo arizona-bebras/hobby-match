@@ -21,6 +21,7 @@
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
 
   import { goto } from '$app/navigation';
+  import { onMount } from 'svelte';
 
   let changeMode = $state(false);
 
@@ -28,10 +29,13 @@
   //   changeMode = !changeMode;
   // });
 
-  window.Telegram.WebApp.MainButton.setText(
-    // changeMode ? 'Сохранить' : 'Изменить виджеты',
-    'Просмотр Анкет',
-  );
+  onMount(() => {
+    window.Telegram.WebApp.MainButton.setText(
+      // changeMode ? 'Сохранить' : 'Изменить виджеты',
+      'Просмотр Анкет',
+    );
+  })
+
 
   useTelegramButton(() => {
     goto('/Search');
