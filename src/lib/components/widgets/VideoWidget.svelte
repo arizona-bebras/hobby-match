@@ -12,7 +12,7 @@
 <div class="TextBox">
   {#if data.platform === 'YouTube'}
     <iframe
-      class="w-full aspect-video"
+      class="w-full aspect-video overflow-hidden pointer-events-none"
       src={youtubeURL}
       title="YouTube Video"
       frameborder="0"
@@ -22,7 +22,7 @@
     ></iframe>
   {:else if data.platform === 'Rutube'}
     <iframe
-      class="w-full aspect-video"
+      class="w-full aspect-video overflow-hidden pointer-events-none"
       title="Rutube Video"
       src={rutubeURL}
       frameBorder="0"
@@ -30,7 +30,7 @@
       allowFullScreen
     ></iframe>
   {:else if data.platform === 'TikTok'}
-    <iframe class="w-full aspect-square" title="TikTok Video" src={tiktokURL}
+    <iframe class="w-full aspect-square overflow-hidden pointer-events-none" title="TikTok Video" src={tiktokURL}
     ></iframe>
   {/if}
 </div>

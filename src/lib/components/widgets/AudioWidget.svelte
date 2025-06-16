@@ -15,6 +15,8 @@
     if (!iframe) return data.html;
 
     iframe.setAttribute('height', '166');
+    iframe.style.overflow = 'hidden';
+    iframe.style.pointerEvents = 'none';
 
     const src = new URL(iframe.src);
     src.searchParams.set('hide_related', 'true');

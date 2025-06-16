@@ -116,7 +116,7 @@
     }
     console.log(111);
     isProfileEnd =
-      screenContainer.scrollTop + screenContainer.offsetHeight - 8 >=
+      screenContainer.scrollTop + screenContainer.offsetHeight >=
       profileContainer.offsetHeight;
   }}
 >
