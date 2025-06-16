@@ -56,37 +56,86 @@ routerAdd("GET", "/worker/feed", (e) => {
     "pageOwner": "",
     "view_count": 0,
   }))
+  // TODO: it might get stuck if there are a lot of missing records in Vectorize
   $app.db().newQuery(`
-      WITH view_counts AS (
+      WITH viewer_counts AS (
           SELECT
-              u.id AS pageOwner,
-              COALESCE(COUNT(v.viewer), 0) AS view_count
-          FROM users u
-                   LEFT JOIN views v ON v.pageOwner = u.id AND v.viewer = {:current_user_id}
-          WHERE u.id != {:current_user_id}
-          GROUP BY u.id
+              pageOwner,
+              COUNT(*) AS view_count
+          FROM
+              views
+          WHERE
+              viewer = {:current_user_id}
+          GROUP BY
+              pageOwner
       ),
-           min_view_count AS (
-               SELECT MIN(view_count) AS min_count FROM view_counts
+           all_counts AS (
+               SELECT
+                   u.id AS pageOwner,
+                   COALESCE(vc.view_count, 0) AS view_count
+               FROM
+                   users u
+                       LEFT JOIN
+                   viewer_counts vc ON u.id = vc.pageOwner
+               WHERE
+                   u.id != {:current_user_id} 
+                 AND u.miniapp_name <> '' 
+                 AND u.user_photo <> ''
+                 AND u.interests IS NOT NULL
            ),
-           lowest_group AS (
-               SELECT vc.*
-               FROM view_counts vc
-                        JOIN min_view_count mv ON vc.view_count = mv.min_count
+           min_count AS (
+               SELECT
+                   MIN(view_count) AS min_view_count
+               FROM
+                   all_counts
            ),
-           final_selection AS (
-               SELECT * FROM lowest_group
-               UNION ALL
-               SELECT *
-               FROM view_counts
-               WHERE pageOwner NOT IN (SELECT pageOwner FROM lowest_group)
-               ORDER BY view_count ASC, RANDOM()
-               LIMIT GREATEST(3 - (SELECT COUNT(*) FROM lowest_group), 0)
+           min_count_pages AS (
+               SELECT
+                   pageOwner,
+                   view_count
+               FROM
+                   all_counts
+               WHERE
+                   view_count = (SELECT min_view_count FROM min_count)
+           ),
+           count_min_pages AS (
+               SELECT
+                   COUNT(*) AS cnt
+               FROM
+                   min_count_pages
            )
-      SELECT *
-      FROM final_selection
-      ORDER BY view_count ASC;
-`).bind({"current_user_id": e.auth.id}).all(views);
+      SELECT
+          pageOwner,
+          view_count
+      FROM
+          min_count_pages
+      WHERE
+              (SELECT cnt FROM count_min_pages) >= 3
+
+      UNION ALL
+
+      SELECT
+          pageOwner,
+          view_count
+      FROM
+          all_counts
+      WHERE
+              (SELECT cnt FROM count_min_pages) < 3
+      ORDER BY
+          view_count ASC,
+          pageOwner ASC
+      LIMIT
+          CASE
+              WHEN (SELECT cnt FROM count_min_pages) >= 3 THEN
+                  CASE
+                      WHEN (SELECT cnt FROM count_min_pages) > 100 THEN 100
+                      ELSE (SELECT cnt FROM count_min_pages)
+                      END
+              ELSE 3
+              END;
+  `).bind({"current_user_id": e.auth.id}).all(views);
+
+  console.log(JSON.stringify(views, null, 2));
 
   const response = require(`${__hooks}/worker.js`).request("POST", "feed/query", {
     id: e.auth.id,
