@@ -126,7 +126,7 @@
 
     {#if isProfileEnd && isMousePress}
       <div
-        class="bg-accent/25 max-w-15 max-h-27 rounded-full mx-auto overflow-hidden"
+        class="bg-accent/25 max-w-15 max-h-27 rounded-full mx-auto"
         style:width="{elementSize}px"
         style:height="{elementSize}px"
       >
