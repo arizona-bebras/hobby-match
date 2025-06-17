@@ -150,7 +150,7 @@
         <p class="text-accent-foreground font-medium pb-4.5">
           Виджет "Время игры"
         </p>
-        <p class="pb-2">Введите ссылку на свой аккаунт Steam</p>
+        <p class="pb-2 text-text-color">Введите ссылку на свой аккаунт Steam</p>
         <Form.Field {form} name="accountLink">
           <Form.Control>
             {#snippet children({ props })}

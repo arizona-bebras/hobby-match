@@ -80,7 +80,9 @@
         <p class="text-accent-foreground font-medium pb-2">
           Виджет "Социальная сеть"
         </p>
-        <p class="pb-1">Вы можете ввести ссылку на канал или личный аккаунт</p>
+        <p class="pb-1 text-text-color">
+          Вы можете ввести ссылку на канал или личный аккаунт
+        </p>
         <p class="pb-2 text-gray-400">
           Платформы: YouTube, Twitch, VK, Steam, Telegram
         </p>

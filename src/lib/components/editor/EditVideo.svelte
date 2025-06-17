@@ -78,7 +78,7 @@
     <Sheet.Header>
       <form method="POST" use:enhance>
         <p class="text-accent-foreground font-medium pb-4.5">Виджет "Видео"</p>
-        <p class="pb-1">Введите ссылку на видео</p>
+        <p class="pb- text-text-color">Введите ссылку на видео</p>
         <p class="pb-2 text-gray-400">Платформы: YouTube, RuTube, TikTok</p>
         <Form.Field {form} name="link">
           <Form.Control>
