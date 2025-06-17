@@ -175,7 +175,7 @@
                 ? steamGames.find(
                     (game) => game.appid === parseInt($formData.gameId),
                   )?.name || 'Выберите игру'
-                : '2'}</Select.Trigger
+                : 'Загрузка...'}</Select.Trigger
             >
             <Select.Content class="h-[50vh]">
               {#each steamGames as game}
