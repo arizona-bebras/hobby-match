@@ -7,6 +7,10 @@
   import { onMount } from 'svelte';
   import { ArrowUp } from '@lucide/svelte';
   import { pb } from '$lib';
+  import { fade, scale, slide, fly, draw, blur } from 'svelte/transition';
+  import { Tween } from 'svelte/motion';
+  import { cubicOut } from 'svelte/easing';
+  import { elasticOut } from 'svelte/easing';
 
   let isMousePress = $state(false);
   let profileContainer: HTMLDivElement | undefined = $state();
@@ -25,6 +29,10 @@
     // getProfiles();
   });
   let elementSize = $state(0);
+  // let elementSize = new Tween(0, {
+  //   duration: 400,
+  //   easing: cubicOut,
+  // });
   let isProfileEnd = $state(false);
   let touchStartPosition: { x: number; y: number } | null = $state(null);
   let transitionScroll = $state(0);
@@ -67,9 +75,26 @@
     console.log(response);
     return response;
   }
+  let isMoving = $state(false);
+  // $inspect(elementSize);
+  $inspect(isMoving);
 
-  $inspect(isProfileEnd);
-  $inspect(touchStartPosition);
+  function spin(node, { duration }) {
+    return {
+      duration,
+      css: (t, u) => {
+        const eased = elasticOut(t);
+
+        return `
+					transform: scale(${eased}) rotate(${eased * 1080}deg);
+					color: hsl(
+						${Math.trunc(t * 360)},
+						${Math.min(100, 1000 * u)}%,
+						${Math.min(50, 500 * u)}%
+					);`;
+      },
+    };
+  }
 </script>
 
 <div
@@ -85,9 +110,11 @@
     }
   }}
   ontouchend={() => {
+    isMoving = false;
     touchStartPosition = null;
   }}
   ontouchmove={(e) => {
+    isMoving = true;
     if (touchStartPosition) {
       const delta = (touchStartPosition?.y - e.changedTouches[0].clientY) * 0.5;
       if (delta > 0) {
@@ -142,8 +169,9 @@
     <div bind:this={profileContainer}>
       <Questionnaire data={offeredProfiles[0]} />
     </div>
-    {#if isProfileEnd}
+    {#if isProfileEnd && isMoving}
       <div
+        out:spin={{ duration: 8000 }}
         class="bg-accent/25 max-w-15 max-h-27 rounded-full mx-auto overflow-hidden"
         style:width="{elementSize}px"
         style:height="{elementSize}px"
@@ -151,13 +179,17 @@
         <p style:font-size="min(30px, {elementSize}px)" class="text-center">
           &#8593;
         </p>
-        <img
-          class="rounded-full p-1 aspect-square object-cover"
-          src={pb.buildURL(
-            `/api/files/_pb_users_auth_/${offeredProfiles[1].id}/${offeredProfiles[1].user_photo}`,
-          )}
-          alt="userImage"
-        />
+        {#if elementSize >= 35}
+          <img
+            class="rounded-full p-1 aspect-square object-cover max-w-15 max-h-15 mx-auto"
+            style:width="{elementSize - 35}px"
+            style:height="{elementSize - 35}px"
+            src={pb.buildURL(
+              `/api/files/_pb_users_auth_/${offeredProfiles[1].id}/${offeredProfiles[1].user_photo}`,
+            )}
+            alt="userImage"
+          />
+        {/if}
       </div>
     {/if}
   {/if}
