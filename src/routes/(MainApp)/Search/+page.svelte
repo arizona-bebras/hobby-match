@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { ProgressRing } from '@skeletonlabs/skeleton-svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
   import { goto } from '$app/navigation';
   import Questionnaire from '$lib/components/profile/Questionnaire.svelte';
@@ -127,7 +128,16 @@
   }}
 >
   {#if offeredProfiles.length <= 0}
-    <p>Загрузка</p>
+    <div
+      class="flex flex-col items-center justify-center w-screen h-screen font-[Inter] text-lg font-medium"
+    >
+      <ProgressRing
+        value={null}
+        meterStroke="stroke-accent"
+        trackStroke="stroke-accent/25"
+      ></ProgressRing>
+      <p class="pt-4 text-text-color">Ищем подходящие профили...</p>
+    </div>
   {:else}
     <div bind:this={profileContainer}>
       <Questionnaire data={offeredProfiles[0]} />
