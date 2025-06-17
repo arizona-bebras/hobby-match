@@ -72,7 +72,7 @@
 </script>
 
 <div
-  class="overflow-y-auto"
+  class="overflow-y-auto w-full"
   bind:this={screenContainer}
   ontouchstart={(e) => {
     console.log(e, isProfileEnd);
