@@ -11,7 +11,8 @@
   import TgPostWidget from '$lib/components/widgets/TgPostWidget.svelte';
   import type { Widget } from '$lib/widgetTypes/widgetTypes';
 
-  let { widget }: { widget: Widget } = $props();
+  let { widget, isViewingMode }: { widget: Widget; isViewingMode: boolean } =
+    $props();
 </script>
 
 {#if widget.data.type === 'text'}
@@ -27,7 +28,7 @@
 {:else if widget.data.type === 'progress_bar'}
   <ProgressWidget data={widget.data} />
 {:else if widget.data.type === 'todo'}
-  <ToDoWidget data={widget.data} widgetId={widget.id} />
+  <ToDoWidget data={widget.data} widgetId={widget.id} {isViewingMode} />
 {:else if widget.data.type === 'survey' && widget.additionalData?.type === 'survey'}
   <SurveyWidget
     data={widget.data}

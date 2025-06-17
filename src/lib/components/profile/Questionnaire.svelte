@@ -30,7 +30,7 @@
 
   {#each data.widgets as widget (widget.id)}
     <div class="relative mb-2">
-      <RenderWidget {widget} />
+      <RenderWidget {widget} isViewingMode={true} />
     </div>
   {/each}
 </div>
