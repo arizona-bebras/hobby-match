@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const videoSchema = z.object({
   link: z.string().refine((value) => getYouTubeVideoId(value) !== null, {
-    message: 'Неверный формат ссылки.',
+    message: 'Неверный формат ссылки',
   }),
   // .regex(
   //   /^(https?:\/\/(?:www\.)?(?:youtube\.com\/embed\/[a-zA-Z0-9_-]{11}(?:\?si=[a-zA-Z0-9_-]+)?|rutube\.ru\/play\/embed\/[a-zA-Z0-9]+(?:\/)?|www\.tiktok\.com\/player\/v1\/\d+))$/,

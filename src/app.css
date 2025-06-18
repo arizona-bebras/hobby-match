@@ -104,7 +104,7 @@
 
 @layer components {
   .GameBox{
-    @apply flex bg-accent/25 p-[10px] rounded-[12px] border-solid border-[#7c7c7c] mb-[8px] w-full;
+    @apply flex bg-accent/25 p-[10px] rounded-[12px] border-solid border-[#7c7c7c] w-full;
   }
   .TextBox{
     @apply border-l-[2px] border-accent w-[100%] pl-2;

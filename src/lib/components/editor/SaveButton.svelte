@@ -1,14 +1,21 @@
 <script lang="ts">
+  import { cn } from '$lib/utils.js';
   let {
     onClick,
     isButtonActive,
-  }: { onClick: () => void; isButtonActive: boolean } = $props();
+    class: className = '',
+  }: {
+    onClick: () => void;
+    isButtonActive: boolean;
+    class?: string;
+  } = $props();
 </script>
 
 <button
   type="button"
   onclick={onClick}
   disabled={!isButtonActive}
-  class="w-full h-12 {isButtonActive ? 'bg-accent' : 'bg-inactive'} rounded-xl"
-  >Сохранить</button
+  class:bg-accent={isButtonActive}
+  class:bg-inactive={!isButtonActive}
+  class={cn('w-full h-12 rounded-xl mt-9', className)}>Сохранить</button
 >

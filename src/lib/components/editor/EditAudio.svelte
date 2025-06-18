@@ -70,7 +70,6 @@
             {#snippet children({ props })}
               <Input
                 placeholder="https://soundcloud.com/..."
-                class="mb-9"
                 {...props}
                 bind:value={$formData.link}
               />

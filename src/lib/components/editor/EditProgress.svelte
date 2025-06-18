@@ -42,7 +42,14 @@
     },
   });
 
-  const { form: formData, enhance, validateForm, allErrors, reset } = form;
+  const {
+    form: formData,
+    enhance,
+    validateForm,
+    allErrors,
+    reset,
+    errors,
+  } = form;
 
   $effect(() => {
     if (widgetId) {
@@ -97,7 +104,6 @@
                     {...props}
                     bind:value={$formData.currentProgress}
                     type="number"
-                    placeholder="Напишите что-нибудь, предположим, о себе"
                     class=""
                   />
                 {/snippet}
@@ -114,7 +120,6 @@
                     {...props}
                     bind:value={$formData.maxProgress}
                     type="number"
-                    placeholder="Напишите что-нибудь, предположим, о себе"
                     class=""
                   />
                 {/snippet}
@@ -124,15 +129,19 @@
           </div>
         </div>
 
-        {#if $allErrors.length}
-          <ul>
-            {#each $allErrors as error}
-              <li>
-                <p class="text-destructive">{error.messages.join('. ')}</p>
-              </li>
-            {/each}
-          </ul>
+        {#if $errors._errors !== undefined}
+          <p class="text-destructive">{$errors?._errors}</p>
         {/if}
+
+        <!--{#if $allErrors.length}-->
+        <!--  <ul>-->
+        <!--    {#each $allErrors as error}-->
+        <!--      <li>-->
+        <!--        <p class="text-destructive">{error.messages.join('. ')}</p>-->
+        <!--      </li>-->
+        <!--    {/each}-->
+        <!--  </ul>-->
+        <!--{/if}-->
 
         {#if widgetId !== undefined}
           <DeleteButton {widgetId} />

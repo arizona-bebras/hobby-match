@@ -158,7 +158,7 @@
                 {...props}
                 bind:value={userSteamUrl}
                 placeholder="https://steamcommunity.com/..."
-                class="mb-6.75"
+                class="mb-1"
               />
             {/snippet}
           </Form.Control>
@@ -170,7 +170,8 @@
             bind:value={$formData.gameId}
             name="gameId"
           >
-            <Select.Trigger class="w-fit mb-9"
+            <Select.Trigger
+              class="w-full mt-2 text-ellipsis overflow-clip whitespace-nowrap"
               >{steamGames.length >= 1
                 ? steamGames.find(
                     (game) => game.appid === parseInt($formData.gameId),

@@ -74,7 +74,6 @@
             {#snippet children({ props })}
               <Input
                 placeholder="https://t.me/..."
-                class="mb-9"
                 {...props}
                 bind:value={$formData.link}
               />

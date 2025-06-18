@@ -74,7 +74,6 @@
                 {...props}
                 bind:value={$formData.text}
                 placeholder="Напишите что-нибудь, предположим, о себе"
-                class="mb-6.75"
               />
             {/snippet}
           </Form.Control>
