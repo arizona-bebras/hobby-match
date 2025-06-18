@@ -9,7 +9,7 @@
   import { pb } from '$lib';
   import { fade, scale, slide, fly, draw, blur } from 'svelte/transition';
   import { Tween } from 'svelte/motion';
-  import { cubicOut } from 'svelte/easing';
+  import { cubicOut, quintOut } from 'svelte/easing';
   import { elasticOut } from 'svelte/easing';
 
   let isMousePress = $state(false);
@@ -79,19 +79,20 @@
   // $inspect(elementSize);
   $inspect(isMoving);
 
-  function spin(node, { duration }) {
+  function close(node: HTMLDivElement, { duration }: { duration: number }) {
+    const startWidth = node.offsetWidth;
+    const startHeight = node.offsetHeight;
+
     return {
       duration,
-      css: (t, u) => {
-        const eased = elasticOut(t);
-
+      css: (t) => {
+        const eased = quintOut(t);
         return `
-					transform: scale(${eased}) rotate(${eased * 1080}deg);
-					color: hsl(
-						${Math.trunc(t * 360)},
-						${Math.min(100, 1000 * u)}%,
-						${Math.min(50, 500 * u)}%
-					);`;
+          width: ${startWidth * t}px;
+          height: ${startHeight * t}px;
+          opacity: ${t};
+          overflow: hidden;
+        `;
       },
     };
   }
@@ -171,7 +172,7 @@
     </div>
     {#if isProfileEnd && isMoving}
       <div
-        out:spin={{ duration: 8000 }}
+        out:close={{ duration: 200 }}
         class="bg-accent/25 max-w-15 max-h-27 rounded-full mx-auto overflow-hidden"
         style:width="{elementSize}px"
         style:height="{elementSize}px"
