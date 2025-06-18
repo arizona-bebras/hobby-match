@@ -49,6 +49,20 @@
       elementSize = 0;
     }
   });
+  let hapticAvailable = $state(true);
+  let hapticDisable = $state(false);
+  $effect(() => {
+    if (elementSize >= 108 && hapticAvailable) {
+      window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+      hapticAvailable = false;
+      hapticDisable = false;
+    } else if (elementSize <= 105 && elementSize >= 20 && !hapticDisable) {
+      window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+      hapticAvailable = true;
+      hapticDisable = true;
+    }
+  });
+
   $effect(() => {
     if (offeredProfiles.length <= 2) {
       getProfiles().then(
