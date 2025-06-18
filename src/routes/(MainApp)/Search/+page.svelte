@@ -71,7 +71,6 @@
     }
   });
   $effect(() => {
-    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAA');
     if (
       profileContainer &&
       screenContainer &&
@@ -91,7 +90,7 @@
   }
   let isMoving = $state(false);
   // $inspect(elementSize);
-  $inspect(isMoving);
+  $inspect(elementSize);
 
   function close(node: HTMLDivElement, { duration }: { duration: number }) {
     const startWidth = node.offsetWidth;
@@ -139,6 +138,7 @@
     }
   }}
   onwheel={(e) => {
+    isMoving = true;
     if (isProfileEnd) {
       if (e.deltaY > 0) {
         elementSize += e.deltaY / 10;
