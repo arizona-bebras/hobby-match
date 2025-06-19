@@ -86,6 +86,7 @@
                   alt="loadedImage"
                 />
                 <button
+                  class="absolute right-4 top-4"
                   onclick={async () => {
                     await pb.collection('widgets').update(widgetId, {
                       'files-': [url.split('/').pop()],
@@ -96,7 +97,7 @@
                   }}
                   type="button"
                 >
-                  <X class="absolute right-3 top-3 text-black" />
+                  <X class=" text-accent" />
                 </button>
               </div>
             {/each}
@@ -109,11 +110,12 @@
                 alt="loadedImage"
               />
               <button
+                class="absolute right-4 top-4"
                 onclick={() =>
                   ($formData.files = $formData.files.toSpliced(index, 1))}
                 type="button"
               >
-                <X class="absolute right-3 top-3 text-black" />
+                <X class="text-accent" />
               </button>
             </div>
           {/each}

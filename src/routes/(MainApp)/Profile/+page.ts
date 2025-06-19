@@ -24,18 +24,26 @@ export const load: PageLoad = async ({ data, depends }) => {
       additionalData: {},
     }));
     const pageData: PageData = {
+      id: pb.authStore.record!.id,
       user_photo: pb.authStore.record!.user_photo,
+      user_info: pb.authStore.record!.user_info,
       miniapp_name: pb.authStore.record!.miniapp_name,
       age: pb.authStore.record!.age,
       location: pb.authStore.record!.location,
-      interests: await pb.collection('users').getOne(pb.authStore.record!.id, {
-        fields: 'expand',
-        expand: 'interests',
-        requestKey: null,
-      }),
+      interests: await pb
+        .collection('users')
+        .getOne(pb.authStore.record!.id, {
+          fields: 'expand',
+          expand: 'interests',
+          requestKey: null,
+        })
+        .then((result) => {
+          return result.expand?.interests;
+        }),
       widgets: structuredClone(widgets),
       textForm,
     };
+    console.log(pageData);
     return pageData;
   }
   throw new Error('Data validation error');

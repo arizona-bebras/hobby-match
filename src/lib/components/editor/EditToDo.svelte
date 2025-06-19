@@ -81,7 +81,6 @@
                 {...props}
                 bind:value={$formData.title}
                 placeholder="Я хочу..."
-                class="mb-6.75"
               />
             {/snippet}
           </Form.Control>

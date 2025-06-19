@@ -3,7 +3,8 @@
   import { pb } from '$lib';
   import { scrollY } from 'svelte/reactivity/window';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
-  let { data, changeMode }: { data: PageData; changeMode: boolean } = $props();
+  let { data, changeMode = false }: { data: PageData; changeMode?: boolean } =
+    $props();
 
   let image: HTMLImageElement | undefined = $state();
   let width = $derived(image?.width ?? 300);
@@ -12,6 +13,8 @@
   );
   let topLayer: boolean = $derived((scrollY.current ?? 0) > height);
   let topLayerContainer: HTMLDivElement | undefined = $state();
+  $inspect(data);
+  console.log(pb.files.getURL(data, data.user_photo));
 </script>
 
 {#if topLayer || changeMode}
@@ -28,8 +31,9 @@
   ></div>
 {/if}
 <!--src={pb.files.getURL(pb.authStore.record ?? {}, data.user_photo)}-->
+<!--src="https://imgv3.fotor.com/images/slider-image/A-clear-close-up-photo-of-a-woman.jpg"-->
 <img
-  src="https://imgv3.fotor.com/images/slider-image/A-clear-close-up-photo-of-a-woman.jpg"
+  src={pb.buildURL(`/api/files/_pb_users_auth_/${data.id}/${data.user_photo}`)}
   alt="person"
   class="w-full rounded-b-3xl object-cover transition-[height]"
   style="height: {!changeMode ? height : 0}px"

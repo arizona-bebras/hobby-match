@@ -66,7 +66,7 @@
         onclick={() => {
           if (completedStages.includes(stage[0])) currentStage = stage[0];
         }}
-        class="border-t-2 w-30.75 p-2.5 {completedStages.includes(stage[0])
+        class="border-t-2 w-1/3 p-2.5 {completedStages.includes(stage[0])
           ? 'text-accent/50'
           : currentStage === stage[0]
             ? 'text-accent'

@@ -2,6 +2,7 @@ import { pb } from '$lib/index';
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 if (browser) {
+  window.Telegram.WebApp.disableVerticalSwipes();
   pb.send('/api/collections/users/auth-with-telegram', {
     method: 'POST',
     body: {

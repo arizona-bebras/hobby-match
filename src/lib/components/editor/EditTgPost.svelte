@@ -66,13 +66,14 @@
         <p class="text-accent-foreground font-medium pb-4.5">
           Виджет "Телеграм Пост"
         </p>
-        <p class="pb-2">Введите ссылку на пост из публичного канала.</p>
+        <p class="pb-2 text-text-color">
+          Введите ссылку на пост из публичного канала.
+        </p>
         <Form.Field {form} name="link">
           <Form.Control>
             {#snippet children({ props })}
               <Input
                 placeholder="https://t.me/..."
-                class="mb-9"
                 {...props}
                 bind:value={$formData.link}
               />

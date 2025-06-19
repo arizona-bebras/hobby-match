@@ -21,6 +21,7 @@
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
 
   let { data }: { data: PageData } = $props();
+  console.log(data);
 </script>
 
 <Header {data} />
@@ -29,7 +30,7 @@
 
   {#each data.widgets as widget (widget.id)}
     <div class="relative mb-2">
-      <RenderWidget {widget} />
+      <RenderWidget {widget} isViewingMode={true} />
     </div>
   {/each}
 </div>

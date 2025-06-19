@@ -33,7 +33,7 @@
               onClick(type);
             }}
           >
-            {name}
+            <p class="text-text-color">{name}</p>
           </button>
         </Dialog.Title>
       {/each}

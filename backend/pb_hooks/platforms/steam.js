@@ -9,7 +9,7 @@ function resolveSteamLink(link) {
   } else if (handle[1] === 'id') {
     const vanity = require(`${__hooks}/steamapi.js`).request(
       'GET',
-      'getSteamLevel',
+      'resolveVanityUrl',
       `vanityurl=${handle[2]}`,
     );
     if(!vanity.json.id) return null;

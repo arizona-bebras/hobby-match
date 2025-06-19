@@ -150,7 +150,7 @@
         <p class="text-accent-foreground font-medium pb-4.5">
           Виджет "Время игры"
         </p>
-        <p class="pb-2">Введите ссылку на свой аккаунт Steam</p>
+        <p class="pb-2 text-text-color">Введите ссылку на свой аккаунт Steam</p>
         <Form.Field {form} name="accountLink">
           <Form.Control>
             {#snippet children({ props })}
@@ -158,7 +158,7 @@
                 {...props}
                 bind:value={userSteamUrl}
                 placeholder="https://steamcommunity.com/..."
-                class="mb-6.75"
+                class="mb-1"
               />
             {/snippet}
           </Form.Control>
@@ -170,12 +170,13 @@
             bind:value={$formData.gameId}
             name="gameId"
           >
-            <Select.Trigger class="w-fit mb-9"
+            <Select.Trigger
+              class="w-full mt-2 text-ellipsis overflow-clip whitespace-nowrap"
               >{steamGames.length >= 1
                 ? steamGames.find(
                     (game) => game.appid === parseInt($formData.gameId),
                   )?.name || 'Выберите игру'
-                : '2'}</Select.Trigger
+                : 'Загрузка...'}</Select.Trigger
             >
             <Select.Content class="h-[50vh]">
               {#each steamGames as game}

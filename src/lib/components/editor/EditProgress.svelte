@@ -42,7 +42,14 @@
     },
   });
 
-  const { form: formData, enhance, validateForm, allErrors, reset } = form;
+  const {
+    form: formData,
+    enhance,
+    validateForm,
+    allErrors,
+    reset,
+    errors,
+  } = form;
 
   $effect(() => {
     if (widgetId) {
@@ -74,7 +81,7 @@
         <p class="text-accent-foreground font-medium pb-4.5">
           Виджет "Прогресс"
         </p>
-        <p class="pb-2">Задача:</p>
+        <p class="pb-2 text-text-color">Задача:</p>
         <Form.Field {form} name="description">
           <Form.Control>
             {#snippet children({ props })}
@@ -89,7 +96,7 @@
         </Form.Field>
         <div class="flex flex-row justify-between w-full">
           <div class="w-[45%]">
-            <p>Текущий:</p>
+            <p class="text-text-color">Текущий:</p>
             <Form.Field {form} name="currentProgress">
               <Form.Control>
                 {#snippet children({ props })}
@@ -97,7 +104,6 @@
                     {...props}
                     bind:value={$formData.currentProgress}
                     type="number"
-                    placeholder="Напишите что-нибудь, предположим, о себе"
                     class=""
                   />
                 {/snippet}
@@ -106,7 +112,7 @@
             </Form.Field>
           </div>
           <div class="w-[45%]">
-            <p class="">Цель:</p>
+            <p class="text-text-color">Цель:</p>
             <Form.Field {form} name="maxProgress">
               <Form.Control>
                 {#snippet children({ props })}
@@ -114,7 +120,6 @@
                     {...props}
                     bind:value={$formData.maxProgress}
                     type="number"
-                    placeholder="Напишите что-нибудь, предположим, о себе"
                     class=""
                   />
                 {/snippet}
@@ -124,15 +129,19 @@
           </div>
         </div>
 
-        {#if $allErrors.length}
-          <ul>
-            {#each $allErrors as error}
-              <li>
-                <p class="text-destructive">{error.messages.join('. ')}</p>
-              </li>
-            {/each}
-          </ul>
+        {#if $errors._errors !== undefined}
+          <p class="text-destructive">{$errors?._errors}</p>
         {/if}
+
+        <!--{#if $allErrors.length}-->
+        <!--  <ul>-->
+        <!--    {#each $allErrors as error}-->
+        <!--      <li>-->
+        <!--        <p class="text-destructive">{error.messages.join('. ')}</p>-->
+        <!--      </li>-->
+        <!--    {/each}-->
+        <!--  </ul>-->
+        <!--{/if}-->
 
         {#if widgetId !== undefined}
           <DeleteButton {widgetId} />

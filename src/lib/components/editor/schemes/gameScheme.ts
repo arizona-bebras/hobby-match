@@ -5,6 +5,7 @@ export const gameScheme = z.object({
     .string()
     .regex(
       /^(?:https:\/\/)?steamcommunity\.com\/((?:id)|(?:profiles))\/(\w+)/gm,
+      'Неверный формат ссылки',
     ),
   gameId: z.string(),
 });

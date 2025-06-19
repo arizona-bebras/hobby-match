@@ -13,6 +13,7 @@
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
+  import { Info } from '@lucide/svelte';
   let {
     widgetId,
     onClose,
@@ -78,7 +79,12 @@
     <Sheet.Header>
       <form method="POST" use:enhance>
         <p class="text-accent-foreground font-medium pb-4.5">Виджет "Видео"</p>
-        <p class="pb-2">Введите ссылку на видео</p>
+        <p class="pb- text-text-color">Введите ссылку на видео</p>
+
+        <div class="flex flex-row pb-2 gap-1 text-gray-400 items-center">
+          <Info class="inline-block size-4" />
+          <p class=" ">Платформы: YouTube, RuTube, TikTok</p>
+        </div>
         <Form.Field {form} name="link">
           <Form.Control>
             {#snippet children({ props })}

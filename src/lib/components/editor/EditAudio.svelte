@@ -64,13 +64,12 @@
     <Sheet.Header>
       <form method="POST" use:enhance>
         <p class="text-accent-foreground font-medium pb-4.5">Виджет "Аудио"</p>
-        <p class="pb-2">Введите ссылку на SoundCloud</p>
+        <p class="pb-2 text-text-color">Введите ссылку на SoundCloud</p>
         <Form.Field {form} name="link">
           <Form.Control>
             {#snippet children({ props })}
               <Input
                 placeholder="https://soundcloud.com/..."
-                class="mb-9"
                 {...props}
                 bind:value={$formData.link}
               />

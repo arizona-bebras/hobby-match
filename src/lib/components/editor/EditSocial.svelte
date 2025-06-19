@@ -13,6 +13,7 @@
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
   import type { SocialMediaLink } from '$lib/widgetTypes/widgetTypes';
+  import { Info } from '@lucide/svelte';
   let {
     widgetId,
     onClose,
@@ -80,7 +81,15 @@
         <p class="text-accent-foreground font-medium pb-2">
           Виджет "Социальная сеть"
         </p>
-        <p class="pb-2">Вы можете ввести ссылку на канал или личный аккаунт</p>
+        <p class="pb-1 text-text-color">
+          Вы можете ввести ссылку на канал или личный аккаунт
+        </p>
+        <div class="flex flex-row pb-2 gap-1 text-gray-400 items-start">
+          <Info class="inline-block size-4 mt-1" />
+          <span class="align-top">
+            Платформы: YouTube, Twitch, VK, Steam, Telegram
+          </span>
+        </div>
         <Form.Field {form} name="link">
           <Form.Control>
             {#snippet children({ props })}
