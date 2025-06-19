@@ -55,5 +55,8 @@
     "tailwindcss": "^4.1.8",
     "typescript-eslint": "^8.27.0",
     "vite-plugin-mkcert": "^1.17.8"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.44.0"
   }
 }
