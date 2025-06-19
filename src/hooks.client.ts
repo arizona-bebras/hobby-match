@@ -2,6 +2,9 @@ import { pb } from '$lib/index';
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 if (browser) {
+  if (!window.Telegram.WebApp.isVersionAtLeast('7.0')) {
+    window.location.replace('https://t.me/detoshumibot');
+  }
   window.Telegram.WebApp.disableVerticalSwipes();
   pb.send('/api/collections/users/auth-with-telegram', {
     method: 'POST',
