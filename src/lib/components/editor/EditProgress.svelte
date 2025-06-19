@@ -27,6 +27,7 @@
     SPA: true,
     validators: zodClient(progressScheme),
     onSubmit: async () => {
+      isLoading = true;
       const widget: ProgressBar = {
         type: 'progress_bar',
         currentProgress: $formData.currentProgress,
@@ -38,6 +39,7 @@
       } else {
         await createWidget(widget);
       }
+      isLoading = false;
       onClose();
     },
   });
@@ -51,6 +53,7 @@
     errors,
   } = form;
 
+  let isLoading = $state(false);
   $effect(() => {
     if (widgetId) {
       pb.collection('widgets')
@@ -148,6 +151,7 @@
         {/if}
 
         <SaveButton
+          {isLoading}
           onClick={() => {
             form.submit();
           }}

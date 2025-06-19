@@ -7,7 +7,7 @@ export const gameScheme = z.object({
       /^(?:https:\/\/)?steamcommunity\.com\/((?:id)|(?:profiles))\/(\w+)/gm,
       'Неверный формат ссылки',
     ),
-  gameId: z.string(),
+  gameId: z.string().min(1),
 });
 
 export type FormSchema = typeof gameScheme;

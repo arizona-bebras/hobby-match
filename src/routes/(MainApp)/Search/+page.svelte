@@ -17,7 +17,11 @@
   let screenContainer: HTMLDivElement | undefined = $state();
   let offeredProfiles: PageData[] = $state([]);
   let currentProfile = $state(0);
-  useTelegramButton(() => goto('/Profile'));
+  useTelegramButton(async () => {
+    window.Telegram.WebApp.MainButton.showProgress();
+    await goto('/Profile');
+    window.Telegram.WebApp.MainButton.hideProgress();
+  });
 
   // let offeredProfiles
 

@@ -24,11 +24,13 @@
     onClose: CallableFunction;
   } = $props();
   let isButtonActive = $state(false);
+  let isLoading = $state(false);
 
   const form = superForm(defaults(zod(socialScheme)), {
     SPA: true,
     validators: zod(socialScheme),
     onSubmit: async () => {
+      isLoading = true;
       const widget: SocialMediaLink = {
         type: 'social_media' as const,
         platform: getPlatform($formData.link)!,
@@ -39,6 +41,7 @@
       } else {
         await createWidget(widget);
       }
+      isLoading = false;
       onClose();
     },
   });
@@ -106,6 +109,7 @@
           <DeleteButton {widgetId} />
         {/if}
         <SaveButton
+          {isLoading}
           onClick={() => {
             form.submit();
           }}

@@ -11,6 +11,7 @@
   import { pb } from '$lib';
   import { invalidate } from '$app/navigation';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
+  import SaveButton from '$lib/components/editor/SaveButton.svelte';
 
   let {
     widgetId,
@@ -28,11 +29,12 @@
   });
 
   let photoInput: HTMLInputElement;
-
+  let isLoading = $state(false);
   const form = superForm(defaults(zod(imageScheme)), {
     SPA: true,
     validators: zod(imageScheme),
     onSubmit: async () => {
+      isLoading = true;
       const widget = {
         type: 'photo' as const,
       };
@@ -41,6 +43,7 @@
       } else {
         await updateWidget(widgetId, widget, $formData.files);
       }
+      isLoading = false;
       onClose();
     },
   });
@@ -147,16 +150,13 @@
         {#if widgetId !== undefined}
           <DeleteButton {widgetId} />
         {/if}
-        <button
-          type="button"
-          onclick={() => {
+        <SaveButton
+          {isLoading}
+          onClick={() => {
             form.submit();
           }}
-          disabled={!isButtonActive}
-          class="w-full h-12 {isButtonActive
-            ? 'bg-accent'
-            : 'bg-inactive'} rounded-xl mt-2">Сохранить</button
-        >
+          {isButtonActive}
+        />
       </form>
     </Sheet.Header>
     <!--      <SuperDebug data={$formData} />-->
