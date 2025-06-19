@@ -6,7 +6,7 @@ from telegram.ext import ContextTypes
 from pocketbase import PocketBase
 import os
 import asyncio
-pb = PocketBase("DB_ADDRESS")
+pb = PocketBase(os.getenv("DB_ADDRESS"))
 DB_ADMIN_LOGIN = os.getenv("DB_ADMIN_LOGIN")
 DB_ADMIN_PASSWORD = os.getenv("DB_ADMIN_PASSWORD")
 bot = Bot(token=os.getenv('BOT_TOKEN'))
