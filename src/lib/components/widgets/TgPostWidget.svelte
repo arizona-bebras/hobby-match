@@ -22,5 +22,9 @@
 </script>
 
 {#key data}
-  <div style="width: 100%;" use:telegramIframe class="overflow-hidden pointer-events-none"></div>
+  <div
+    style="width: 100%;"
+    use:telegramIframe
+    class="overflow-hidden pointer-events-none"
+  ></div>
 {/key}

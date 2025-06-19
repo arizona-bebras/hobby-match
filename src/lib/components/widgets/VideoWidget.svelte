@@ -9,7 +9,7 @@
   let tiktokURL = `https://www.tiktok.com/player/v1/${videId}`;
 </script>
 
-<div class="TextBox">
+<div class="TextBox overflow-hidden pointer-events-none">
   {#if data.platform === 'YouTube'}
     <iframe
       class="w-full aspect-video overflow-hidden"

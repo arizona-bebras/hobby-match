@@ -7,7 +7,9 @@
 
   let urls = $derived.by(() => {
     console.log(additionalData);
-    return additionalData.urls.map((url) => pb.buildURL(`/api/files/${url}`));
+    return additionalData.urls.map((url) =>
+      pb.buildURL(`/api/files/${url}?thumb=350x0`),
+    );
   });
   $inspect(urls);
 </script>
