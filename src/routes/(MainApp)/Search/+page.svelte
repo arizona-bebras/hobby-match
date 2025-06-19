@@ -181,9 +181,11 @@
       <p class="pt-4 text-text-color">Ищем подходящие профили...</p>
     </div>
   {:else}
-    <div bind:this={profileContainer}>
-      <Questionnaire data={offeredProfiles[0]} />
-    </div>
+    {#key currentProfile}
+      <div in:fly={{ duration: 500, y: 200 }} bind:this={profileContainer}>
+        <Questionnaire data={offeredProfiles[0]} />
+      </div>
+    {/key}
     {#if isProfileEnd && isMoving}
       <div
         out:close={{ duration: 200 }}
