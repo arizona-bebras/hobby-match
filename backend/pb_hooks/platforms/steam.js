@@ -44,7 +44,7 @@ module.exports = {
     const gameData = require(`${__hooks}/steamapi.js`).request(
       'GET',
       'getGameHours',
-      `&id=${id}&appid=${appid}`,
+      `id=${id}&appid=${appid}`,
     );
     if (!gameData.json?.game?.game_name) return null;
     return {

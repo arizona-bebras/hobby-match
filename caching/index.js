@@ -57,7 +57,6 @@ server.get('/getGameHours', async (request) => {
       });
     }
   }
-  console.log(cache);
   return { game: cache.get(`game-${id}-${appid}`) };
 });
 
@@ -83,11 +82,12 @@ server.get('/resolveVanityUrl', async (request) => {
 
 server.get('/youtube/getChannelInfo', async (request) => {
   const key = request.query.key;
-  const handle = request.query.handle;
+  const handle = request.query.handle ?? request.query.id;
+  const isId = !request.query.handle;
   if (!cache.has(`yt-${handle}`)) {
-    cache.set(`yt-${handle}`, await getYoutubeChannelInfo(key, handle));
+    cache.set(`yt-${handle}`, await getYoutubeChannelInfo(key, handle, isId));
   }
-  return { subs: cache.get(`yt-${handle}`) };
+  return { info: cache.get(`yt-${handle}`) };
 });
 
 //twitch
