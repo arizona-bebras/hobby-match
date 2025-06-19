@@ -1,38 +1,51 @@
-# sv
+# Shumi.space 🚀❤️‍🔥
+**Shumi.space** — это Telegram Mini App, объединяющее функции социальной сети, хобби-трекера и рекомендательной платформы. Пользователи могут оформлять уникальные профили с помощью виджетов, делиться достижениями, подключать внешние сервисы и находить других по интересам, возрасту и локации. Алгоритм рекомендаций использует векторный поиск для подбора наиболее релевантных анкет.
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+## 👤 Целевая аудитория
+- Подростки и молодежь (14–35 лет)
+- Активные пользователи Telegram и соцсетей
+- Имеют хобби или ищут вдохновение 
+- Хотят самовыражения и общения с единомышленниками
+- Проживают в России и странах СНГ 
 
-## Creating a project
+## 🤔 Проблема, которую решает продукт
 
-If you're seeing this, you've probably already done this step. Congrats!
+1. Отсутствие качественного и адаптированного под локальный рынок приложения для знакомств и общения на основе хобби
+2. Перегруженность традиционных соцсетей и дейтинг-приложений нерелевантным контентом
+3. Сложность поиска подходящих людей по интересам
+4. Недостаточная персонализация профилей в аналогичных решениях
 
-```bash
-# create a new project in the current directory
-npx sv create
+## 📊 Аналоги
+**Amino, Hobbytwin, GoSocial, Patook, Tinder** — частично решают задачи, но не адаптированы под Telegram, не локализованы, имеют устаревший интерфейс или фокусируются на другом сегменте
 
-# create a new project in my-app
-npx sv create my-app
-```
+**Shumi** — единственное решение в формате Telegram Mini App с кастомизацией, рекомендациями и полной интеграцией с соцсетями
 
-## Developing
+## 🌟 Наши преимущества
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+1. Бесплатный доступ ко всем функциям
+2. Работает как Telegram Mini App — не требует установки
+3. Гибкая кастомизация анкеты с помощью виджетов
+4. Современные рекомендательные алгоритмы
+5. Интеграция с внешними платформами (YouTube, VK, Steam и др.)
 
-```bash
-npm run dev
+## 👾 Функционал
+* Создание и оформление анкеты с помощью виджетов
+* Указание интересов и настроек приватности
+* Просмотр анкет других пользователей по интересам
+* Общение через Telegram
+* Получение рекомендаций и отслеживание прогресса в хобби
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+## 💾 Технологии
+* Frontend: SvelteKit + Vite
+* Backend: PocketBase (REST API + real-time)
+* Серверная логика: Cloudflare Workers + Fastify
+* Рекомендации: Cloudflare Vectorize + BGE-M3
+* Интеграции: VK, Steam, YouTube, Telegram и др.
+* CI/CD: Автосборка через Coolify и Cloudflare
 
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## 🔥 Особенности
+* Авторизация через Telegram — без регистрации
+* Гибкость пользовательского профиля и визуального оформления
+* Семантический поиск по интересам, а не только по тегам
+* Оптимизировано под мобильные устройства
+* Высокая производительность и масштабируемость
