@@ -22,9 +22,15 @@
 </script>
 
 {#key data}
-  <div
-    style="width: 100%;"
-    use:telegramIframe
-    class="overflow-hidden pointer-events-none"
-  ></div>
+  <button
+    onclick={() =>
+      window.Telegram.WebApp.openTelegramLink(`https://t.me/${data.link}`)}
+    class="w-full"
+    aria-label="Пост"
+  >
+    <div
+      use:telegramIframe
+      class="w-full overflow-hidden pointer-events-none"
+    ></div>
+  </button>
 {/key}

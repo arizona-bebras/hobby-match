@@ -4,39 +4,31 @@
   let { data } = $props();
   let videId = getYouTubeVideoId(data.link);
 
-  let youtubeURL = `https://www.youtube.com/embed/${videId}`;
-  let rutubeURL = `https://rutube.ru/play/embed/${videId}`;
-  let tiktokURL = `https://www.tiktok.com/player/v1/${videId}`;
+  let url;
+  switch (data.platform) {
+    case 'YouTube':
+      url = `https://www.youtube.com/embed/${videId}`;
+      break;
+    case 'Rutube':
+      url = `https://rutube.ru/play/embed/${videId}`;
+      break;
+    case 'TikTok':
+      url = `https://www.tiktok.com/player/v1/${videId}`;
+      break;
+  }
 </script>
 
-<div class="TextBox overflow-hidden pointer-events-none">
-  {#if data.platform === 'YouTube'}
-    <iframe
-      class="w-full aspect-video overflow-hidden"
-      scrolling="no"
-      src={youtubeURL}
-      title="YouTube Video"
-      frameborder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      referrerpolicy="strict-origin-when-cross-origin"
-      allowfullscreen
-    ></iframe>
-  {:else if data.platform === 'Rutube'}
-    <iframe
-      class="w-full aspect-video overflow-hidden"
-      scrolling="no"
-      title="Rutube Video"
-      src={rutubeURL}
-      frameBorder="0"
-      allow="clipboard-write; autoplay"
-      allowFullScreen
-    ></iframe>
-  {:else if data.platform === 'TikTok'}
-    <iframe
-      class="w-full aspect-square overflow-hidden"
-      scrolling="no"
-      title="TikTok Video"
-      src={tiktokURL}
-    ></iframe>
-  {/if}
-</div>
+<button
+  class="TextBox"
+  onclick={() => window.Telegram.WebApp.openLink(data.link)}
+  aria-label="Видео"
+>
+  <iframe
+    class="w-full aspect-video overflow-hidden pointer-events-none"
+    scrolling="no"
+    src={url}
+    title="Видео"
+    frameborder="0"
+    referrerpolicy="strict-origin-when-cross-origin"
+  ></iframe>
+</button>

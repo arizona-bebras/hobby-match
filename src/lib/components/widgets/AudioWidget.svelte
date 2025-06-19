@@ -30,8 +30,13 @@
   let trackIframePromise = getEmbedCode(data.link);
 </script>
 
-{#await trackIframePromise}
-  <p></p>
-{:then trackIframe}
-  {@html trackIframe}
-{/await}
+<button
+  onclick={() => window.Telegram.WebApp.openLink(data.link)}
+  class="w-full"
+>
+  {#await trackIframePromise}
+    <p>Загрузка...</p>
+  {:then trackIframe}
+    {@html trackIframe}
+  {/await}
+</button>
