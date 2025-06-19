@@ -78,8 +78,8 @@
           {socialMediaData.username}
         {:else if socialMediaData.type === 'VK'}
           {socialMediaData.name}
-        {:else}
-          dev
+        {:else if data.platform === 'Telegram'}
+          Telegram
         {/if}
       </p>
 
@@ -106,7 +106,7 @@
             'подписчиков',
           ])}
         {:else}
-          dev
+          {data.link}
         {/if}
       </p>
     </div>

@@ -23,7 +23,7 @@
   <GameWidget data={widget.additionalData} />
 {:else if widget.data.type === 'video'}
   <VideoWidget data={widget.data} />
-{:else if widget.data.type === 'social_media' && widget.additionalData?.type !== 'photo' && widget.additionalData?.type !== 'survey' && widget.additionalData?.type !== undefined}
+{:else if widget.data.type === 'social_media' && widget.additionalData?.type !== 'photo' && widget.additionalData?.type !== 'survey'}
   <SocialWidget data={widget.data} socialMediaData={widget.additionalData} />
 {:else if widget.data.type === 'progress_bar'}
   <ProgressWidget data={widget.data} />
