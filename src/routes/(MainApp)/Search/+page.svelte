@@ -11,12 +11,15 @@
   import { Tween } from 'svelte/motion';
   import { cubicOut, quintOut } from 'svelte/easing';
   import { elasticOut } from 'svelte/easing';
+  import { Plus, Pencil, Save, Heart, HeartOff } from '@lucide/svelte';
+  import LikeButton from '$lib/components/search/LikeButton.svelte';
 
   let isMousePress = $state(false);
   let profileContainer: HTMLDivElement | undefined = $state();
   let screenContainer: HTMLDivElement | undefined = $state();
   let offeredProfiles: PageData[] = $state([]);
   let currentProfile = $state(0);
+  let liked: boolean = $state(false);
   useTelegramButton(() => goto('/Profile'));
 
   // let offeredProfiles
@@ -79,6 +82,15 @@
       isProfileEnd = true;
     }
   });
+  // $effect(() => {
+  //   if (liked && touchStartPosition !== null) {
+  //     console.log("LIKEDLIKEDLIKEDLIKED")
+  //     pb.collection('likes').create({
+  //       user: pb.authStore.record!.id,
+  //       liked_user: offeredProfiles[0].id
+  //     })
+  //   }
+  // });
   async function getProfiles(): Promise<PageData[]> {
     const response = await pb.send('/worker/feed', {
       method: 'GET',
@@ -181,6 +193,26 @@
       <p class="pt-4 text-text-color">Ищем подходящие профили...</p>
     </div>
   {:else}
+    <button
+      onclick={() => {
+        if (!liked) {
+          pb.collection('likes').create({
+            user: pb.authStore.record!.id,
+            liked_user: offeredProfiles[0].id
+          })
+        }
+        liked = !liked
+        console.log("LIKEDLIKEDLIKEDLIKED")
+        }}
+      class="bg-accent size-12.5 fixed right-6.5 bottom-5 z-2 flex items-center justify-center rounded-xl"
+    >
+      {#if !liked}
+        <Heart class="size-6 text-text-color" />
+      {:else}
+        <HeartOff class="size-6 text-text-color" />
+      {/if} 
+    </button>
+   
     <div bind:this={profileContainer}>
       <Questionnaire data={offeredProfiles[0]} />
     </div>
