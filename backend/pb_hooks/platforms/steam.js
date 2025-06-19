@@ -2,7 +2,7 @@
 /* eslint-disable */
 
 function resolveSteamLink(link) {
-  const handle = /^(?:https?:\/\/)?steamcommunity\.com\/(profiles|id)\/([a-zA-Z0-9]+)/.exec(link);
+  const handle = /^(?:https?:\/\/)?steamcommunity\.com\/(profiles|id)\/([a-zA-Z0-9_.-]+)/.exec(link);
   if (!link || !handle || handle.length !== 3) return null;
   if (handle[1] === 'profiles') {
     return handle[2];
