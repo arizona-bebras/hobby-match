@@ -238,7 +238,7 @@
             style:width="{elementSize - 35}px"
             style:height="{elementSize - 35}px"
             src={pb.buildURL(
-              `/api/files/_pb_users_auth_/${offeredProfiles[1].id}/${offeredProfiles[1].user_photo}`,
+              `/api/files/_pb_users_auth_/${offeredProfiles[1].id}/${offeredProfiles[1].user_photo}?thumb=350x0`,
             )}
             alt="userImage"
           />

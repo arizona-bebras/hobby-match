@@ -84,7 +84,7 @@
             {#each imageUrls as url, i}
               <div class="w-full h-auto bg-accent/45 rounded-2xl relative mb-4">
                 <img
-                  src={pb.buildURL(`/api/files/${url}`)}
+                  src={pb.buildURL(`/api/files/${url}?thumb=350x0`)}
                   class="p-4"
                   alt="loadedImage"
                 />
