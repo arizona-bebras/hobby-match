@@ -1,11 +1,11 @@
 import { z } from 'zod';
+import { getLocalTimeZone, today } from '@internationalized/date';
 
 export const informationSchema = z.object({
   miniapp_name: z
     .string()
     .min(2, 'Длина должна быть больше 2-ух символов')
     .max(50, 'Длина не должна быть больше 50-ти символов'),
-  // @ts-expect-error sex
   gender: z.enum(['male', 'female']),
   birth_date: z.string().datetime(),
   location: z

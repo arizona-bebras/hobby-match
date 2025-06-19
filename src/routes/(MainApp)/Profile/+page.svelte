@@ -29,17 +29,20 @@
   //   changeMode = !changeMode;
   // });
 
-  onMount(() => {
+  $effect(() => {
     window.Telegram.WebApp.MainButton.setText(
-      // changeMode ? 'Сохранить' : 'Изменить виджеты',
-      'Просмотр Анкет',
+      changeMode ? 'Сохранить' : 'Просмотр анкет',
     );
   });
 
   useTelegramButton(async () => {
-    window.Telegram.WebApp.MainButton.showProgress();
-    await goto('/Search');
-    window.Telegram.WebApp.MainButton.hideProgress();
+    if (!changeMode) {
+      window.Telegram.WebApp.MainButton.showProgress();
+      await goto('/Search');
+      window.Telegram.WebApp.MainButton.hideProgress();
+    } else {
+      changeMode = false;
+    }
   });
 
   let showWidgetMenu = $state(false);
@@ -71,16 +74,14 @@
 <div class="w-full h-full overflow-y-auto">
   <Header {data} {changeMode} />
   <div class="font-[Inter] px-4 w-full max-w-full relative">
-    <button
-      onclick={() => (changeMode = !changeMode)}
-      class="bg-accent size-12.5 fixed right-6.5 bottom-5 z-2 flex items-center justify-center rounded-xl"
-    >
-      {#if !changeMode}
+    {#if !changeMode}
+      <button
+        onclick={() => (changeMode = !changeMode)}
+        class="bg-accent size-12.5 fixed right-6.5 bottom-5 z-2 flex items-center justify-center rounded-xl"
+      >
         <Pencil class="size-6 text-white" />
-      {:else}
-        <Save class="size-6 text-white" />
-      {/if}
-    </button>
+      </button>
+    {/if}
     <UserInfo {data} {changeMode} />
 
     {#if changeMode}

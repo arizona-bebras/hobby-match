@@ -91,7 +91,7 @@
     $formData.gender = pb.authStore.record!.gender;
     $formData.birth_date = pb.authStore.record?.birth_date
       ? new Date(pb.authStore.record?.birth_date).toISOString()
-      : '';
+      : '2000-01-01T00:00:00Z';
     $formData.location = pb.authStore.record!.location;
     $formData.user_info = pb.authStore.record!.user_info;
   });
@@ -171,7 +171,8 @@
       </div>
       <DataPicker
         bind:value={$formData.birth_date}
-        maxValue={today(getLocalTimeZone())}
+        maxValue={today(getLocalTimeZone()).subtract({ years: 14 })}
+        minValue={today(getLocalTimeZone()).subtract({ years: 90 })}
       />
     </div>
     <div>
@@ -184,7 +185,7 @@
           {#snippet children({ props })}
             <Input
               {...props}
-              placeholder="Начни вводить название города"
+              placeholder="Введи название города"
               bind:value={$formData.location}
             />
           {/snippet}
