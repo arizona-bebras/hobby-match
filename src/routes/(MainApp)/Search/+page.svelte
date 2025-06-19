@@ -222,10 +222,6 @@
         <HeartOff class="size-6 text-text-color" />
       {/if} 
     </button>
-   
-    <div bind:this={profileContainer}>
-      <Questionnaire data={offeredProfiles[0]} />
-    </div>
     {#if isProfileEnd && isMoving}
       <div
         out:close={{ duration: 200 }}
