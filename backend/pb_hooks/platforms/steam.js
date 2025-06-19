@@ -2,7 +2,7 @@
 /* eslint-disable */
 
 function resolveSteamLink(link) {
-  const handle = /^(?:https?:\/\/)?steamcommunity\.com\/(profiles|id)\/([a-zA-Z0-9]+)/.exec(link);
+  const handle = /^(?:https?:\/\/)?steamcommunity\.com\/(profiles|id)\/([a-zA-Z0-9_.-]+)/.exec(link);
   if (!link || !handle || handle.length !== 3) return null;
   if (handle[1] === 'profiles') {
     return handle[2];
@@ -44,7 +44,7 @@ module.exports = {
     const gameData = require(`${__hooks}/steamapi.js`).request(
       'GET',
       'getGameHours',
-      `&id=${id}&appid=${appid}`,
+      `id=${id}&appid=${appid}`,
     );
     if (!gameData.json?.game?.game_name) return null;
     return {

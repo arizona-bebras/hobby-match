@@ -19,6 +19,11 @@
   let screenContainer: HTMLDivElement | undefined = $state();
   let offeredProfiles: PageData[] = $state([]);
   let currentProfile = $state(0);
+  useTelegramButton(async () => {
+    window.Telegram.WebApp.MainButton.showProgress();
+    await goto('/Profile');
+    window.Telegram.WebApp.MainButton.hideProgress();
+  });
   let liked: boolean = $state(false);
   useTelegramButton(() => goto('/Profile'));
 
@@ -193,6 +198,11 @@
       <p class="pt-4 text-text-color">Ищем подходящие профили...</p>
     </div>
   {:else}
+    {#key currentProfile}
+      <div in:fly={{ duration: 500, y: 200 }} bind:this={profileContainer}>
+        <Questionnaire data={offeredProfiles[0]} />
+      </div>
+    {/key}
     <button
       onclick={() => {
         if (!liked) {

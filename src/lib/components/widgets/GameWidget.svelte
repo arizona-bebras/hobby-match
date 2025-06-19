@@ -2,13 +2,13 @@
   import type { SteamGameData } from '$lib/widgetTypes/widgetTypes';
 
   let { data }: { data: SteamGameData } = $props();
-  console.log(1111111111111111, data.icon);
+  console.log(1111111111111111, data);
 </script>
 
 <div class="GameBox box-border">
   <img
     src={data.icon}
-    alt="Valorant Image"
+    alt={data.title}
     class="size-10 rounded-lg align-center my-auto"
   />
   <div

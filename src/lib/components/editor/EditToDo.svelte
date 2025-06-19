@@ -28,6 +28,7 @@
     SPA: true,
     validators: zodClient(toDoScheme),
     onSubmit: async () => {
+      isLoading = true;
       const widget: Todo = {
         type: 'todo',
         title: $formData.title,
@@ -38,6 +39,7 @@
       } else {
         await createWidget(widget);
       }
+      isLoading = false;
       onClose();
     },
   });
@@ -58,6 +60,7 @@
   });
 
   let isButtonActive = $state(false);
+  let isLoading = $state(false);
   $effect(() => {
     validateForm().then((response) => {
       isButtonActive = response.valid;
@@ -123,6 +126,7 @@
         {/if}
 
         <SaveButton
+          {isLoading}
           onClick={() => {
             form.submit();
           }}

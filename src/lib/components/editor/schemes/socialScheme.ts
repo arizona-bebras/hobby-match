@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
 const platformRegex = {
-  youtube: /^https:\/\/(www\.)?youtube\.com\/@[\w-]+$/,
+  youtube:
+    /^https?:\/\/(?:www\.)?youtube\.com\/(channel|user|c|@)\/?([a-zA-Z0-9_-]+)/,
   twitch: /^https:\/\/(www\.)?twitch\.tv\/[a-zA-Z0-9_]{4,25}$/,
   vk: /^https:\/\/vk\.com\/[a-zA-Z0-9_.]+$/,
   steam:

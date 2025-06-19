@@ -26,6 +26,7 @@
     SPA: true,
     validators: zodClient(audioScheme),
     onSubmit: async () => {
+      isLoading = true;
       let url = $formData.link;
       const widget: Audio = {
         type: 'audio',
@@ -36,11 +37,13 @@
       } else {
         await createWidget(widget);
       }
+      isLoading = false;
       onClose();
     },
   });
   const { form: formData, enhance, validateForm, reset } = form;
   let isButtonActive = $state(false);
+  let isLoading = $state(false);
   $effect(() => {
     validateForm().then((response) => {
       isButtonActive = response.valid;
@@ -81,6 +84,7 @@
           <DeleteButton {widgetId} />
         {/if}
         <SaveButton
+          {isLoading}
           onClick={() => {
             form.submit();
           }}

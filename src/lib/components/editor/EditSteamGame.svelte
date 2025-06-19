@@ -43,6 +43,7 @@
     SPA: true,
     validators: zodClient(gameScheme),
     onSubmit: async () => {
+      isLoading = true;
       const widget: SteamGame = {
         type: 'steam_game',
         accountLink: $formData.accountLink,
@@ -53,6 +54,7 @@
       } else {
         await createWidget(widget);
       }
+      isLoading = false;
       onClose();
     },
   });
@@ -77,6 +79,7 @@
   let isButtonActive = $state(false);
   let isSteamUrlCorrect = $state(false);
   let userSteamUrl = $state('');
+  let isLoading = $state(false);
 
   $effect(() => {
     validateForm().then((response) => {
@@ -200,6 +203,7 @@
           <DeleteButton {widgetId} />
         {/if}
         <SaveButton
+          {isLoading}
           onClick={() => {
             form.submit();
           }}

@@ -34,11 +34,12 @@
       // changeMode ? 'Сохранить' : 'Изменить виджеты',
       'Просмотр Анкет',
     );
-  })
+  });
 
-
-  useTelegramButton(() => {
-    goto('/Search');
+  useTelegramButton(async () => {
+    window.Telegram.WebApp.MainButton.showProgress();
+    await goto('/Search');
+    window.Telegram.WebApp.MainButton.hideProgress();
   });
 
   let showWidgetMenu = $state(false);
@@ -75,20 +76,20 @@
       class="bg-accent size-12.5 fixed right-6.5 bottom-5 z-2 flex items-center justify-center rounded-xl"
     >
       {#if !changeMode}
-        <Pencil class="size-6 text-text-color" />
+        <Pencil class="size-6 text-white" />
       {:else}
-        <Save class="size-6 text-text-color" />
+        <Save class="size-6 text-white" />
       {/if}
     </button>
     <UserInfo {data} {changeMode} />
 
     {#if changeMode}
       <button
-        class="my-2 w-full h-12 bg-[#34C759] rounded-xl flex justify-center items-center gap-3 font-medium"
+        class="my-2 w-full h-12 bg-[#34C759] rounded-xl flex justify-center items-center gap-3 font-medium text-white"
         onclick={() => (showWidgetMenu = true)}
       >
         <Plus class="size-5" />
-        Добавить виджет
+        <p class="">Добавить виджет</p>
       </button>
     {/if}
 
@@ -173,7 +174,7 @@
             }}
           />
         {/if}
-        <RenderWidget {widget} />
+        <RenderWidget {widget} isViewingMode={false} />
       </div>
     {/each}
   </div>

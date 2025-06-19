@@ -23,10 +23,12 @@
     onClose: CallableFunction;
   } = $props();
 
+  let isLoading = $state(false);
   const form = superForm(defaults(zod(textSchema)), {
     SPA: true,
     validators: zodClient(textSchema),
     onSubmit: async () => {
+      isLoading = true;
       const widget: Text = {
         type: 'text',
         text: $formData.text,
@@ -36,6 +38,7 @@
       } else {
         await createWidget(widget);
       }
+      isLoading = false;
       onClose();
     },
   });
@@ -84,6 +87,7 @@
         {/if}
 
         <SaveButton
+          {isLoading}
           onClick={() => {
             form.submit();
           }}
