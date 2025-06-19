@@ -35,7 +35,7 @@
     },
   });
 
-  const { form: formData, enhance, validateForm } = form;
+  const { form: formData, enhance, validateForm, errors } = form;
 
   const file = fileProxy(form, 'user_photo');
   async function handleTelegramButtonClick() {
@@ -103,6 +103,9 @@
     >
       Выбрать файл</button
     >
+    {#if $errors.user_photo}
+      <p class="text-destructive text-sm font-medium">{$errors.user_photo}</p>
+    {/if}
     <input
       type="file"
       class="hidden"
@@ -126,4 +129,4 @@
     {/if}
   </div>
 </form>
-<SuperDebug data={$formData} />
+<!--<SuperDebug data={$formData} />-->

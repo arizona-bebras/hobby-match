@@ -61,8 +61,8 @@
     {#if selected !== null}
       <div class="ml-7.25">
         <Progress
-          value={survey.stats[i]}
-          max={votesCount}
+          value={survey.stats[i] + (selected === i ? fakeVote : 0)}
+          max={votesCount + fakeVote}
           height="h-1"
           meterBg={selected === i ? 'bg-accent' : 'bg-black/40'}
           trackBg="bg-[#D9D9D9]"
