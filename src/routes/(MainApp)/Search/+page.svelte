@@ -5,16 +5,10 @@
   import Questionnaire from '$lib/components/profile/Questionnaire.svelte';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
   import { onMount } from 'svelte';
-  import { ArrowUp } from '@lucide/svelte';
   import { pb } from '$lib';
-  import { fade, scale, slide, fly, draw, blur } from 'svelte/transition';
-  import { Tween } from 'svelte/motion';
-  import { cubicOut, quintOut } from 'svelte/easing';
-  import { elasticOut } from 'svelte/easing';
-  import { Plus, Pencil, Save, Heart, HeartOff } from '@lucide/svelte';
-  import LikeButton from '$lib/components/search/LikeButton.svelte';
+  import { fly } from 'svelte/transition';
+  import { Heart } from '@lucide/svelte';
 
-  let isMousePress = $state(false);
   let profileContainer: HTMLDivElement | undefined = $state();
   let screenContainer: HTMLDivElement | undefined = $state();
   let offeredProfiles: PageData[] = $state([]);
@@ -43,7 +37,6 @@
   // });
   let isProfileEnd = $state(false);
   let touchStartPosition: { x: number; y: number } | null = $state(null);
-  let transitionScroll = $state(0);
   // let scrollY = $derived(container.scrollTop);
   // $inspect(scrollY);
   $effect(() => {
@@ -53,6 +46,7 @@
         console.log('Опа! Загружаем новую страницу');
         currentProfile += 1;
         offeredProfiles.shift();
+        liked = false;
       }
       elementSize = 0;
     }
@@ -115,8 +109,7 @@
 
     return {
       duration,
-      css: (t) => {
-        const eased = quintOut(t);
+      css: (t: number) => {
         return `
           width: ${startWidth * t}px;
           height: ${startHeight * t}px;
@@ -207,21 +200,28 @@
       onclick={() => {
         if (!liked) {
           pb.collection('likes').create({
-            user: pb.authStore.record!.id,
-            liked_user: offeredProfiles[0].id
-          })
+            user: pb.authStore.record?.id,
+            liked_user: offeredProfiles[0].id,
+          });
         }
-        liked = !liked
-        console.log("LIKEDLIKEDLIKEDLIKED")
-        }}
+        liked = !liked;
+        console.log('LIKE');
+      }}
+      disabled={liked}
       class="bg-accent size-12.5 fixed right-6.5 bottom-5 z-2 flex items-center justify-center rounded-xl"
     >
       {#if !liked}
         <Heart class="size-6 text-text-color" />
       {:else}
-        <HeartOff class="size-6 text-text-color" />
-      {/if} 
+        <Heart
+          fill="#fff"
+          strokeWidth={0}
+          class="size-6 text-text-color animate-ping"
+          style="animation-iteration-count: 2; animation-direction: alternate; animation-duration: 400ms"
+        />
+      {/if}
     </button>
+
     {#if isProfileEnd && isMoving}
       <div
         out:close={{ duration: 200 }}
