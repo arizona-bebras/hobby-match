@@ -20,7 +20,7 @@
     script.onload = () => {
       const frames = div.getElementsByTagName('iframe');
       for (const frame of frames) {
-        frame.setAttribute('sandbox', 'allow-scripts allow-forms');
+        frame.setAttribute('sandbox', '');
       }
     };
   };
