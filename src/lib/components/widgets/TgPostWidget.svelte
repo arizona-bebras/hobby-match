@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import type { Post } from '$lib/widgetTypes/widgetTypes';
   let { data }: { data: Post } = $props();
   const telegramIframe = (div: HTMLDivElement) => {
@@ -18,6 +17,12 @@
     script.setAttribute('data-dark', theme === 'dark' ? '1' : '0');
 
     div!.appendChild(script);
+    script.onload = () => {
+      const frames = div.getElementsByTagName('iframe');
+      for (const frame of frames) {
+        frame.setAttribute('sandbox', 'allow-scripts allow-forms');
+      }
+    };
   };
 </script>
 
