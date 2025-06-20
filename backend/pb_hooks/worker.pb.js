@@ -81,7 +81,8 @@ routerAdd("GET", "/worker/feed", (e) => {
                    u.id != {:current_user_id} 
                  AND u.miniapp_name <> '' 
                  AND u.user_photo <> ''
-                 AND u.interests IS NOT NULL
+                 AND u.interests <> '[]'
+                 AND NOT u.hide
            ),
            min_count AS (
                SELECT
