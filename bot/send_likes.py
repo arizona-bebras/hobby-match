@@ -23,7 +23,7 @@ async def send_likes() -> None:
         if not like.sent:
             tg_username = f"@{like.expand['user'].telegram_username}"
             liked_user_tg_id = like.expand['liked_user'].telegram_id
-            liked_user_id = like.expand['liked_user'].id
+            liked_user_id = like.user
             print(liked_user_tg_id)
 
             keyboard = InlineKeyboardMarkup.from_button(InlineKeyboardButton(
