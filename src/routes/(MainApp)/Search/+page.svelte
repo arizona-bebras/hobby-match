@@ -9,9 +9,11 @@
   import { fly } from 'svelte/transition';
   import { Heart } from '@lucide/svelte';
 
+  let { data }: { data: { page?: PageData } } = $props();
+
   let profileContainer: HTMLDivElement | undefined = $state();
   let screenContainer: HTMLDivElement | undefined = $state();
-  let offeredProfiles: PageData[] = $state([]);
+  let offeredProfiles: PageData[] = $state(data.page ? [data.page] : []);
   let currentProfile = $state(0);
   useTelegramButton(async () => {
     window.Telegram.WebApp.MainButton.showProgress();
@@ -21,13 +23,12 @@
   let liked: boolean = $state(false);
   useTelegramButton(() => goto('/Profile'));
 
-  // let offeredProfiles
-
   onMount(() => {
     window.Telegram.WebApp.MainButton.setText(
       // changeMode ? 'Сохранить' : 'Изменить виджеты',
       'Моя анкета',
     );
+    window.Telegram.WebApp.MainButton.show();
     // getProfiles();
   });
   let elementSize = $state(0);
@@ -64,14 +65,6 @@
       hapticDisable = true;
     }
   });
-
-  $effect(() => {
-    if (offeredProfiles.length <= 2) {
-      getProfiles().then(
-        (response) => (offeredProfiles = [...offeredProfiles, ...response]),
-      );
-    }
-  });
   $effect(() => {
     if (
       profileContainer &&
@@ -81,15 +74,15 @@
       isProfileEnd = true;
     }
   });
-  // $effect(() => {
-  //   if (liked && touchStartPosition !== null) {
-  //     console.log("LIKEDLIKEDLIKEDLIKED")
-  //     pb.collection('likes').create({
-  //       user: pb.authStore.record!.id,
-  //       liked_user: offeredProfiles[0].id
-  //     })
-  //   }
-  // });
+
+  $effect(() => {
+    if (offeredProfiles.length <= 2) {
+      getProfiles().then(
+        (response) => (offeredProfiles = [...offeredProfiles, ...response]),
+      );
+    }
+  });
+
   async function getProfiles(): Promise<PageData[]> {
     const response = await pb.send('/worker/feed', {
       method: 'GET',

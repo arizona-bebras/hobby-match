@@ -23,7 +23,7 @@ if (browser) {
       res.record.interests.length < 3
     ) {
       goto('/registration');
-    } else {
+    } else if (window.location.pathname !== '/Search') {
       goto('/Profile');
     }
   });

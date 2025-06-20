@@ -1,4 +1,3 @@
-import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
 import type {
   Audio,
   Geo,
@@ -29,12 +28,8 @@ import type {
 // };
 
 export type InterestType = {
-  collectionId: string;
-  collectionName: string;
-  created: string;
   id: string;
   tag: string;
-  updated: string;
 };
 
 type WidgetType = {
