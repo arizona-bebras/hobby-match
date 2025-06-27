@@ -21,22 +21,28 @@ async def send_likes() -> None:
         })
     for like in likes:
         if not like.sent:
-            tg_username = f"@{like.expand['user'].telegram_username}"
+            tg_id = f"{like.expand['user'].telegram_id}"
             liked_user_tg_id = like.expand['liked_user'].telegram_id
             liked_user_id = like.user
-            print(liked_user_tg_id)
 
-            keyboard = InlineKeyboardMarkup.from_button(InlineKeyboardButton(
+            keyboard = InlineKeyboardMarkup(inline_keyboard = [[InlineKeyboardButton(
+                text=f"Телеграм профиль",
+                url = f"tg://user?id={tg_id}")],
+                [InlineKeyboardButton(
                 text="Посмотреть анкету",
-                web_app=WebAppInfo(url=f"{app_url}/Search?opened={liked_user_id}")))
+                web_app=WebAppInfo(url=f"{app_url}/Search?opened={liked_user_id}"))]])
+
+            # keyboard = InlineKeyboardMarkup.from_button(InlineKeyboardButton(
+            #     text="Посмотреть анкету",
+            #     web_app=WebAppInfo(url=f"{app_url}/Search?opened={liked_user_id}")))
             try:
                 await bot.send_message(chat_id=liked_user_tg_id,
-                                       text=f"Вы кому-то понравились!\n{tg_username}",
+                                       text=f"Вы кому-то понравились!",
                                        reply_markup=keyboard)
+                pb.collection('likes').update(like.id, {
+                    "sent": True,
+                })
             except TelegramError as e:
                 print(e)
-            pb.collection('likes').update(like.id, {
-                "sent": True,
-            })
     
 asyncio.run(send_likes())
