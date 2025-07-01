@@ -115,7 +115,7 @@
 </script>
 
 <div
-  class="overflow-y-auto w-full"
+  class="overflow-y-auto w-full min-h-full"
   bind:this={screenContainer}
   ontouchstart={(e) => {
     console.log(e, isProfileEnd);
@@ -185,7 +185,11 @@
     </div>
   {:else}
     {#key currentProfile}
-      <div in:fly={{ duration: 500, y: 200 }} bind:this={profileContainer}>
+      <div
+        in:fly={{ duration: 500, y: 200 }}
+        bind:this={profileContainer}
+        class="min-h-full"
+      >
         <Questionnaire data={offeredProfiles[0]} />
       </div>
     {/key}
