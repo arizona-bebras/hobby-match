@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "@google-cloud/local-auth": "^2.1.0",
+    "@sentry/sveltekit": "9",
     "@splidejs/svelte-splide": "^0.2.9",
     "@tailwindcss/vite": "^4.1.8",
     "@telegram-apps/sdk-svelte": "^2.0.23",
