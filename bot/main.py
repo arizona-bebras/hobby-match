@@ -1,4 +1,6 @@
 from dotenv import load_dotenv
+from telegram.constants import ParseMode
+
 load_dotenv('.env')
 
 from telegram import Update, WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
@@ -27,40 +29,43 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "passwordConfirm" : "useless_password"
     }
     user = BotUser(user_data, pb)
+    first_time = False
     if not user.is_user_in_db():
+        first_time = True
         user.add_user_to_db()
 
     keyboard = InlineKeyboardMarkup.from_button(InlineKeyboardButton(
-        text="Shumi",
+        text="Открыть Shumi",
         web_app=WebAppInfo(url=f"{app_url}/")))
 
     
     await context.bot.send_message(chat_id=update.effective_chat.id,
-                                   text="Приветствуем Вас в Shumi!",
+                                   text="*Привет, я Shumi\\!* 👋\n\n" +
+                                        "Я помогу найти тебе новые знакомства\\.\n" +
+                                        ("Заполняй анкету и вперед к поискам\\!\n" if first_time else
+                                         "Заходи в приложение и находи себе друзей\\!\n"),
+                                   parse_mode=ParseMode.MARKDOWN_V2,
                                    reply_markup=keyboard)
     
-async def likes(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    pb.admins.auth_with_password(DB_ADMIN_LOGIN, DB_ADMIN_PASSWORD)
-    telegram_id = update.message.from_user.id
-    user_db_id = pb.collection('users').get_first_list_item(f"telegram_id = '{telegram_id}'").id
-    likes = pb.collection('likes').get_full_list(batch=100, query_params={
-            "filter": f"liked_user = '{user_db_id}'",
-            "expand": "user",
-            "sort": "-created"
-        })
-    tg_ids=""
-    for like in likes:
-        tg_ids += f"@{like.expand['user'].telegram_username} " + "\n"
-        pb.collection('likes').update(like.id, {
-                "sent": True,
-            })
-    await context.bot.send_message(chat_id=update.effective_chat.id,
-                                   text=f"У Вас {len(likes)} лайков! \n" + tg_ids)
+# async def likes(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+#     pb.admins.auth_with_password(DB_ADMIN_LOGIN, DB_ADMIN_PASSWORD)
+#     telegram_id = update.message.from_user.id
+#     user_db_id = pb.collection('users').get_first_list_item(f"telegram_id = '{telegram_id}'").id
+#     likes = pb.collection('likes').get_full_list(batch=100, query_params={
+#             "filter": f"liked_user = '{user_db_id}'",
+#             "expand": "user",
+#             "sort": "-created"
+#         })
+#     tg_ids=""
+#     for like in likes:
+#         tg_ids += f"@{like.expand['user'].telegram_username} " + "\n"
+#     await context.bot.send_message(chat_id=update.effective_chat.id,
+#                                    text=f"У тебя {len(likes)} лайков! \n" + tg_ids)
 
 app = ApplicationBuilder().token(BOT_TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
 
-app.add_handler(CommandHandler("likes", likes))
+# app.add_handler(CommandHandler("likes", likes))
 
 app.run_polling()
