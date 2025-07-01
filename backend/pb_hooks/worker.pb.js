@@ -54,7 +54,6 @@ function upsertUser(e) {
 routerAdd("GET", "/worker/feed", (e) => {
   const views = arrayOf(new DynamicModel({
     "user_id": "",
-    "last_viewed": "",
   }))
   $app.db().newQuery(`
       WITH user_view_dates AS (
