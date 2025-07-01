@@ -78,7 +78,7 @@ routerAdd("GET", "/worker/feed", (e) => {
                      ORDER BY last_viewed
                      ASC NULLS FIRST 
                      LIMIT (
-                         SELECT MIN(100, MAX(3, CAST(total * 0.5 AS INT))) FROM total_users
+                         SELECT MIN(100, MAX(3, CAST(total * 0.2 AS INT))) FROM total_users
                      )
         ) SELECT * FROM limited_users;
   `).bind({"current_user_id": e.auth.id}).all(views);
