@@ -151,6 +151,7 @@
           <DeleteButton {widgetId} />
         {/if}
         <SaveButton
+          class="mt-1"
           {isLoading}
           onClick={() => {
             form.submit();

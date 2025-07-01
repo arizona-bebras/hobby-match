@@ -5,7 +5,12 @@
   import type { PageProps } from '../../../.svelte-kit/types/src/routes/registration/$types';
   import { pb } from '$lib/index';
   import { onMount } from 'svelte';
+  import { Check } from '@lucide/svelte';
+  import { goto } from '$app/navigation';
 
+  let information: Information | undefined = $state();
+  let photo: Photo | undefined = $state();
+  let interests: Interests | undefined = $state();
   let stages: string[][] = [
     ['information', 'Информация'],
     ['photo', 'Фото'],
@@ -77,11 +82,24 @@
   </div>
   {#if currentStage === 'information'}
     <!--    <Information bind:currentStage />-->
-    <Information form={data.information} {nextStage} />
+    <Information form={data.information} bind:this={information} {nextStage} />
   {:else if currentStage === 'photo'}
-    <Photo form={data.photo} {nextStage} />
+    <Photo form={data.photo} bind:this={photo} {nextStage} />
   {:else if currentStage === 'interests'}
-    <Interests form={data.interests} />
+    <Interests form={data.interests} bind:this={interests} />
+  {/if}
+  {#if completedStages.includes('information') && completedStages.includes('photo') && completedStages.includes('interests')}
+    <button
+      class="bg-accent size-12.5 fixed right-4 bottom-4 z-2 flex items-center justify-center rounded-xl"
+      onclick={async () => {
+        if (currentStage === 'information') await information?.save();
+        else if (currentStage === 'photo') await photo?.save();
+        else if (currentStage === 'interests') await interests?.save();
+        await goto('/Profile');
+      }}
+    >
+      <Check class="size-6 text-text-color" />
+    </button>
   {/if}
   <!--  <button onclick={() => console.log(complitedStages)}>ComplitedStages</button>-->
 </div>

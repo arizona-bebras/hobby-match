@@ -1,9 +1,6 @@
 <script lang="ts">
   import { pb } from '$lib/index';
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';
-  let fileInput: HTMLInputElement;
-  let tgImage = window.Telegram.WebApp.initDataUnsafe.user?.photo_url;
-  console.log(tgImage);
   import {
     photoSchema,
     type FormSchema,
@@ -17,32 +14,39 @@
   import { zodClient } from 'sveltekit-superforms/adapters';
   import { onDestroy } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
+  let fileInput: HTMLInputElement;
+  let tgImage = window.Telegram.WebApp.initDataUnsafe.user?.photo_url;
+  console.log(tgImage);
   let {
     form: photo,
     nextStage,
   }: { form: SuperValidated<Infer<FormSchema>>; nextStage: CallableFunction } =
     $props();
 
-  const form = superForm(photo, {
-    validators: zodClient(photoSchema),
-    dataType: 'json',
-    onSubmit: async () => {
+  export async function save(): Promise<boolean> {
+    if (!hasPhoto || formValid) {
+      window.Telegram.WebApp.MainButton.showProgress();
       await pb
         .collection('users')
         .update(pb.authStore.record!.id, $formData)
         .finally(window.Telegram.WebApp.MainButton.hideProgress);
       nextStage();
-    },
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  const form = superForm(photo, {
+    validators: zodClient(photoSchema),
+    dataType: 'json',
   });
 
   const { form: formData, enhance, validateForm, errors } = form;
 
   const file = fileProxy(form, 'user_photo');
   async function handleTelegramButtonClick() {
-    if (!hasPhoto || formValid) {
-      window.Telegram.WebApp.MainButton.showProgress();
-      form.submit();
-    } else {
+    if (!(await save())) {
       nextStage();
     }
   }
