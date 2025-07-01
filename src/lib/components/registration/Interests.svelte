@@ -103,11 +103,16 @@
     // }),
     // console.log(result);
   }
-  function handleInput() {
-    if (userInterest.length >= 1) {
-      getWords(userInterest);
-    }
-  }
+  $effect(() => {
+    const query = userInterest;
+    const timeout = setTimeout(() => {
+      if (query.length >= 1) {
+        getWords(query);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  });
   $inspect(suggestedWords);
   let showingInterests = $derived([
     ...selectedInterests.map((element) => ({ ...element, selected: true })),
@@ -134,7 +139,6 @@
         type="text"
         placeholder="Начните вводить"
         bind:value={userInterest}
-        oninput={handleInput}
         onkeydown={(e) => {
           if (e.key === 'Enter') {
             e.preventDefault();
