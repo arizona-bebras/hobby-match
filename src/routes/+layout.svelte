@@ -1,4 +1,5 @@
 <script>
+  import { Toaster } from '$lib/components/ui/sonner/index.js';
   let { children } = $props();
   import '../app.css';
   import { Search, Settings, UserRoundPen } from '@lucide/svelte';
@@ -9,4 +10,5 @@
   // });
 </script>
 
+<Toaster />
 <slot></slot>
