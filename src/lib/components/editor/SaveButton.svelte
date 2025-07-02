@@ -6,11 +6,13 @@
     isButtonActive,
     class: className = '',
     isLoading = false,
+    text = 'Сохранить',
   }: {
     onClick: () => void;
     isButtonActive: boolean;
     class?: string;
     isLoading?: boolean;
+    text?: string;
   } = $props();
 </script>
 
@@ -22,7 +24,7 @@
   class:bg-inactive={!isButtonActive}
   class={cn('w-full h-12 rounded-xl mt-9 relative', className)}
 >
-  Сохранить
+  {text}
   {#if isLoading}
     <LoaderCircle class="ml-1 animate-spin absolute top-0 right-2 h-full" />
   {/if}
