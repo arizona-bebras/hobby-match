@@ -4,7 +4,7 @@ from telegram.constants import ParseMode
 load_dotenv('.env')
 
 from telegram import Update, WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler
 from tg_bot_users import BotUser
 #from send_likes import send_likes
 from pocketbase import PocketBase
@@ -46,6 +46,47 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                                          "Заходи в приложение и находи себе друзей\\!\n"),
                                    parse_mode=ParseMode.MARKDOWN_V2,
                                    reply_markup=keyboard)
+
+async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard = [
+            [
+                InlineKeyboardButton(
+                    text=f"Да",
+                    callback_data="Yes"),
+                InlineKeyboardButton(
+                    text="Нет",
+                    callback_data="No")
+            ]
+        ])
+    
+    await context.bot.send_message(chat_id=update.effective_chat.id,
+                                   text="Вы точно хотите удалить Вашу анкету?",
+                                   parse_mode=ParseMode.MARKDOWN_V2,
+                                   reply_markup=keyboard)
+    
+async def delete_button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    telegram_id = query.from_user.id
+
+    if query.data == "Yes":
+        user = pb.collection('users').get_first_list_item(f"telegram_id = '{telegram_id}'")
+        pb.collection('users').update(user.id, {
+            "miniapp_name": "",
+            "gender": "",
+            "birth_date": "",
+            "location": "",
+            "user_info": "",
+            "user_photo": "",
+            "interests": ""
+        })
+        await query.edit_message_text('Ваша анкета удалена')
+        await update.callback_query.message.edit_reply_markup(InlineKeyboardMarkup(inline_keyboard=None))
+    else:
+        await query.edit_message_text('Ваша анкета не была удалена')
+        await update.callback_query.message.edit_reply_markup(InlineKeyboardMarkup(inline_keyboard=None))
+
     
 # async def likes(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 #     pb.admins.auth_with_password(DB_ADMIN_LOGIN, DB_ADMIN_PASSWORD)
@@ -66,6 +107,8 @@ app = ApplicationBuilder().token(BOT_TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
 
-# app.add_handler(CommandHandler("likes", likes))
+app.add_handler(CommandHandler("delete", delete))
+
+app.add_handler(CallbackQueryHandler(delete_button_handler))
 
 app.run_polling()
