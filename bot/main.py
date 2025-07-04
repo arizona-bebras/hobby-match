@@ -72,15 +72,7 @@ async def delete_button_handler(update: Update, context: ContextTypes.DEFAULT_TY
 
     if query.data == "Yes":
         user = pb.collection('users').get_first_list_item(f"telegram_id = '{telegram_id}'")
-        pb.collection('users').update(user.id, {
-            "miniapp_name": "",
-            "gender": "",
-            "birth_date": "",
-            "location": "",
-            "user_info": "",
-            "user_photo": "",
-            "interests": ""
-        })
+        pb.collection('users').delete(user.id)
         await query.edit_message_text('Ваша анкета удалена')
         await update.callback_query.message.edit_reply_markup(InlineKeyboardMarkup(inline_keyboard=None))
     else:
