@@ -2,7 +2,12 @@ import * as Sentry from '@sentry/sveltekit';
 import { pb } from '$lib/index';
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
+import Plausible from 'plausible-tracker';
 
+export const plausible = Plausible({
+  domain: 'shumi.space',
+  apiHost: 'https://look.gesti.tech',
+});
 // If you don't want to use Session Replay, remove the `Replay` integration,
 // `replaysSessionSampleRate` and `replaysOnErrorSampleRate` options.
 Sentry.init({
@@ -16,6 +21,8 @@ Sentry.init({
 if (browser) {
   if (!window.Telegram.WebApp.isVersionAtLeast('7.0')) {
     window.location.replace('https://t.me/detoshumibot');
+  } else {
+    plausible.enableAutoPageviews();
   }
   window.Telegram.WebApp.disableVerticalSwipes();
   pb.send('/api/collections/users/auth-with-telegram', {

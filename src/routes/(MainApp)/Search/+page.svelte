@@ -8,6 +8,7 @@
   import { pb } from '$lib';
   import { fly } from 'svelte/transition';
   import { Heart } from '@lucide/svelte';
+  import { plausible } from '../../../hooks.client';
 
   let { data }: { data: { page?: PageData } } = $props();
 
@@ -200,6 +201,7 @@
             user: pb.authStore.record?.id,
             liked_user: offeredProfiles[0].id,
           });
+          plausible.trackEvent('liked');
         }
         liked = !liked;
         console.log('LIKE');
