@@ -3,10 +3,11 @@
 
 module.exports = {
   request: function (method, data) {
-    const baseUrl = `${$os.getenv('CACHED_API')}/vk/getPageInfo?key=${$os.getenv('VK_ACCESS_TOKEN')}&${data}`;
+    const baseUrl = `${$os.getenv('CACHED_API')}/vk/page?key=${$os.getenv('VK_ACCESS_TOKEN')}&${data}`;
     return $http.send({
       method,
       url: baseUrl,
+      headers: { 'Authorization': `Bearer ${$os.getenv('CACHED_TOKEN')}` }
     });
   },
 };

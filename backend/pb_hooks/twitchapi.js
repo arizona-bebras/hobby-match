@@ -3,10 +3,11 @@
 
 module.exports = {
   request: function (method, data) {
-    const baseUrl = `${$os.getenv('CACHED_API')}/twitch/getChannelInfo?key=${$os.getenv('TWITCH_TOKEN')}&clientId=${$os.getenv('TWITCH_CLIENT_ID')}&${data}`;
+    const baseUrl = `${$os.getenv('CACHED_API')}/twitch/channel?key=${$os.getenv('TWITCH_TOKEN')}&clientId=${$os.getenv('TWITCH_CLIENT_ID')}&${data}`;
     return $http.send({
       method,
       url: baseUrl,
+      headers: { 'Authorization': `Bearer ${$os.getenv('CACHED_TOKEN')}` }
     });
   },
 };

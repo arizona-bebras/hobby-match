@@ -5,7 +5,7 @@ routerAdd(
     const id = e.requestInfo().query['id'];
     const response = require(`${__hooks}/steamapi.js`).request(
       'GET',
-      'getSteamUsername',
+      'username',
       `id=${id}`,
     );
 
@@ -21,7 +21,7 @@ routerAdd(
     const id = e.requestInfo().query['id'];
     const response = require(`${__hooks}/steamapi.js`).request(
       'GET',
-      'getOwnedGames',
+      'games',
       `id=${id}`,
     );
 
@@ -37,7 +37,7 @@ routerAdd(
     const id = e.requestInfo().query['id'];
     const response = require(`${__hooks}/steamapi.js`).request(
       'GET',
-      'getSteamLevel',
+      'level',
       `id=${id}`,
     );
 
@@ -53,7 +53,7 @@ routerAdd(
     const vanityurl = e.requestInfo().query['vanityurl'];
     const response = require(`${__hooks}/steamapi.js`).request(
       'GET',
-      'resolveVanityUrl',
+      'vanity',
       `vanityurl=${vanityurl}`,
     );
 
@@ -70,7 +70,7 @@ routerAdd(
     const appid = e.requestInfo().query['appid'];
     const response = require(`${__hooks}/steamapi.js`).request(
       'GET',
-      'getGameHours',
+      'game',
       `id=${id}&appid=${appid}`,
     );
 

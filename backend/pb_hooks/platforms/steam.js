@@ -9,7 +9,7 @@ function resolveSteamLink(link) {
   } else if (handle[1] === 'id') {
     const vanity = require(`${__hooks}/steamapi.js`).request(
       'GET',
-      'resolveVanityUrl',
+      'vanity',
       `vanityurl=${handle[2]}`,
     );
     if(!vanity.json.id) return null;
@@ -24,13 +24,13 @@ module.exports = {
     const id = resolveSteamLink(link);
     const level = require(`${__hooks}/steamapi.js`).request(
       'GET',
-      'getSteamLevel',
+      'level',
       `id=${id}`,
     );
     if (level.json.level === undefined) return null;
     const player = require(`${__hooks}/steamapi.js`).request(
       'GET',
-      'getPlayerUsername',
+      'username',
       `id=${id}`,
     );
     if (!player.json.username) return null;
@@ -43,7 +43,7 @@ module.exports = {
     const id = resolveSteamLink(link);
     const gameData = require(`${__hooks}/steamapi.js`).request(
       'GET',
-      'getGameHours',
+      'game',
       `id=${id}&appid=${appid}`,
     );
     if (!gameData.json?.game?.game_name) return null;
