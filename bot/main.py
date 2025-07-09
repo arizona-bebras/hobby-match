@@ -105,8 +105,8 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         pb.collection('users').update(user.id,{
             "hide": True if query.data == "hide" else False
         })
-        await context.bot.send_message(chat_id=update.effective_chat.id,
-                                    text="Ваша анкета скрыта" if query.data == "hide" else "Другие пользователи теперь видят Вас")
+        await query.edit_message_text("Ваша анкета скрыта" if query.data == "hide" else "Другие пользователи теперь видят Вас")
+        await update.callback_query.message.edit_reply_markup(InlineKeyboardMarkup(inline_keyboard=None))
         return MENU
 
 # async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
