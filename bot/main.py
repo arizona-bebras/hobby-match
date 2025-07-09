@@ -4,7 +4,7 @@ from telegram.constants import ParseMode
 load_dotenv('.env')
 
 from telegram import Update, WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton, MenuButtonWebApp
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler, ConversationHandler
 from tg_bot_users import BotUser
 #from send_likes import send_likes
 from pocketbase import PocketBase
@@ -18,6 +18,8 @@ DB_ADMIN_LOGIN = os.getenv('DB_ADMIN_LOGIN')
 pb = PocketBase(DB_ADDRESS)
 pb.admins.auth_with_password(DB_ADMIN_LOGIN, DB_ADMIN_PASSWORD)
 app_url = os.getenv("APP_URL")
+
+MENU, DELETE = range(2)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_data =  {
@@ -47,10 +49,44 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                                          "Заходи в приложение и находи себе друзей\\!\n"),
                                    parse_mode=ParseMode.MARKDOWN_V2,
                                    reply_markup=keyboard)
+    
+async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    try:
+        user = pb.collection('users').get_first_list_item(f"telegram_id = '{update.effective_chat.id}'")
+    except:
+        user = None
+    if user == None:
+        keyboard = InlineKeyboardMarkup.from_button(InlineKeyboardButton(
+        text="Открыть Shumi",
+        web_app=WebAppInfo(url=f"{app_url}/")))
 
-async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-
-    keyboard = InlineKeyboardMarkup(inline_keyboard = [
+        await context.bot.send_message(chat_id=update.effective_chat.id,
+                                    text = "Вы еще не зарегестрировались",
+                                    parse_mode=ParseMode.MARKDOWN_V2,
+                                    reply_markup=keyboard)
+    else:
+        hidden = user.hide
+        keyboard = InlineKeyboardMarkup(inline_keyboard = [
+                [
+                    InlineKeyboardButton(
+                        text = "Скрыть анкету" if not hidden else "Показывать анкету",
+                        callback_data="hide" if not hidden else "reveal"),
+                    InlineKeyboardButton(
+                        text="Удалить анкету",
+                        callback_data="delete")
+                ]
+            ])
+        await context.bot.send_message(chat_id=update.effective_chat.id,
+                                    text = "Menu",
+                                    parse_mode=ParseMode.MARKDOWN_V2,
+                                    reply_markup=keyboard)
+    return MENU
+    
+async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    if query.data == "delete":
+        delete_keyboard = [
             [
                 InlineKeyboardButton(
                     text=f"Да",
@@ -59,12 +95,37 @@ async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                     text="Нет",
                     callback_data="No")
             ]
-        ])
+        ]
     
-    await context.bot.send_message(chat_id=update.effective_chat.id,
-                                   text="Вы точно хотите удалить Вашу анкету?",
-                                   parse_mode=ParseMode.MARKDOWN_V2,
-                                   reply_markup=keyboard)
+        await query.edit_message_text('Вы точно хотите удалить Вашу анкету?')
+        await update.callback_query.message.edit_reply_markup(InlineKeyboardMarkup(inline_keyboard=delete_keyboard))
+        return DELETE
+    elif query.data == "hide" or query.data == "reveal":
+        user = pb.collection('users').get_first_list_item(f"telegram_id = '{query.from_user.id}'")
+        pb.collection('users').update(user.id,{
+            "hide": True if query.data == "hide" else False
+        })
+        await context.bot.send_message(chat_id=update.effective_chat.id,
+                                    text="Ваша анкета скрыта" if query.data == "hide" else "Другие пользователи теперь видят Вас")
+        return MENU
+
+# async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+#     keyboard = InlineKeyboardMarkup(inline_keyboard = [
+#             [
+#                 InlineKeyboardButton(
+#                     text=f"Да",
+#                     callback_data="Yes"),
+#                 InlineKeyboardButton(
+#                     text="Нет",
+#                     callback_data="No")
+#             ]
+#         ])
+    
+#     await context.bot.send_message(chat_id=update.effective_chat.id,
+#                                    text="Вы точно хотите удалить Вашу анкету?",
+#                                    parse_mode=ParseMode.MARKDOWN_V2,
+#                                    reply_markup=keyboard)
     
 async def delete_button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -76,9 +137,11 @@ async def delete_button_handler(update: Update, context: ContextTypes.DEFAULT_TY
         pb.collection('users').delete(user.id)
         await query.edit_message_text('Ваша анкета удалена')
         await update.callback_query.message.edit_reply_markup(InlineKeyboardMarkup(inline_keyboard=None))
+        return 
     else:
         await query.edit_message_text('Ваша анкета не была удалена')
         await update.callback_query.message.edit_reply_markup(InlineKeyboardMarkup(inline_keyboard=None))
+        return MENU
 
     
 # async def likes(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -98,10 +161,24 @@ async def delete_button_handler(update: Update, context: ContextTypes.DEFAULT_TY
 
 app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-app.add_handler(CommandHandler("start", start))
+conv_handler = ConversationHandler(
+    entry_points=[CommandHandler('start', start), CommandHandler('menu', menu)],
+    states={
+        MENU: [CallbackQueryHandler(menu_handler)],
+        DELETE: [CallbackQueryHandler(delete_button_handler)]
+    },
+    fallbacks=[CommandHandler('start', start), CommandHandler('menu', menu)]
+)
 
-app.add_handler(CommandHandler("delete", delete))
+# app.add_handler(CommandHandler("start", start))
 
-app.add_handler(CallbackQueryHandler(delete_button_handler))
+# #app.add_handler(CommandHandler("delete", delete))
+# app.add_handler(CommandHandler("menu", menu))
+
+# app.add_handler(CallbackQueryHandler(menu_handler))
+
+# app.add_handler(CallbackQueryHandler(delete_button_handler))
+
+app.add_handler(conv_handler)
 
 app.run_polling()
