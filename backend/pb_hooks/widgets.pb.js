@@ -139,6 +139,17 @@ onRecordUpdate((e) => {
       $app.unsafeWithoutHooks().save(conflict);
     }
   }
+
+  if (JSON.parse(e.record.get("data")).type == "survey"){
+    const votes = $app.findRecordsByFilter('votes', `survey = {:id}`, '', 0, 0,{
+      "id": e.record.getString("id")
+    });
+    for (const vote of votes) {
+      console.log(JSON.stringify(vote))
+      $app.delete(vote)
+    }
+  }
+
   e.next()
 
   require(`${__hooks}/widgets.js`).reorder(e.record.getString('user'));
