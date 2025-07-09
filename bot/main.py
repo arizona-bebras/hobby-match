@@ -3,7 +3,7 @@ from telegram.constants import ParseMode
 
 load_dotenv('.env')
 
-from telegram import Update, WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Update, WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton, MenuButtonWebApp
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler
 from tg_bot_users import BotUser
 #from send_likes import send_likes
@@ -38,6 +38,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         text="Открыть Shumi",
         web_app=WebAppInfo(url=f"{app_url}/")))
 
+    await context.bot.set_chat_menu_button(chat_id=update.effective_chat.id, menu_button=MenuButtonWebApp('Shumi', web_app=WebAppInfo(url=f"{app_url}/")))
     
     await context.bot.send_message(chat_id=update.effective_chat.id,
                                    text="*Привет, я Shumi\\!* 👋\n\n" +
