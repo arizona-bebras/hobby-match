@@ -52,6 +52,10 @@ function upsertUser(e) {
 }
 
 routerAdd("GET", "/worker/feed", (e) => {
+  if(e.auth.getBool('hide')) {
+    e.auth.set('hide', false);
+    $app.save(e.auth);
+  }
   const views = arrayOf(new DynamicModel({
     "user_id": "",
   }))
@@ -68,6 +72,11 @@ routerAdd("GET", "/worker/feed", (e) => {
               AND u.user_photo <> ''
               AND u.interests <> '[]'
               AND NOT u.hide
+              AND NOT EXISTS (
+                SELECT 1
+                FROM bans b
+                WHERE b.telegram_id = u.telegram_id
+              )
             GROUP BY u.id
         ),
         total_users AS (

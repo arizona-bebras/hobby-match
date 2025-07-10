@@ -77,22 +77,20 @@
   });
 
   $effect(() => {
-    if (offeredProfiles.length <= 2) {
-      getProfiles().then(
-        (response) => (offeredProfiles = [...offeredProfiles, ...response]),
-      );
-    }
-  });
+    const timeout = setTimeout(
+      () => {
+        if (offeredProfiles.length > 2) return;
+        pb.send('/worker/feed', {
+          method: 'GET',
+        }).then(
+          (response) => (offeredProfiles = [...offeredProfiles, ...response]),
+        );
+      },
+      offeredProfiles.length == 0 ? 0 : 800,
+    );
 
-  async function getProfiles(): Promise<PageData[]> {
-    const response = await pb.send('/worker/feed', {
-      method: 'GET',
-    });
-    // console.log(response);
-    // offeredProfiles = response;
-    console.log(response);
-    return response;
-  }
+    return () => clearTimeout(timeout);
+  });
   let isMoving = $state(false);
   // $inspect(elementSize);
   $inspect(elementSize);

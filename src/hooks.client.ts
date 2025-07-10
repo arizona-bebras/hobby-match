@@ -30,8 +30,16 @@ if (browser) {
     body: {
       data: window.Telegram.WebApp.initData,
     },
-  }).then((res) => {
+  }).then(async (res) => {
     pb.authStore.save(res.token, res.record);
+    try {
+      const ban = await pb.collection('bans').getFirstListItem('');
+      await goto(`/ban?reason=${encodeURIComponent(ban.reason)}`);
+      return;
+    } catch (e) {
+      console.error(e);
+      // ok
+    }
     if (
       !res.record.miniapp_name ||
       !res.record.gender ||
@@ -41,9 +49,9 @@ if (browser) {
       !res.record.user_photo ||
       res.record.interests.length < 3
     ) {
-      goto('/registration');
+      await goto('/registration');
     } else if (window.location.pathname !== '/Search') {
-      goto('/Profile');
+      await goto('/Profile');
     }
   });
 }

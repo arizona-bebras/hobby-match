@@ -1,4 +1,7 @@
+from typing import Any, Coroutine
+
 from dotenv import load_dotenv
+from pocketbase.errors import ClientResponseError
 from telegram.constants import ParseMode
 
 load_dotenv('.env')
@@ -50,43 +53,42 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                                    parse_mode=ParseMode.MARKDOWN_V2,
                                    reply_markup=keyboard)
     
-async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
         user = pb.collection('users').get_first_list_item(f"telegram_id = '{update.effective_chat.id}'")
-    except:
-        user = None
-    if user == None:
-        keyboard = InlineKeyboardMarkup.from_button(InlineKeyboardButton(
-        text="Открыть Shumi",
-        web_app=WebAppInfo(url=f"{app_url}/")))
-
-        await context.bot.send_message(chat_id=update.effective_chat.id,
-                                    text = "Вы еще не зарегестрировались",
-                                    parse_mode=ParseMode.MARKDOWN_V2,
-                                    reply_markup=keyboard)
-    else:
-        hidden = user.hide
         keyboard = InlineKeyboardMarkup(inline_keyboard = [
-                [
-                    InlineKeyboardButton(
-                        text = "Скрыть анкету" if not hidden else "Показывать анкету",
-                        callback_data="hide" if not hidden else "reveal"),
-                    InlineKeyboardButton(
-                        text="Удалить анкету",
-                        callback_data="delete")
-                ]
-            ])
-        await context.bot.send_message(chat_id=update.effective_chat.id,
-                                    text = "Menu",
-                                    parse_mode=ParseMode.MARKDOWN_V2,
-                                    reply_markup=keyboard)
+            [
+                InlineKeyboardButton(
+                    text = "👀 Скрыть анкету" if not user.hide else "👀 Показывать анкету",
+                    callback_data="hide" if not user.hide else "reveal"),
+                InlineKeyboardButton(
+                    text="🗑 Удалить анкету",
+                    callback_data="delete")
+            ]
+        ])
+        text = ("⚙️ *Параметры*\n\n" +
+            "Ты можешь _временно_ скрыть свою анкету из поиска, " +
+            "она не будет отображаться у других\\. " +
+            "Анкета активируется автоматически, когда ты снова зайдешь в ленту\\.\n\n" +
+            "Удаление анкеты уничтожает все твои данные *безвозвратно*\\. " +
+            "После этого нужно будет заново заполнять анкету\\.")
+        if update.callback_query and update.callback_query.message:
+            await update.callback_query.edit_message_text(text,
+                                          parse_mode=ParseMode.MARKDOWN_V2,
+                                          reply_markup=keyboard)
+        else:
+            await context.bot.send_message(chat_id=update.effective_chat.id,
+                                           text=text,
+                                           parse_mode=ParseMode.MARKDOWN_V2,
+                                           reply_markup=keyboard)
+    except ClientResponseError:
+        await start(update, context)
     return MENU
     
 async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    await query.answer()
     if query.data == "delete":
-        delete_keyboard = [
+        delete_keyboard = InlineKeyboardMarkup(inline_keyboard=[
             [
                 InlineKeyboardButton(
                     text=f"Да",
@@ -95,18 +97,36 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     text="Нет",
                     callback_data="No")
             ]
-        ]
-    
-        await query.edit_message_text('Вы точно хотите удалить Вашу анкету?')
-        await update.callback_query.message.edit_reply_markup(InlineKeyboardMarkup(inline_keyboard=delete_keyboard))
+        ])
+
+        await query.edit_message_text('🚫 *Точно удалить?*\n\n' +
+                                      'Это действие никак не отменить\\! Ты потеряешь все данные анкеты и виджеты\\.',
+                                      parse_mode=ParseMode.MARKDOWN_V2,
+                                      reply_markup=delete_keyboard)
+        await query.answer()
         return DELETE
     elif query.data == "hide" or query.data == "reveal":
         user = pb.collection('users').get_first_list_item(f"telegram_id = '{query.from_user.id}'")
         pb.collection('users').update(user.id,{
-            "hide": True if query.data == "hide" else False
+            "hide": query.data == "hide"
         })
-        await query.edit_message_text("Ваша анкета скрыта" if query.data == "hide" else "Другие пользователи теперь видят Вас")
-        await update.callback_query.message.edit_reply_markup(InlineKeyboardMarkup(inline_keyboard=None))
+        await query.edit_message_text("✅ *Анкета скрыта*\n\nЖдем тебя ещё\\!" if query.data == "hide" else "✅ Твою анкету снова видно",
+                                      parse_mode=ParseMode.MARKDOWN_V2,
+                                      reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                                          [
+                                              InlineKeyboardButton(
+                                                  text = "👀 Показывать" if query.data == "hide" else "👀 Скрыть",
+                                                  callback_data="reveal" if query.data == "hide" else "hide"),
+                                              InlineKeyboardButton(
+                                                  text = "⬅️ К меню",
+                                                  callback_data="menu"),
+                                          ]
+                                      ]))
+        await query.answer()
+        return MENU
+    elif query.data == "menu":
+        await menu(update, context)
+        await query.answer()
         return MENU
 
 # async def delete(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -129,18 +149,26 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
 async def delete_button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    await query.answer()
     telegram_id = query.from_user.id
 
     if query.data == "Yes":
         user = pb.collection('users').get_first_list_item(f"telegram_id = '{telegram_id}'")
         pb.collection('users').delete(user.id)
-        await query.edit_message_text('Ваша анкета удалена')
-        await update.callback_query.message.edit_reply_markup(InlineKeyboardMarkup(inline_keyboard=None))
-        return 
+        await query.edit_message_text('✅ *Анкета удалена*\n\nНадеюсь, ещё увидимся\\!',
+                                      parse_mode=ParseMode.MARKDOWN_V2,
+                                      reply_markup=InlineKeyboardMarkup(inline_keyboard=[]))
+        await query.answer()
+        return MENU
     else:
-        await query.edit_message_text('Ваша анкета не была удалена')
-        await update.callback_query.message.edit_reply_markup(InlineKeyboardMarkup(inline_keyboard=None))
+        await query.edit_message_text('👌 Не удаляем',
+                                      reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                                            [
+                                                InlineKeyboardButton(
+                                                    text = "⬅️ К меню",
+                                                    callback_data="menu"),
+                                            ]
+                                        ]))
+        await query.answer()
         return MENU
 
     

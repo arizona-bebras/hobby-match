@@ -4,6 +4,12 @@
 console.log("Loading widget hooks!");
 
 onRecordEnrich((e) => {
+  if(!e.requestInfo.hasSuperuserAuth()) {
+    e.record.hide('comment');
+  }
+}, 'bans');
+
+onRecordEnrich((e) => {
   if(e.record.getDateTime("birth_date")) {
     e.record.withCustomData(true);
     const currentDate = new Date().getTime() / 1000;
