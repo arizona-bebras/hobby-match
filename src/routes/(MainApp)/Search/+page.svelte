@@ -7,7 +7,7 @@
   import { onMount } from 'svelte';
   import { pb } from '$lib';
   import { fly } from 'svelte/transition';
-  import { Heart } from '@lucide/svelte';
+  import { Heart, LoaderCircle } from '@lucide/svelte';
   import { plausible } from '../../../hooks.client';
 
   let { data }: { data: { page?: PageData } } = $props();
@@ -80,11 +80,11 @@
     const timeout = setTimeout(
       () => {
         if (offeredProfiles.length > 2) return;
-        pb.send('/worker/feed', {
-          method: 'GET',
-        }).then(
-          (response) => (offeredProfiles = [...offeredProfiles, ...response]),
-        );
+        // pb.send('/worker/feed', {
+        //   method: 'GET',
+        // }).then(
+        //   (response) => (offeredProfiles = [...offeredProfiles, ...response]),
+        // );
       },
       offeredProfiles.length == 0 ? 0 : 800,
     );
@@ -230,15 +230,19 @@
           &#8593;
         </p>
         {#if elementSize >= 35}
-          <img
-            class="rounded-full p-1 aspect-square object-cover max-w-15 max-h-15 mx-auto"
-            style:width="{elementSize - 35}px"
-            style:height="{elementSize - 35}px"
-            src={pb.buildURL(
-              `/api/files/_pb_users_auth_/${offeredProfiles[1].id}/${offeredProfiles[1].user_photo}?thumb=350x0`,
-            )}
-            alt="userImage"
-          />
+          {#if offeredProfiles.length > 1}
+            <img
+              class="rounded-full p-1 aspect-square object-cover max-w-15 max-h-15 mx-auto"
+              style:width="{elementSize - 35}px"
+              style:height="{elementSize - 35}px"
+              src={pb.buildURL(
+                `/api/files/_pb_users_auth_/${offeredProfiles[1]?.id}/${offeredProfiles[1]?.user_photo}?thumb=350x0`,
+              )}
+              alt="userImage"
+            />
+          {:else}
+            <LoaderCircle class="animate-spin w-full" />
+          {/if}
         {/if}
       </div>
     {/if}

@@ -36,8 +36,7 @@ if (browser) {
       const ban = await pb.collection('bans').getFirstListItem('');
       await goto(`/ban?reason=${encodeURIComponent(ban.reason)}`);
       return;
-    } catch (e) {
-      console.error(e);
+    } catch (_) {
       // ok
     }
     if (
@@ -55,20 +54,5 @@ if (browser) {
     }
   });
 }
-/* 
-if (browser) {
-  if (!pb.authStore.isValid && window.Telegram?.WebApp?.initData) {
-    const authData = await pb.send(
-      '/api/collections/users/auth-with-telegram',
-      {
-        method: 'POST',
-        body: {
-          data: window.Telegram.WebApp.initData,
-        },
-      },
-    );
-    pb.authStore.save(authData.token, authData.record);
-  }
 
-localStorage.setItem('tmp_userdata', JSON.stringify(pb.authStore.model));*/
 export const handleError = Sentry.handleErrorWithSentry();

@@ -17,7 +17,7 @@
   $effect(() => {
     console.log(survey, selected);
     if (selected !== null && survey.myVote === null)
-      chooseOption(id, selected!);
+      chooseOption(id, selected!).catch((e) => console.error(e));
   });
 </script>
 
