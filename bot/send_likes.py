@@ -92,7 +92,7 @@ async def send_likes() -> None:
                                  reply_markup=keyboard,
                                  parse_mode=ParseMode.MARKDOWN_V2)
             if is_mutual:
-                name, gender_postfix, name_link, keyboard, photo_url = user_info(like.expand['user'])
+                name, gender_postfix, name_link, keyboard, photo_url = user_info(like.expand['liked_user'])
                 await bot.send_photo(chat_id=like.expand['user'].telegram_id,
                                      photo=photo_url,
                                      caption="*Взаимный лайк\\!* 💖\n\n" +
