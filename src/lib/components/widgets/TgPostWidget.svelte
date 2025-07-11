@@ -43,9 +43,8 @@
 
 <svelte:window
   onmessage={(message) => {
-    console.log(message.data);
     if (
-      iframeEl &&
+      message.source === iframeEl?.contentWindow &&
       message.data.type === 'resize' &&
       typeof message.data.height === 'number'
     ) {
