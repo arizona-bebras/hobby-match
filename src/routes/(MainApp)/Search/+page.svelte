@@ -80,11 +80,11 @@
     const timeout = setTimeout(
       () => {
         if (offeredProfiles.length > 2) return;
-        // pb.send('/worker/feed', {
-        //   method: 'GET',
-        // }).then(
-        //   (response) => (offeredProfiles = [...offeredProfiles, ...response]),
-        // );
+        pb.send('/worker/feed', {
+          method: 'GET',
+        }).then(
+          (response) => (offeredProfiles = [...offeredProfiles, ...response]),
+        );
       },
       offeredProfiles.length == 0 ? 0 : 800,
     );
