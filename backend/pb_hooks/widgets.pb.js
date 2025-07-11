@@ -146,14 +146,10 @@ onRecordUpdate((e) => {
     }
   }
 
-  if (JSON.parse(e.record.get("data")).type == "survey"){
-    const votes = $app.findRecordsByFilter('votes', `survey = {:id}`, '', 0, 0,{
-      "id": e.record.getString("id")
-    });
-    for (const vote of votes) {
-      console.log(JSON.stringify(vote))
-      $app.delete(vote)
-    }
+  if (JSON.parse(e.record.get("data")).type === "survey") {
+    console.log($app.db().delete('votes', $dbx.hashExp({
+      "survey": e.record.getString("id"),
+    })).execute());
   }
 
   e.next()

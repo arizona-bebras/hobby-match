@@ -2,7 +2,7 @@
   import * as Sheet from '$lib/components/ui/sheet/index.js';
   import * as Form from '$lib/components/ui/form/index.js';
   import { Input } from '$lib/components/ui/input';
-  import { X } from '@lucide/svelte';
+  import { Info, X } from '@lucide/svelte';
   import { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
   import { surveyScheme } from '$lib/components/editor/schemes/surveySheme';
@@ -86,7 +86,7 @@
           <Form.Control>
             {#snippet children({ props })}
               <Input
-                placeholder="Напишите какой-нибудь вопрос"
+                placeholder="Напиши какой-нибудь вопрос"
                 class="mb-2"
                 {...props}
                 bind:value={$formData.question}
@@ -127,8 +127,15 @@
         </button>
         {#if widgetId !== undefined}
           <DeleteButton {widgetId} />
+          <div class="flex flex-row pb-2 gap-1 text-gray-400 items-start">
+            <Info class="inline-block size-4 mt-1" />
+            <span class="align-top">
+              При изменении опроса все голоса сбрасываются
+            </span>
+          </div>
         {/if}
         <SaveButton
+          class="mt-2"
           {isLoading}
           onClick={() => {
             form.submit();

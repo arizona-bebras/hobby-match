@@ -1,14 +1,15 @@
 <script lang="ts">
-  import { pb } from '$lib/index';
   import { Check } from '@lucide/svelte';
   import { Progress } from '@skeletonlabs/skeleton-svelte';
   import { chooseOption } from '$lib/components/widgetConstructors/widgetsConstructor';
-  import { onMount } from 'svelte';
   import type { SurveyData, Survey } from '$lib/widgetTypes/widgetTypes';
 
   let { data, id, survey }: { data: Survey; id: string; survey: SurveyData } =
     $props();
   let selected = $state(survey.myVote);
+  $effect(() => {
+    selected = survey.myVote;
+  });
 
   let votesCount = $derived(survey.stats.reduce((a, b) => a + b, 0));
   let fakeVote = $derived(survey.myVote === null ? 1 : 0);
@@ -41,7 +42,7 @@
     <label class="flex items-center space-x-2">
       <input
         type="radio"
-        name="radio-direct"
+        name={id}
         value={i}
         bind:group={selected}
         class="appearance-none rounded-full size-5.25 border-2 border-[#D9D9D9]
