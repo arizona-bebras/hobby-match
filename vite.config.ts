@@ -4,6 +4,9 @@ import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
+  esbuild: {
+    drop: ['console', 'debugger'],
+  },
   plugins: [
     sentrySvelteKit({
       sourceMapsUploadOptions: {
