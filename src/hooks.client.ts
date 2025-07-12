@@ -34,7 +34,11 @@ if (browser) {
     pb.authStore.save(res.token, res.record);
     try {
       const ban = await pb.collection('bans').getFirstListItem('');
-      await goto(`/ban?reason=${encodeURIComponent(ban.reason)}`);
+      if (ban.reason) {
+        await goto(`/ban?reason=${encodeURIComponent(ban.reason)}`);
+      } else {
+        await goto(`/ban`);
+      }
       return;
     } catch (_) {
       // ok

@@ -1,6 +1,7 @@
 <script>
   import { Ban } from '@lucide/svelte';
   import { page } from '$app/state';
+  import { pb } from '$lib';
 </script>
 
 <div
@@ -10,8 +11,11 @@
   <h1 class="font-bold text-xl">Аккаунт заблокирован!</h1>
   <p>
     Твоя анкета нарушает правила сообщества, поэтому мы её заблокировали. Если
-    ты не согласен с этим решением, обратись на почту
+    ты не соглас{pb.authStore.record?.gender === 'female' ? 'на' : 'ен'} с этим решением,
+    обратись на почту
     <a href="mailto:ban@shumi.space" class="underline">ban@shumi.space</a>.
   </p>
-  <p><b>Причина:</b> {page.url.searchParams.get('reason')}</p>
+  {#if page.url.searchParams.has('reason')}
+    <p><b>Причина:</b> {page.url.searchParams.get('reason')}</p>
+  {/if}
 </div>
