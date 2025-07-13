@@ -214,6 +214,24 @@
         <Form.FieldErrors />
       </Form.Field>
     </div>
+    <div class="text-gray-400">
+      Используя приложение, ты соглашаешься с
+      <a
+        class="underline"
+        target="_blank"
+        href="https://telegra.ph/Politika-konfidencialnosti-07-13-64"
+      >
+        Политикой конфиденциальности
+      </a>
+      и
+      <a
+        class="underline"
+        target="_blank"
+        href="https://telegra.ph/Polzovatelskoe-soglashenie-07-13-19"
+      >
+        Пользовательским соглашением
+      </a>.
+    </div>
   </div>
   <!--  <SuperDebug data={$formData} />-->
 </form>
