@@ -5,7 +5,7 @@
 </script>
 
 <div class="GameBox flex-col">
-  <p class="font-[Inter] text-[20px] font-medium">&#9876; {data.description}</p>
+  <p class="font-[Inter] text-[20px] font-medium">{data.description}</p>
   <div class="w-full bg-background rounded-lg overflow-hidden relative">
     <div
       class="h-8.25 bg-accent"
