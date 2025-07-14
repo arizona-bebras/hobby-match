@@ -144,9 +144,7 @@ onRecordUpdate((e) => {
       conflict.set("order", oldOrder);
       $app.unsafeWithoutHooks().save(conflict);
     }
-  }
-
-  if (JSON.parse(e.record.get("data")).type === "survey") {
+  } else if (JSON.parse(e.record.get("data")).type === "survey") {
     console.log($app.db().delete('votes', $dbx.hashExp({
       "survey": e.record.getString("id"),
     })).execute());
