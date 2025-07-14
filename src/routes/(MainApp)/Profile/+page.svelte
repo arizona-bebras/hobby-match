@@ -24,15 +24,11 @@
   import { onMount } from 'svelte';
 
   let changeMode = $state(false);
-
-  // useTelegramButton(() => {
-  //   changeMode = !changeMode;
-  // });
-
   $effect(() => {
-    window.Telegram.WebApp.MainButton.setText(
-      changeMode ? 'Сохранить' : 'Просмотр анкет',
-    );
+    window.Telegram.WebApp.MainButton.setParams({
+      text: changeMode ? 'Сохранить' : 'Искать анкеты',
+      is_visible: !addedWidget && !showWidgetMenu,
+    });
   });
 
   useTelegramButton(async () => {
@@ -48,15 +44,6 @@
   let showWidgetMenu = $state(false);
   let addedWidget: WidgetType | undefined = $state(undefined);
   let editingWidget: string | undefined = $state(undefined);
-
-  $effect(() => {
-    if (!addedWidget && !showWidgetMenu)
-      window.Telegram.WebApp.MainButton.show();
-    else window.Telegram.WebApp.MainButton.hide();
-    // return () => {
-    //   window.Telegram.WebApp.MainButton.hide();
-    // };
-  });
   let { data }: { data: PageData } = $props();
   console.log(data);
   let widgets: WidgetWithService[] = $state(data.widgets);

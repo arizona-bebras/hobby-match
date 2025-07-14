@@ -11,4 +11,4 @@
 </script>
 
 <Toaster />
-<slot></slot>
+{@render children()}

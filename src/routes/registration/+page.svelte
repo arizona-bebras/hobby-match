@@ -64,7 +64,7 @@
   $inspect(completedStages);
 </script>
 
-<div class="p-4 w-full">
+<div class="p-4 w-full min-h-screen bg-background text-text-color">
   <div class="flex">
     {#each stages as stage}
       <button
@@ -98,7 +98,7 @@
         await goto('/Profile');
       }}
     >
-      <Check class="size-6 text-text-color" />
+      <Check class="size-6 text-white" />
     </button>
   {/if}
   <!--  <button onclick={() => console.log(complitedStages)}>ComplitedStages</button>-->

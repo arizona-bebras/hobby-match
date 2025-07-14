@@ -110,7 +110,9 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         pb.collection('users').update(user.id,{
             "hide": query.data == "hide"
         })
-        await query.edit_message_text("✅ *Анкета скрыта*\n\nЖдем тебя ещё\\!" if query.data == "hide" else "✅ Твою анкету снова видно",
+        await query.edit_message_text("✅ *Анкета скрыта*\n" +
+                                      "Анкета активируется автоматически, когда ты снова зайдешь в ленту\\.\n\n" +
+                                      "Ждем тебя ещё\\!" if query.data == "hide" else "✅ Твою анкету снова видно",
                                       parse_mode=ParseMode.MARKDOWN_V2,
                                       reply_markup=InlineKeyboardMarkup(inline_keyboard=[
                                           [

@@ -127,6 +127,7 @@
           onclick={() => {
             photoInput.click();
           }}
+          disabled={isLoading}
           type="button"
           class="w-full h-12 bg-accent rounded-xl mb-2 mt-4"
           >Выбрать изображение</button

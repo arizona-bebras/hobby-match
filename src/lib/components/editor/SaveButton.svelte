@@ -22,10 +22,13 @@
   disabled={!isButtonActive || isLoading}
   class:bg-accent={isButtonActive}
   class:bg-inactive={!isButtonActive}
-  class={cn('w-full h-12 rounded-xl mt-9 relative', className)}
+  class={cn(
+    'w-full h-12 rounded-xl mt-9 relative text-white flex flex-row justify-center items-center',
+    className,
+  )}
 >
-  {text}
   {#if isLoading}
-    <LoaderCircle class="ml-1 animate-spin absolute top-0 right-2 h-full" />
+    <LoaderCircle class="mr-2 animate-spin h-full" />
   {/if}
+  {text}
 </button>

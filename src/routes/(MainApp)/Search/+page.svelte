@@ -208,12 +208,12 @@
       class="bg-accent size-12.5 fixed right-6.5 bottom-5 z-2 flex items-center justify-center rounded-xl"
     >
       {#if !liked}
-        <Heart class="size-6 text-text-color" />
+        <Heart class="size-6 text-white" />
       {:else}
         <Heart
           fill="#fff"
           strokeWidth={0}
-          class="size-6 text-text-color animate-ping"
+          class="size-6 text-white animate-ping"
           style="animation-iteration-count: 2; animation-direction: alternate; animation-duration: 400ms"
         />
       {/if}

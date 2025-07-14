@@ -66,7 +66,7 @@
         <Form.Field {form} name="reason">
           <Form.Control>
             {#snippet children({ props })}
-              <Form.Label>
+              <Form.Label class="text-text-color">
                 <Emoji class="mr-1" symbol="⚡" />Причина жалобы
               </Form.Label>
               <Select.Root
@@ -76,12 +76,15 @@
               >
                 <Select.Trigger
                   {...props}
-                  class="w-full text-ellipsis overflow-clip whitespace-nowrap mb-2 mt-1"
+                  class="w-full text-ellipsis overflow-clip whitespace-nowrap mb-2 mt-1 text-text-color"
                   >{$formData.reason}</Select.Trigger
                 >
                 <Select.Content>
                   {#each reasons as reason}
-                    <Select.Item value={reason}>{reason}</Select.Item>
+                    <Select.Item
+                      class="data-[highlighted]:text-text-color"
+                      value={reason}>{reason}</Select.Item
+                    >
                   {/each}
                 </Select.Content>
               </Select.Root>
@@ -91,14 +94,14 @@
         <Form.Field {form} name="info">
           <Form.Control>
             {#snippet children({ props })}
-              <Form.Label>
+              <Form.Label class="text-text-color">
                 <Emoji class="mr-1" symbol="🤔" />Дополнительная информация
               </Form.Label>
               <Input
                 {...props}
                 bind:value={$formData.info}
                 placeholder="Что не так?"
-                class="mb-2 mt-1"
+                class="mb-2 mt-1 text-text-color"
               />
             {/snippet}
           </Form.Control>
