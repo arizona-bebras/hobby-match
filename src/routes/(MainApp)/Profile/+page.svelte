@@ -19,34 +19,23 @@
   import UserInfo from '$lib/components/profile/UserInfo.svelte';
   import RenderWidget from '$lib/components/profile/RenderWidget.svelte';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
-  import { toast } from "svelte-sonner";
 
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
 
   let changeMode = $state(false);
-
   $effect(() => {
     window.Telegram.WebApp.MainButton.setParams({
       text: changeMode ? 'Сохранить' : 'Искать анкеты',
       is_visible: !addedWidget && !showWidgetMenu,
-      color: (widgets.length < 2 && !changeMode) ? '#AAAAAA' : Telegram.WebApp.themeParams.button_color
     });
   });
 
   useTelegramButton(async () => {
     if (!changeMode) {
-      if (widgets.length < 2) {
-        toast.error("Просмотр анкет недоступен", {
-          description: "Добавьте ДВА или более виджетов",
-          position:"top-center",
-        })
-      }
-      else {
-        window.Telegram.WebApp.MainButton.showProgress();
-        await goto('/Search');
-        window.Telegram.WebApp.MainButton.hideProgress();
-      }
+      window.Telegram.WebApp.MainButton.showProgress();
+      await goto('/Search');
+      window.Telegram.WebApp.MainButton.hideProgress();
     } else {
       changeMode = false;
     }
@@ -62,7 +51,6 @@
   $effect(() => {
     widgets = data.widgets;
   });
-
 
   function onEditClose() {
     addedWidget = undefined;
