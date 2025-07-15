@@ -30,6 +30,7 @@
       let url = $formData.link;
       const widget: Audio = {
         type: 'audio',
+        platform: getPlatformType(url)!,
         link: url,
       };
       if (widgetId != undefined) {
@@ -60,6 +61,15 @@
       reset();
     }
   });
+
+  function getPlatformType(url: string) {
+    const domain = url.match(/https?:\/\/([^/]+)/)![1].toLowerCase();
+    if (domain.includes('soundcloud')) {
+      return 'SoundCloud' as const;
+    } else if (domain.includes('music.yandex')) {
+      return 'Yandex' as const;
+    }
+  }
 </script>
 
 <Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
@@ -67,7 +77,7 @@
     <Sheet.Header>
       <form method="POST" use:enhance>
         <p class="text-accent-foreground font-medium pb-4.5">Виджет "Аудио"</p>
-        <p class="pb-2 text-text-color">Введите ссылку на SoundCloud</p>
+        <p class="pb-2 text-text-color">Введите ссылку на SoundCloud или Яндекс Музыку</p>
         <Form.Field {form} name="link">
           <Form.Control>
             {#snippet children({ props })}

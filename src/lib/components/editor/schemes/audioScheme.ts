@@ -2,11 +2,18 @@ import { z } from 'zod';
 
 export const audioScheme = z.object({
   link: z
-    .string()
-    .regex(
-      /soundcloud\.com/i,
-      'Неверный формат ссылки',
-    ),
+    .union(
+      [z.string()
+      .regex(
+        /soundcloud\.com/i,
+        'Неверный формат ссылки',
+      ),
+      z.string()
+      .regex(
+        /music.yandex\.ru/i,
+        'Неверный формат ссылки',
+      )]
+    )
 });
 
 export type FormSchema = typeof audioScheme;

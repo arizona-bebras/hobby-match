@@ -1,7 +1,8 @@
 <script lang="ts">
   let { data } = $props();
+  let track = $state();
 
-  async function getEmbedCode(trackUrl: string) {
+  async function getScEmbedCode(trackUrl: string) {
     const response = await fetch(
       `https://soundcloud.com/oembed?format=json&url=${encodeURIComponent(trackUrl)}`,
     );
@@ -27,16 +28,32 @@
     return iframe.outerHTML;
   }
 
-  let trackIframePromise = getEmbedCode(data.link);
+  async function getYandexTrack(trackUrl: string){
+    console.log(trackUrl)
+    return (`<iframe frameborder="0" allow="clipboard-write" style="border:none;width:500px;height:130px;" src="https://music.yandex.ru/iframe/${trackUrl.slice(23)}"></iframe>`)
+  }
+
+
+  switch (data.platform) {
+    case 'SoundCloud':
+      track = getScEmbedCode(data.link);
+      break
+    case 'Yandex':
+      track = getYandexTrack(data.link);
+      break
+
+  }
 </script>
 
 <button
   onclick={() => window.Telegram.WebApp.openLink(data.link)}
   class="w-full"
 >
-  {#await trackIframePromise}
+  {#await track}
     <p>Загрузка...</p>
   {:then trackIframe}
-    {@html trackIframe}
+    <div class="max-w-[350px] overflow-hidden rounded-xl">
+      {@html trackIframe}
+    </div>
   {/await}
 </button>
