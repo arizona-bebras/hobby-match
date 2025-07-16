@@ -10,7 +10,7 @@ export const audioScheme = z.object({
       ),
       z.string()
       .regex(
-        /music.yandex\.ru/i,
+        /music.yandex\.ru\/album\/[0-9]+\/track\/[0-9]+$/i,
         'Неверный формат ссылки',
       )]
     )
