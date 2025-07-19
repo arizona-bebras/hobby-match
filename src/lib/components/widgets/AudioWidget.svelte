@@ -30,7 +30,12 @@
 
   async function getYandexTrack(trackUrl: string){
     console.log(trackUrl)
-    return (`<iframe frameborder="0" allow="clipboard-write" style="border:none;width:500px;height:130px;" src="https://music.yandex.ru/iframe/${trackUrl.slice(23)}"></iframe>`)
+    const iframe = document.createElement("iframe")
+    iframe.setAttribute('src', `https://music.yandex.ru/iframe/${trackUrl.slice(23)}`)
+    iframe.setAttribute('height', '130');
+    iframe.setAttribute('width', '500');
+    console.log(iframe.outerHTML)
+    return iframe.outerHTML;
   }
 
 
