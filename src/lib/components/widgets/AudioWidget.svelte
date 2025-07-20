@@ -2,7 +2,7 @@
   let { data } = $props();
   let track = $state();
 
-  async function getScEmbedCode(trackUrl: string) {
+  async function getScEmbed(trackUrl: string) {
     const response = await fetch(
       `https://soundcloud.com/oembed?format=json&url=${encodeURIComponent(trackUrl)}`,
     );
@@ -28,7 +28,7 @@
     return iframe.outerHTML;
   }
 
-  async function getYandexTrack(trackUrl: string){
+  async function getYandexTrack(trackUrl: string) {
     console.log(trackUrl)
     const iframe = document.createElement("iframe")
     iframe.setAttribute('src', `https://music.yandex.ru/iframe/${trackUrl.slice(23)}`)
@@ -38,15 +38,24 @@
     return iframe.outerHTML;
   }
 
+  async function getSpotifyEmbed(trackUrl: string) {
+    const data = await fetch(
+      `https://open.spotify.com/oembed?url=${encodeURIComponent(trackUrl)}`
+    ).then(response => response.json())
+    return data.html!
+  }
+
 
   switch (data.platform) {
     case 'SoundCloud':
-      track = getScEmbedCode(data.link);
+      track = getScEmbed(data.link);
       break
     case 'Yandex':
       track = getYandexTrack(data.link);
       break
-
+    case 'Spotify':
+      track = getSpotifyEmbed(data.link);
+      break
   }
 </script>
 

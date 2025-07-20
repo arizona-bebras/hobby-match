@@ -22,7 +22,7 @@ export type WidgetType = Widget['data']['type'];
 // SoundCloud embed
 export type Audio = {
   type: 'audio';
-  platform: 'SoundCloud' | 'Yandex';
+  platform: 'SoundCloud' | 'Yandex' | 'Spotify';
   link: string;
 };
 

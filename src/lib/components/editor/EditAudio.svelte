@@ -69,6 +69,9 @@
     } else if (domain.includes('music.yandex')) {
       return 'Yandex' as const;
     }
+    else if (domain.includes('open.spotify')) {
+      return 'Spotify' as const;
+    }
   }
 </script>
 
