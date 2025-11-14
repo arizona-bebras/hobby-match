@@ -4,6 +4,8 @@
 @import '@skeletonlabs/skeleton/optional/presets';
 @import '@skeletonlabs/skeleton/themes/cerberus';
 
+@import "tw-animate-css";
+
 @source '../node_modules/@skeletonlabs/skeleton-svelte/dist';
 /*:root {*/
 /*  --background: 0 0% 100%;*/
