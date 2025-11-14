@@ -1,41 +1,65 @@
 <script lang="ts">
-  import { pb } from '$lib/index';
   import { goto } from '$app/navigation';
-  import { UserRoundPen, Search, Settings } from '@lucide/svelte';
-  import { browser } from '$app/environment';
-  // import { initData } from '@telegram-apps/sdk-svelte';
-  // if (browser) {
-  //   init();
-  //   console.log(initData.canSendAfter());
-  // }
+  import { User, MessagesSquare, Eye } from '@lucide/svelte';
+  import { page } from '$app/state';
+
   let { children } = $props();
-  // async function getUser() {
-  //   //@ts-ignore
-  //   let user = await pb
-  //     .collection('users')
-  //     .getFirstListItem(`telegram_id = "${pb.authStore.model?.telegram_id}"`);
-  //   if (user.location == '' || user.birth_date == '') {
-  //     goto('./registration');
-  //   }
-  // }
-  //getUser();
+
+  let footerButtons = [
+    {
+      icon: Eye,
+      title: 'Просмотр',
+      redirectTo: 'view',
+    },
+    {
+      icon: MessagesSquare,
+      title: 'Сообщества',
+      redirectTo: 'community',
+    },
+    {
+      icon: User,
+      title: 'Моя анкета',
+      redirectTo: 'Profile',
+    },
+  ];
+  let currentPage: 'view' | 'community' | 'profile' = $state('profile');
+
+  $effect(() => {
+    let path = page.url.pathname.toLowerCase();
+    if (path.includes('view')) {
+      currentPage = 'view';
+    } else if (path.includes('community')) {
+      currentPage = 'community';
+    } else {
+      currentPage = 'Profile';
+    }
+  });
 </script>
 
 <div class="w-screen max-w-full h-screen flex flex-col">
+  {page.url.pathname}
+  {currentPage}
   <div
     class="flex-1 flex flex-col bg-background items-center text-text-color overflow-hidden"
   >
     {@render children()}
   </div>
-  <!--  <footer class="flex justify-between w-full fixed bottom-0 bg-background z-2">-->
-  <!--    <button type="button" class="btn preset-outlined-surface-500 p-3 m-2"-->
-  <!--      ><a href="/Profile"><UserRoundPen /></a></button-->
-  <!--    >-->
-  <!--    <button type="button" class="btn preset-outlined-surface-500 p-3 m-2"-->
-  <!--      ><a href="/Search"><Search /></a></button-->
-  <!--    >-->
-  <!--    <button type="button" class="btn preset-outlined-surface-500 p-3 m-2"-->
-  <!--      ><a href="/Settings"><Settings /></a></button-->
-  <!--    >-->
-  <!--  </footer>-->
+  <footer
+    class="flex justify-around text-text-color font-[Inter] text-[14px] bg-background"
+  >
+    {#each footerButtons as button (button.title)}
+      {@const Icon = button.icon}
+      {@const isActive = currentPage === button.redirectTo}
+      <button
+        class="flex flex-col items-center py-2 bg-background"
+        onclick={() => goto(`/${button.redirectTo}`)}
+      >
+        <Icon class={isActive ? 'stroke-accent' : ''} />
+        <span
+          class:text-accent-foreground={isActive}
+          class:font-semibold={isActive}>{button.title}</span
+        >
+      </button>
+    {/each}
+  </footer>
 </div>
