@@ -77,8 +77,10 @@
       />
       <p class="peer-checked:text-accent">{task.description}</p>
       {#if selected !== null}
+        {@const vote = survey.stats[i] + (selected === i ? fakeVote : 0)}
         <p class="ml-auto">
-          {survey.stats[i] + (selected === i ? fakeVote : 0)} голосов
+          {vote}
+          {getCorrectForm(vote)}
         </p>
       {/if}
     </label>
