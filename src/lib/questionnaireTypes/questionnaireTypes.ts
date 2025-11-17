@@ -59,6 +59,7 @@ type WidgetType = {
 
 export type PageData = {
   age: number;
+  birth_date: Date;
   gender: string;
   id: string;
   interests: InterestType[];

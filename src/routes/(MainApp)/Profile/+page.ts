@@ -28,6 +28,7 @@ export const load: PageLoad = async ({ data, depends }) => {
       user_photo: pb.authStore.record!.user_photo,
       user_info: pb.authStore.record!.user_info,
       miniapp_name: pb.authStore.record!.miniapp_name,
+      birth_date: pb.authStore.record!.birth_date,
       age: pb.authStore.record!.age,
       location: pb.authStore.record!.location,
       interests: await pb
