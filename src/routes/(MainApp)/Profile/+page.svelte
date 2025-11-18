@@ -21,8 +21,7 @@
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
   import * as Sheet from '$lib/components/ui/sheet/index.js';
 
-  import Test from '$lib/Test.svelte';
-  import { toast } from "svelte-sonner";
+  import { toast } from 'svelte-sonner';
 
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
@@ -33,19 +32,21 @@
     window.Telegram.WebApp.MainButton.setParams({
       text: changeMode ? 'Сохранить' : 'Искать анкеты',
       is_visible: !addedWidget && !showWidgetMenu,
-      color: (widgets.length < 2 && !changeMode) ? '#AAAAAA' : Telegram.WebApp.themeParams.button_color
+      color:
+        widgets.length < 2 && !changeMode
+          ? '#AAAAAA'
+          : Telegram.WebApp.themeParams.button_color,
     });
   });
 
   useTelegramButton(async () => {
     if (!changeMode) {
       if (widgets.length < 2) {
-        toast.error("Просмотр анкет недоступен", {
-          description: "Добавьте ДВА или более виджетов",
-          position:"top-center",
-        })
-      }
-      else {
+        toast.error('Просмотр анкет недоступен', {
+          description: 'Добавьте ДВА или более виджетов',
+          position: 'top-center',
+        });
+      } else {
         window.Telegram.WebApp.MainButton.showProgress();
         await goto('/Search');
         window.Telegram.WebApp.MainButton.hideProgress();
@@ -66,7 +67,6 @@
     widgets = data.widgets;
   });
 
-
   function onEditClose() {
     addedWidget = undefined;
     editingWidget = undefined;
@@ -76,14 +76,14 @@
 <div class="w-full h-full overflow-y-auto">
   <Header {data} {changeMode} />
   <div class="font-[Inter] px-4 w-full max-w-full relative">
-    <!--{#if !changeMode}-->
-    <!--  <button-->
-    <!--    onclick={() => (changeMode = !changeMode)}-->
-    <!--    class="bg-accent size-12.5 fixed right-6.5 bottom-5 z-2 flex items-center justify-center rounded-xl"-->
-    <!--  >-->
-    <!--    <Pencil class="size-6 text-white" />-->
-    <!--  </button>-->
-    <!--{/if}-->
+    {#if !changeMode}
+      <button
+        onclick={() => (changeMode = !changeMode)}
+        class="bg-accent size-12.5 fixed right-6.5 bottom-5 z-2 flex items-center justify-center rounded-xl"
+      >
+        <Pencil class="size-6 text-white" />
+      </button>
+    {/if}
     <UserInfo {data} {changeMode} />
 
     {#if changeMode}
@@ -181,20 +181,4 @@
       </div>
     {/each}
   </div>
-  <button onclick={() => (addedWidget = '25')}>Test</button>
-  {#if addedWidget === '25'}
-    <Test open={addedWidget === '25'} onClose={onEditClose} />
-  {/if}
-  <Sheet.Root>
-    <Sheet.Trigger>Open</Sheet.Trigger>
-    <Sheet.Content>
-      <Sheet.Header>
-        <Sheet.Title>Are you sure absolutely sure?</Sheet.Title>
-        <Sheet.Description>
-          This action cannot be undone. This will permanently delete your
-          account and remove your data from our servers.
-        </Sheet.Description>
-      </Sheet.Header>
-    </Sheet.Content>
-  </Sheet.Root>
 </div>
