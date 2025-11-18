@@ -3,29 +3,52 @@
   import { Progress } from '@skeletonlabs/skeleton-svelte';
   import { chooseOption } from '$lib/components/widgetConstructors/widgetsConstructor';
   import type { SurveyData, Survey } from '$lib/widgetTypes/widgetTypes';
+  import { string } from 'zod';
 
   let { data, id, survey }: { data: Survey; id: string; survey: SurveyData } =
     $props();
-  let selected = $state(survey.myVote);
-  $effect(() => {
-    selected = survey.myVote;
-  });
 
+  let selected = $state(survey.myVote);
   let votesCount = $derived(survey.stats.reduce((a, b) => a + b, 0));
   let fakeVote = $derived(survey.myVote === null ? 1 : 0);
 
+  $effect(() => {
+    selected = survey.myVote;
+  });
   $effect(() => {
     console.log(survey, selected);
     if (selected !== null && survey.myVote === null)
       chooseOption(id, selected!).catch((e) => console.error(e));
   });
+
+  function getCorrectForm(count: number): string {
+    const remainder10 = count % 10;
+    const remainder100 = count % 100;
+
+    let wordForm: string;
+
+    if (remainder100 >= 11 && remainder100 <= 14) {
+      wordForm = 'голосов';
+    } else if (remainder10 === 1) {
+      wordForm = 'голос';
+    } else if (remainder10 >= 2 && remainder10 <= 4) {
+      wordForm = 'голоса';
+    } else {
+      wordForm = 'голосов';
+    }
+
+    return wordForm;
+  }
 </script>
 
 <div class="ToDoBox">
   <div class="flex">
     <p class="pb-2.25 font-bold">{data.question}</p>
     {#if selected !== null}
-      <p class="ml-auto">{votesCount + fakeVote} проголосовали</p>
+      <p class="ml-auto">
+        {votesCount + fakeVote}
+        {getCorrectForm(votesCount + fakeVote)}
+      </p>
     {/if}
   </div>
   <!--  <div class="flex gap-2">-->
@@ -54,8 +77,10 @@
       />
       <p class="peer-checked:text-accent">{task.description}</p>
       {#if selected !== null}
+        {@const vote = survey.stats[i] + (selected === i ? fakeVote : 0)}
         <p class="ml-auto">
-          {survey.stats[i] + (selected === i ? fakeVote : 0)} голосов
+          {vote}
+          {getCorrectForm(vote)}
         </p>
       {/if}
     </label>
