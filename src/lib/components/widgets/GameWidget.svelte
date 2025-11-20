@@ -3,7 +3,6 @@
   import { TriangleAlert } from '@lucide/svelte';
 
   let { data }: { data: SteamGameData } = $props();
-  data = {};
   console.log(1111111111111111, data);
 </script>
 
