@@ -48,7 +48,7 @@
         });
       } else {
         window.Telegram.WebApp.MainButton.showProgress();
-        await goto('/Search');
+        await goto('/search');
         window.Telegram.WebApp.MainButton.hideProgress();
       }
     } else {

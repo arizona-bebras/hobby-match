@@ -18,11 +18,11 @@
   let currentProfile = $state(0);
   useTelegramButton(async () => {
     window.Telegram.WebApp.MainButton.showProgress();
-    await goto('/Profile');
+    await goto('/profile');
     window.Telegram.WebApp.MainButton.hideProgress();
   });
   let liked: boolean = $state(false);
-  useTelegramButton(() => goto('/Profile'));
+  useTelegramButton(() => goto('/profile'));
 
   onMount(() => {
     window.Telegram.WebApp.MainButton.setText(

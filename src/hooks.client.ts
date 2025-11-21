@@ -53,8 +53,8 @@ if (browser) {
       res.record.interests.length < 3
     ) {
       await goto('/registration');
-    } else if (window.location.pathname !== '/Search') {
-      await goto('/Profile');
+    } else if (window.location.pathname !== '/search') {
+      await goto('/profile');
     }
   });
 }

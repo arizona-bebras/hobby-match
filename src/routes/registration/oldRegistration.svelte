@@ -16,7 +16,7 @@
       birth_date: '',
     };
     console.log('Создана запись:', record);
-    goto('/Profile');
+    goto('/profile');
   }
 </script>
 

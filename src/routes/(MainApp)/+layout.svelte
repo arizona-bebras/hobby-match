@@ -29,10 +29,10 @@
   </div>
   <!--  <footer class="flex justify-between w-full fixed bottom-0 bg-background z-2">-->
   <!--    <button type="button" class="btn preset-outlined-surface-500 p-3 m-2"-->
-  <!--      ><a href="/Profile"><UserRoundPen /></a></button-->
+  <!--      ><a href="/profile"><UserRoundPen /></a></button-->
   <!--    >-->
   <!--    <button type="button" class="btn preset-outlined-surface-500 p-3 m-2"-->
-  <!--      ><a href="/Search"><Search /></a></button-->
+  <!--      ><a href="/search"><search /></a></button-->
   <!--    >-->
   <!--    <button type="button" class="btn preset-outlined-surface-500 p-3 m-2"-->
   <!--      ><a href="/Settings"><Settings /></a></button-->
