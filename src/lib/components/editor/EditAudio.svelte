@@ -75,9 +75,11 @@
 <Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
-      <form method="POST" use:enhance>
+      <form method="POST" use:enhance class="text-text-color">
         <p class="text-accent-foreground font-medium pb-4.5">Виджет "Аудио"</p>
-        <p class="pb-2 text-text-color">Введите ссылку на SoundCloud или Яндекс Музыку</p>
+        <p class="pb-2 text-text-color">
+          Введите ссылку на SoundCloud или Яндекс Музыку
+        </p>
         <Form.Field {form} name="link">
           <Form.Control>
             {#snippet children({ props })}

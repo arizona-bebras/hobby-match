@@ -75,7 +75,12 @@
 <Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
-      <form method="POST" enctype="multipart/form-data" use:enhance>
+      <form
+        method="POST"
+        enctype="multipart/form-data"
+        use:enhance
+        class="text-text-color"
+      >
         <p class="text-accent-foreground font-medium pb-4">
           Виджет "Изображения"
         </p>

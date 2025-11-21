@@ -73,7 +73,7 @@
 <Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
-      <form method="POST" use:enhance>
+      <form method="POST" use:enhance class="text-text-color">
         <p class="text-accent-foreground font-medium pb-4.5">
           Виджет "Список задач"
         </p>
