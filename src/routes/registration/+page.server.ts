@@ -1,8 +1,8 @@
 import { type Actions, fail, redirect, type RequestEvent } from '@sveltejs/kit';
 import { defaults, superValidate } from 'sveltekit-superforms';
-import { photoSchema } from '$lib/components/registration/PhotoFormShema';
-import { informationSchema } from '$lib/components/registration/InformationFormShema';
-import { interestsScheme } from '$lib/components/registration/InterestsFormShema';
+import { photoSchema } from '$lib/components/registration/photo/PhotoFormShema';
+import { informationSchema } from '$lib/components/registration/information/InformationFormShema';
+import { interestsScheme } from '$lib/components/registration/interests/InterestsFormShema';
 import { zod } from 'sveltekit-superforms/adapters';
 import { pb } from '$lib/index';
 import type { PageServerLoad } from './$types';
@@ -52,7 +52,7 @@ export const actions: Actions = {
         interests,
       });
     }
-    redirect(303, '/Profile');
+    redirect(303, '/profile');
     return {
       interests,
     };

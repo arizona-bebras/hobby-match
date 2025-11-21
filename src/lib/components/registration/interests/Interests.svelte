@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { pb } from '$lib/index';
-  import { Input } from '$lib/components/ui/input/index.js';
+  import { pb } from '$lib';
+  import { Input } from '$lib/components/ui/input';
   import { Plus } from '@lucide/svelte';
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';
   import SuperDebug, {
@@ -11,10 +11,10 @@
   import {
     type FormSchema,
     interestsScheme,
-  } from '$lib/components/registration/InterestsFormShema';
+  } from '$lib/components/registration/interests/InterestsFormShema';
   import { zodClient } from 'sveltekit-superforms/adapters';
   import { onDestroy } from 'svelte';
-  import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
+  import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
   type Word = {
     id: string;
     tag: string;

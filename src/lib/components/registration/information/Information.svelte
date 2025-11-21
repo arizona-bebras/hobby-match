@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { pb } from '$lib/index';
+  import { pb } from '$lib';
   import {
     DateFormatter,
     type DateValue,
@@ -15,16 +15,16 @@
   import {
     type FormSchema,
     informationSchema,
-  } from '$lib/components/registration/InformationFormShema';
+  } from '$lib/components/registration/information/InformationFormShema';
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';
   import { Input } from '$lib/components/ui/input';
   import { Mars, Venus, CalendarIcon } from '@lucide/svelte';
   import { Textarea } from '$lib/components/ui/textarea';
   import DataPicker from '$lib/components/ui/dataPicker/DataPicker.svelte';
-  import * as Form from '$lib/components/ui/form/index.js';
-  import { photoSchema } from '$lib/components/registration/PhotoFormShema';
+  import * as Form from '$lib/components/ui/form';
+  import { photoSchema } from '$lib/components/registration/photo/PhotoFormShema';
   import { onDestroy } from 'svelte';
-  import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
+  import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
   let gender = $state('');
 
   let value = $state<DateValue>();
@@ -35,9 +35,13 @@
   // $inspect(dateOfBirth);
   let {
     form: information,
-    nextStage,
-  }: { form: SuperValidated<Infer<FormSchema>>; nextStage: CallableFunction } =
-    $props();
+    setCurrentStage,
+    markStageComplete,
+  }: {
+    form: SuperValidated<Infer<FormSchema>>;
+    setCurrentStage: (stage: string) => void;
+    markStageComplete: (stage: 'Информация' | 'Фото' | 'Интересы') => void;
+  } = $props();
 
   const form = superForm(information, {
     validators: zodClient(informationSchema),
@@ -56,7 +60,8 @@
   async function handleTelegramButtonClick() {
     await save();
     form.submit();
-    nextStage();
+    markStageComplete('Информация');
+    setCurrentStage('Фото');
   }
 
   useTelegramButton(handleTelegramButtonClick);

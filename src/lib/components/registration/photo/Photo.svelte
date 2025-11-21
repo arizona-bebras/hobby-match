@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { pb } from '$lib/index';
+  import { pb } from '$lib';
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';
   import {
     photoSchema,
     type FormSchema,
-  } from '$lib/components/registration/PhotoFormShema';
+  } from '$lib/components/registration/photo/PhotoFormShema';
   import SuperDebug, {
     type SuperValidated,
     type Infer,
@@ -13,15 +13,19 @@
   } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
   import { onDestroy } from 'svelte';
-  import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
+  import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
   let fileInput: HTMLInputElement;
   let tgImage = window.Telegram.WebApp.initDataUnsafe.user?.photo_url;
   console.log(tgImage);
   let {
     form: photo,
-    nextStage,
-  }: { form: SuperValidated<Infer<FormSchema>>; nextStage: CallableFunction } =
-    $props();
+    setCurrentStage,
+    markStageComplete,
+  }: {
+    form: SuperValidated<Infer<FormSchema>>;
+    setCurrentStage: (stage: string) => void;
+    markStageComplete: (stage: 'Информация' | 'Фото' | 'Интересы') => void;
+  } = $props();
 
   export async function save(): Promise<boolean> {
     if (!hasPhoto || formValid) {
@@ -30,7 +34,8 @@
         .collection('users')
         .update(pb.authStore.record!.id, $formData)
         .finally(window.Telegram.WebApp.MainButton.hideProgress);
-      nextStage();
+      markStageComplete('Фото');
+      setCurrentStage('Интересы');
       return true;
     } else {
       return false;
@@ -47,7 +52,8 @@
   const file = fileProxy(form, 'user_photo');
   async function handleTelegramButtonClick() {
     if (!(await save())) {
-      nextStage();
+      markStageComplete('Фото');
+      setCurrentStage('Интересы');
     }
   }
 
