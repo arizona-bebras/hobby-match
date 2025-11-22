@@ -1,14 +1,14 @@
 <script lang="ts">
-  import * as Sheet from '$lib/components/ui/sheet/index.js';
+  import * as Sheet from '$lib/components/ui/sheet';
   import {
     createWidget,
     updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
-  import * as Form from '$lib/components/ui/form/index.js';
-  import { Input } from '$lib/components/ui/input/index.js';
+  import * as Form from '$lib/components/ui/form';
+  import { Input } from '$lib/components/ui/input';
   import { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
-  import { toDoScheme } from '$lib/components/editor/schemes/toDoScheme';
+  import { toDoScheme } from '$lib/components/editor/todo/toDoScheme';
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';

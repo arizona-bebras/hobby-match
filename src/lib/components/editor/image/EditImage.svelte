@@ -1,9 +1,9 @@
 <script lang="ts">
-  import * as Sheet from '$lib/components/ui/sheet/index.js';
+  import * as Sheet from '$lib/components/ui/sheet';
   import { X } from '@lucide/svelte';
   import { superForm, defaults } from 'sveltekit-superforms';
   import { zod } from 'sveltekit-superforms/adapters';
-  import { imageScheme } from '$lib/components/editor/schemes/imageSheme';
+  import { imageScheme } from '$lib/components/editor/image/imageSheme';
   import {
     createWidget,
     updateWidget,

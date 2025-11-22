@@ -1,11 +1,11 @@
 <script lang="ts">
-  import * as Sheet from '$lib/components/ui/sheet/index.js';
+  import * as Sheet from '$lib/components/ui/sheet';
   import { Input } from '$lib/components/ui/input';
-  import * as Form from '$lib/components/ui/form/index.js';
+  import * as Form from '$lib/components/ui/form';
 
   import { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
-  import { videoSchema } from '$lib/components/editor/schemes/videoSheme';
+  import { videoSchema } from '$lib/components/editor/video/videoSheme';
   import {
     createWidget,
     updateWidget,
