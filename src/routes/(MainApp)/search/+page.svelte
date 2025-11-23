@@ -144,13 +144,12 @@
   {:else}
     <UserProfile
       {currentProfile}
-      {profileContainer}
+      bind:profileContainer
       {offeredProfiles}
       bind:liked
     />
-
     {#if isProfileEnd && isMoving}
-      <TransitionBlock {elementSize} {offeredProfiles} />
+      <TransitionBlock bind:elementSize {offeredProfiles} />
     {/if}
   {/if}
 </div>

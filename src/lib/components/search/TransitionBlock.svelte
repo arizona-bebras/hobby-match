@@ -12,7 +12,7 @@
       css: (t: number) => {
         return `
           width: ${startWidth * t}px; 
-          height: ${startHeight * t}px;
+          height: ${startHeight * t}px; 
           opacity: ${t};
           overflow: hidden;
         `;
@@ -21,7 +21,7 @@
   }
 
   const {
-    elementSize,
+    elementSize = $bindable(),
     offeredProfiles,
   }: { elementSize: number; offeredProfiles: PageData[] } = $props();
 </script>

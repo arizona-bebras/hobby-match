@@ -8,7 +8,7 @@
 
   let {
     currentProfile,
-    profileContainer,
+    profileContainer = $bindable(),
     offeredProfiles,
     liked = $bindable(),
   }: {
