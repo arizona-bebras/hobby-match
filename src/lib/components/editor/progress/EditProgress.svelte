@@ -1,12 +1,12 @@
 <script lang="ts">
-  import * as Sheet from '$lib/components/ui/sheet/index.js';
+  import * as Sheet from '$lib/components/ui/sheet';
   import {
     createWidget,
     updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
-  import * as Form from '$lib/components/ui/form/index.js';
-  import { Input } from '$lib/components/ui/input/index.js';
-  import { progressScheme } from '$lib/components/editor/schemes/progressScheme';
+  import * as Form from '$lib/components/ui/form';
+  import { Input } from '$lib/components/ui/input';
+  import { progressScheme } from '$lib/components/editor/progress/progressScheme';
   import { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
   import { pb } from '$lib';
@@ -80,7 +80,7 @@
 <Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
-      <form method="POST" use:enhance>
+      <form method="POST" use:enhance class="text-text-color">
         <p class="text-accent-foreground font-medium pb-4.5">
           Виджет "Прогресс"
         </p>

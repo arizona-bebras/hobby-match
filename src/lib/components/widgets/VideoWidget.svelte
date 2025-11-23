@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getYouTubeVideoId } from '$lib/components/editor/schemes/videoSheme';
+  import { getYouTubeVideoId } from '$lib/components/editor/video/videoSheme';
 
   let { data } = $props();
   let videId = getYouTubeVideoId(data.link);

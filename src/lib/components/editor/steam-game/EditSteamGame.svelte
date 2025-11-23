@@ -1,16 +1,16 @@
 <script lang="ts">
-  import * as Sheet from '$lib/components/ui/sheet/index.js';
+  import * as Sheet from '$lib/components/ui/sheet';
   import { Textarea } from '$lib/components/ui/textarea';
   import {
     createWidget,
     updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
-  import * as Form from '$lib/components/ui/form/index.js';
-  import { Input } from '$lib/components/ui/input/index.js';
+  import * as Form from '$lib/components/ui/form';
+  import { Input } from '$lib/components/ui/input';
   import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
-  import * as Select from '$lib/components/ui/select/index.js';
-  import { gameScheme } from '$lib/components/editor/schemes/gameScheme';
+  import * as Select from '$lib/components/ui/select';
+  import { gameScheme } from '$lib/components/editor/steam-game/gameScheme';
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
@@ -149,7 +149,7 @@
 >
   <Sheet.Content side="bottom">
     <Sheet.Header>
-      <form method="POST" use:enhance>
+      <form method="POST" use:enhance class="text-text-color">
         <p class="text-accent-foreground font-medium pb-4.5">
           Виджет "Время игры"
         </p>

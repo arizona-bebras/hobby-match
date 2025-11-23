@@ -1,8 +1,8 @@
 import type { PageServerLoad } from './$types.js';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { textSchema } from '$lib/components/editor/schemes/textSheme';
-import { informationSchema } from '$lib/components/registration/InformationFormShema';
+import { textSchema } from '$lib/components/editor/text/textSheme';
+import { informationSchema } from '$lib/components/registration/information/InformationFormShema';
 
 export const load: PageServerLoad = async () => {
   return {

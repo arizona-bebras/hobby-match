@@ -1,9 +1,13 @@
 <script lang="ts">
-  import Information from '$lib/components/registration/Information.svelte';
-  import Photo from '$lib/components/registration/Photo.svelte';
-  import Interests from '$lib/components/registration/Interests.svelte';
+  import {
+    Information,
+    Photo,
+    Interests,
+    RegisterStages,
+  } from '$lib/components/registration/index';
+
   import type { PageProps } from '../../../.svelte-kit/types/src/routes/registration/$types';
-  import { pb } from '$lib/index';
+  import { pb } from '$lib';
   import { onMount } from 'svelte';
   import { Check } from '@lucide/svelte';
   import { goto } from '$app/navigation';
@@ -11,13 +15,7 @@
   let information: Information | undefined = $state();
   let photo: Photo | undefined = $state();
   let interests: Interests | undefined = $state();
-  let stages: string[][] = [
-    ['information', 'Информация'],
-    ['photo', 'Фото'],
-    ['interests', 'Интересы'],
-  ];
-  let completedStages: string[] = $state([]);
-  let currentStage: string = $state('information');
+
   window.Telegram.WebApp.MainButton.setParams({
     is_active: false,
     is_visible: true,
@@ -26,21 +24,6 @@
   });
   let { data }: PageProps = $props();
 
-  function nextStage() {
-    if (!completedStages.includes(currentStage)) {
-      completedStages.push(currentStage);
-    }
-    switch (currentStage) {
-      case 'information':
-        currentStage = 'photo';
-        break;
-      case 'photo':
-        currentStage = 'interests';
-        break;
-      case 'interests':
-        break;
-    }
-  }
   onMount(() => {
     if (
       pb.authStore.record?.miniapp_name &&
@@ -49,57 +32,87 @@
       pb.authStore.record?.location &&
       pb.authStore.record?.user_info
     ) {
-      completedStages.push('information');
+      markStageComplete('Информация');
     }
     if (pb.authStore.record?.user_photo) {
-      completedStages.push('photo');
+      markStageComplete('Фото');
     }
     if (pb.authStore.record?.interests.length >= 1) {
-      completedStages.push('interests');
+      markStageComplete('Интересы');
     }
-    console.log(pb.authStore.record?.user_photo);
-    console.log(pb.authStore.record?.interests);
   });
-  $inspect(currentStage);
-  $inspect(completedStages);
+
+  let stages = $state([
+    {
+      title: 'Информация',
+      isCurrentStage: true,
+      isComplete: false,
+    },
+    {
+      title: 'Фото',
+      isCurrentStage: false,
+      isComplete: false,
+    },
+    {
+      title: 'Интересы',
+      isCurrentStage: false,
+      isComplete: false,
+    },
+  ]);
+
+  function getCurrentStage() {
+    return stages.find((element) => element.isCurrentStage);
+  }
+
+  function setCurrentStage(newTitle) {
+    for (const stage of stages) {
+      stage.isCurrentStage = stage.title === newTitle;
+    }
+  }
+
+  function markStageComplete(stage: 'Информация' | 'Фото' | 'Интересы') {
+    if (stage === 'Информация') {
+      stages[0].isComplete = true;
+    } else if (stage === 'Фото') {
+      stages[1].isComplete = true;
+    } else {
+      stages[2].isComplete = true;
+    }
+  }
 </script>
 
 <div class="p-4 w-full min-h-screen bg-background text-text-color">
-  <div class="flex">
-    {#each stages as stage}
-      <button
-        onclick={() => {
-          if (completedStages.includes(stage[0])) currentStage = stage[0];
-        }}
-        class="border-t-2 w-1/3 p-2.5 {completedStages.includes(stage[0])
-          ? 'text-accent/50'
-          : currentStage === stage[0]
-            ? 'text-accent'
-            : 'text-[#A7A7A7]'}"
-        class:font-bold={currentStage === stage[0]}>{stage[1]}</button
-      >
-    {/each}
-  </div>
-  {#if currentStage === 'information'}
-    <!--    <Information bind:currentStage />-->
-    <Information form={data.information} bind:this={information} {nextStage} />
-  {:else if currentStage === 'photo'}
-    <Photo form={data.photo} bind:this={photo} {nextStage} />
-  {:else if currentStage === 'interests'}
-    <Interests form={data.interests} bind:this={interests} />
+  <RegisterStages bind:stages />
+  {#if getCurrentStage().title === 'Информация'}
+    <Information
+      form={data.information}
+      {setCurrentStage}
+      {markStageComplete}
+      bind:this={information}
+    />
+  {:else if getCurrentStage().title === 'Фото'}
+    <Photo
+      form={data.photo}
+      {setCurrentStage}
+      {markStageComplete}
+      bind:this={photo}
+    />
+  {:else}
+    <Interests form={data.interests} {setCurrentStage} bind:this={interests} />
   {/if}
-  {#if completedStages.includes('information') && completedStages.includes('photo') && completedStages.includes('interests')}
+
+  {#if stages.every((obj) => obj.isComplete)}
     <button
       class="bg-accent size-12.5 fixed right-4 bottom-4 z-2 flex items-center justify-center rounded-xl"
       onclick={async () => {
-        if (currentStage === 'information') await information?.save();
-        else if (currentStage === 'photo') await photo?.save();
-        else if (currentStage === 'interests') await interests?.save();
-        await goto('/Profile');
+        let currentStage = getCurrentStage().title;
+        if (currentStage === 'Информация') await information?.save();
+        else if (currentStage === 'Фото') await photo?.save();
+        else if (currentStage === 'Интересы') await interests?.save();
+        await goto('/profile');
       }}
     >
       <Check class="size-6 text-white" />
     </button>
   {/if}
-  <!--  <button onclick={() => console.log(complitedStages)}>ComplitedStages</button>-->
 </div>

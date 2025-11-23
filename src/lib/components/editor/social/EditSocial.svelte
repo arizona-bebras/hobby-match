@@ -1,10 +1,10 @@
 <script lang="ts">
-  import * as Sheet from '$lib/components/ui/sheet/index.js';
-  import * as Form from '$lib/components/ui/form/index.js';
+  import * as Sheet from '$lib/components/ui/sheet';
+  import * as Form from '$lib/components/ui/form';
   import { Input } from '$lib/components/ui/input';
   import { superForm, defaults } from 'sveltekit-superforms';
   import { zod } from 'sveltekit-superforms/adapters';
-  import { socialScheme } from '$lib/components/editor/schemes/socialScheme';
+  import { socialScheme } from '$lib/components/editor/social/socialScheme';
   import {
     createWidget,
     updateWidget,
@@ -80,7 +80,7 @@
 <Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
-      <form method="POST" use:enhance>
+      <form method="POST" use:enhance class="text-text-color">
         <p class="text-accent-foreground font-medium pb-2">
           Виджет "Социальная сеть"
         </p>

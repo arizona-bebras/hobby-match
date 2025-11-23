@@ -1,10 +1,10 @@
 <script lang="ts">
-  import Steam from '$lib/components/SocialMedia/Steam.svelte';
-  import Twitch from '$lib/components/SocialMedia/Twitch.svelte';
-  import Twitter from '$lib/components/SocialMedia/Twitter.svelte';
-  import Vk from '$lib/components/SocialMedia/Vk.svelte';
-  import Youtube from '$lib/components/SocialMedia/Youtube.svelte';
-  import TgAccount from '$lib/components/SocialMedia/TgAccount.svelte';
+  import Steam from '$lib/components/socialMedia/Steam.svelte';
+  import Twitch from '$lib/components/socialMedia/Twitch.svelte';
+  import Twitter from '$lib/components/socialMedia/Twitter.svelte';
+  import Vk from '$lib/components/socialMedia/Vk.svelte';
+  import Youtube from '$lib/components/socialMedia/Youtube.svelte';
+  import TgAccount from '$lib/components/socialMedia/TgAccount.svelte';
 
   import { ArrowUpRight } from '@lucide/svelte';
   import type {

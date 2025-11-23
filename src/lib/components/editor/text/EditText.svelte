@@ -1,12 +1,12 @@
 <script lang="ts">
-  import * as Sheet from '$lib/components/ui/sheet/index.js';
+  import * as Sheet from '$lib/components/ui/sheet';
   import { Textarea } from '$lib/components/ui/textarea';
   import {
     createWidget,
     updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
-  import * as Form from '$lib/components/ui/form/index.js';
-  import { textSchema } from '$lib/components/editor/schemes/textSheme';
+  import * as Form from '$lib/components/ui/form';
+  import { textSchema } from '$lib/components/editor/text/textSheme';
   import { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
   import { pb } from '$lib';
@@ -68,7 +68,7 @@
 <Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
-      <form method="POST" use:enhance>
+      <form method="POST" use:enhance class="text-text-color">
         <p class="text-accent-foreground font-medium pb-4.5">Виджет "Текст"</p>
         <Form.Field {form} name="text">
           <Form.Control>

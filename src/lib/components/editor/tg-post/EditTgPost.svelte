@@ -1,9 +1,9 @@
 <script lang="ts">
   import { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zodClient } from 'sveltekit-superforms/adapters';
-  import { audioScheme } from '$lib/components/editor/schemes/audioScheme';
-  import * as Sheet from '$lib/components/ui/sheet/index.js';
-  import * as Form from '$lib/components/ui/form/index.js';
+  import { postScheme } from '$lib/components/editor/tg-post/postSheme';
+  import * as Sheet from '$lib/components/ui/sheet';
+  import * as Form from '$lib/components/ui/form';
   import { Input } from '$lib/components/ui/input';
   import {
     createWidget,
@@ -12,7 +12,6 @@
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
-  import type { Audio } from '$lib/widgetTypes/widgetTypes';
   let {
     widgetId,
     onClose,
@@ -22,18 +21,16 @@
     widgetId?: string;
     onClose: CallableFunction;
   } = $props();
-  const form = superForm(defaults(zod(audioScheme)), {
+  const form = superForm(defaults(zod(postScheme)), {
     SPA: true,
-    validators: zodClient(audioScheme),
+    validators: zodClient(postScheme),
     onSubmit: async () => {
       isLoading = true;
-      let url = $formData.link;
-      const widget: Audio = {
-        type: 'audio',
-        platform: getPlatformType(url)!,
-        link: url,
+      const widget = {
+        type: 'post' as const,
+        link: $formData.link.match(/(?<=https:\/\/t\.me\/).*/)![0],
       };
-      if (widgetId != undefined) {
+      if (widgetId) {
         await updateWidget(widgetId, widget);
       } else {
         await createWidget(widget);
@@ -53,39 +50,33 @@
     $formData;
   });
   $effect(() => {
-    if (widgetId !== undefined) {
+    if (widgetId) {
       pb.collection('widgets')
         .getOne(widgetId)
-        .then((result) => ($formData.link = result.data.link));
+        .then(
+          (result) => ($formData.link = `https://t.me/${result.data.link}`),
+        );
     } else {
       reset();
     }
   });
-
-  function getPlatformType(url: string) {
-    const domain = url.match(/https?:\/\/([^/]+)/)![1].toLowerCase();
-    if (domain.includes('soundcloud')) {
-      return 'SoundCloud' as const;
-    } else if (domain.includes('music.yandex')) {
-      return 'Yandex' as const;
-    }
-    else if (domain.includes('open.spotify')) {
-      return 'Spotify' as const;
-    }
-  }
 </script>
 
 <Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
-      <form method="POST" use:enhance>
-        <p class="text-accent-foreground font-medium pb-4.5">Виджет "Аудио"</p>
-        <p class="pb-2 text-text-color">Введите ссылку на SoundCloud или Яндекс Музыку</p>
+      <form method="POST" use:enhance class="text-text-color">
+        <p class="text-accent-foreground font-medium pb-4.5">
+          Виджет "Телеграм Пост"
+        </p>
+        <p class="pb-2 text-text-color">
+          Введите ссылку на пост из публичного канала.
+        </p>
         <Form.Field {form} name="link">
           <Form.Control>
             {#snippet children({ props })}
               <Input
-                placeholder="https://soundcloud.com/..."
+                placeholder="https://t.me/..."
                 {...props}
                 bind:value={$formData.link}
               />

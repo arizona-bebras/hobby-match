@@ -1,9 +1,9 @@
 <script lang="ts">
-  import * as Sheet from '$lib/components/ui/sheet/index.js';
+  import * as Sheet from '$lib/components/ui/sheet';
   import { X } from '@lucide/svelte';
   import { superForm, defaults } from 'sveltekit-superforms';
   import { zod } from 'sveltekit-superforms/adapters';
-  import { imageScheme } from '$lib/components/editor/schemes/imageSheme';
+  import { imageScheme } from '$lib/components/editor/image/imageSheme';
   import {
     createWidget,
     updateWidget,
@@ -75,7 +75,12 @@
 <Sheet.Root bind:open onOpenChange={(state) => !state && onClose()}>
   <Sheet.Content side="bottom">
     <Sheet.Header>
-      <form method="POST" enctype="multipart/form-data" use:enhance>
+      <form
+        method="POST"
+        enctype="multipart/form-data"
+        use:enhance
+        class="text-text-color"
+      >
         <p class="text-accent-foreground font-medium pb-4">
           Виджет "Изображения"
         </p>
