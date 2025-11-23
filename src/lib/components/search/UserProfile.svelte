@@ -41,7 +41,7 @@
     console.log('LIKE');
   }}
   disabled={liked}
-  class="bg-accent size-12.5 fixed right-6.5 bottom-5 z-2 flex items-center justify-center rounded-xl"
+  class="bg-accent size-12.5 fixed right-6.5 bottom-20 z-2 flex items-center justify-center rounded-xl"
 >
   {#if !liked}
     <Heart class="size-6 text-white" />

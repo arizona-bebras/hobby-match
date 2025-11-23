@@ -17,7 +17,7 @@
     {
       icon: User,
       title: 'Моя анкета',
-      redirectTo: 'Profile',
+      redirectTo: 'profile',
     },
   ];
   let currentPage: 'view' | 'community' | 'profile' = $state('profile');
@@ -29,7 +29,7 @@
     } else if (path.includes('community')) {
       currentPage = 'community';
     } else {
-      currentPage = 'Profile';
+      currentPage = 'profile';
     }
   });
 </script>
