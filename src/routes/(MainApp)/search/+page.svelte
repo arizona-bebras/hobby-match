@@ -1,14 +1,12 @@
 <script lang="ts">
-  import { ProgressRing } from '@skeletonlabs/skeleton-svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
   import { goto } from '$app/navigation';
-  import Questionnaire from '$lib/components/profile/Questionnaire.svelte';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
   import { onMount } from 'svelte';
   import { pb } from '$lib';
-  import { fly } from 'svelte/transition';
-  import { Heart, LoaderCircle } from '@lucide/svelte';
-  import { plausible } from '../../../hooks.client';
+  import LoadingScreen from '$lib/components/search/LoadingScreen.svelte';
+  import TransitionBlock from '$lib/components/search/TransitionBlock.svelte';
+  import UserProfile from '$lib/components/search/UserProfile.svelte';
 
   let { data }: { data: { page?: PageData } } = $props();
 
@@ -25,22 +23,12 @@
   useTelegramButton(() => goto('/profile'));
 
   onMount(() => {
-    window.Telegram.WebApp.MainButton.setText(
-      // changeMode ? 'Сохранить' : 'Изменить виджеты',
-      'Моя анкета',
-    );
+    window.Telegram.WebApp.MainButton.setText('Моя анкета');
     window.Telegram.WebApp.MainButton.show();
-    // getProfiles();
   });
   let elementSize = $state(0);
-  // let elementSize = new Tween(0, {
-  //   duration: 400,
-  //   easing: cubicOut,
-  // });
   let isProfileEnd = $state(false);
   let touchStartPosition: { x: number; y: number } | null = $state(null);
-  // let scrollY = $derived(container.scrollTop);
-  // $inspect(scrollY);
   $effect(() => {
     if (touchStartPosition === null) {
       if (elementSize >= 108) {
@@ -55,6 +43,7 @@
   });
   let hapticAvailable = $state(true);
   let hapticDisable = $state(false);
+
   $effect(() => {
     if (elementSize >= 108 && hapticAvailable) {
       window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
@@ -66,6 +55,7 @@
       hapticDisable = true;
     }
   });
+
   $effect(() => {
     if (
       profileContainer &&
@@ -92,32 +82,12 @@
     return () => clearTimeout(timeout);
   });
   let isMoving = $state(false);
-  // $inspect(elementSize);
-  $inspect(elementSize);
-
-  function close(node: HTMLDivElement, { duration }: { duration: number }) {
-    const startWidth = node.offsetWidth;
-    const startHeight = node.offsetHeight;
-
-    return {
-      duration,
-      css: (t: number) => {
-        return `
-          width: ${startWidth * t}px;
-          height: ${startHeight * t}px;
-          opacity: ${t};
-          overflow: hidden;
-        `;
-      },
-    };
-  }
 </script>
 
 <div
   class="overflow-y-auto w-full min-h-full"
   bind:this={screenContainer}
   ontouchstart={(e) => {
-    console.log(e, isProfileEnd);
     if (isProfileEnd) {
       touchStartPosition = {
         x: e.changedTouches[0].clientX,
@@ -155,7 +125,6 @@
       }
 
       screenContainer?.scrollTo(0, screenContainer?.scrollHeight);
-      console.log(elementSize, e.deltaY / 10);
     } else {
       elementSize = 0;
       touchStartPosition = null;
@@ -165,86 +134,23 @@
     if (!screenContainer || !profileContainer) {
       return;
     }
-    console.log(111);
     isProfileEnd =
       screenContainer.scrollTop + screenContainer.offsetHeight >=
       profileContainer.offsetHeight;
   }}
 >
   {#if offeredProfiles.length <= 0}
-    <div
-      class="flex flex-col items-center justify-center w-screen h-screen font-[Inter] text-lg font-medium"
-    >
-      <ProgressRing
-        value={null}
-        meterStroke="stroke-accent"
-        trackStroke="stroke-accent/25"
-      ></ProgressRing>
-      <p class="pt-4 text-text-color">Ищем подходящие профили...</p>
-    </div>
+    <LoadingScreen />
   {:else}
-    {#key currentProfile}
-      <div
-        in:fly={{ duration: 500, y: 200 }}
-        bind:this={profileContainer}
-        class="min-h-full"
-      >
-        <Questionnaire data={offeredProfiles[0]} />
-      </div>
-    {/key}
-    <button
-      onclick={() => {
-        if (!liked) {
-          pb.collection('likes').create({
-            user: pb.authStore.record?.id,
-            liked_user: offeredProfiles[0].id,
-          });
-          plausible.trackEvent('liked');
-        }
-        liked = !liked;
-        console.log('LIKE');
-      }}
-      disabled={liked}
-      class="bg-accent size-12.5 fixed right-6.5 bottom-5 z-2 flex items-center justify-center rounded-xl"
-    >
-      {#if !liked}
-        <Heart class="size-6 text-white" />
-      {:else}
-        <Heart
-          fill="#fff"
-          strokeWidth={0}
-          class="size-6 text-white animate-ping"
-          style="animation-iteration-count: 2; animation-direction: alternate; animation-duration: 400ms"
-        />
-      {/if}
-    </button>
+    <UserProfile
+      {currentProfile}
+      {profileContainer}
+      {offeredProfiles}
+      bind:liked
+    />
 
     {#if isProfileEnd && isMoving}
-      <div
-        out:close={{ duration: 200 }}
-        class="bg-accent/25 max-w-15 max-h-27 rounded-full mx-auto overflow-hidden"
-        style:width="{elementSize}px"
-        style:height="{elementSize}px"
-      >
-        <p style:font-size="min(30px, {elementSize}px)" class="text-center">
-          &#8593;
-        </p>
-        {#if elementSize >= 35}
-          {#if offeredProfiles.length > 1}
-            <img
-              class="rounded-full p-1 aspect-square object-cover max-w-15 max-h-15 mx-auto"
-              style:width="{elementSize - 35}px"
-              style:height="{elementSize - 35}px"
-              src={pb.buildURL(
-                `/api/files/_pb_users_auth_/${offeredProfiles[1]?.id}/${offeredProfiles[1]?.user_photo}?thumb=350x0`,
-              )}
-              alt="userImage"
-            />
-          {:else}
-            <LoaderCircle class="animate-spin w-full" />
-          {/if}
-        {/if}
-      </div>
+      <TransitionBlock {elementSize} {offeredProfiles} />
     {/if}
   {/if}
 </div>
