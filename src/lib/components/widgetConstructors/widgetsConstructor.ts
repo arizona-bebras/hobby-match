@@ -1,5 +1,6 @@
 import type { Widget } from '$lib/widgetTypes/widgetTypes';
 import { pb } from '$lib';
+import { db } from '$lib';
 import { invalidate } from '$app/navigation';
 
 export interface AdditionalData {
@@ -17,17 +18,28 @@ export async function createWidget(
   formData: Widget['data'],
   files: File[] = [],
 ): Promise<void> {
-  await pb.collection('widgets').create({
-    user: pb.authStore.record?.id,
-    order: -1,
-    files: files,
-    data: formData,
-  });
+  var form = new FormData()
+  form.append("data", JSON.stringify(formData))
+  for (let i = 0; i < files.length; i++) {
+    form.append(`file_${i}`, files[i])
+  }
+  const authHeader: HeadersInit = new Headers()
+  authHeader.set('Authorization', `Bearer ${window.localStorage.getItem("access_token")}`)
+  await fetch(`${db}/api/me/widgets`, {
+    method: "POST",
+    headers: authHeader,
+    body: form
+  })
   await invalidate('user:widgets');
 }
 
 export async function deleteWidget(widgetId: string): Promise<void> {
-  await pb.collection('widgets').delete(widgetId);
+  const authHeader: HeadersInit = new Headers()
+  authHeader.set('Authorization', `Bearer ${window.localStorage.getItem("access_token")}`)
+  await fetch(`${db}/api/me/widgets?widget_id=${widgetId}`, {
+    method: "DELETE",
+    headers: authHeader
+  })
 }
 
 export async function updateWidget(
@@ -35,10 +47,19 @@ export async function updateWidget(
   formData: Widget['data'],
   files: File[] = [],
 ) {
-  await pb.collection('widgets').update(widgetId, {
-    data: formData,
-    'files+': files,
-  });
+  var form = new FormData()
+  form.append("widget_id", widgetId)
+  form.append("data", JSON.stringify(formData))
+  for (let i = 0; i < files.length; i++) {
+    form.append(`file_${i}`, files[i])
+  }
+  const authHeader: HeadersInit = new Headers()
+  authHeader.set('Authorization', `Bearer ${window.localStorage.getItem("access_token")}`)
+  await fetch(`${db}/api/me/widgets`, {
+    method: "PUT",
+    headers: authHeader,
+    body: form
+  })
   await invalidate('user:widgets');
   //widget.changeStatus = false;
 }
@@ -47,9 +68,18 @@ export async function changeWidgetPosition(
   widget: Widget,
   posChange: 1 | -1,
 ): Promise<void> {
-  await pb.collection('widgets').update(widget.id, {
-    'order+': posChange,
-  });
+  var form = new FormData()
+  form.append("widget_id", widget.id)
+  form.append("order", `${widget.order}`)
+  form.append("order", `${posChange}`)
+  const authHeader: HeadersInit = new Headers()
+  authHeader.set('Authorization', `Bearer ${window.localStorage.getItem("access_token")}`)
+  await fetch(`${db}/api/me/widgets/order`, {
+    method: "PUT",
+    headers: authHeader,
+    body: form
+  })
+  await invalidate('user:widgets');
 }
 
 export async function chooseOption(

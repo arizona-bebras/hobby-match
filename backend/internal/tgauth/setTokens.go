@@ -21,7 +21,7 @@ type AuthClient struct{
 }
 
 type TgAuthClaims struct {
-	TgID int64 
+	TgID string 
 	jwt.RegisteredClaims
 }
 
@@ -58,7 +58,7 @@ func (auth *AuthClient) SetTokens(w http.ResponseWriter, r *http.Request) {
 			log.Printf("TG ID %d", initData.User.ID)
 
 			var user database.User
-			result := auth.DB.Table("users").First(&user, "tg_id = ?", strconv.FormatInt(initData.User.ID, 10))
+			result := auth.DB.Table("users").Take(&user, "tg_id = ?", strconv.FormatInt(initData.User.ID, 10))
 			log.Printf("result %v", result.Error)
 			if result.Error != nil {
 				log.Println(result.Error)
@@ -74,7 +74,7 @@ func (auth *AuthClient) SetTokens(w http.ResponseWriter, r *http.Request) {
 			}
 
 			tgAuthClaims := TgAuthClaims{
-				TgID: initData.User.ID,
+				TgID: strconv.Itoa(int(initData.User.ID)),
 				RegisteredClaims: jwt.RegisteredClaims{
 					ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 				},

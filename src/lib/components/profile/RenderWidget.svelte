@@ -16,6 +16,7 @@
 </script>
 
 {#if widget.data.type === 'text'}
+  {console.log("TRYING RENDER TEXT")}
   <TextWidget data={widget.data} />
 {:else if widget.data.type === 'audio'}
   <AudioWidget data={widget.data} />

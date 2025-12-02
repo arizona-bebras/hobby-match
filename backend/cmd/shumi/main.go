@@ -36,7 +36,7 @@ func main() {
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"https://qh5zm0g8-5173.euw.devtunnels.ms"},
-		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Authorization", "Content-Type"},
 		Debug:          true,
 	})

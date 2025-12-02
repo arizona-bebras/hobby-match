@@ -3,6 +3,8 @@ pocketbase
 venv
 __pychache__
 backend/pb_data
+go.mod
+go.sum
 # Output
 .output
 .vercel

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Plus, Pencil } from '@lucide/svelte';
-  import type { WidgetType } from '$lib/widgetTypes/widgetTypes';
+  import type { Widget, WidgetType } from '$lib/widgetTypes/widgetTypes';
   import Edit from '$lib/components/editor/Edit.svelte';
   import WidgetsListMenu from '$lib/components/editor/WidgetsListMenu.svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
@@ -49,7 +49,7 @@
   let editingWidget: string | undefined = $state(undefined);
   let { data }: { data: PageData } = $props();
   console.log(data);
-  let widgets: WidgetType[] = $state(data.widgets);
+  let widgets: Widget[] = $state(data.widgets);
 
   $effect(() => {
     widgets = data.widgets;
@@ -94,8 +94,8 @@
     />
 
     <RenderEditWidget {addedWidget} {onEditClose} widgetId={editingWidget} />
-
-    {#each widgets as { widget }, i (widget.id)}
+    {#each widgets as widget, i (widget.id)}
+      {console.log(widget)}
       <div class="relative mb-2">
         {#if changeMode}
           <Edit
