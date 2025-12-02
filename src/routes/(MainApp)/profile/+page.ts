@@ -12,6 +12,10 @@ export const load: PageLoad = async ({ fetch, data, depends }) => {
     method: "GET",
     headers: authHeader
   }).then(res => res.json())
-  var pageData: PageData = JSON.parse(res) as PageData
+  const currentDate = new Date().getTime() / 1000;
+  const birthDate = new Date(res.birth_date).getTime()/1000;
+  const age = currentDate - birthDate
+  var pageData: PageData = res as PageData
+  pageData.age = Math.floor(age / (60 * 60 * 24 * 365.25))
   return pageData
 }
