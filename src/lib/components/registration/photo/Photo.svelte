@@ -36,6 +36,7 @@
       const res = await updatePhoto($formData).finally(window.Telegram.WebApp.MainButton.hideProgress)
       if (res != 200) {
         console.log('failed to update user data')
+        return false;
       }
       return true;
     } else {

@@ -6,9 +6,7 @@ import (
 	"log"
 	"net/http"
 	"reflect"
-	"strconv"
-
-	// "strings"
+	// "strconv"
 
 	"gorm.io/gorm"
 )
@@ -19,19 +17,6 @@ const AuthContextKey = contextKey("TgID")
 
 type UserDataHandler struct {
 	DB *gorm.DB
-}
-
-func getWidgetsByUserID(DB *gorm.DB, userTgID int64) ([]Widget, error) {
-	var widgets []Widget
-	result := DB.Model(&Widget{}).Where("user = ?", strconv.Itoa(int(userTgID))).Find(&widgets)
-	log.Printf("%v", widgets)
-	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
-			return []Widget{}, nil
-		}
-		return []Widget{}, result.Error
-	}
-	return widgets, nil
 }
 
 func getStructFieldNames(s interface{}) []string {
@@ -59,7 +44,7 @@ func getStructFieldNames(s interface{}) []string {
 }
 
 func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
-	tgID, ok := r.Context().Value(AuthContextKey).(int64)
+	tgID, ok := r.Context().Value(AuthContextKey).(string)
 	if !ok {
         log.Printf("Authentication error: TgID is missing or not int64")
         http.Error(w, "Authentication required", http.StatusUnauthorized)
@@ -73,9 +58,10 @@ func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	widgets, err := getWidgetsByUserID(h.DB, user.TgID)
-	if err != nil {
-		log.Printf("failed to get widgets: %s", err.Error())
+	var widgets []Widget
+	result = h.DB.Table("widgets").Find(&widgets, "widgets.user = ?", tgID)
+	if result.Error != nil {
+		log.Printf("failed to get widgets: %s", result.Error.Error())
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -96,6 +82,7 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 	tgID := r.Context().Value(AuthContextKey)
 
 	body, err := io.ReadAll(r.Body)
+	r.Body.Close()
 	if err != nil {
 		log.Printf("failed read data: %s", err.Error())
 		http.Error(w, "internal server error", http.StatusInternalServerError)
@@ -104,19 +91,19 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 
 	log.Println(string(body))
 
-	var payload User
-	log.Printf("GOT DATA %v", payload)
-	err = json.Unmarshal(body, &payload)
-	payload.TgID = tgID.(int64)
+	var user User
+	log.Printf("GOT DATA %v", user)
+	err = json.Unmarshal(body, &user)
+	user.TgID = tgID.(string)
 
-	log.Printf("%v", payload)
-	log.Printf("%s", getStructFieldNames(payload))
+	log.Printf("%v", user)
+	log.Printf("%s", getStructFieldNames(user))
 
 	var result *gorm.DB
-	if len(payload.Interests) == 0 {
-		result = h.DB.Model(&payload).Select("name", "location", "gender", "birth_date", "info").Updates(&payload)
+	if len(user.Interests) == 0 {
+		result = h.DB.Model(&user).Select("name", "location", "gender", "birth_date", "info").Updates(&user)
 	} else {
-		result = h.DB.Model(&payload).Select("interests").Updates(&payload)
+		result = h.DB.Model(&user).Select("interests").Updates(&user)
 	}
 
 	if result.Error != nil {
@@ -130,12 +117,7 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 }
 
 func (h *UserDataHandler) UpdateMyProfilePhoto(w http.ResponseWriter, r *http.Request) {
-	tgID, ok := r.Context().Value(AuthContextKey).(int64)
-	if !ok {
-		log.Printf("failed to get tg id")
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-		return
-	}
+	tgID := r.Context().Value(AuthContextKey).(string)
 
 	photoFile, _, err := r.FormFile("user_photo")
 	if err != nil {
@@ -190,5 +172,28 @@ func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
+
+	case "/api/me/widgets":
+		switch r.Method {
+		case http.MethodPost:
+			h.CreateWidget(w, r)
+		case http.MethodPut:
+			h.UpdateWidget(w, r)
+		case http.MethodDelete:
+			h.DelteWidget(w, r)
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+	case "/api/me/widgets/order":
+		switch r.Method {
+		case http.MethodPut:
+			h.UpdateWidgetOrder(w, r)
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
 	}
 }
+
