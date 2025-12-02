@@ -1,0 +1,53 @@
+<script lang="ts">
+  import { pb } from '$lib';
+  import { LoaderCircle } from '@lucide/svelte';
+  import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
+
+  function close(node: HTMLDivElement, { duration }: { duration: number }) {
+    const startWidth = node.offsetWidth;
+    const startHeight = node.offsetHeight;
+
+    return {
+      duration,
+      css: (t: number) => {
+        return `
+          width: ${startWidth * t}px; 
+          height: ${startHeight * t}px;
+          opacity: ${t};
+          overflow: hidden;
+        `;
+      },
+    };
+  }
+
+  const {
+    elementSize,
+    offeredProfiles,
+  }: { elementSize: number; offeredProfiles: PageData[] } = $props();
+</script>
+
+<div
+  out:close={{ duration: 200 }}
+  class="bg-accent/25 max-w-15 max-h-27 rounded-full mx-auto overflow-hidden"
+  style:width="{elementSize}px"
+  style:height="{elementSize}px"
+>
+  <p style:font-size="min(30px, {elementSize}px)" class="text-center">
+    &#8593;
+  </p>
+  {#if elementSize >= 35}
+    {#if offeredProfiles.length > 1}
+      <img
+        class="rounded-full p-1 aspect-square object-cover max-w-15 max-h-15 mx-auto"
+        style:width="{elementSize - 35}px"
+        style:height="{elementSize - 35}px"
+        src={pb.buildURL(
+          `/api/files/_pb_users_auth_/${offeredProfiles[1]?.id}/${offeredProfiles[1]?.user_photo}?thumb=350x0`,
+        )}
+        alt="userImage"
+      />
+    {:else}
+      <LoaderCircle class="animate-spin w-full" />
+    {/if}
+  {/if}
+</div>
