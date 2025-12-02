@@ -21,10 +21,10 @@ type User struct {
 }
 
 type Widget struct {
-	Id        string    `json:"id" gorm:"primaryKey" db:"id"`
-	User      int64    `json:"user" db:"user"`
-	Order     int      `json:"order" db:"order"`
-	Files     [][]byte `json:"files" db:"files"`
-	Data      []byte   `json:"data" db:"data"`
-	Namespace string   `json:"namespace" db:"namespace"`
+	Id        string        `json:"id" gorm:"primaryKey" db:"id"`
+	User      int64         `json:"user" db:"user"`
+	Order     int           `json:"order" db:"order"`
+	Files     pq.ByteaArray `json:"files" gorm:"type:bytea[]" db:"files"`
+	Data      []byte        `json:"data" db:"data"`
+	Namespace string        `json:"namespace" db:"namespace"`
 }

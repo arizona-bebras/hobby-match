@@ -33,7 +33,7 @@
 <!--src={pb.files.getURL(pb.authStore.record ?? {}, data.user_photo)}-->
 <!--src="https://imgv3.fotor.com/images/slider-image/A-clear-close-up-photo-of-a-woman.jpg"-->
 <img
-  src={pb.buildURL(`/api/files/_pb_users_auth_/${data.id}/${data.user_photo}`)}
+  src={`data:image/png;base64,${data.user_photo}`}
   alt="person"
   class="w-full rounded-b-3xl object-cover transition-[height]"
   style="height: {!changeMode ? height : 0}px"

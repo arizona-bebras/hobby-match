@@ -3,7 +3,7 @@
   import { cn } from '$lib/utils';
   import type { InterestType } from '$lib/questionnaireTypes/questionnaireTypes';
 
-  let { interests }: { interests: InterestType[] } = $props();
+  let { interests }: { interests: string[] } = $props();
   let isOpen = $state(false);
   console.log('Interests:', interests);
 </script>
@@ -21,7 +21,7 @@
       <div
         class="flex gap-[8px] h-fit bg-accent/25 rounded-[28px] px-[12px] py-[8px]"
       >
-        <p class="text-accent">{interest.tag}</p>
+        <p class="text-accent">{interest}</p>
       </div>
     {/each}
     {#if isOpen}

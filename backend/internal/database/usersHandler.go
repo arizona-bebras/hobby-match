@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"strconv"
+
 	// "strings"
 
 	"gorm.io/gorm"
@@ -19,11 +21,14 @@ type UserDataHandler struct {
 	DB *gorm.DB
 }
 
-func getWidgetsByUserID(DB *gorm.DB, userID int64) ([]Widget, error) {
+func getWidgetsByUserID(DB *gorm.DB, userTgID int64) ([]Widget, error) {
 	var widgets []Widget
-	result := DB.Table("widgets").Find(&widgets, "user = ?", userID)
+	result := DB.Model(&Widget{}).Where("user = ?", strconv.Itoa(int(userTgID))).Find(&widgets)
 	log.Printf("%v", widgets)
 	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return []Widget{}, nil
+		}
 		return []Widget{}, result.Error
 	}
 	return widgets, nil
@@ -54,7 +59,12 @@ func getStructFieldNames(s interface{}) []string {
 }
 
 func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
-	tgID := r.Context().Value(AuthContextKey)
+	tgID, ok := r.Context().Value(AuthContextKey).(int64)
+	if !ok {
+        log.Printf("Authentication error: TgID is missing or not int64")
+        http.Error(w, "Authentication required", http.StatusUnauthorized)
+        return
+    }
 	var user User
 	result := h.DB.Table("users").First(&user, "tg_id = ?", tgID)
 	if result.Error != nil {
