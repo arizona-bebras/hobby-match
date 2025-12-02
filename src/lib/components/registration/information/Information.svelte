@@ -25,6 +25,7 @@
   import { photoSchema } from '$lib/components/registration/photo/PhotoFormShema';
   import { onDestroy } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
+  import { updateData } from '$lib/components/registration/';
   let gender = $state('');
 
   let value = $state<DateValue>();
@@ -52,10 +53,12 @@
 
   export async function save() {
     window.Telegram.WebApp.MainButton.showProgress();
-    await pb
-      .collection('users')
-      .update(pb.authStore.record!.id, $formData)
-      .finally(window.Telegram.WebApp.MainButton.hideProgress);
+    const res = await updateData($formData).finally(window.Telegram.WebApp.MainButton.hideProgress)
+    if (res != 200) {
+      console.log('failed to update user data')
+      return
+    }
+    return
   }
   async function handleTelegramButtonClick() {
     await save();

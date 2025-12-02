@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/sveltekit';
 import { pb } from '$lib/index';
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
+import { db } from '$lib/index'
 import Plausible from 'plausible-tracker';
 
 export const plausible = Plausible({
@@ -19,44 +20,49 @@ Sentry.init({
 });
 
 if (browser) {
-  if (!window.Telegram.WebApp.isVersionAtLeast('7.0')) {
-    window.location.replace('https://t.me/detoshumibot');
-  } else {
-    plausible.enableAutoPageviews();
-  }
+  // if (!window.Telegram.WebApp.isVersionAtLeast('7.0')) {
+  //   window.location.replace('https://t.me/detoshumibot');
+  // } else {
+  //   plausible.enableAutoPageviews();
+  // }
   window.Telegram.WebApp.disableVerticalSwipes();
-  pb.send('/api/collections/users/auth-with-telegram', {
-    method: 'POST',
-    body: {
-      data: window.Telegram.WebApp.initData,
+  fetch(`${db}/api/auth`, {
+    headers: {
+      "Authorization": `tma ${window.Telegram.WebApp.initData}`
     },
   }).then(async (res) => {
-    pb.authStore.save(res.token, res.record);
-    try {
-      const ban = await pb.collection('bans').getFirstListItem('');
-      if (ban.reason) {
-        await goto(`/ban?reason=${encodeURIComponent(ban.reason)}`);
-      } else {
-        await goto(`/ban`);
-      }
-      return;
-    } catch (_) {
-      // ok
-    }
+    const data = await res.json()
+    const user = data.response.user
+    window.localStorage.setItem("access_token", data.response.access_token)
+    window.localStorage.setItem("refresh_token", data.response.refresh_token)
+    // try {
+    //   const ban = await pb.collection('bans').getFirstListItem('');
+    //   if (ban.reason) {
+    //     await goto(`/ban?reason=${encodeURIComponent(ban.reason)}`);
+    //   } else {
+    //     await goto(`/ban`);
+    //   }
+    //   return;
+    // } catch (_) {
+    //   // ok
+    // }
     if (
-      !res.record.miniapp_name ||
-      !res.record.gender ||
-      !res.record.birth_date ||
-      !res.record.location ||
-      !res.record.user_info ||
-      !res.record.user_photo ||
-      res.record.interests.length < 3
+      !user.miniapp_name ||
+      !user.gender ||
+      !user.birth_date ||
+      !user.location ||
+      !user.user_info ||
+      !user.user_photo
+      // user.interests.length < 3
     ) {
       await goto('/registration');
     } else if (window.location.pathname !== '/search') {
       await goto('/profile');
     }
-  });
+  })
+  .catch((error) => {
+    console.error("Fetch-запрос завершился ошибкой (сработал catch):", error);
+  });;
 }
 
-export const handleError = Sentry.handleErrorWithSentry();
+// export const handleError = Sentry.handleErrorWithSentry();

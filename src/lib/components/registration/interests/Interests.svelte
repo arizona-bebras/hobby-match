@@ -1,5 +1,6 @@
 <script lang="ts">
   import { pb } from '$lib';
+  import { db } from '$lib';
   import { Input } from '$lib/components/ui/input';
   import { Plus } from '@lucide/svelte';
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';
@@ -15,6 +16,7 @@
   import { zodClient } from 'sveltekit-superforms/adapters';
   import { onDestroy } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
+  import { updateData } from '$lib/components/registration/';
   type Word = {
     id: string;
     tag: string;
@@ -33,13 +35,16 @@
 
   export async function save() {
     window.Telegram.WebApp.MainButton.showProgress();
-    await pb
-      .collection('users')
-      .update(pb.authStore.record!.id, $formData)
-      .finally(window.Telegram.WebApp.MainButton.hideProgress);
+    const res = await updateData($formData).finally(window.Telegram.WebApp.MainButton.hideProgress)
+    if (res != 200) {
+      console.log('failed to update user data')
+      return
+    }
+    return
   }
 
   async function handleTelegramButtonClick() {
+    // window.Telegram.WebApp.MainButton.showProgress()
     await save();
     form.submit();
   }
@@ -85,12 +90,18 @@
   let suggestedWords: Word[] = $state([]);
   $inspect(suggestedWords);
   async function getWords(userInterest: string) {
-    const result = await pb.send('/worker/autocomplete', {
+    // const result = await pb.send('/worker/autocomplete', {
+    //   method: 'GET',
+    //   query: {
+    //     query: userInterest,
+    //   },
+    // });
+    const authHeader: HeadersInit = new Headers()
+    authHeader.set('Authorization', `Bearer ${window.localStorage.getItem("access_token")}`)
+    const result = await fetch(`${db}/api/worker/autocomplete?query=${userInterest}`, {
       method: 'GET',
-      query: {
-        query: userInterest,
-      },
-    });
+      headers: authHeader,
+    }).then(res => res.json());
     suggestedWords = result.response.matches.map(
       (element: { id: string; metadata: { tag: string } }) => ({
         id: element.id,
@@ -161,7 +172,7 @@
                   selectedInterests.splice(i, 1);
                 }
                 $formData.interests = selectedInterests.map(
-                  (element) => element.id,
+                  (element) => element.tag,
                 );
                 // if (selectedInterests.includes (element['id'])) {
                 //   selectedInterests.splice(

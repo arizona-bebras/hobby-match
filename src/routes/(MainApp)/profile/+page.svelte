@@ -1,15 +1,13 @@
 <script lang="ts">
-  import { Plus, Pencil, Save } from '@lucide/svelte';
+  import { Plus, Pencil } from '@lucide/svelte';
   import type { WidgetType } from '$lib/widgetTypes/widgetTypes';
   import Edit from '$lib/components/editor/Edit.svelte';
   import WidgetsListMenu from '$lib/components/editor/WidgetsListMenu.svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte';
-  import type { WidgetWithService } from '$lib/components/widgetConstructors/widgetsConstructor';
   import Header from '$lib/components/profile/Header.svelte';
   import UserInfo from '$lib/components/profile/UserInfo.svelte';
   import RenderWidget from '$lib/components/profile/RenderWidget.svelte';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
-  import * as Sheet from '$lib/components/ui/sheet/index.js';
 
   import { toast } from 'svelte-sonner';
 
@@ -51,7 +49,7 @@
   let editingWidget: string | undefined = $state(undefined);
   let { data }: { data: PageData } = $props();
   console.log(data);
-  let widgets: WidgetWithService[] = $state(data.widgets);
+  let widgets: WidgetType[] = $state(data.widgets);
 
   $effect(() => {
     widgets = data.widgets;
@@ -69,7 +67,7 @@
     {#if !changeMode}
       <button
         onclick={() => (changeMode = !changeMode)}
-        class="bg-accent size-12.5 fixed right-6.5 bottom-20 z-2 flex items-center justify-center rounded-xl"
+        class="bg-accent size-12.5 fixed right-6.5 bottom-5 z-2 flex items-center justify-center rounded-xl"
       >
         <Pencil class="size-6 text-white" />
       </button>

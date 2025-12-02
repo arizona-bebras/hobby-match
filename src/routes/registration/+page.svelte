@@ -64,7 +64,7 @@
     return stages.find((element) => element.isCurrentStage);
   }
 
-  function setCurrentStage(newTitle) {
+  function setCurrentStage(newTitle: string) {
     for (const stage of stages) {
       stage.isCurrentStage = stage.title === newTitle;
     }
@@ -83,14 +83,14 @@
 
 <div class="p-4 w-full min-h-screen bg-background text-text-color">
   <RegisterStages bind:stages />
-  {#if getCurrentStage().title === 'Информация'}
+  {#if getCurrentStage()!.title === 'Информация'}
     <Information
       form={data.information}
       {setCurrentStage}
       {markStageComplete}
       bind:this={information}
     />
-  {:else if getCurrentStage().title === 'Фото'}
+  {:else if getCurrentStage()!.title === 'Фото'}
     <Photo
       form={data.photo}
       {setCurrentStage}
@@ -105,7 +105,7 @@
     <button
       class="bg-accent size-12.5 fixed right-4 bottom-4 z-2 flex items-center justify-center rounded-xl"
       onclick={async () => {
-        let currentStage = getCurrentStage().title;
+        let currentStage = getCurrentStage()!.title;
         if (currentStage === 'Информация') await information?.save();
         else if (currentStage === 'Фото') await photo?.save();
         else if (currentStage === 'Интересы') await interests?.save();

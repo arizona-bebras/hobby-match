@@ -14,6 +14,8 @@
   import { zodClient } from 'sveltekit-superforms/adapters';
   import { onDestroy } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
+  import { updatePhoto } from '$lib/components/registration/';
+  // import { BOT_TOKEN } from '$env/static/private';
   let fileInput: HTMLInputElement;
   let tgImage = window.Telegram.WebApp.initDataUnsafe.user?.photo_url;
   console.log(tgImage);
@@ -30,12 +32,11 @@
   export async function save(): Promise<boolean> {
     if (!hasPhoto || formValid) {
       window.Telegram.WebApp.MainButton.showProgress();
-      await pb
-        .collection('users')
-        .update(pb.authStore.record!.id, $formData)
-        .finally(window.Telegram.WebApp.MainButton.hideProgress);
-      markStageComplete('Фото');
-      setCurrentStage('Интересы');
+      console.log($formData)
+      const res = await updatePhoto($formData).finally(window.Telegram.WebApp.MainButton.hideProgress)
+      if (res != 200) {
+        console.log('failed to update user data')
+      }
       return true;
     } else {
       return false;
@@ -126,7 +127,10 @@
     <p class="self-center">или</p>
     <button
       type="button"
-      onclick={() => ($formData.user_photo = tgImage ?? '')}
+      onclick={async () => {
+        // const tgPhotoFile = await fetch(`https://api.telegram.org/file/bot${BOT_TOKEN}/${tgImage}`)
+        $formData.user_photo = tgImage ?? ''
+      }}
       class="w-full h-12 bg-accent rounded-xl text-white font-medium"
       >Взять текущую фотографию из Telegram</button
     >

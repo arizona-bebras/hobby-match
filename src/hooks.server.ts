@@ -17,3 +17,4 @@ async function authAsAdmin() {
 authAsAdmin();
 export const handleError = Sentry.handleErrorWithSentry();
 export const handle = sequence(Sentry.sentryHandle());
+
