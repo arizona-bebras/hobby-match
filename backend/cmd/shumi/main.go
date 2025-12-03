@@ -49,6 +49,11 @@ func main() {
 	}
 	mux.Handle("/api/me/", tgauth.AuthMiddleware(userDataHandler))
 
+	voteHandler := database.VoteHandler{
+		DB: dbConnection,
+	}
+	mux.Handle("/api/vote/", tgauth.AuthMiddleware(voteHandler))
+
 	workerHandler := worker.WorkerHandler{}
 	mux.Handle("/api/worker/", tgauth.AuthMiddleware(workerHandler))
 

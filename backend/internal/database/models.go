@@ -1,6 +1,12 @@
 package database
 
-import "github.com/lib/pq"
+import (
+	"errors"
+	"log"
+
+	"github.com/lib/pq"
+	"gorm.io/gorm"
+)
 
 type TgUser struct {
 	TgID        string `json:"id"`
@@ -27,4 +33,22 @@ type Widget struct {
 	Files     pq.ByteaArray `json:"files" gorm:"type:bytea[]" db:"files"`
 	Data      string        `json:"data" db:"data"`
 	Namespace string        `json:"namespace" db:"namespace"`
+}
+
+type Vote struct {
+	User   string `json:"user" db:"user"`
+	Survey string `json:"survey" db:"survey"`
+	Option int    `json:"option" db:"option"`
+}
+
+func (w *Widget) BeforeCreate(db *gorm.DB) error {
+	result := db.Debug().Table("widgets").
+		Where(`"user" = ?`, w.User).
+		Update("order", gorm.Expr(`"order" + ?`, 1))
+
+	if result.Error != nil {
+		log.Printf("failed to increase widget order: %s", result.Error.Error())
+		return errors.New("failed to increase widget order")
+	}
+	return nil
 }
