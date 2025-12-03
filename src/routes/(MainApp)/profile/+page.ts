@@ -19,5 +19,8 @@ export const load: PageLoad = async ({ fetch, data, depends }) => {
   for (var widget of pageData.widgets) {
     widget.data = JSON.parse(widget.data)
   }
+  pageData.widgets = pageData.widgets.sort((a, b) => {
+    return a.order - b.order
+  })
   return pageData
 }

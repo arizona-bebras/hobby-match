@@ -71,7 +71,7 @@ export async function changeWidgetPosition(
   var form = new FormData()
   form.append("widget_id", widget.id)
   form.append("order", `${widget.order}`)
-  form.append("order", `${posChange}`)
+  form.append("pos_change", `${posChange}`)
   const authHeader: HeadersInit = new Headers()
   authHeader.set('Authorization', `Bearer ${window.localStorage.getItem("access_token")}`)
   await fetch(`${db}/api/me/widgets/order`, {
@@ -86,9 +86,14 @@ export async function chooseOption(
   surveyId: string,
   option: number,
 ): Promise<void> {
-  await pb.collection('votes').create({
-    user: pb.authStore.record!.id,
-    survey: surveyId,
-    selected_option: option,
-  });
+  var form = new FormData()
+  form.append("survey", surveyId)
+  form.append("option", `${option}`)
+  const authHeader: HeadersInit = new Headers()
+  authHeader.set('Authorization', `Bearer ${window.localStorage.getItem("access_token")}`)
+  await fetch(`${db}/api/vote/`, {
+    method: "POST",
+    headers: authHeader,
+    body: form
+  })
 }
