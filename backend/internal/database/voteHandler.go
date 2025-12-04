@@ -43,7 +43,7 @@ func (h *VoteHandler) Vote(w http.ResponseWriter, r *http.Request) {
 func (h VoteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	switch path {
-	case "/api/vote":
+	case "/api/vote/":
 		switch r.Method {
 		case http.MethodPost:
 			h.Vote(w, r)
