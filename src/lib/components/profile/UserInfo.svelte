@@ -3,6 +3,7 @@
   import { pb } from '$lib';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
   import ReportButton from '$lib/components/profile/ReportButton.svelte';
+  import Zodiac from '$lib/components/profile/Zodiac.svelte';
 
   let { data, changeMode = false }: { data: PageData; changeMode?: boolean } =
     $props();
@@ -13,12 +14,13 @@
 </script>
 
 {#if !changeMode}
-  <p class="font-extrabold text-[32px] mt-2 wrap-anywhere">
+  <div class="font-extrabold text-[32px] mt-2 wrap-anywhere flex gap-1">
     <span>{data.miniapp_name}, {data.age}</span>
+    <!--    <Zodiac />-->
     {#if pb.authStore.record?.id !== data.id}
       <ReportButton offender={data.id} />
     {/if}
-  </p>
+  </div>
   <p class="font-semibold text-[20px] break-words">
     <span>{data.location}</span>
   </p>
