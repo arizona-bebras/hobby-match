@@ -14,6 +14,7 @@ export type Widget = {
     | Survey
     | Text
     | Post;
+  files?: string[];
   additionalData?: SocialMediaData | PhotoData | SurveyData | SteamGameData;
 };
 

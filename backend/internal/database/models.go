@@ -46,11 +46,16 @@ type Vote struct {
 type SurveyAdditionalData struct {
 	Type   string `json:"type"`
 	Stats  []int  `json:"stats"`
-	MyVote *int    `json:"myVote"`
+	MyVote *int   `json:"myVote"`
 }
 
 type SurveyOptions struct {
 	Options []map[string]string `json:"options"`
+}
+
+type PhotoAdditionalData struct {
+	Type string        `json:"type"`
+	Urls pq.ByteaArray `json:"urls"`
 }
 
 type WidgetDataType struct {
@@ -97,8 +102,8 @@ func (w *Widget) AfterFind(db *gorm.DB) error {
 		}
 
 		additionalData := SurveyAdditionalData{
-			Type:  "survey",
-			Stats: make([]int, len(surveyOptions.Options)),
+			Type:   "survey",
+			Stats:  make([]int, len(surveyOptions.Options)),
 			MyVote: nil,
 		}
 
@@ -145,7 +150,7 @@ func (w *Widget) AfterFind(db *gorm.DB) error {
 }
 
 func (w *Widget) BeforeDelete(db *gorm.DB) error {
-	log.Printf("widget: %v",w)
+	log.Printf("widget: %v", w)
 	result := db.Debug().Table("widgets").
 		Where(`"user" = ? AND "order" > ?`, w.User, w.Order).
 		Update("order", gorm.Expr(`"order" - ?`, 1))

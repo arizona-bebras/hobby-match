@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"io"
 
 	"github.com/google/uuid"
 	// "gorm.io/gorm"
@@ -17,19 +18,37 @@ func (h *UserDataHandler) CreateWidget(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseMultipartForm(FORM_SIZE_LIMIT)
 	data := r.PostFormValue("data")
+	fileCount, err := strconv.Atoi(r.PostFormValue("files_count"))
+		if err != nil {
+			log.Printf("failed to get files_count: %s", err.Error())
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
 	log.Println(data)
 
 	files := [][]byte{}
 
-	var file []byte
-	i := 0
-	for {
-		file = []byte(r.PostFormValue(fmt.Sprintf(`file_%d`, i)))
-		if len(file) == 0 {
-			break
+	for i := range fileCount{
+		file, _, err := r.FormFile(fmt.Sprintf(`file_%d`, i))
+		if err != nil {
+			log.Printf("failed to get file: %s", err.Error())
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
 		}
-		files = append(files, file)
+		fileBytes, err := io.ReadAll(file)
+		if err != nil {
+			log.Printf("failed to read file bytes: %s", err.Error())
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		log.Printf("%v", fileBytes)
+
+		file.Close()
+		files = append(files, fileBytes)
 	}
+
+	log.Printf("Files count: %d", len(files))
 
 	widget := Widget{
 		Id:    uuid.NewString(),

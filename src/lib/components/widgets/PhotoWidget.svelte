@@ -1,17 +1,8 @@
 <script lang="ts">
   import { Splide, SplideSlide } from '@splidejs/svelte-splide';
   import '@splidejs/svelte-splide/css';
-  import type { PhotoData } from '$lib/widgetTypes/widgetTypes';
-  import { pb } from '$lib';
-  let { additionalData }: { additionalData: PhotoData } = $props();
+  let { urls }: { urls: string[] } = $props();
 
-  let urls = $derived.by(() => {
-    console.log(additionalData);
-    return additionalData.urls.map((url) =>
-      pb.buildURL(`/api/files/${url}?thumb=350x0`),
-    );
-  });
-  $inspect(urls);
 </script>
 
 {#key urls}
@@ -26,7 +17,7 @@
     {#each urls as src, i}
       <SplideSlide class="flex justify-center items-center">
         <img
-          {src}
+          src = {`data:image/png;base64,${src}`}
           class="w-full aspect-video object-contain"
           alt={`image ${i}`}
         />
