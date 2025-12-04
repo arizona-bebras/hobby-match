@@ -15,6 +15,8 @@
   let votesCount = $derived(survey.stats.reduce((a, b) => a + b, 0));
   let fakeVote = $derived(survey.myVote === null ? 1 : 0);
 
+  console.log($state.snapshot(survey.myVote))
+
   $effect(() => {
     selected = survey.myVote;
   });

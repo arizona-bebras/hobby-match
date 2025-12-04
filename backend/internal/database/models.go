@@ -46,7 +46,7 @@ type Vote struct {
 type SurveyAdditionalData struct {
 	Type   string `json:"type"`
 	Stats  []int  `json:"stats"`
-	MyVote int    `json:"my_vote"`
+	MyVote *int    `json:"myVote"`
 }
 
 type SurveyOptions struct {
@@ -99,6 +99,7 @@ func (w *Widget) AfterFind(db *gorm.DB) error {
 		additionalData := SurveyAdditionalData{
 			Type:  "survey",
 			Stats: make([]int, len(surveyOptions.Options)),
+			MyVote: nil,
 		}
 
 		var results []Result
@@ -128,8 +129,8 @@ func (w *Widget) AfterFind(db *gorm.DB) error {
 		var myVote int
 		if len(results) > 0 {
 			myVote = results[0].MyVote
+			additionalData.MyVote = &myVote
 		}
-		additionalData.MyVote = myVote
 
 		additionalDataJSON, err := json.Marshal(additionalData)
 		if err != nil {
