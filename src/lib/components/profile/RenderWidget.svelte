@@ -36,8 +36,8 @@
     id={widget.id}
     survey={widget.additionalData}
   />
-{:else if widget.additionalData?.type === 'photo' && widget.data.type === 'photo'}
-  <PhotoWidget additionalData={widget.additionalData} />
+{:else if widget.data.type === 'photo'}
+  <PhotoWidget urls={widget.files} />
 {:else if widget.data.type === 'post'}
   <TgPostWidget data={widget.data} />
 {/if}

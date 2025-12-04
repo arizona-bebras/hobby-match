@@ -20,6 +20,8 @@ export async function createWidget(
 ): Promise<void> {
   var form = new FormData()
   form.append("data", JSON.stringify(formData))
+  form.append("files_count", `${files.length}`)
+  console.log(files.length)
   for (let i = 0; i < files.length; i++) {
     form.append(`file_${i}`, files[i])
   }
