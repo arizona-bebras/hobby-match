@@ -8,6 +8,9 @@
   let { data, id, survey }: { data: Survey; id: string; survey: SurveyData } =
     $props();
 
+  console.log($state.snapshot(data))
+  console.log($state.snapshot(survey))
+
   let selected = $state(survey.myVote);
   let votesCount = $derived(survey.stats.reduce((a, b) => a + b, 0));
   let fakeVote = $derived(survey.myVote === null ? 1 : 0);

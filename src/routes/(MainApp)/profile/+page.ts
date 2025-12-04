@@ -18,6 +18,9 @@ export const load: PageLoad = async ({ fetch, data, depends }) => {
   pageData.age = Math.floor(age / (60 * 60 * 24 * 365.25))
   for (var widget of pageData.widgets) {
     widget.data = JSON.parse(widget.data)
+    if (widget.additionalData != "") {
+      widget.additionalData = JSON.parse(widget.additionalData)
+    }
   }
   pageData.widgets = pageData.widgets.sort((a, b) => {
     return a.order - b.order

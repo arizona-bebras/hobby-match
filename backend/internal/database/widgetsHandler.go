@@ -90,7 +90,15 @@ func (h *UserDataHandler) UpdateWidget(w http.ResponseWriter, r *http.Request) {
 func (h *UserDataHandler) DelteWidget(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("widget_id")
 
-	result := h.DB.Delete(&Widget{}, "id = ?",id)
+	widgetToDelete := Widget{Id: id} 
+	
+	if err := h.DB.First(&widgetToDelete, "id = ?", id).Error; err != nil {
+		log.Printf("failed to delete widget: %s", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	result := h.DB.Delete(&widgetToDelete)
 	if result.Error != nil {
 		log.Printf("failed to delete widget: %s", result.Error.Error())
 		http.Error(w, "internal server error", http.StatusInternalServerError)
