@@ -4,7 +4,7 @@
   import { Input } from '$lib/components/ui/input';
   import { Info, X } from '@lucide/svelte';
   import { superForm, defaults } from 'sveltekit-superforms';
-  import { zod, zodClient } from 'sveltekit-superforms/adapters';
+  import { zod, zod4, zodClient } from 'sveltekit-superforms/adapters';
   import { surveyScheme } from '$lib/components/editor/survey/surveySheme';
   import {
     createWidget,
@@ -24,9 +24,9 @@
     widgetId?: string;
     onClose: CallableFunction;
   } = $props();
-  const form = superForm(defaults(zod(surveyScheme)), {
+  const form = superForm(defaults(zod4(surveyScheme)), {
     SPA: true,
-    validators: zodClient(surveyScheme),
+    validators: zod4(surveyScheme),
     onSubmit: async () => {
       isLoading = true;
       const widget: Survey = {

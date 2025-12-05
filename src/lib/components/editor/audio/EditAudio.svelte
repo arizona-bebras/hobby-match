@@ -1,6 +1,6 @@
 <script lang="ts">
   import { superForm, defaults } from 'sveltekit-superforms';
-  import { zod, zodClient } from 'sveltekit-superforms/adapters';
+  import { zod, zod4, zodClient } from 'sveltekit-superforms/adapters';
   import { audioScheme } from '$lib/components/editor/audio/audioScheme';
   import * as Sheet from '$lib/components/ui/sheet';
   import * as Form from '$lib/components/ui/form';
@@ -22,9 +22,9 @@
     widgetId?: string;
     onClose: CallableFunction;
   } = $props();
-  const form = superForm(defaults(zod(audioScheme)), {
+  const form = superForm(defaults(zod4(audioScheme)), {
     SPA: true,
-    validators: zodClient(audioScheme),
+    validators: zod4(audioScheme),
     onSubmit: async () => {
       isLoading = true;
       let url = $formData.link;
@@ -68,8 +68,7 @@
       return 'SoundCloud' as const;
     } else if (domain.includes('music.yandex')) {
       return 'Yandex' as const;
-    }
-    else if (domain.includes('open.spotify')) {
+    } else if (domain.includes('open.spotify')) {
       return 'Spotify' as const;
     }
   }

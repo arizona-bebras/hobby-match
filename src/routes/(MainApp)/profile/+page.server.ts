@@ -1,17 +1,17 @@
 import type { PageServerLoad } from './$types.js';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod, zod4 } from 'sveltekit-superforms/adapters';
 import { textSchema } from '$lib/components/editor/text/textSheme';
 import { informationSchema } from '$lib/components/registration/information/InformationFormShema';
 
 export const load: PageServerLoad = async () => {
   return {
-    textForm: await superValidate(zod(textSchema)),
+    textForm: await superValidate(zod4(textSchema)),
   };
 };
 export const actions = {
   default: async (event) => {
-    const someData = await superValidate(event, zod(informationSchema));
+    const someData = await superValidate(event, zod4(informationSchema));
     console.log(someData);
     return {
       someData,

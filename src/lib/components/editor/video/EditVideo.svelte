@@ -4,7 +4,7 @@
   import * as Form from '$lib/components/ui/form';
 
   import { superForm, defaults } from 'sveltekit-superforms';
-  import { zod, zodClient } from 'sveltekit-superforms/adapters';
+  import { zod, zod4, zodClient } from 'sveltekit-superforms/adapters';
   import { videoSchema } from '$lib/components/editor/video/videoSheme';
   import {
     createWidget,
@@ -24,7 +24,7 @@
     onClose: CallableFunction;
   } = $props();
 
-  const form = superForm(defaults(zod(videoSchema)), {
+  const form = superForm(defaults(zod4(videoSchema)), {
     SPA: true,
     validators: zodClient(videoSchema),
     onSubmit: async () => {
