@@ -1,7 +1,10 @@
 <script lang="ts">
   import { ArrowRight, ShieldUser, Shield } from '@lucide/svelte';
 
-  const { namespacesList }: { namespacesList: object[] } = $props();
+  const {
+    namespacesList,
+    searchFilter,
+  }: { namespacesList: object[]; searchFilter: string } = $props();
 
   function getCorrectForm(count: number): string {
     const lastDigit = count % 10;
@@ -22,31 +25,37 @@
   }
 </script>
 
-{#each namespacesList as namespace (namespace.title)}
-  <div class="flex py-1.5 items-center justify-between">
-    <div class="flex gap-2.5 items-center">
-      <img
-        src="https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg"
-        class="size-8"
-        alt="group image"
-      />
-      <div class="flex flex-col">
-        <div class="font-medium flex items-center gap-2">
-          {namespace.title}
-          {#if namespace.is_admin}
-            <div
-              class="size-4 bg-accent rounded-[4px] flex items-center justify-center"
-            >
-              <ShieldUser class="size-3.5 " />
+<div class="overflow-y-scroll h-[calc(100vh-150px)]">
+  {#each namespacesList as namespace (namespace.title)}
+    {#if namespace.title.toLowerCase().includes(searchFilter.toLowerCase())}
+      <div
+        class="flex py-1.5 items-center justify-between border-b-[2px] border-text-color/25"
+      >
+        <div class="flex gap-2.5 items-center">
+          <img
+            src="https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg"
+            class="size-8"
+            alt="group image"
+          />
+          <div class="flex flex-col">
+            <div class="font-medium flex items-center gap-2">
+              {namespace.title}
+              {#if namespace.is_admin}
+                <div
+                  class="size-4 bg-accent rounded-[4px] flex items-center justify-center"
+                >
+                  <ShieldUser class="size-3.5 " />
+                </div>
+              {/if}
             </div>
-          {/if}
+            <p>
+              {namespace.amount_members}
+              {getCorrectForm(namespace.amount_members)}
+            </p>
+          </div>
         </div>
-        <p>
-          {namespace.amount_members}
-          {getCorrectForm(namespace.amount_members)}
-        </p>
+        <ArrowRight class="size-5" />
       </div>
-    </div>
-    <ArrowRight class="size-5" />
-  </div>
-{/each}
+    {/if}
+  {/each}
+</div>
