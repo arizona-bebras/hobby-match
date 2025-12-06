@@ -65,6 +65,12 @@ type SocialData struct {
 	Link     string `json:"link"`
 }
 
+type GameData struct {
+	Type        string `json:"type"`
+	GameId      string    `json:"gameId"`
+	AccountLink string `json:"accountLink"`
+}
+
 type WidgetDataType struct {
 	Type string `json:"type"`
 }
@@ -173,6 +179,22 @@ func (w *Widget) AfterFind(db *gorm.DB) error {
 			w.AdditionalData = string(additionalDataJSON)
 			log.Println(string(additionalDataJSON))
 		}
+	case "steam_game":
+		var gameData GameData
+		err := json.Unmarshal([]byte(w.Data), &gameData)
+		if err != nil {
+			log.Println(err)
+			return nil
+		}
+
+		additionalData, err := socialapirequests.GetGameInfo(gameData.AccountLink, gameData.GameId)
+		additionalDataJSON, err := json.Marshal(additionalData)
+		if err != nil {
+			log.Printf("failed to get votes %v", err)
+			return err
+		}
+		w.AdditionalData = string(additionalDataJSON)
+		log.Println(string(additionalDataJSON))
 	}
 
 	return nil

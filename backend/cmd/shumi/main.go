@@ -14,6 +14,7 @@ import (
 	"shumi/internal/database"
 	"shumi/internal/worker"
 	"shumi/internal/tgauth"
+	"shumi/internal/socialapirequests"
 )
 
 func main() {
@@ -56,6 +57,11 @@ func main() {
 
 	workerHandler := worker.WorkerHandler{}
 	mux.Handle("/api/worker/", tgauth.AuthMiddleware(workerHandler))
+
+	gameHandler := socialapirequests.GamesHandler{
+		DB: dbConnection,
+	}
+	mux.Handle("/api/games", tgauth.AuthMiddleware(gameHandler))
 
 	log.Println("Listen started at localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", c.Handler(mux)))
