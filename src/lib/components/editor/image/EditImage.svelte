@@ -6,9 +6,11 @@
   import { imageScheme } from '$lib/components/editor/image/imageSheme';
   import {
     createWidget,
+    deletePhotoFromWidget,
     updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
   import { pb } from '$lib';
+  import { db } from '$lib';
   import { invalidate } from '$app/navigation';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
@@ -17,10 +19,12 @@
     widgetId,
     onClose,
     open = $bindable(false),
+    files
   }: {
     open: boolean;
     widgetId?: string;
     onClose: CallableFunction;
+    files: string[];
   } = $props();
 
   let photoFiles: FileList | undefined = $state();
@@ -48,17 +52,17 @@
     },
   });
 
-  let imageUrls: string[] = $state([]);
-  $effect(() => {
-    photoFiles = undefined;
-    if (widgetId) {
-      pb.collection('widgets')
-        .getOne(widgetId!)
-        .then((record) => (imageUrls = record.additionalData.urls));
-    } else {
-      reset();
-    }
-  });
+  // let imageUrls: string[] = $state([]);
+  // $effect(() => {
+  //   photoFiles = undefined;
+  //   if (widgetId) {
+  //     pb.collection('widgets')
+  //       .getOne(widgetId!)
+  //       .then((record) => (imageUrls = record.additionalData.urls));
+  //   } else {
+  //     reset();
+  //   }
+  // });
 
   const { form: formData, enhance, validateForm, reset } = form;
   let isButtonActive = $state(false);
@@ -86,20 +90,18 @@
         </p>
         <div class="overflow-auto max-h-80">
           {#if widgetId !== undefined}
-            {#each imageUrls as url, i}
+            {#each files as url, i}
               <div class="w-full h-auto bg-accent/45 rounded-2xl relative mb-4">
                 <img
-                  src={pb.buildURL(`/api/files/${url}?thumb=350x0`)}
+                  src={`data:image/png;base64,${url}`}
                   class="p-4"
                   alt="loadedImage"
                 />
                 <button
                   class="absolute right-4 top-4"
                   onclick={async () => {
-                    await pb.collection('widgets').update(widgetId, {
-                      'files-': [url.split('/').pop()],
-                    });
-                    imageUrls.splice(i, 1);
+                    await deletePhotoFromWidget(widgetId, i)
+                    files.splice(i, 1);
                     await invalidate('user:widgets');
                     isButtonActive = true;
                   }}

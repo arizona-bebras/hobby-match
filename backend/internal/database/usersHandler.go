@@ -181,7 +181,7 @@ func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		case http.MethodPut:
 			h.UpdateWidget(w, r)
 		case http.MethodDelete:
-			h.DelteWidget(w, r)
+			h.DeleteWidget(w, r)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -191,6 +191,15 @@ func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPut:
 			h.UpdateWidgetOrder(w, r)
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+	case "/api/me/widgets/photo":
+		switch r.Method {
+		case http.MethodDelete:
+			h.DeleteWidgetPhoto(w, r)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return

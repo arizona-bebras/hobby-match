@@ -52,6 +52,7 @@ export async function updateWidget(
   var form = new FormData()
   form.append("widget_id", widgetId)
   form.append("data", JSON.stringify(formData))
+  form.append("files_count", `${files.length}`)
   for (let i = 0; i < files.length; i++) {
     form.append(`file_${i}`, files[i])
   }
@@ -97,5 +98,17 @@ export async function chooseOption(
     method: "POST",
     headers: authHeader,
     body: form
+  })
+}
+
+export async function deletePhotoFromWidget(
+  widgetId: string,
+  index: number,
+): Promise<void> {
+  const authHeader: HeadersInit = new Headers()
+  authHeader.set('Authorization', `Bearer ${window.localStorage.getItem("access_token")}`)
+  await fetch(`${db}/api/me/widgets/photo?widget_id=${widgetId}&index=${index}`, {
+    method: "DELETE",
+    headers: authHeader
   })
 }

@@ -17,7 +17,8 @@
     addedWidget,
     onEditClose,
     widgetId,
-  }: { addedWidget: WidgetType; onEditClose: () => void; widgetId: string } =
+    files
+  }: { addedWidget: WidgetType; onEditClose: () => void; widgetId: string; files: string[] } =
     $props();
 </script>
 
@@ -55,6 +56,7 @@
   open={addedWidget === 'photo'}
   onClose={onEditClose}
   widgetId={addedWidget === 'photo' ? widgetId : undefined}
+  files={files}
 />
 <EditToDo
   open={addedWidget === 'todo'}
