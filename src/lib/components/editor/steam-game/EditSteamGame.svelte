@@ -12,6 +12,7 @@
   import * as Select from '$lib/components/ui/select';
   import { gameScheme } from '$lib/components/editor/steam-game/gameScheme';
   import { pb } from '$lib';
+  import { db } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
   import type { SteamGame } from '$lib/widgetTypes/widgetTypes';
@@ -112,24 +113,12 @@
   let steamGames: steamGames[] = $state([]);
   async function getUserGames(accountLink: string) {
     console.log('ЗАПУСК ФУНКЦИИ getUserGames');
-    const steamRegex =
-      /^(?:https:\/\/)?steamcommunity\.com\/((?:id)|(?:profiles))\/(\w+)/gm;
-    const match = steamRegex.exec(accountLink);
-    let steamID = match![2];
-
-    if (match![1] === 'profiles') {
-      console.log('Выполнение поиска по profile');
-      steamID = match![2];
-    } else if (match![1] === 'id') {
-      console.log('Выполнение поиска по id');
-      let result = await pb.send(`/steam/vanityurl?vanityurl=${steamID}`, {});
-      steamID = result.response.id;
-      console.log(steamID);
-    }
-
-    console.log('Полученный steamID:', steamID);
-    const games = await pb.send(`/steam/games?id=${steamID}`, {});
-    steamGames = games.response.games.sort((a, b) =>
+    const authHeader: HeadersInit = new Headers()
+    authHeader.set('Authorization', `Bearer ${window.localStorage.getItem("access_token")}`)
+    const res = await fetch(`${db}/api/games?link=${accountLink}`, {
+      headers: authHeader,
+    }).then(res => res.json());
+    steamGames = res.games.sort((a: any, b: any) =>
       a.name.localeCompare(b.name),
     );
   }
