@@ -47,6 +47,7 @@
   let showWidgetMenu = $state(false);
   let addedWidget: WidgetType | undefined = $state(undefined);
   let editingWidget: string | undefined = $state(undefined);
+  let editingFiles: string[] | undefined = $state(undefined);
   let { data }: { data: PageData } = $props();
   console.log(data);
   let widgets: Widget[] = $state(data.widgets);
@@ -93,7 +94,7 @@
       }}
     />
 
-    <RenderEditWidget {addedWidget} {onEditClose} widgetId={editingWidget} />
+    <RenderEditWidget {addedWidget} {onEditClose} widgetId={editingWidget} files={editingFiles} />
     {#each widgets as widget, i (widget.id)}
       {console.log(widget)}
       <div class="relative mb-2">
@@ -103,6 +104,7 @@
             onEdit={() => {
               addedWidget = widget.data.type;
               editingWidget = widget.id;
+              editingFiles = widget.files;
             }}
             onMove={(delta) => {
               if (
