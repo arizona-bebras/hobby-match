@@ -76,7 +76,7 @@ type WidgetDataType struct {
 }
 
 func (w *Widget) BeforeCreate(db *gorm.DB) error {
-	result := db.Debug().Table("widgets").
+	result := db.Table("widgets").
 		Where(`"user" = ?`, w.User).
 		Update("order", gorm.Expr(`"order" + ?`, 1))
 
@@ -121,7 +121,7 @@ func (w *Widget) AfterFind(db *gorm.DB) error {
 		}
 
 		var results []Result
-		err = db.Debug().Raw(`
+		err = db.Raw(`
 			WITH vote_stats AS (
 				SELECT 
 					option, 
@@ -165,8 +165,23 @@ func (w *Widget) AfterFind(db *gorm.DB) error {
 			return errors.New("failed to get widget type")
 		}
 		switch platform.Platform {
+			
 		case "Steam":
 			additionalData, err := socialapirequests.GetSteamUserInfo(platform.Link)
+			if err != nil {
+				log.Println(err)
+				return nil
+			}
+			additionalDataJSON, err := json.Marshal(additionalData)
+			if err != nil {
+				log.Printf("failed to get votes %v", err)
+				return err
+			}
+			w.AdditionalData = string(additionalDataJSON)
+			log.Println(string(additionalDataJSON))
+
+		case "YouTube":
+			additionalData, err := socialapirequests.GetYoutubeUserInfo(platform.Link)
 			if err != nil {
 				log.Println(err)
 				return nil
