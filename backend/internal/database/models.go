@@ -7,6 +7,8 @@ import (
 
 	"github.com/lib/pq"
 	"gorm.io/gorm"
+
+	"shumi/internal/socialapirequests"
 )
 
 type TgUser struct {
@@ -56,6 +58,11 @@ type SurveyOptions struct {
 type PhotoAdditionalData struct {
 	Type string        `json:"type"`
 	Urls pq.ByteaArray `json:"urls"`
+}
+
+type SocialData struct {
+	Platform string `json:"platform"`
+	Link     string `json:"link"`
 }
 
 type WidgetDataType struct {
@@ -144,6 +151,28 @@ func (w *Widget) AfterFind(db *gorm.DB) error {
 		}
 		w.AdditionalData = string(additionalDataJSON)
 		log.Println(string(additionalDataJSON))
+	case "social_media":
+		var platform SocialData
+		err := json.Unmarshal([]byte(w.Data), &platform)
+		if err != nil {
+			log.Printf("failed to get platform type %v", err)
+			return errors.New("failed to get widget type")
+		}
+		switch platform.Platform {
+		case "Steam":
+			additionalData, err := socialapirequests.GetSteamUserInfo(platform.Link)
+			if err != nil {
+				log.Println(err)
+				return nil
+			}
+			additionalDataJSON, err := json.Marshal(additionalData)
+			if err != nil {
+				log.Printf("failed to get votes %v", err)
+				return err
+			}
+			w.AdditionalData = string(additionalDataJSON)
+			log.Println(string(additionalDataJSON))
+		}
 	}
 
 	return nil
