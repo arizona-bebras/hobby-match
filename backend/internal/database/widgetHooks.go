@@ -175,6 +175,10 @@ func (w *Widget) AfterFind(db *gorm.DB) error {
 		}
 
 		additionalData, err := socialapirequests.GetGameInfo(gameData.AccountLink, gameData.GameId)
+		if err != nil {
+			log.Println(err)
+			return nil
+		}
 		additionalDataJSON, err := json.Marshal(additionalData)
 		if err != nil {
 			log.Printf("failed to get votes %v", err)
