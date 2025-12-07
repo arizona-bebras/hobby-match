@@ -11,10 +11,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"shumi/internal/database"
-	"shumi/internal/worker"
+	"shumi/internal/handlers"
 	"shumi/internal/tgauth"
-	"shumi/internal/socialapirequests"
 )
 
 func main() {
@@ -45,20 +43,20 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/auth", auth.SetTokens)
 
-	userDataHandler := database.UserDataHandler{
+	userDataHandler := handlers.UserDataHandler{
 		DB: dbConnection,
 	}
 	mux.Handle("/api/me/", tgauth.AuthMiddleware(userDataHandler))
 
-	voteHandler := database.VoteHandler{
+	voteHandler := handlers.VoteHandler{
 		DB: dbConnection,
 	}
 	mux.Handle("/api/vote/", tgauth.AuthMiddleware(voteHandler))
 
-	workerHandler := worker.WorkerHandler{}
+	workerHandler := handlers.WorkerHandler{}
 	mux.Handle("/api/worker/", tgauth.AuthMiddleware(workerHandler))
 
-	gameHandler := socialapirequests.GamesHandler{
+	gameHandler := handlers.GamesHandler{
 		DB: dbConnection,
 	}
 	mux.Handle("/api/games", tgauth.AuthMiddleware(gameHandler))

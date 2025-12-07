@@ -1,10 +1,12 @@
-package database
+package handlers
 
 import (
 	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 	"log"
+
+	"shumi/internal/database"
 )
 
 type VoteHandler struct {
@@ -12,7 +14,7 @@ type VoteHandler struct {
 }
 
 func (h *VoteHandler) Vote(w http.ResponseWriter, r *http.Request) {
-	tgID := r.Context().Value(AuthContextKey).(string)
+	tgID := r.Context().Value(database.AuthContextKey).(string)
 
 	r.ParseMultipartForm(FORM_SIZE_LIMIT)
 	survey := r.PostFormValue("survey")
@@ -23,7 +25,7 @@ func (h *VoteHandler) Vote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vote := Vote{
+	vote := database.Vote{
 		User: tgID,
 		Survey: survey,
 		Option: option,
