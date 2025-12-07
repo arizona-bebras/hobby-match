@@ -53,7 +53,7 @@ func main() {
 	}
 	mux.Handle("/api/vote/", tgauth.AuthMiddleware(voteHandler))
 
-	workerHandler := handlers.WorkerHandler{}
+	workerHandler := handlers.AutocompleteHandler{}
 	mux.Handle("/api/worker/", tgauth.AuthMiddleware(workerHandler))
 
 	gameHandler := handlers.GamesHandler{
