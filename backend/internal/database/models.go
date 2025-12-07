@@ -193,6 +193,19 @@ func (w *Widget) AfterFind(db *gorm.DB) error {
 			}
 			w.AdditionalData = string(additionalDataJSON)
 			log.Println(string(additionalDataJSON))
+		case "Twitch":
+			additionalData, err := socialapirequests.GetTwitchUserInfo(platform.Link)
+			if err != nil {
+				log.Println(err)
+				return nil
+			}
+			additionalDataJSON, err := json.Marshal(additionalData)
+			if err != nil {
+				log.Printf("failed to get votes %v", err)
+				return err
+			}
+			w.AdditionalData = string(additionalDataJSON)
+			log.Println(string(additionalDataJSON))
 		}
 	case "steam_game":
 		var gameData GameData
