@@ -1,4 +1,4 @@
-package database
+package handlers
 
 import (
 	"encoding/json"
@@ -6,15 +6,9 @@ import (
 	"log"
 	"net/http"
 	"reflect"
-
-	// "strconv"
-
+	"shumi/internal/database"
 	"gorm.io/gorm"
 )
-
-type contextKey string
-
-const AuthContextKey = contextKey("TgID")
 
 type UserDataHandler struct {
 	DB *gorm.DB
@@ -45,13 +39,13 @@ func getStructFieldNames(s interface{}) []string {
 }
 
 func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
-	tgID, ok := r.Context().Value(AuthContextKey).(string)
+	tgID, ok := r.Context().Value(database.AuthContextKey).(string)
 	if !ok {
         log.Printf("Authentication error: TgID is missing or not int64")
         http.Error(w, "Authentication required", http.StatusUnauthorized)
         return
     }
-	var user User
+	var user database.User
 	result := h.DB.Table("users").First(&user, "tg_id = ?", tgID)
 	if result.Error != nil {
 		log.Printf("failed to get user: %s", result.Error.Error())
@@ -59,7 +53,7 @@ func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var widgets []Widget
+	var widgets []database.Widget
 	result = h.DB.Table("widgets").Find(&widgets, "widgets.user = ?", tgID)
 	if result.Error != nil {
 		log.Printf("failed to get widgets: %s", result.Error.Error())
@@ -80,7 +74,7 @@ func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Request) {
-	tgID := r.Context().Value(AuthContextKey)
+	tgID := r.Context().Value(database.AuthContextKey)
 
 	body, err := io.ReadAll(r.Body)
 	r.Body.Close()
@@ -92,7 +86,7 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 
 	log.Println(string(body))
 
-	var user User
+	var user database.User
 	log.Printf("GOT DATA %v", user)
 	err = json.Unmarshal(body, &user)
 	user.TgID = tgID.(string)
@@ -118,7 +112,7 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 }
 
 func (h *UserDataHandler) UpdateMyProfilePhoto(w http.ResponseWriter, r *http.Request) {
-	tgID := r.Context().Value(AuthContextKey).(string)
+	tgID := r.Context().Value(database.AuthContextKey).(string)
 
 	photoFile, _, err := r.FormFile("user_photo")
 	if err != nil {

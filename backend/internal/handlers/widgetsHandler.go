@@ -1,4 +1,4 @@
-package database
+package handlers
 
 import (
 	"fmt"
@@ -8,13 +8,14 @@ import (
 	"io"
 
 	"github.com/google/uuid"
+	"shumi/internal/database"
 	// "gorm.io/gorm"
 )
 
 const FORM_SIZE_LIMIT int64 = 50000000
 
 func (h *UserDataHandler) CreateWidget(w http.ResponseWriter, r *http.Request) {
-	TgID := r.Context().Value(AuthContextKey).(string)
+	TgID := r.Context().Value(database.AuthContextKey).(string)
 
 	r.ParseMultipartForm(FORM_SIZE_LIMIT)
 	data := r.PostFormValue("data")
@@ -48,7 +49,7 @@ func (h *UserDataHandler) CreateWidget(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Files count: %d", len(files))
 
-	widget := Widget{
+	widget := database.Widget{
 		Id:    uuid.NewString(),
 		User:  TgID,
 		Order: 0,
@@ -106,7 +107,7 @@ func (h *UserDataHandler) UpdateWidget(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Files count: %d", len(files))
 
 
-	widget := Widget{
+	widget := database.Widget{
 		Id:    widgetID,
 		Files: files,
 		Data:  data,
@@ -142,7 +143,7 @@ func (h *UserDataHandler) UpdateWidget(w http.ResponseWriter, r *http.Request) {
 func (h *UserDataHandler) DeleteWidget(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("widget_id")
 
-	widgetToDelete := Widget{Id: id} 
+	widgetToDelete := database.Widget{Id: id} 
 	
 	if err := h.DB.First(&widgetToDelete, "id = ?", id).Error; err != nil {
 		log.Printf("failed to delete widget: %s", err)

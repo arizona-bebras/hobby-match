@@ -56,10 +56,6 @@ func GetVkUserInfo(link string) (TwitchUserData, error) {
 	}
 
 	followers := bodyJSON["followers"]
-	if err != nil {
-		log.Printf("failed to subs count %v", err)
-		return TwitchUserData{}, err
-	}
 
 	return TwitchUserData{
 		Type:  "VK",
