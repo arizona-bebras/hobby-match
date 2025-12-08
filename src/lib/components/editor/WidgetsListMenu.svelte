@@ -1,68 +1,228 @@
 <script lang="ts">
+  import * as Sheet from '$lib/components/ui/sheet/index.js';
+  import { buttonVariants } from '$lib/components/ui/button/index.js';
+  import { Input } from '$lib/components/ui/input/index.js';
+  import { Label } from '$lib/components/ui/label/index.js';
   import * as Dialog from '$lib/components/ui/dialog/index.js';
   import type { WidgetType } from '$lib/widgetTypes/widgetTypes';
+  import { type Widget } from '$lib/widgetTypes/widgetTypes';
+  import DuckSoulsIcon from '$lib/assets/DuckSoulsIcon.jpg';
+  import DuckHello from '$lib/assets/DuckHello.png';
+  import DuckUmbrella from '$lib/assets/DuckUmbrella.png';
+  import MockVideo from '$lib/assets/Tudydydy.mp4';
   import {
-    Music,
-    Image,
-    Loader,
-    MessageCircle,
-    Send,
-    Gamepad2,
-    ClipboardPenLine,
-    ChartNoAxesCombined,
-    CaseSensitive,
-    ListChecks,
+    Audio,
+    ToDo,
+    Social,
+    Photo,
+    Survey,
+    TgPost,
+    Progress,
+    Text,
+    Game,
     Video,
-    Icon,
-  } from '@lucide/svelte';
+  } from '$lib/components/widgets/index';
   let {
     onClick,
     open = $bindable(),
   }: { onClick: (name?: WidgetType) => void; open: boolean } = $props();
-  const WIDGETS: Partial<
-    Record<WidgetType, { label: string; icon: typeof Icon }>
-  > = {
-    audio: {
+  let widgetFilter = $state('');
+  const WIDGETS: {
+    type: WidgetType;
+    label: string;
+    widget:
+      | Audio
+      | Game
+      | Photo
+      | Progress
+      | Social
+      | Survey
+      | Text
+      | TgPost
+      | ToDo
+      | Video;
+    data: Widget['data'] | any;
+    additionalData?: Widget['additionalData'];
+  }[] = [
+    {
+      type: 'audio',
       label: 'Аудио',
-      icon: Music,
+      widget: Audio,
+      data: {
+        type: 'audio',
+        platform: 'Yandex',
+        link: 'https://music.yandex.ru/track/38887766?utm_source=web&utm_medium=copy_link',
+      },
     },
-    post: { label: 'Телеграм пост', icon: Send },
-    // geo: 'Маршрут',
-    photo: { label: 'Изображение', icon: Image },
-    progress_bar: { label: 'Прогресс', icon: ChartNoAxesCombined },
-    social_media: { label: 'Социальная сеть', icon: MessageCircle },
-    steam_game: { label: 'Время в игре', icon: Gamepad2 },
-    // sticker: 'Стикер',
-    survey: { label: 'Опрос', icon: ClipboardPenLine },
-    text: { label: 'Текст', icon: CaseSensitive },
-    todo: { label: 'Список задач', icon: ListChecks },
-    video: { label: 'Видео', icon: Video },
-  } as const;
+    {
+      type: 'steam_game',
+      label: 'Время в игре',
+      widget: Game,
+      data: {
+        type: 'steam_game',
+        hours_played: 245,
+        icon: DuckSoulsIcon,
+        title: 'Duck Souls',
+      },
+    },
+    {
+      type: 'photo',
+      label: 'Изображение',
+      widget: Photo,
+      data: {
+        type: 'photo',
+        urls: [DuckHello, DuckUmbrella],
+      },
+    },
+    {
+      type: 'progress_bar',
+      label: 'Прогресс',
+      widget: Progress,
+      data: {
+        type: 'progress_bar',
+        description: 'Проплыть 100 км',
+        currentProgress: 76,
+        maxProgress: 100,
+      },
+    },
+    {
+      type: 'social_media',
+      label: 'Социальная сеть',
+      widget: Social,
+      data: {
+        type: 'social_media',
+        platform: 'Twitch',
+        link: 'https://www.twitch.tv/twitch',
+      },
+      additionalData: {
+        type: 'Twitch',
+        title: 'Twitch',
+        followers: 2412740,
+      },
+    },
+    {
+      type: 'survey',
+      label: 'Опрос',
+      widget: Survey,
+      data: {
+        type: 'survey',
+        question: 'Какой хлеб лучше',
+        options: [{ description: 'Белый' }, { description: 'Чёрный' }],
+      },
+    },
+    {
+      type: 'text',
+      label: 'Текст',
+      widget: Text,
+      data: {
+        type: 'text',
+        text: 'Если тонешь — всплывёшь. Ты же утка!',
+      },
+    },
+    {
+      type: 'todo',
+      label: 'Список задач',
+      widget: ToDo,
+      data: {
+        type: 'todo',
+        title: '',
+        tasks: [
+          { description: 'Поставить цель на эту неделю', isCompleted: true },
+          { description: 'Спланировать вечер', isCompleted: false },
+          {
+            description: 'Поздороваться с одной новой уткой',
+            isCompleted: true,
+          },
+        ],
+      },
+    },
+    {
+      type: 'video',
+      label: 'Видео',
+      widget: Video,
+      data: {
+        type: 'video',
+        link: MockVideo,
+        platform: 'Rutube',
+      },
+    },
+    {
+      type: 'post',
+      label: 'Телеграм пост',
+      widget: TgPost,
+      data: {
+        type: 'post',
+        link: 'durov/337',
+      },
+    },
+  ];
+  $inspect(widgetFilter);
 </script>
 
-<!--if (!state) onClick()-->
-<Dialog.Root bind:open onOpenChange={(state) => !state && onClick()}>
-  <Dialog.Content>
-    <Dialog.Header
-      ><Dialog.Title
-        class="text-accent-foreground bg-accent/25 w-fit p-3 mx-auto rounded-xl"
-        >Добавить виджет</Dialog.Title
-      ></Dialog.Header
-    >
-    {#each Object.entries(WIDGETS) as [type, widget]}
-      {@const Icon = widget.icon}
-
-      <button
-        onclick={() => {
-          // @ts-expect-error object entries sucks
-          onClick(type);
-        }}
+<Sheet.Root bind:open onOpenChange={(state) => !state && onClick()}>
+  <Sheet.Content side="bottom" class="max-h-[calc(100vh-75px)]">
+    <Sheet.Header>
+      <Sheet.Title class="text-center text-[16px] font-medium mb-6"
+        >Новый виджет</Sheet.Title
       >
-        <div class="flex text-accent-foreground text-base font-medium">
-          <Icon class="mr-2 mt-0.75 size-6" />
-          <p class="">{widget.label}</p>
-        </div>
-      </button>
-    {/each}
-  </Dialog.Content>
-</Dialog.Root>
+      <Sheet.Description class="text-text-color mb-6">
+        <Input placeholder="Поиск по виджетам" bind:value={widgetFilter} />
+      </Sheet.Description>
+    </Sheet.Header>
+    <div class="overflow-y-scroll h-[calc(100vh-195px)] pt-2">
+      <!--      <button onclick={() => onClick('text')}>Test Text</button>-->
+      {#each WIDGETS as widget (widget.type)}
+        {#if widget.label.toLowerCase().includes(widgetFilter.toLowerCase())}
+          {@const Component = widget.widget}
+          <div
+            onclick={(e) => {
+              e.stopPropagation();
+              onClick(widget.type);
+            }}
+            class="border-2 border-dashed border-white/25 p-2 rounded-xl relative mb-6 font-semibold
+"
+          >
+            <span
+              class="absolute -top-3.75 left-1/2 transform -translate-x-1/2 z-5"
+            >
+              {widget.label}
+            </span>
+            {#if widget.type === 'photo'}
+              <div>
+                <Component data={widget.data} isTestImage={true} />
+              </div>
+            {:else if widget.type === 'survey'}
+              <div>
+                <Component
+                  data={widget.data}
+                  id={1}
+                  survey={{
+                    type: 'survey',
+                    stats: [0],
+                    myVote: null,
+                  }}
+                />
+              </div>
+            {:else if widget.type === 'video'}
+              <div>
+                <Component data={widget.data} TestVideo={MockVideo} />
+              </div>
+            {:else}
+              <div class={widget.type === 'todo' ? '' : 'pointer-events-none'}>
+                <Component
+                  data={widget.data}
+                  socialMediaData={widget.additionalData}
+                />
+              </div>
+            {/if}
+          </div>
+        {/if}
+      {/each}
+    </div>
+    <Sheet.Footer>
+      <Sheet.Close class={buttonVariants({ variant: 'outline' })}
+        >Save changes</Sheet.Close
+      >
+    </Sheet.Footer>
+  </Sheet.Content>
+</Sheet.Root>

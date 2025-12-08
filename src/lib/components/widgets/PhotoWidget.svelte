@@ -3,13 +3,20 @@
   import '@splidejs/svelte-splide/css';
   import type { PhotoData } from '$lib/widgetTypes/widgetTypes';
   import { pb } from '$lib';
-  let { additionalData }: { additionalData: PhotoData } = $props();
+  let {
+    data,
+    isTestImage = false,
+  }: { data: PhotoData; isTestImage?: boolean } = $props();
 
   let urls = $derived.by(() => {
-    console.log(additionalData);
-    return additionalData.urls.map((url) =>
-      pb.buildURL(`/api/files/${url}?thumb=350x0`),
-    );
+    console.log(data);
+    if (isTestImage) {
+      return data.urls;
+    } else {
+      return data.urls.map((url) =>
+        pb.buildURL(`/api/files/${url}?thumb=350x0`),
+      );
+    }
   });
   $inspect(urls);
 </script>

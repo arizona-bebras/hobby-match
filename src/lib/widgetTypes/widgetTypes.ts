@@ -133,7 +133,7 @@ export type Survey = {
 export type SurveyData = {
   type: 'survey';
   stats: number[];
-  myVote?: number;
+  myVote?: number | null;
 };
 
 export type Text = {
