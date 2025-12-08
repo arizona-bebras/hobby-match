@@ -9,6 +9,7 @@
   import { Textarea } from '$lib/components/ui/textarea/index.js';
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';
   import QRCode from '@castlenine/svelte-qrcode';
+  import copy from 'copy-to-clipboard';
 
   let currentStage = $state(1);
   let fileButton: HTMLInputElement = $state();
@@ -85,6 +86,8 @@
     });
   }
   $inspect(isSheetOpen);
+  let link = `https://t.me/share/url?url=${encodeURI('https://core.telegram.org/widgets/share')}&text=${encodeURI('hello world')}
+           `;
 </script>
 
 <Sheet.Root bind:open={isSheetOpen}>
@@ -94,121 +97,126 @@
       onSheetOpenHandle();
     }}>Создать</Sheet.Trigger
   >
-  <Sheet.Content side="bottom">
+  <Sheet.Content side="bottom" class="max-h-[calc(100vh-65px)]">
     <Sheet.Header>
-      <form method="POST" use:enhance class="space-y-6">
-        {#if currentStage === 1}
-          <Sheet.Title class="text-center text-[16px] font-medium"
-            >Новый неймспейс</Sheet.Title
-          >
-          <Form.Field {form} name="title">
-            <Form.Control>
-              {#snippet children({ props })}
-                <Form.Label class="text-[16px] font-medium flex items-center">
-                  <Emoji symbol="🤔" class="size-4 mr-1" />
-                  Как назовём?
-                </Form.Label>
-                <Input {...props} bind:value={$formData.title} />
-              {/snippet}
-            </Form.Control>
-            <Form.FieldErrors />
-          </Form.Field>
-          <Form.Field {form} name="photo">
-            <Form.Control>
-              {#snippet children({ props })}
-                <Form.Label class="text-[16px] font-medium flex items-center">
-                  <Emoji symbol="📸" class="size-4 mr-1" />
-                  Украсим фотографией?
-                </Form.Label>
-                <p class="text-[14px] mb-3">
-                  Аватарка поможет пользователям быстрее различать твой
-                  неймспейс в списке доступных. Ну и это красиво
-                </p>
-                <input
-                  type="file"
-                  {...props}
-                  bind:this={fileButton}
-                  oninput={() => {
-                    $formData.photo = fileButton.files[0];
-                  }}
-                  class="hidden"
-                />
-                <button
-                  type="button"
-                  onclick={() => {
-                    fileButton.click();
-                  }}
-                  class="w-full bg-accent py-1.5 rounded-lg"
-                  >Выбрать файл...</button
-                >
-              {/snippet}
-            </Form.Control>
-            <Form.FieldErrors />
-          </Form.Field>
-          <Form.Field {form} name="description">
-            <Form.Control>
-              {#snippet children({ props })}
-                <Form.Label class="text-[16px] font-medium flex items-center">
-                  <Emoji symbol="💬" class="size-4 mr-1" />
-                  А что будет?
-                </Form.Label>
-                <p class="text-[14px] mb-3">
-                  Введи описание будущего неймспейса. Это наверняка поможет
-                  пользователям найти твое сообщество ^^
-                </p>
-                <Textarea {...props} bind:value={$formData.description} />
-              {/snippet}
-            </Form.Control>
-            <Form.FieldErrors />
-          </Form.Field>
-        {:else if currentStage === 2}
-          <Sheet.Title class="text-center text-[16px] font-medium"
-            >Тип неймспейса</Sheet.Title
-          >
-          <Form.Field {form} name="secret_word">
-            <Form.Control>
-              {#snippet children({ props })}
-                <Form.Label class="text-[16px] font-medium flex items-center">
-                  <Emoji symbol="🔗" class="size-4 mr-1" />
-                  Секретное слово?
-                </Form.Label>
-                <p class="text-[14px] mb-3">
-                  Введи описание будущего неймспейса. Это наверняка поможет
-                  пользователям найти твое сообщество ^^
-                </p>
-                <Textarea {...props} bind:value={$formData.secret_word} />
-              {/snippet}
-            </Form.Control>
-            <Form.FieldErrors />
-          </Form.Field>
-        {:else if currentStage === 3}
-          <Sheet.Title class="text-center text-[16px] font-medium"
-            >{$formData.title}</Sheet.Title
-          >
-          <div class="flex flex-col justify-center items-center mb-6">
-            <QRCode data="Hello World! fjdifjaoifjaofdajfoiajfoia" />
-            <div class="text-center mt-8.5">
-              <span class="mb-1"
-                ><Emoji symbol="🎉" class="size-4 mr-1" /> Всё готово!</span
-              >
-              <p class="text-gray-400">«{$formData.title}»</p>
-              <p class="text-gray-400">готов принимать гостей!</p>
-            </div>
-          </div>
-          <button
-            type="button"
-            class="py-2 w-full bg-accent/20 mb-2 rounded-xl text-accent-foreground"
-            onclick={() => {
-              navigator.clipboard.writeText('Hello World! Test');
-            }}>Скопировать ссылку</button
-          >
-          <button type="button" class="py-2 w-full bg-accent rounded-xl"
-            >Поделиться</button
-          >
-        {/if}
-        <!--        <SuperDebug data={formData} />-->
-      </form>
+      <Sheet.Title class="text-center text-[16px] font-medium"
+        >{currentStage === 1
+          ? 'Новый неймспейс'
+          : currentStage === 2
+            ? 'Тип неймспейса'
+            : $formData.title}</Sheet.Title
+      >
     </Sheet.Header>
+    <form
+      method="POST"
+      use:enhance
+      class="space-y-6 max-h-[calc(100vh-100px)] overflow-y-auto"
+    >
+      {#if currentStage === 1}
+        <Form.Field {form} name="title">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label class="text-[16px] font-medium flex items-center">
+                <Emoji symbol="🤔" class="size-4 mr-1" />
+                Как назовём?
+              </Form.Label>
+              <Input {...props} bind:value={$formData.title} />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+        <Form.Field {form} name="photo">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label class="text-[16px] font-medium flex items-center">
+                <Emoji symbol="📸" class="size-4 mr-1" />
+                Украсим фотографией?
+              </Form.Label>
+              <p class="text-[14px] mb-3">
+                Аватарка поможет пользователям быстрее различать твой неймспейс
+                в списке доступных. Ну и это красиво
+              </p>
+              <input
+                type="file"
+                {...props}
+                bind:this={fileButton}
+                oninput={() => {
+                  $formData.photo = fileButton.files[0];
+                }}
+                class="hidden"
+              />
+              <button
+                type="button"
+                onclick={() => {
+                  fileButton.click();
+                }}
+                class="w-full bg-accent py-1.5 rounded-lg"
+                >Выбрать файл...</button
+              >
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+        <Form.Field {form} name="description">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label class="text-[16px] font-medium flex items-center">
+                <Emoji symbol="💬" class="size-4 mr-1" />
+                А что будет?
+              </Form.Label>
+              <p class="text-[14px] mb-3">
+                Введи описание будущего неймспейса. Это наверняка поможет
+                пользователям найти твое сообщество ^^
+              </p>
+              <Textarea {...props} bind:value={$formData.description} />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+      {:else if currentStage === 2}
+        <Form.Field {form} name="secret_word">
+          <Form.Control>
+            {#snippet children({ props })}
+              <Form.Label class="text-[16px] font-medium flex items-center">
+                <Emoji symbol="🔗" class="size-4 mr-1" />
+                Секретное слово?
+              </Form.Label>
+              <p class="text-[14px] mb-3">
+                Введи описание будущего неймспейса. Это наверняка поможет
+                пользователям найти твое сообщество ^^
+              </p>
+              <Textarea {...props} bind:value={$formData.secret_word} />
+            {/snippet}
+          </Form.Control>
+          <Form.FieldErrors />
+        </Form.Field>
+      {:else if currentStage === 3}
+        <div class="flex flex-col justify-center items-center mb-6">
+          <QRCode data="Hello World!" />
+          <div class="text-center mt-6.5">
+            <span class="mb-1"
+              ><Emoji symbol="🎉" class="size-4 mr-1" /> Всё готово!</span
+            >
+            <p class="text-gray-400">«{$formData.title}»</p>
+            <p class="text-gray-400">готов принимать гостей!</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="py-2 w-full bg-accent/20 mb-2 rounded-xl text-accent-foreground"
+          onclick={() => {
+            console.log(Telegram.WebApp.version);
+            Telegram.WebApp.shareMessage('dasda');
+            copy('Hello World Telegram miniapp');
+          }}>Скопировать ссылку</button
+        >
+        <a href={link}>test</a>
+        <button type="button" class="py-2 w-full bg-accent rounded-xl mb-4"
+          >Поделиться</button
+        >
+      {/if}
+      <!--        <SuperDebug data={formData} />-->
+    </form>
   </Sheet.Content>
 </Sheet.Root>
 <!--<button class="px-6 py-1.5 rounded-[8px] bg-accent text-[14px]">Создать</button>-->
