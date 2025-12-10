@@ -110,7 +110,7 @@
     <form
       method="POST"
       use:enhance
-      class="space-y-6 max-h-[calc(100vh-100px)] overflow-y-auto"
+      class="space-y-6 max-h-[calc(100vh-110px)] overflow-y-auto"
     >
       {#if currentStage === 1}
         <Form.Field {form} name="title">
@@ -128,10 +128,10 @@
         <Form.Field {form} name="photo">
           <Form.Control>
             {#snippet children({ props })}
-              <Form.Label class="text-[16px] font-medium flex items-center">
+              <p class="text-[16px] font-medium flex items-center">
                 <Emoji symbol="📸" class="size-4 mr-1" />
                 Украсим фотографией?
-              </Form.Label>
+              </p>
               <p class="text-[14px] mb-3">
                 Аватарка поможет пользователям быстрее различать твой неймспейс
                 в списке доступных. Ну и это красиво
@@ -205,14 +205,12 @@
           type="button"
           class="py-2 w-full bg-accent/20 mb-2 rounded-xl text-accent-foreground"
           onclick={() => {
-            console.log(Telegram.WebApp.version);
-            Telegram.WebApp.shareMessage('dasda');
             copy('Hello World Telegram miniapp');
           }}>Скопировать ссылку</button
         >
-        <a href={link}>test</a>
-        <button type="button" class="py-2 w-full bg-accent rounded-xl mb-4"
-          >Поделиться</button
+        <a
+          class="py-2 w-full bg-accent rounded-xl mb-4 block text-center"
+          href={link}>Поделиться</a
         >
       {/if}
       <!--        <SuperDebug data={formData} />-->
