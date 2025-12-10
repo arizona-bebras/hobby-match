@@ -15,7 +15,7 @@ type TgUser struct {
 }
 
 type User struct {
-	TgID      string         `json:"tg_user" gorm:"primaryKey;column:id"`
+	TgID      string         `json:"tg_user" gorm:"primaryKey;column:tg_id"`
 	Name      string         `json:"miniapp_name" gorm:"column:name"`
 	Location  string         `json:"location" gorm:"column:location"`
 	Gender    string         `json:"gender" gorm:"column:gender"`
@@ -48,4 +48,9 @@ type Namespace struct {
 	Picture     []byte `json:"picture" gorm:"column:picture"`
 	Description string `json:"description" gorm:"column:description"`
 	Admin       string `json:"admin" gorm:"column:admin"`
+}
+
+type NamespaceInvite struct {
+	Id         string `json:"id" gorm:"column:id"`
+	InviteCode string `json:"invite_code" gorm:"column:invite_code"`
 }

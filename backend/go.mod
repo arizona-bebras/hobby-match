@@ -9,6 +9,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/rs/cors v1.11.1
 	github.com/telegram-mini-apps/init-data-golang v1.5.0
+	github.com/xyproto/randomstring v1.2.0
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.1
 )

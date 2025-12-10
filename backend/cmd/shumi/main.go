@@ -53,14 +53,20 @@ func main() {
 	}
 	mux.Handle("/api/vote/", tgauth.AuthMiddleware(voteHandler))
 
-	workerHandler := handlers.AutocompleteHandler{}
-	mux.Handle("/api/worker/", tgauth.AuthMiddleware(workerHandler))
+	autocompleteHandler := handlers.AutocompleteHandler{}
+	mux.Handle("/api/worker/", tgauth.AuthMiddleware(autocompleteHandler))
 
 	gameHandler := handlers.GamesHandler{
 		DB: dbConnection,
 	}
-	mux.Handle("/api/games", tgauth.AuthMiddleware(gameHandler))
+	mux.Handle("/api/games/", tgauth.AuthMiddleware(gameHandler))
 
+	namespaceHandler := handlers.NamespaceHandler{
+		DB: dbConnection,
+	}
+	mux.Handle("/api/namespace/", tgauth.AuthMiddleware(namespaceHandler))
+
+	
 	log.Println("Listen started at localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", c.Handler(mux)))
 }
