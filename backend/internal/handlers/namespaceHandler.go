@@ -36,6 +36,15 @@ type Match struct {
 	Score float64 `json:"score"`
 }
 
+// EnterNamespace
+// @Summary Зайти в неймспейс
+// @Accept multipart/form-data
+// @Param namespace formData string true "id неймспейса"
+// @Param invite_code formData string true "инвайт код для входа в неймспейс"
+// @Success 200 {string} string "Успешный вход"
+// @Failure 403 {string} string "Неверный код входа"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/namespace/{namespace_id} [post]
 func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey).(string)
 
@@ -55,6 +64,12 @@ func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request
 	w.Write([]byte("\n\n"))
 }
 
+// EnterNamespace
+// @Summary Выйти из неймспейса
+// @Param namespace query string true "id неймспейса"
+// @Success 200 {string} string "Успешный вход"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/namespace/{namespace_id} [delete]
 func (h *NamespaceHandler) LeaveNamespace(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey).(string)
 
@@ -68,10 +83,19 @@ func (h *NamespaceHandler) LeaveNamespace(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	w.Write([]byte(`you entered namespace`))
+	w.Write([]byte(`you leaved namespace`))
 	w.Write([]byte("\n\n"))
 }
 
+// CreateNamespace
+// @Summary Создать неймспейс
+// @Accept multipart/form-data
+// @Param title formData string true "Название неймспейса"
+// @Param photo formData file true "Картинка неймспейса"
+// @Param description formData string true "Описание неймспейса"
+// @Success 200 {string} string "Неймспейс успешно создан"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/namespace [post]
 func (h *NamespaceHandler) CreateNamespace(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey).(string)
 
@@ -124,6 +148,15 @@ func (h *NamespaceHandler) CreateNamespace(w http.ResponseWriter, r *http.Reques
 	w.Write([]byte("\n\n"))
 }
 
+// UpdateNamespace
+// @Summary Обновить информацию о неймспейсе
+// @Accept multipart/form-data
+// @Param title formData string false "Название неймспейса"
+// @Param photo formData file false "Картинка неймспейса"
+// @Param description formData string false "Описание неймспейса"
+// @Success 200 {string} string "Неймспейс успешно обновлен"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/namespace [put]
 func (h *NamespaceHandler) UpdateNamespace(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey).(string)
 
@@ -177,6 +210,13 @@ func (h *NamespaceHandler) UpdateNamespace(w http.ResponseWriter, r *http.Reques
 	w.Write([]byte("\n\n"))
 }
 
+// DeleteNamespace
+// @Summary Удалить неймспейс
+// @Param id query string true "Название неймспейса"
+// @Success 200 {string} string "Неймспейс успешно удален"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Failure 403 {string} string "Этот пользователь не админ неймспейса"
+// @Router /api/namespace [delete]
 func (h *NamespaceHandler) DeleteNamespace(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey)
 
@@ -222,6 +262,13 @@ func getUserById(tx *gorm.DB, id string) (database.User, error) {
 	return user, nil
 }
 
+// GetFeed
+// @Summary Получить ленту из анкет пользователей неймспейса
+// @Produce json
+// @Param id path string true "id неймспейса"
+// @Success 200 {array} database.User
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/namespace/{namespace_id} [get]
 func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey).(string)
 

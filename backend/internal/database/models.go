@@ -14,6 +14,7 @@ type TgUser struct {
 	TgFirstname string `json:"firstname"`
 }
 
+// @Description Основные данные профиля и связанные виджеты.
 type User struct {
 	TgID      string         `json:"tg_user" gorm:"primaryKey;column:tg_id"`
 	Name      string         `json:"miniapp_name" gorm:"column:name"`
@@ -26,6 +27,7 @@ type User struct {
 	Widgets   []Widget       `json:"widgets" gorm:"-"`
 }
 
+// @Description Виджет
 type Widget struct {
 	Id             string        `json:"id" gorm:"primaryKey;column:id"`
 	User           string        `json:"user" gorm:"column:user;type:bigint"`
@@ -36,12 +38,14 @@ type Widget struct {
 	AdditionalData string        `json:"additionalData" gorm:"-"`
 }
 
+// @Description Голос в опросе
 type Vote struct {
 	User   string `json:"user" gorm:"column:user"`
 	Survey string `json:"survey" gorm:"column:survey"`
 	Option int    `json:"option" gorm:"column:option"`
 }
 
+// @Description Неймспейс
 type Namespace struct {
 	Id          string `json:"id" gorm:"primaryKey;column:id"`
 	Title       string `json:"title" gorm:"column:title"`
@@ -50,6 +54,7 @@ type Namespace struct {
 	Admin       string `json:"admin" gorm:"column:admin"`
 }
 
+// @Description Инвайт код для неймспейса
 type NamespaceInvite struct {
 	Id         string `json:"id" gorm:"column:id"`
 	InviteCode string `json:"invite_code" gorm:"column:invite_code"`
