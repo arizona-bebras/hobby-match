@@ -14,6 +14,14 @@ import (
 
 const FORM_SIZE_LIMIT int64 = 50000000
 
+// CreateWidget
+// @Summary Создать виджет
+// @Accept multipart/form-data
+// @Param data formData []byte false "Данные виджета"
+// @Param files formData array false "Файлы виджета"
+// @Success 200 {string} string "Виджет успешно создан"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/me/widgets [post]
 func (h *UserDataHandler) CreateWidget(w http.ResponseWriter, r *http.Request) {
 	TgID := r.Context().Value(database.AuthContextKey).(string)
 
@@ -70,6 +78,14 @@ func (h *UserDataHandler) CreateWidget(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("\n\n"))
 }
 
+// UpdateWidget
+// @Summary Обновить виджет
+// @Accept multipart/form-data
+// @Param data formData []byte false "Данные виджета"
+// @Param files formData array false "Файлы виджета"
+// @Success 200 {string} string "Виджет успешно обновлен"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/me/widgets [put]
 func (h *UserDataHandler) UpdateWidget(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(FORM_SIZE_LIMIT)
 	data := r.PostFormValue("data")
@@ -140,6 +156,13 @@ func (h *UserDataHandler) UpdateWidget(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`widget updated`))
 	w.Write([]byte("\n\n"))
 }
+
+// DeleteWidget
+// @Summary Удалить виджет
+// @Param widget_id query string true "id виджета"
+// @Success 200 {string} string "Виджет удален"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/me/widgets [delete]
 func (h *UserDataHandler) DeleteWidget(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("widget_id")
 
@@ -162,6 +185,14 @@ func (h *UserDataHandler) DeleteWidget(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("\n\n"))
 }
 
+// UpdateWidgetOrder
+// @Summary Обновить очередь виджета
+// @Accept multipart/form-data
+// @Param widget_id formData string true "id виджета"
+// @Param order formData integer true "Изменение позиции виджета виджета"
+// @Success 200 {string} string "Очередь успешно обновлена"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/me/widgets/order [put]
 func (h *UserDataHandler) UpdateWidgetOrder(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(FORM_SIZE_LIMIT)
 	widgetID := r.PostFormValue("widget_id")
@@ -242,6 +273,13 @@ func (h *UserDataHandler) UpdateWidgetOrder(w http.ResponseWriter, r *http.Reque
 	w.Write([]byte("\n\n"))
 }
 
+// DeleteWidgetPhoto
+// @Summary Удалить фото виджета
+// @Param widget_id query string true "id виджета"
+// @Param index query integer true "Позиция фото в списке"
+// @Success 200 {string} string "Фото виджета удалено"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/me/widgets/photo [delete]
 func (h *UserDataHandler) DeleteWidgetPhoto(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	id := q.Get("widget_id")

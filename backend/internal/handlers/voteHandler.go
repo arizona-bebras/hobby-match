@@ -13,6 +13,14 @@ type VoteHandler struct {
 	DB *gorm.DB
 }
 
+// Vote
+// @Summary Проголосовать в опросе
+// @Accept multipart/form-data
+// @Param survey formData string false "id виджета опроса"
+// @Param option formData string false "вариант опроса"
+// @Success 200 {string} string "Голос засчитан"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/vote [post]
 func (h *VoteHandler) Vote(w http.ResponseWriter, r *http.Request) {
 	tgID := r.Context().Value(database.AuthContextKey).(string)
 

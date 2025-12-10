@@ -16,6 +16,14 @@ type GamesHandler struct {
 	DB *gorm.DB
 }
 
+// GetGames
+// @Summary Игры пользователя из его steam профиля для виджета
+// @Produce json
+// @Param link string query true Ссылка на профиль
+// @Success 200 {string} JSON, содержащий список игр
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/games [get]
+
 func (h *GamesHandler) GetGames(w http.ResponseWriter, r *http.Request) {
 	id, err := socialapirequests.ResolveSteamLink(r.URL.Query().Get("link"))
 	if err != nil {

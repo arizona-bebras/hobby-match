@@ -14,6 +14,11 @@ import (
 	"shumi/internal/handlers"
 	"shumi/internal/tgauth"
 )
+// @title Shumi API
+// @version 1.0
+// @description Отососи пидрила гнойная
+
+// @BasePath /api
 
 func main() {
 	err := godotenv.Load()

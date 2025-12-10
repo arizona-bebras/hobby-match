@@ -38,6 +38,13 @@ func getStructFieldNames(s interface{}) []string {
 	return fieldNames
 }
 
+// GetMe
+// @Summary Профиль пользователя
+// @Produce json
+// @Success 200 {object} database.User
+// @Failure 401 {string} string "Пользователь не авторизован"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/me [get]
 func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 	tgID, ok := r.Context().Value(database.AuthContextKey).(string)
 	if !ok {
@@ -73,6 +80,19 @@ func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("\n\n"))
 }
 
+// UpdateMyProfileInfo
+// @Summary Обновить информацию профиля пользователя
+// @Accept json
+// @Param name body string false "Имя пользователя"
+// @Param location body string false "Локация пользователя"
+// @Param gender body string false "Пол пользователя"
+// @Param birth_date body string false "Дата рождения пользователя"
+// @Param info body string false "Информация о пользователе"
+// @Param interests body array false "Интересы о пользователе"
+// @Success 200 {string} string "Пользователь успешно обновлен"
+// @Failure 401 {string} string "Пользователь не авторизован"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/me [post]
 func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Request) {
 	tgID := r.Context().Value(database.AuthContextKey)
 
@@ -111,6 +131,13 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 	w.Write([]byte("\n\n"))
 }
 
+// UpdateMyProfilePhoto
+// @Summary Обновить информацию профиля пользователя
+// @Accept json
+// @Param user_photo body []byte false "Фото пользователя"
+// @Success 200 {string} string "Пользователь успешно обновлен"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/me/photo [post]
 func (h *UserDataHandler) UpdateMyProfilePhoto(w http.ResponseWriter, r *http.Request) {
 	tgID := r.Context().Value(database.AuthContextKey).(string)
 

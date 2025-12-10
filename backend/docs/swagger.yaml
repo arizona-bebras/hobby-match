@@ -1,0 +1,433 @@
+basePath: /api
+definitions:
+  database.User:
+    description: Основные данные профиля и связанные виджеты.
+    properties:
+      birth_date:
+        type: string
+      gender:
+        type: string
+      interests:
+        items:
+          type: string
+        type: array
+      location:
+        type: string
+      miniapp_name:
+        type: string
+      tg_user:
+        type: string
+      user_info:
+        type: string
+      user_photo:
+        items:
+          type: integer
+        type: array
+      widgets:
+        items:
+          $ref: '#/definitions/database.Widget'
+        type: array
+    type: object
+  database.Widget:
+    description: Виджет
+    properties:
+      additionalData:
+        type: string
+      data:
+        type: string
+      files:
+        items:
+          items:
+            format: int32
+            type: integer
+          type: array
+        type: array
+      id:
+        type: string
+      namespace:
+        type: string
+      order:
+        type: integer
+      user:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Отососи пидрила гнойная
+  title: Shumi API
+  version: "1.0"
+paths:
+  /api/me:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.User'
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Профиль пользователя
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Имя пользователя
+        in: body
+        name: name
+        schema:
+          type: string
+      - description: Локация пользователя
+        in: body
+        name: location
+        schema:
+          type: string
+      - description: Пол пользователя
+        in: body
+        name: gender
+        schema:
+          type: string
+      - description: Дата рождения пользователя
+        in: body
+        name: birth_date
+        schema:
+          type: string
+      - description: Информация о пользователе
+        in: body
+        name: info
+        schema:
+          type: string
+      - description: Интересы о пользователе
+        in: body
+        name: interests
+        schema:
+          type: array
+      responses:
+        "200":
+          description: Пользователь успешно обновлен
+          schema:
+            type: string
+        "401":
+          description: Пользователь не авторизован
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Обновить информацию профиля пользователя
+  /api/me/photo:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Фото пользователя
+        in: body
+        name: user_photo
+        schema:
+          items:
+            type: integer
+          type: array
+      responses:
+        "200":
+          description: Пользователь успешно обновлен
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Обновить информацию профиля пользователя
+  /api/me/widgets:
+    delete:
+      parameters:
+      - description: id виджета
+        in: query
+        name: widget_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Виджет удален
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Удалить виджет
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - collectionFormat: csv
+        description: Данные виджета
+        in: formData
+        items:
+          format: int32
+          type: integer
+        name: data
+        type: array
+      - description: Файлы виджета
+        in: formData
+        name: files
+        type: array
+      responses:
+        "200":
+          description: Виджет успешно создан
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Создать виджет
+    put:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - collectionFormat: csv
+        description: Данные виджета
+        in: formData
+        items:
+          format: int32
+          type: integer
+        name: data
+        type: array
+      - description: Файлы виджета
+        in: formData
+        name: files
+        type: array
+      responses:
+        "200":
+          description: Виджет успешно обновлен
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Обновить виджет
+  /api/me/widgets/order:
+    put:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: id виджета
+        in: formData
+        name: widget_id
+        required: true
+        type: string
+      - description: Изменение позиции виджета виджета
+        in: formData
+        name: order
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Очередь успешно обновлена
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Обновить очередь виджета
+  /api/me/widgets/photo:
+    delete:
+      parameters:
+      - description: id виджета
+        in: query
+        name: widget_id
+        required: true
+        type: string
+      - description: Позиция фото в списке
+        in: query
+        name: index
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Фото виджета удалено
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Удалить фото виджета
+  /api/namespace:
+    delete:
+      parameters:
+      - description: Название неймспейса
+        in: query
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Неймспейс успешно удален
+          schema:
+            type: string
+        "403":
+          description: Этот пользователь не админ неймспейса
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Удалить неймспейс
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Название неймспейса
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: Картинка неймспейса
+        in: formData
+        name: photo
+        required: true
+        type: file
+      - description: Описание неймспейса
+        in: formData
+        name: description
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Неймспейс успешно создан
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Создать неймспейс
+    put:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Название неймспейса
+        in: formData
+        name: title
+        type: string
+      - description: Картинка неймспейса
+        in: formData
+        name: photo
+        type: file
+      - description: Описание неймспейса
+        in: formData
+        name: description
+        type: string
+      responses:
+        "200":
+          description: Неймспейс успешно обновлен
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Обновить информацию о неймспейсе
+  /api/namespace/{namespace_id}:
+    delete:
+      parameters:
+      - description: id неймспейса
+        in: query
+        name: namespace
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Успешный вход
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Выйти из неймспейса
+    get:
+      parameters:
+      - description: id неймспейса
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.User'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Получить ленту из анкет пользователей неймспейса
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: id неймспейса
+        in: formData
+        name: namespace
+        required: true
+        type: string
+      - description: инвайт код для входа в неймспейс
+        in: formData
+        name: invite_code
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Успешный вход
+          schema:
+            type: string
+        "403":
+          description: Неверный код входа
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Зайти в неймспейс
+  /api/vote:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: id виджета опроса
+        in: formData
+        name: survey
+        type: string
+      - description: вариант опроса
+        in: formData
+        name: option
+        type: string
+      responses:
+        "200":
+          description: Голос засчитан
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Проголосовать в опросе
+swagger: "2.0"
