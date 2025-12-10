@@ -46,7 +46,7 @@ func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
         return
     }
 	var user database.User
-	result := h.DB.Table("users").First(&user, "tg_id = ?", tgID)
+	result := h.DB.Model(&user).First(&user, "tg_id = ?", tgID)
 	if result.Error != nil {
 		log.Printf("failed to get user: %s", result.Error.Error())
 		http.Error(w, "internal server error", http.StatusInternalServerError)

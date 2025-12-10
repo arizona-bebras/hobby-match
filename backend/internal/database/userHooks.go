@@ -14,7 +14,7 @@ import (
 
 type UserVector struct {
 	Id        string   `json:"id"`
-	Interests []string `json:"interests"`
+	Interests []string `json:"interest_ids"`
 	Text      string   `json:"text"`
 }
 

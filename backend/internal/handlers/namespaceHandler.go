@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,8 +10,10 @@ import (
 	"os"
 	"shumi/internal/database"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
+	"github.com/xyproto/randomstring"
 	"gorm.io/gorm"
 )
 
@@ -18,12 +21,55 @@ type NamespaceHandler struct {
 	DB *gorm.DB
 }
 
-type View struct {
-	Id string `json:"id"`
+type WorkerRequest struct {
+	Id   string   `json:"id"`
+	From []string `json:"from"`
+}
+
+type UserView struct {
+    UserID     string     `json:"user_id" db:"user_id"`
+    LastViewed *time.Time `json:"last_viewed" db:"last_viewed"` 
 }
 
 type Match struct {
-	Id string `json:"id"`
+	Id    string  `json:"id"`
+	Score float64 `json:"score"`
+}
+
+func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request) {
+	tgId := r.Context().Value(database.AuthContextKey).(string)
+
+	r.ParseMultipartForm(FORM_SIZE_LIMIT)
+	namespace := r.PostFormValue("namespace")
+
+	err := h.DB.Table("namespace_user").Create(map[string]interface{}{
+		"namespace": namespace, "user": tgId,
+	}).Error
+	if err != nil {
+		log.Println("failed to enter namespace!")
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Write([]byte(`you entered namespace`))
+	w.Write([]byte("\n\n"))
+}
+
+func (h *NamespaceHandler) LeaveNamespace(w http.ResponseWriter, r *http.Request) {
+	tgId := r.Context().Value(database.AuthContextKey).(string)
+
+	namespace := r.URL.Query().Get("namespace")
+
+	type NamespaceUser struct{}
+	err := h.DB.Delete(&NamespaceUser{}, "user = $1 AND namespace = $2", tgId, namespace).Error
+	if err != nil {
+		log.Println("failed to leave namespace")
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Write([]byte(`you entered namespace`))
+	w.Write([]byte("\n\n"))
 }
 
 func (h *NamespaceHandler) CreateNamespace(w http.ResponseWriter, r *http.Request) {
@@ -49,15 +95,27 @@ func (h *NamespaceHandler) CreateNamespace(w http.ResponseWriter, r *http.Reques
 
 	description := r.PostFormValue("description")
 
+	namespaceId := uuid.NewString()
+
 	err = h.DB.Table("namespaces").Create(database.Namespace{
-		Id: uuid.NewString(),
-		Title: title,
-		Picture: pictureBytes,
+		Id:          namespaceId,
+		Title:       title,
+		Picture:     pictureBytes,
 		Description: description,
-		Admin: tgId,
+		Admin:       tgId,
 	}).Error
 	if err != nil {
 		log.Println("failed to create namespace!")
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	err = h.DB.Table("namespace_invite").Create(database.NamespaceInvite{
+		Id:         namespaceId,
+		InviteCode: randomstring.String(20),
+	}).Error
+	if err != nil {
+		log.Println("failed to create namespace invite code!")
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -103,9 +161,9 @@ func (h *NamespaceHandler) UpdateNamespace(w http.ResponseWriter, r *http.Reques
 
 	description := r.PostFormValue("description")
 
-	err = h.DB.Model(&database.Namespace{ Id: id }).Updates(database.Namespace{
-		Title: title,
-		Picture: pictureBytes,
+	err = h.DB.Model(&database.Namespace{Id: id}).Updates(database.Namespace{
+		Title:       title,
+		Picture:     pictureBytes,
 		Description: description,
 	}).Error
 
@@ -147,7 +205,7 @@ func (h *NamespaceHandler) DeleteNamespace(w http.ResponseWriter, r *http.Reques
 	w.Write([]byte("\n\n"))
 }
 
-func getUserById(tx *gorm.DB, id string) (database.User, error){
+func getUserById(tx *gorm.DB, id string) (database.User, error) {
 	var user database.User
 	result := tx.Table("users").First(&user, "tg_id = ?", id)
 	if result.Error != nil {
@@ -167,58 +225,65 @@ func getUserById(tx *gorm.DB, id string) (database.User, error){
 func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey).(string)
 
-	namespace := strings.Split(r.URL.Path, "/")[2]
+	namespace := strings.Split(r.URL.Path, "/")[3]
+	log.Println(namespace)
 
-	var views []View
+	var viewsResp []UserView
 	q := `
       WITH user_view_dates AS (
             SELECT
-                u.id AS user_id,
-                MAX(v.created) AS last_viewed
+                u.tg_id AS user_id,
+                MAX(v.date) AS last_viewed
             FROM users u
                 LEFT JOIN views v
-                    ON v.pageOwner = u.id AND v.viewer = $1
-				INNER JOIN user_namespaces un
-					ON un.user = u.id AND un.namespace = $2
-            WHERE u.id != $1
-              AND u.miniapp_name <> ''
-              AND u.user_photo <> ''
-              AND u.interests <> '[]'
-              AND NOT u.hide
-              AND NOT EXISTS (
-                SELECT 1
-                FROM bans b
-                WHERE b.telegram_id = u.telegram_id
-              )
-            GROUP BY u.id
+                    ON v.page_owner = u.tg_id AND v.viewer = $1
+				INNER JOIN user_namespace un
+					ON un.user = u.tg_id AND un.namespace = $2
+            WHERE u.tg_id != $1
+              AND u.name != ''
+              AND u.interests IS NOT NULL
+            GROUP BY u.tg_id
         ),
         total_users AS (
-            SELECT COUNT(*) AS total FROM users WHERE id != $1
+            SELECT COUNT(*) AS total FROM users WHERE tg_id != $1
         ),
         limited_users AS (
             SELECT * FROM user_view_dates 
                      ORDER BY last_viewed
                      ASC NULLS FIRST 
                      LIMIT (
-                         SELECT MIN(100, MAX(3, CAST(total * 0.2 AS INT))) FROM total_users
+                         SELECT LEAST(100, GREATEST(3, CAST(total * 0.2 AS INT))) FROM total_users
                      )
         ) SELECT * FROM limited_users;
   `
-	err := h.DB.Raw(q, tgId, namespace).Scan(&views).Error
+	err := h.DB.Raw(q, tgId, namespace).Scan(&viewsResp).Error
 	if err != nil {
 		log.Printf("failed to get views %v", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	viewsJSON, err := json.Marshal(views)
+	var views []string
+
+	for _, view := range viewsResp {
+		views = append(views, view.UserID)
+	}
+
+	workerRequestBody := WorkerRequest{
+		Id: tgId,
+		From: views,
+	}
+
+	workerRequestJSON, err := json.Marshal(workerRequestBody)
 	if err != nil {
 		log.Printf("failed to get views %v", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	request, err := http.NewRequest("POST", fmt.Sprintf("%s/feed/query", os.Getenv("WORKER_ENDPOINT")), strings.NewReader(fmt.Sprintf(`{ "id": "%s", "from": %s }`, q, viewsJSON)))
+	log.Println(string(workerRequestJSON))
+
+	request, err := http.NewRequest("POST", fmt.Sprintf("%s/feed/query", os.Getenv("WORKER_ENDPOINT")), bytes.NewReader(workerRequestJSON))
 	if err != nil {
 		log.Printf("worker/feed: failed to create request: %v", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
@@ -240,17 +305,27 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var matches []Match
-	err = json.Unmarshal(body, &matches)
+	var respJSON map[string]interface{}
+	err = json.Unmarshal(body, &respJSON)
+
+	log.Println(respJSON)
 	if err != nil {
 		log.Printf("worker/feed: failed to read response: %v", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
 
+	matches := respJSON["matches"].([]interface{})
+
 	pages := []database.User{}
 	for _, match := range matches {
-		page, err := getUserById(h.DB, match.Id)
+		pageId, ok := match.(map[string]interface{})["id"].(string)
+		if !ok {
+			log.Printf("worker/feed: failed to get user page: %v", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+		page, err := getUserById(h.DB, pageId)
 		if err != nil {
 			log.Printf("failed to get user page: %v", err)
 			log.Printf("worker/feed: failed to read response: %v", err)
@@ -269,4 +344,35 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(pagesJSON)
 	w.Write([]byte("\n\n"))
+}
+
+func (h NamespaceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	var namespace string
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) >= 4 && parts[3] != "" {
+		namespace = parts[3]
+	}
+	if namespace == "" {
+		switch r.Method {
+		case http.MethodPost:
+			h.CreateNamespace(w, r)
+		case http.MethodDelete:
+			h.DeleteNamespace(w, r)
+		case http.MethodPut:
+			h.UpdateNamespace(w, r)
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	} else {
+		switch r.Method {
+		case http.MethodPost:
+			h.EnterNamespace(w, r)
+		case http.MethodDelete:
+			h.LeaveNamespace(w, r)
+		case http.MethodGet:
+			h.GetFeed(w, r)
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	}
 }

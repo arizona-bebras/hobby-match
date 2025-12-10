@@ -4,6 +4,7 @@
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
   import { onMount } from 'svelte';
   import { pb } from '$lib';
+  import { db } from '$lib'
   import LoadingScreen from '$lib/components/search/LoadingScreen.svelte';
   import TransitionBlock from '$lib/components/search/TransitionBlock.svelte';
   import UserProfile from '$lib/components/search/UserProfile.svelte';
@@ -21,6 +22,9 @@
   });
   let liked: boolean = $state(false);
   useTelegramButton(() => goto('/profile'));
+
+  const authHeader: HeadersInit = new Headers()
+  authHeader.set('Authorization', `Bearer ${window.localStorage.getItem("access_token")}`)
 
   onMount(() => {
     window.Telegram.WebApp.MainButton.setText('Моя анкета');
@@ -70,11 +74,30 @@
     const timeout = setTimeout(
       () => {
         if (offeredProfiles.length > 2) return;
-        pb.send('/worker/feed', {
-          method: 'GET',
+        fetch (`${db}/api/namespace/00000000-0000-0000-0000-000000000000`, {
+          method: "GET",
+          headers: authHeader,
         }).then(
-          (response) => (offeredProfiles = [...offeredProfiles, ...response]),
+            (response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            }
+        ).then(
+            (data) => {
+                offeredProfiles = [...offeredProfiles, ...data];
+            }
+        ).catch(
+            (error) => {
+                console.error("Fetch error:", error);
+            }
         );
+        // pb.send('/worker/feed', {
+        //   method: 'GET',
+        // }).then(
+        //   (response) => (offeredProfiles = [...offeredProfiles, ...response]),
+        // );
       },
       offeredProfiles.length == 0 ? 0 : 800,
     );
@@ -156,7 +179,7 @@
 </div>
 
 <!--<div-->
-<!--  class="snap-y snap-mandatory w-full h-full overflow-y-auto gap-y-40"-->
+<!-- class="snap-y snap-mandatory w-full h-full overflow-y-auto gap-y-40"-->
 <!--  bind:this={container}-->
 <!--  onscroll={() => {-->
 <!--    updateCurrentSection();-->
@@ -174,7 +197,7 @@
 <!--    onclick={() => {-->
 <!--      // profiles.push(offeredProfiles.shift());-->
 <!--      // profiles.splice(0, 1);-->
-<!--      // currentProfile = 0;-->
+<!--      // currentProfile = 0; -->
 <!--      // container.scrollTop = 0;-->
 <!--      console.log(profiles);-->
 <!--      // profileRef.forEach((element: HTMLDivElement) =>-->
