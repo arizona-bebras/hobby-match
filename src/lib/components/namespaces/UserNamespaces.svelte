@@ -25,7 +25,7 @@
   }
 </script>
 
-<div class="overflow-y-scroll h-[calc(100vh-200px)]">
+<div class="overflow-y-auto h-[calc(100vh-200px)]">
   {#each namespacesList as namespace (namespace.title)}
     {#if namespace.title.toLowerCase().includes(searchFilter.toLowerCase())}
       <div
