@@ -13,6 +13,9 @@ import (
 
 	"shumi/internal/handlers"
 	"shumi/internal/tgauth"
+
+	_ "shumi/docs"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 // @title Shumi API
 // @version 1.0
@@ -71,7 +74,10 @@ func main() {
 	}
 	mux.Handle("/api/namespace/", tgauth.AuthMiddleware(namespaceHandler))
 
-	
+	mux.Handle("/swagger/", httpSwagger.Handler(
+        httpSwagger.URL("http://localhost:8080/swagger/doc.json"),
+    ))
+
 	log.Println("Listen started at localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", c.Handler(mux)))
 }
