@@ -29,33 +29,35 @@
   }
 
   async function getYandexTrack(trackUrl: string) {
-    console.log(trackUrl)
-    const iframe = document.createElement("iframe")
-    iframe.setAttribute('src', `https://music.yandex.ru/iframe/${trackUrl.slice(23)}`)
+    console.log(trackUrl);
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute(
+      'src',
+      `https://music.yandex.ru/iframe/${trackUrl.slice(23)}`,
+    );
     iframe.setAttribute('height', '130');
     iframe.setAttribute('width', '500');
-    console.log(iframe.outerHTML)
+    console.log(iframe.outerHTML);
     return iframe.outerHTML;
   }
 
   async function getSpotifyEmbed(trackUrl: string) {
     const data = await fetch(
-      `https://open.spotify.com/oembed?url=${encodeURIComponent(trackUrl)}`
-    ).then(response => response.json())
-    return data.html!
+      `https://open.spotify.com/oembed?url=${encodeURIComponent(trackUrl)}`,
+    ).then((response) => response.json());
+    return data.html!;
   }
-
 
   switch (data.platform) {
     case 'SoundCloud':
       track = getScEmbed(data.link);
-      break
+      break;
     case 'Yandex':
       track = getYandexTrack(data.link);
-      break
+      break;
     case 'Spotify':
       track = getSpotifyEmbed(data.link);
-      break
+      break;
   }
 </script>
 

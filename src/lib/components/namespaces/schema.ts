@@ -18,7 +18,7 @@ export const createSchema = z.object({
   secret_word: z
     .string()
     .min(2, { error: 'Длинна поля должна быть более 2 символов' })
-    .max(50, { error: 'Длинна поля должна быть не более 50 символов' }),
+    .max(250, { error: 'Длинна поля должна быть не более 250 символов' }),
 });
 
 export type FormSchema = typeof createSchema;
