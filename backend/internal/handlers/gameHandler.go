@@ -20,7 +20,7 @@ type GamesHandler struct {
 // @Summary Игры пользователя из его steam профиля для виджета
 // @Produce json
 // @Param link string query true Ссылка на профиль
-// @Success 200 {string} JSON, содержащий список игр
+// @Success 200 {string} "JSON, содержащий список игр"
 // @Failure 500 {string} string "Внутренняя ошибка сервера"
 // @Router /api/games [get]
 
