@@ -22,7 +22,13 @@
 </script>
 
 {#if TestVideo}
-  <video width="320" height="256" controls poster={test}>
+  <video
+    width="320"
+    height="256"
+    controls
+    poster={test}
+    class="w-[320px] h-[256px] object-cover"
+  >
     <source src={TestVideo} type="video/mp4" />
     Your browser does not support the video tag.
   </video>

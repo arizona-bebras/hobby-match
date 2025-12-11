@@ -198,7 +198,7 @@
                   id={1}
                   survey={{
                     type: 'survey',
-                    stats: [0],
+                    stats: [0, 0],
                     myVote: null,
                   }}
                 />
