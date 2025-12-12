@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { ArrowRight, ShieldUser, Shield } from '@lucide/svelte';
+  import { ShieldUser, Shield } from '@lucide/svelte';
   import { goto } from '$app/navigation';
+  import UserInfoBtn from '$lib/components/namespaces/UserInfoBtn.svelte';
 
   const { users }: { users: object[] } = $props();
 </script>
@@ -34,9 +35,7 @@
           </div>
         </div>
       </div>
-      <button onclick={() => goto('#')}>
-        <ArrowRight class="size-5" />
-      </button>
+      <UserInfoBtn />
     </div>
   {/each}
 </div>

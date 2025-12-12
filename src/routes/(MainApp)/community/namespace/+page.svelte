@@ -50,7 +50,7 @@
 <img
   alt="Картинка неймспейса"
   src={testNameSpaceses.img}
-  class="size-100 rounded-full object-cover absolute -top-[40%] z-0 opacity-60 blur-2xl"
+  class="size-100 rounded-full object-cover absolute -top-[35%] z-0 opacity-60 blur-2xl"
 />
 <div class="px-4 flex flex-col justify-start items-start w-full">
   <div
@@ -58,7 +58,7 @@
   >
     <p>Смотреть анкеты</p>
     <button>
-      <ChevronRight />
+      <ChevronRight class="size-5" />
     </button>
   </div>
   <div
@@ -66,7 +66,7 @@
   >
     <p>Редактировать</p>
     <button>
-      <PencilLine />
+      <PencilLine class="size-5" />
     </button>
   </div>
   <p>Участники</p>
