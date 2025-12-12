@@ -10,11 +10,14 @@
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';
   import QRCode from '@castlenine/svelte-qrcode';
   import copy from 'copy-to-clipboard';
+  import { toSvg } from 'jdenticon';
 
   let currentStage = $state(1);
   let fileButton: HTMLInputElement = $state();
+  let uploadedPhoto = $state('');
   let isSheetOpen = $state(false);
 
+  $inspect(uploadedPhoto);
   const form = superForm(defaults(zod4(createSchema)), {
     SPA: true,
     validators: zod4(createSchema),
@@ -48,6 +51,10 @@
     currentStage += 1;
     if (currentStage === 2) {
       Telegram.WebApp.MainButton.text = 'Закрыть';
+      const pngString = toSvg(generateRandomHash(), 100);
+      if (!$formData.photo) {
+        uploadedPhoto = svgXmlToDataURLRobust(pngString);
+      }
       form.submit();
     }
     if (currentStage > 2) {
@@ -80,6 +87,22 @@
   }
   let link = `https://t.me/share/url?url=${encodeURI('https://core.telegram.org/widgets/share')}&text=${encodeURI('hello world')}
            `;
+  function svgXmlToDataURLRobust(svgXml) {
+    const utf8Bytes = new TextEncoder().encode(svgXml);
+    const binaryString = String.fromCharCode.apply(null, utf8Bytes);
+    const base64 = btoa(binaryString);
+    return `data:image/svg+xml;base64,${base64}`;
+  }
+
+  function generateRandomHash(length = 24) {
+    let randomString =
+      Math.random().toString(16).substring(2) +
+      Math.random().toString(16).substring(2);
+    while (randomString.length < length) {
+      randomString += Math.random().toString(16).substring(2);
+    }
+    return randomString.substring(0, length);
+  }
 </script>
 
 <Sheet.Root
@@ -140,6 +163,11 @@
                 bind:this={fileButton}
                 oninput={() => {
                   $formData.photo = fileButton.files[0];
+                  let reader = new FileReader();
+                  reader.readAsDataURL(fileButton.files[0]);
+                  reader.onload = (ev) => {
+                    uploadedPhoto = ev.target.result;
+                  };
                 }}
                 class="hidden"
               />
@@ -190,7 +218,12 @@
         <!--  </Form.Field>-->
       {:else if currentStage === 2}
         <div class="flex flex-col justify-center items-center mb-6">
-          <QRCode data="Hello World!" />
+          <QRCode
+            data="Hello World!"
+            logoInBase64={uploadedPhoto}
+            logoSize={15}
+            logoPadding={1}
+          />
           <div class="text-center mt-6.5">
             <span class="mb-1"
               ><Emoji symbol="🎉" class="size-4 mr-1" /> Всё готово!</span
@@ -211,7 +244,7 @@
           href={link}>Поделиться</a
         >
       {/if}
-      <!--        <SuperDebug data={formData} />-->
+      <SuperDebug data={formData} />
     </form>
   </Sheet.Content>
 </Sheet.Root>
