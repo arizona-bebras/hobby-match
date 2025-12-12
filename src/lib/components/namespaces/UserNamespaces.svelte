@@ -35,7 +35,7 @@
         <div class="flex gap-2.5 items-center">
           <img
             src="https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg"
-            class="size-8"
+            class="size-8 object-cover"
             alt="group image"
           />
           <div class="flex flex-col">
