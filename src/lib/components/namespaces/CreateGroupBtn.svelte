@@ -35,32 +35,19 @@
         } else {
           disableTgBtn();
         }
-      } else if (currentStage === 2) {
-        const secret_word = await form.validate('secret_word', {
-          update: false,
-        } as never);
-        if (!secret_word) {
-          activateTgBtn();
-        } else {
-          disableTgBtn();
-        }
       }
+    },
+    onSubmit() {
+      console.log('Форма отправлена!');
     },
   });
 
   const { form: formData, enhance } = form;
 
-  useTelegramButton(() => {
+  useTelegramButton(async () => {
     currentStage += 1;
     if (currentStage === 2) {
-      disableTgBtn();
-    }
-    if (currentStage === 3) {
       Telegram.WebApp.MainButton.text = 'Закрыть';
-    }
-    if (currentStage > 3) {
-      currentStage = 1;
-      isSheetOpen = false;
       form.submit();
     }
   });
@@ -90,7 +77,15 @@
            `;
 </script>
 
-<Sheet.Root bind:open={isSheetOpen}>
+<Sheet.Root
+  bind:open={isSheetOpen}
+  onOpenChange={(open) => {
+    if (!open) {
+      currentStage = 1;
+      isSheetOpen = false;
+    }
+  }}
+>
   <Sheet.Trigger
     class="px-6 py-1.5 rounded-[8px] bg-accent text-[14px]"
     onclick={() => {
@@ -100,15 +95,12 @@
   <Sheet.Content side="bottom" class="max-h-[calc(100vh-65px)]">
     <Sheet.Header>
       <Sheet.Title class="text-center text-[16px] font-medium"
-        >{currentStage === 1
-          ? 'Новый неймспейс'
-          : currentStage === 2
-            ? 'Тип неймспейса'
-            : $formData.title}</Sheet.Title
+        >{currentStage === 1 ? 'Новый неймспейс' : $formData.title}</Sheet.Title
       >
     </Sheet.Header>
     <form
       method="POST"
+      enctype="multipart/form-data"
       use:enhance
       class="space-y-6 max-h-[calc(100vh-110px)] overflow-y-auto"
     >
@@ -173,24 +165,24 @@
           </Form.Control>
           <Form.FieldErrors />
         </Form.Field>
+        <!--{:else if currentStage === 2}-->
+        <!--  <Form.Field {form} name="secret_word">-->
+        <!--    <Form.Control>-->
+        <!--      {#snippet children({ props })}-->
+        <!--        <Form.Label class="text-[16px] font-medium flex items-center">-->
+        <!--          <Emoji symbol="🔗" class="size-4 mr-1" />-->
+        <!--          Секретное слово?-->
+        <!--        </Form.Label>-->
+        <!--        <p class="text-[14px] mb-3">-->
+        <!--          Введи описание будущего неймспейса. Это наверняка поможет-->
+        <!--          пользователям найти твое сообщество ^^-->
+        <!--        </p>-->
+        <!--        <Textarea {...props} bind:value={$formData.secret_word} />-->
+        <!--      {/snippet}-->
+        <!--    </Form.Control>-->
+        <!--    <Form.FieldErrors />-->
+        <!--  </Form.Field>-->
       {:else if currentStage === 2}
-        <Form.Field {form} name="secret_word">
-          <Form.Control>
-            {#snippet children({ props })}
-              <Form.Label class="text-[16px] font-medium flex items-center">
-                <Emoji symbol="🔗" class="size-4 mr-1" />
-                Секретное слово?
-              </Form.Label>
-              <p class="text-[14px] mb-3">
-                Введи описание будущего неймспейса. Это наверняка поможет
-                пользователям найти твое сообщество ^^
-              </p>
-              <Textarea {...props} bind:value={$formData.secret_word} />
-            {/snippet}
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
-      {:else if currentStage === 3}
         <div class="flex flex-col justify-center items-center mb-6">
           <QRCode data="Hello World!" />
           <div class="text-center mt-6.5">
