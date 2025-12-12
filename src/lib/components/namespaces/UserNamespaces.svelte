@@ -1,5 +1,6 @@
 <script lang="ts">
   import { ArrowRight, ShieldUser, Shield } from '@lucide/svelte';
+  import { goto } from '$app/navigation';
 
   const {
     namespacesList,
@@ -54,7 +55,9 @@
             </p>
           </div>
         </div>
-        <ArrowRight class="size-5" />
+        <button onclick={() => goto('/community/namespace')}>
+          <ArrowRight class="size-5" />
+        </button>
       </div>
     {/if}
   {/each}
