@@ -3,8 +3,7 @@
   import type { Video } from '$lib/widgetTypes/widgetTypes';
   import test from '$lib/assets/DuckHello.png?h=100';
 
-  let { data, TestVideo = null }: { data: Video; TestVideo?: null | any } =
-    $props();
+  let { data }: { data: Video } = $props();
   let videId = getYouTubeVideoId(data.link);
 
   let url;
@@ -21,30 +20,17 @@
   }
 </script>
 
-{#if TestVideo}
-  <video
-    width="320"
-    height="256"
-    controls
-    poster={test}
-    class="w-[320px] h-[256px] object-cover"
-  >
-    <source src={TestVideo} type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
-{:else}
-  <button
-    class="TextBox"
-    onclick={() => window.Telegram.WebApp.openLink(data.link)}
-    aria-label="Видео"
-  >
-    <iframe
-      class="w-full aspect-video overflow-hidden pointer-events-none"
-      scrolling="no"
-      src={url}
-      title="Видео"
-      frameborder="0"
-      referrerpolicy="strict-origin-when-cross-origin"
-    ></iframe>
-  </button>
-{/if}
+<button
+  class="TextBox"
+  onclick={() => window.Telegram.WebApp.openLink(data.link)}
+  aria-label="Видео"
+>
+  <iframe
+    class="w-full aspect-video overflow-hidden pointer-events-none"
+    scrolling="no"
+    src={url}
+    title="Видео"
+    frameborder="0"
+    referrerpolicy="strict-origin-when-cross-origin"
+  ></iframe>
+</button>

@@ -9,7 +9,6 @@
   import DuckSoulsIcon from '$lib/assets/DuckSoulsIcon.jpg';
   import DuckHello from '$lib/assets/DuckHello.png';
   import DuckUmbrella from '$lib/assets/DuckUmbrella.png';
-  import MockVideo from '$lib/assets/Tudydydy.mp4';
   import {
     Audio,
     ToDo,
@@ -142,7 +141,7 @@
       widget: Video,
       data: {
         type: 'video',
-        link: MockVideo,
+        link: 'https://rutube.ru/video/c6cc4d620b1d4338901770a44b3e82f4/?r=wd',
         platform: 'Rutube',
       },
     },
@@ -188,27 +187,23 @@
               {widget.label}
             </span>
             {#if widget.type === 'photo'}
-              <div>
+              <div class="pointer-events-none">
                 <Component data={widget.data} isTestImage={true} />
               </div>
             {:else if widget.type === 'survey'}
-              <div>
+              <div class="pointer-events-none">
                 <Component
                   data={widget.data}
                   id={1}
                   survey={{
                     type: 'survey',
-                    stats: [0, 0],
-                    myVote: null,
+                    stats: [0, 1],
+                    myVote: 1,
                   }}
                 />
               </div>
-            {:else if widget.type === 'video'}
-              <div>
-                <Component data={widget.data} TestVideo={MockVideo} />
-              </div>
             {:else}
-              <div class={widget.type === 'todo' ? '' : 'pointer-events-none'}>
+              <div class="pointer-events-none">
                 <Component
                   data={widget.data}
                   socialMediaData={widget.additionalData}
