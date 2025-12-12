@@ -50,6 +50,11 @@
       Telegram.WebApp.MainButton.text = 'Закрыть';
       form.submit();
     }
+    if (currentStage > 2) {
+      Telegram.WebApp.MainButton.hide();
+      currentStage = 1;
+      isSheetOpen = false;
+    }
   });
 
   function onSheetOpenHandle() {
@@ -57,6 +62,7 @@
       text: 'Далее',
       is_active: false,
       color: Telegram.WebApp.themeParams.hint_color,
+      is_visible: true,
     });
   }
   function activateTgBtn() {
@@ -72,7 +78,6 @@
       color: Telegram.WebApp.themeParams.hint_color,
     });
   }
-  $inspect(isSheetOpen);
   let link = `https://t.me/share/url?url=${encodeURI('https://core.telegram.org/widgets/share')}&text=${encodeURI('hello world')}
            `;
 </script>
@@ -81,6 +86,7 @@
   bind:open={isSheetOpen}
   onOpenChange={(open) => {
     if (!open) {
+      Telegram.WebApp.MainButton.hide();
       currentStage = 1;
       isSheetOpen = false;
     }
