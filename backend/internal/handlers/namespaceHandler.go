@@ -48,14 +48,32 @@ type Match struct {
 func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey).(string)
 
-	r.ParseMultipartForm(FORM_SIZE_LIMIT)
-	namespace := r.PostFormValue("namespace")
+	parts := strings.Split(r.URL.Path, "/")
 
-	err := h.DB.Table("namespace_user").Create(map[string]interface{}{
+	namespace := parts[3]
+	r.ParseMultipartForm(FORM_SIZE_LIMIT)
+	invite_code := r.PostFormValue("invite_code")
+
+	var namespaceInviteCode database.NamespaceInvite
+
+	err := h.DB.Table("namespace_invite").First(&namespaceInviteCode, "namespace = ?", namespace).Error
+	if err != nil {
+		log.Printf("failed to find namespace code! %v", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	if invite_code != namespaceInviteCode.InviteCode {
+		log.Println("wrong invite code!")
+		http.Error(w, "internal server error", http.StatusForbidden)
+		return
+	}
+
+	err = h.DB.Table("user_namespace").Create(map[string]interface{}{
 		"namespace": namespace, "user": tgId,
 	}).Error
 	if err != nil {
-		log.Println("failed to enter namespace!")
+		log.Printf("failed to enter namespace! %v", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -73,10 +91,12 @@ func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request
 func (h *NamespaceHandler) LeaveNamespace(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey).(string)
 
-	namespace := r.URL.Query().Get("namespace")
+	parts := strings.Split(r.URL.Path, "/")
 
-	type NamespaceUser struct{}
-	err := h.DB.Delete(&NamespaceUser{}, "user = $1 AND namespace = $2", tgId, namespace).Error
+	namespace := parts[3]
+
+	// type UserNamespace struct{}
+	err := h.DB.Debug().Table("user_namespace").Where(`"user" = ? AND namespace = ?`, tgId, namespace).Delete(&struct{}{}).Error
 	if err != nil {
 		log.Println("failed to leave namespace")
 		http.Error(w, "internal server error", http.StatusInternalServerError)
@@ -121,7 +141,8 @@ func (h *NamespaceHandler) CreateNamespace(w http.ResponseWriter, r *http.Reques
 
 	namespaceId := uuid.NewString()
 
-	err = h.DB.Table("namespaces").Create(database.Namespace{
+	tx := h.DB.Begin()
+	err = tx.Table("namespaces").Create(database.Namespace{
 		Id:          namespaceId,
 		Title:       title,
 		Picture:     pictureBytes,
@@ -129,20 +150,23 @@ func (h *NamespaceHandler) CreateNamespace(w http.ResponseWriter, r *http.Reques
 		Admin:       tgId,
 	}).Error
 	if err != nil {
+		tx.Rollback()
 		log.Println("failed to create namespace!")
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	err = h.DB.Table("namespace_invite").Create(database.NamespaceInvite{
-		Id:         namespaceId,
-		InviteCode: randomstring.String(20),
+	err = tx.Table("namespace_invite").Create(database.NamespaceInvite{
+		Namespace:         namespaceId,
+		InviteCode: randomstring.CookieFriendlyString(20),
 	}).Error
 	if err != nil {
+		tx.Rollback()
 		log.Println("failed to create namespace invite code!")
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
+	tx.Commit();
 
 	w.Write([]byte(`namespace created`))
 	w.Write([]byte("\n\n"))
@@ -178,19 +202,18 @@ func (h *NamespaceHandler) UpdateNamespace(w http.ResponseWriter, r *http.Reques
 	title := r.PostFormValue("title")
 
 	picture, _, err := r.FormFile("photo")
+	var pictureBytes []byte
 	if err != nil {
-		log.Printf("failed to get file: %s", err.Error())
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-		return
+		log.Printf("no file file in form: %s", err.Error())
+	} else {
+		pictureBytes, err = io.ReadAll(picture)
+		if err != nil {
+			log.Printf("failed to read picture bytes: %s", err.Error())
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+		picture.Close()
 	}
-	pictureBytes, err := io.ReadAll(picture)
-	if err != nil {
-		log.Printf("failed to read picture bytes: %s", err.Error())
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	picture.Close()
 
 	description := r.PostFormValue("description")
 
@@ -222,9 +245,9 @@ func (h *NamespaceHandler) DeleteNamespace(w http.ResponseWriter, r *http.Reques
 
 	id := r.URL.Query().Get("id")
 	var namespace database.Namespace
-	err := h.DB.Table("namespaces").First(&namespace, "id = ?", id)
+	err := h.DB.Table("namespaces").First(&namespace, "id = ?", id).Error
 	if err != nil {
-		log.Println("failed to get namespace!")
+		log.Printf("failed to get namespace! %v", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -234,7 +257,7 @@ func (h *NamespaceHandler) DeleteNamespace(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = h.DB.Delete(namespace)
+	err = h.DB.Delete(namespace).Error
 	if err != nil {
 		log.Println("failed to get namespace!")
 		http.Error(w, "internal server error", http.StatusInternalServerError)

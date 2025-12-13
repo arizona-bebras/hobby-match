@@ -28,7 +28,7 @@ func (h *VoteHandler) Vote(w http.ResponseWriter, r *http.Request) {
 	survey := r.PostFormValue("survey")
 	option, err := strconv.Atoi(r.PostFormValue("option"))
 	if err != nil {
-		log.Println("failes to vote")
+		log.Println("failed to vote")
 		http.Error(w, "interbal server error", http.StatusInternalServerError)
 		return
 	}
