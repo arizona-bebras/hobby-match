@@ -56,6 +56,6 @@ type Namespace struct {
 
 // @Description Инвайт код для неймспейса
 type NamespaceInvite struct {
-	Id         string `json:"id" gorm:"column:id"`
+	Namespace  string `json:"namespace" gorm:"column:namespace"`
 	InviteCode string `json:"invite_code" gorm:"column:invite_code"`
 }
