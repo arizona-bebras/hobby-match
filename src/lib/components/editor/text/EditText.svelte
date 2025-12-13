@@ -8,7 +8,7 @@
   import * as Form from '$lib/components/ui/form';
   import { textSchema } from '$lib/components/editor/text/textSheme';
   import { superForm, defaults } from 'sveltekit-superforms';
-  import { zod, zodClient } from 'sveltekit-superforms/adapters';
+  import { zod, zod4, zodClient } from 'sveltekit-superforms/adapters';
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
@@ -24,9 +24,9 @@
   } = $props();
 
   let isLoading = $state(false);
-  const form = superForm(defaults(zod(textSchema)), {
+  const form = superForm(defaults(zod4(textSchema)), {
     SPA: true,
-    validators: zodClient(textSchema),
+    validators: zod4(textSchema),
     onSubmit: async () => {
       isLoading = true;
       const widget: Text = {

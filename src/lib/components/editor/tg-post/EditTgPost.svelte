@@ -1,6 +1,6 @@
 <script lang="ts">
   import { superForm, defaults } from 'sveltekit-superforms';
-  import { zod, zodClient } from 'sveltekit-superforms/adapters';
+  import { zod, zod4, zodClient } from 'sveltekit-superforms/adapters';
   import { postScheme } from '$lib/components/editor/tg-post/postSheme';
   import * as Sheet from '$lib/components/ui/sheet';
   import * as Form from '$lib/components/ui/form';
@@ -21,9 +21,9 @@
     widgetId?: string;
     onClose: CallableFunction;
   } = $props();
-  const form = superForm(defaults(zod(postScheme)), {
+  const form = superForm(defaults(zod4(postScheme)), {
     SPA: true,
-    validators: zodClient(postScheme),
+    validators: zod4(postScheme),
     onSubmit: async () => {
       isLoading = true;
       const widget = {

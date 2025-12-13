@@ -67,7 +67,10 @@
   <!--    <p class:text-accent={isSelected}>Нет</p>-->
   <!--  </div>-->
   {#each data.options as task, i}
-    <label class="flex items-center space-x-2">
+    <label
+      class="flex items-center space-x-2 relative"
+      onclick={(e) => e.stopPropagation()}
+    >
       <input
         type="radio"
         name={id}
@@ -78,7 +81,7 @@
         disabled={selected !== null}
       />
       <Check
-        class="absolute size-3.5 left-5.5 stroke-white invisible peer-checked:visible"
+        class="absolute size-3.5 left-1 stroke-white invisible peer-checked:visible"
       />
       <p class="peer-checked:text-accent">{task.description}</p>
       {#if selected !== null}

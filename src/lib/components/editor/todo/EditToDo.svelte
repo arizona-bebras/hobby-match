@@ -7,7 +7,7 @@
   import * as Form from '$lib/components/ui/form';
   import { Input } from '$lib/components/ui/input';
   import { superForm, defaults } from 'sveltekit-superforms';
-  import { zod, zodClient } from 'sveltekit-superforms/adapters';
+  import { zod, zod4, zodClient } from 'sveltekit-superforms/adapters';
   import { toDoScheme } from '$lib/components/editor/todo/toDoScheme';
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
@@ -24,9 +24,9 @@
     onClose: CallableFunction;
   } = $props();
 
-  const form = superForm(defaults(zod(toDoScheme)), {
+  const form = superForm(defaults(zod4(toDoScheme)), {
     SPA: true,
-    validators: zodClient(toDoScheme),
+    validators: zod4(toDoScheme),
     onSubmit: async () => {
       isLoading = true;
       const widget: Todo = {

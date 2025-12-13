@@ -9,7 +9,7 @@
 
 <div class="w-screen max-w-full h-screen flex flex-col">
   <div
-    class="flex-1 flex flex-col bg-background items-center text-text-color overflow-hidden"
+    class="flex-1 flex flex-col bg-background items-center text-text-color overflow-hidden font-[Inter]"
   >
     {@render children()}
   </div>

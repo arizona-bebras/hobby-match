@@ -7,7 +7,7 @@
   import { TriangleAlert } from '@lucide/svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
   import { defaults, superForm } from 'sveltekit-superforms';
-  import { zod, zodClient } from 'sveltekit-superforms/adapters';
+  import { zod, zod4, zodClient } from 'sveltekit-superforms/adapters';
   import { reasons, reportSchema } from '$lib/components/profile/reportSchema';
   import { Input } from '$lib/components/ui/input';
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';
@@ -22,9 +22,9 @@
     }
   });
 
-  const form = superForm(defaults(zod(reportSchema)), {
+  const form = superForm(defaults(zod4(reportSchema)), {
     SPA: true,
-    validators: zodClient(reportSchema),
+    validators: zod4(reportSchema),
     onSubmit: async () => {
       try {
         await pb.collection('reports').create({

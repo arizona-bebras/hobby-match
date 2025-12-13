@@ -87,7 +87,7 @@ get along, so we shut typescript up by casting `value` to `never`.
   type="single"
   weekdayFormat="short"
   locale="ru"
-  class={cn('bg-background w-[325px] rounded-md border p-3', className)}
+  class={cn('bg-background w-[325px] rounded-md p-3', className)}
   bind:value
   bind:placeholder
 >

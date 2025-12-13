@@ -3,7 +3,7 @@
   import * as Form from '$lib/components/ui/form';
   import { Input } from '$lib/components/ui/input';
   import { superForm, defaults } from 'sveltekit-superforms';
-  import { zod } from 'sveltekit-superforms/adapters';
+  import { zod, zod4 } from 'sveltekit-superforms/adapters';
   import { socialScheme } from '$lib/components/editor/social/socialScheme';
   import {
     createWidget,
@@ -26,9 +26,9 @@
   let isButtonActive = $state(false);
   let isLoading = $state(false);
 
-  const form = superForm(defaults(zod(socialScheme)), {
+  const form = superForm(defaults(zod4(socialScheme)), {
     SPA: true,
-    validators: zod(socialScheme),
+    validators: zod4(socialScheme),
     onSubmit: async () => {
       isLoading = true;
       const widget: SocialMediaLink = {

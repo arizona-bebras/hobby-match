@@ -2,7 +2,7 @@
   import * as Sheet from '$lib/components/ui/sheet';
   import { X } from '@lucide/svelte';
   import { superForm, defaults } from 'sveltekit-superforms';
-  import { zod } from 'sveltekit-superforms/adapters';
+  import { zod, zod4 } from 'sveltekit-superforms/adapters';
   import { imageScheme } from '$lib/components/editor/image/imageSheme';
   import {
     createWidget,
@@ -34,9 +34,9 @@
 
   let photoInput: HTMLInputElement;
   let isLoading = $state(false);
-  const form = superForm(defaults(zod(imageScheme)), {
+  const form = superForm(defaults(zod4(imageScheme)), {
     SPA: true,
-    validators: zod(imageScheme),
+    validators: zod4(imageScheme),
     onSubmit: async () => {
       isLoading = true;
       const widget = {

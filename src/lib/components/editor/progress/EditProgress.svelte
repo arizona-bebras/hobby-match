@@ -8,7 +8,7 @@
   import { Input } from '$lib/components/ui/input';
   import { progressScheme } from '$lib/components/editor/progress/progressScheme';
   import { superForm, defaults } from 'sveltekit-superforms';
-  import { zod, zodClient } from 'sveltekit-superforms/adapters';
+  import { zod, zod4, zodClient } from 'sveltekit-superforms/adapters';
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
@@ -23,9 +23,9 @@
     widgetId?: string;
   } = $props();
 
-  const form = superForm(defaults(zod(progressScheme)), {
+  const form = superForm(defaults(zod4(progressScheme)), {
     SPA: true,
-    validators: zodClient(progressScheme),
+    validators: zod4(progressScheme),
     onSubmit: async () => {
       isLoading = true;
       const widget: ProgressBar = {

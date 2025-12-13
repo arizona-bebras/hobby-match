@@ -8,7 +8,7 @@
   import * as Form from '$lib/components/ui/form';
   import { Input } from '$lib/components/ui/input';
   import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
-  import { zod, zodClient } from 'sveltekit-superforms/adapters';
+  import { zod, zod4, zodClient } from 'sveltekit-superforms/adapters';
   import * as Select from '$lib/components/ui/select';
   import { gameScheme } from '$lib/components/editor/steam-game/gameScheme';
   import { pb } from '$lib';
@@ -40,9 +40,9 @@
     }, 10);
   }
 
-  const form = superForm(defaults(zod(gameScheme)), {
+  const form = superForm(defaults(zod4(gameScheme)), {
     SPA: true,
-    validators: zodClient(gameScheme),
+    validators: zod4(gameScheme),
     onSubmit: async () => {
       isLoading = true;
       const widget: SteamGame = {

@@ -1,7 +1,9 @@
 <script lang="ts">
   import { getYouTubeVideoId } from '$lib/components/editor/video/videoSheme';
+  import type { Video } from '$lib/widgetTypes/widgetTypes';
+  import test from '$lib/assets/DuckHello.png?h=100';
 
-  let { data } = $props();
+  let { data }: { data: Video } = $props();
   let videId = getYouTubeVideoId(data.link);
 
   let url;

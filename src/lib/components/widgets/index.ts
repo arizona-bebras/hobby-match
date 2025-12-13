@@ -1,0 +1,12 @@
+export { default as Audio } from './AudioWidget.svelte';
+export { default as Game } from './GameWidget.svelte';
+export { default as Photo } from './PhotoWidget.svelte';
+export { default as Progress } from './ProgressWidget.svelte';
+export { default as Question } from './QuestionWidget.svelte';
+export { default as Social } from './SocialWidget.svelte';
+export { default as Sticker } from './StickerWidget.svelte';
+export { default as Survey } from './SurveyWidget.svelte';
+export { default as Text } from './TextWidget.svelte';
+export { default as TgPost } from './TgPostWidget.svelte';
+export { default as ToDo } from './ToDoWidget.svelte';
+export { default as Video } from './VideoWidget.svelte';
