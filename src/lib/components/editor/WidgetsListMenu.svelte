@@ -21,6 +21,7 @@
     Game,
     Video,
   } from '$lib/components/widgets/index';
+  console.log(DuckHello, DuckUmbrella)
   let {
     onClick,
     open = $bindable(),
@@ -68,9 +69,9 @@
       type: 'photo',
       label: 'Изображение',
       widget: Photo,
+      files: [DuckHello, DuckUmbrella],
       data: {
         type: 'photo',
-        urls: [DuckHello, DuckUmbrella],
       },
     },
     {
@@ -188,7 +189,7 @@
             </span>
             {#if widget.type === 'photo'}
               <div class="pointer-events-none">
-                <Component data={widget.data} isTestImage={true} />
+                <Component urls={widget.files} isTestImage={true} />
               </div>
             {:else if widget.type === 'survey'}
               <div class="pointer-events-none">

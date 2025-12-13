@@ -1,8 +1,9 @@
 <script lang="ts">
   import { Splide, SplideSlide } from '@splidejs/svelte-splide';
   import '@splidejs/svelte-splide/css';
-  let { urls }: { urls: string[] } = $props();
+  let { urls, isTestImage }: { urls: string[], isTestImage: boolean } = $props();
 
+  console.log($state.snapshot(urls))
 </script>
 
 {#key urls}
@@ -14,6 +15,17 @@
       classes: { page: 'opacity-100! splide__pagination__page ' },
     }}
   >
+  {#if isTestImage}
+    {#each urls as src, i}
+      <SplideSlide class="flex justify-center items-center">
+        <img
+          src = {`${src}`}
+          class="w-full aspect-video object-contain"
+          alt={`image ${i}`}
+        />
+      </SplideSlide>
+    {/each}
+  {:else}
     {#each urls as src, i}
       <SplideSlide class="flex justify-center items-center">
         <img
@@ -23,6 +35,7 @@
         />
       </SplideSlide>
     {/each}
+  {/if}
   </Splide>
 {/key}
 
