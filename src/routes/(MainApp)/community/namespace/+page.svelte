@@ -2,6 +2,7 @@
   import { ChevronRight, PencilLine } from '@lucide/svelte';
   import UserNamespaces from '$lib/components/namespaces/UserNamespaces.svelte';
   import NamespaceMembersLst from '$lib/components/namespaces/NamespaceMembersLst.svelte';
+  import type { NamespaceMembers } from '$lib/namespaceTypes';
 
   let testNameSpaceses = {
     img: 'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',
@@ -10,7 +11,7 @@
     is_admin: true,
   };
 
-  let namespaceUsers = [
+  let namespaceUsers: NamespaceMembers = [
     {
       img: 'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',
       username: 'Valera',
