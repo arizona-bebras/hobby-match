@@ -53,7 +53,7 @@ func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
         return
     }
 	var user database.User
-	result := h.DB.Model(&user).First(&user, "tg_id = ?", tgID)
+	result := h.DB.Model(&user).First(&user, "id = ?", tgID)
 	if result.Error != nil {
 		log.Printf("failed to get user: %s", result.Error.Error())
 		http.Error(w, "internal server error", http.StatusInternalServerError)
@@ -157,7 +157,7 @@ func (h *UserDataHandler) UpdateMyProfilePhoto(w http.ResponseWriter, r *http.Re
 
 	photoFile.Close()
 
-	result := h.DB.Table("users").Where("tg_id = ?", tgID).Select("photo").Updates(&map[string]interface{}{
+	result := h.DB.Table("users").Where("id = ?", tgID).Select("photo").Updates(&map[string]interface{}{
 		"photo": photoBytes,
 	})
 

@@ -270,7 +270,7 @@ func (h *NamespaceHandler) DeleteNamespace(w http.ResponseWriter, r *http.Reques
 
 func getUserById(tx *gorm.DB, id string) (database.User, error) {
 	var user database.User
-	result := tx.Table("users").First(&user, "tg_id = ?", id)
+	result := tx.Table("users").First(&user, "id = ?", id)
 	if result.Error != nil {
 		return user, fmt.Errorf("failed to get user: %s", result.Error.Error())
 	}
@@ -302,20 +302,20 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	q := `
       WITH user_view_dates AS (
             SELECT
-                u.tg_id AS user_id,
+                u.id AS user_id,
                 MAX(v.date) AS last_viewed
             FROM users u
                 LEFT JOIN views v
-                    ON v.page_owner = u.tg_id AND v.viewer = $1
+                    ON v.page_owner = u.id AND v.viewer = $1
 				INNER JOIN user_namespace un
-					ON un.user = u.tg_id AND un.namespace = $2
-            WHERE u.tg_id != $1
+					ON un.user = u.id AND un.namespace = $2
+            WHERE u.id != $1
               AND u.name != ''
               AND u.interests IS NOT NULL
-            GROUP BY u.tg_id
+            GROUP BY u.id
         ),
         total_users AS (
-            SELECT COUNT(*) AS total FROM users WHERE tg_id != $1
+            SELECT COUNT(*) AS total FROM users WHERE id != $1
         ),
         limited_users AS (
             SELECT * FROM user_view_dates 

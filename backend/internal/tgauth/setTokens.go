@@ -58,7 +58,7 @@ func (auth *AuthClient) SetTokens(w http.ResponseWriter, r *http.Request) {
 			log.Printf("TG ID %d", initData.User.ID)
 
 			var user database.User
-			result := auth.DB.Table("users").Take(&user, "tg_id = ?", strconv.FormatInt(initData.User.ID, 10))
+			result := auth.DB.Table("users").Take(&user, "id = ?", strconv.FormatInt(initData.User.ID, 10))
 			log.Printf("result %v", result.Error)
 			if result.Error != nil {
 				log.Println(result.Error)

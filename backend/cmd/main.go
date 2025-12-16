@@ -43,8 +43,9 @@ func main() {
 	log.Printf("prod: %v", prod)
 
 	dbPassword := os.Getenv("POSTGRESQL_PASSWORD")
+	dbAddress := os.Getenv("DB_ADDRESS")
 
-	dsn := fmt.Sprintf("host=db user=postgres password=%s dbname=shumi port=5432 sslmode=disable", dbPassword)
+	dsn := fmt.Sprintf("host=%s user=postgres password=%s dbname=shumi port=5432 sslmode=disable", dbAddress, dbPassword)
 	dbConnection, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
