@@ -1,18 +1,19 @@
-FROM golang as build
+FROM golang:1.24 AS builder
 
-WORKDIR /usr/src/app
+WORKDIR /backend
 
-# pre-copy/cache go.mod for pre-downloading dependencies and only redownloading them in subsequent builds if they change
-COPY go.mod go.sum ./
-RUN go mod download
+COPY go.mod go.sum /backend/
 
-COPY *.go .
-RUN go build -v -o /usr/local/bin/app ./...
+RUN go mod tidy
 
-WORKDIR /app
+COPY . /backend
 
-COPY pb_hooks /app/pb_hooks
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-s -w" -o /backend/server ./cmd/
+
+FROM scratch
 
 EXPOSE 8080
 
-CMD ["app", "serve", "--http=0.0.0.0:8080"]
+COPY --from=builder /backend/server /server
+
+ENTRYPOINT ["/server"]

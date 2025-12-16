@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
+      POSTGRES_DB: shumi
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  backend:
+    build: .
+    ports:
+      - "8090:8080"
+    environment:
+      DB_HOST: db
+      DB_USER: postgres
+      DB_NAME: shumi
+      DB_PORT: 5432
+      BOT_TOKEN: ${BOT_TOKEN}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SERCET: ${JWT_REFRESH_SERCET}
+      POSTGRESQL_PASSWORD: ${POSTGRESQL_PASSWORD}
+      WORKER_SECRET: ${WORKER_SECRET}
+      WORKER_ENDPOINT: ${WORKER_ENDPOINT}
+      CACHING_ENDPOINT: ${CACHING_ENDPOINT}
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY}
+      TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID}
+      TWITCH_TOKEN: ${TWITCH_TOKEN}
+      STEAM_API_KEY: ${STEAM_API_KEY}
+    depends_on:
+      - db    
+    command: ["/server", "-prod=true"]
+
+volumes:
+  postgres_data:

@@ -34,8 +34,8 @@ func (h *VoteHandler) Vote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vote := database.Vote{
-		User: tgID,
-		Survey: survey,
+		UserId: tgID,
+		WidgetId: survey,
 		Option: option,
 	}
 

@@ -5,36 +5,64 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"flag"
 
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
+	"shumi/internal/database"
 	"shumi/internal/handlers"
 	"shumi/internal/tgauth"
 
 	_ "shumi/docs"
+
 	httpSwagger "github.com/swaggo/http-swagger"
 )
+
 // @title Shumi API
 // @version 1.0
-// @description Отососи пидрила гнойная
+// @description Shumi API
 
 // @BasePath /api
 
 func main() {
-	err := godotenv.Load()
+	var prod bool
+	flag.BoolVar(&prod, "prod", false, "dev/prod")
+	flag.Parse()
+
+	if !prod {
+		err := godotenv.Load("../.env")
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println("env vars loaded!")
+	}
+
+	log.Printf("prod: %v", prod)
+
+	dbPassword := os.Getenv("POSTGRESQL_PASSWORD")
+
+	dsn := fmt.Sprintf("host=db user=postgres password=%s dbname=shumi port=5432 sslmode=disable", dbPassword)
+	dbConnection, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
 
-	dbPassword := os.Getenv("POSTGRESQL_PASSWORD")
-
-	dsn := fmt.Sprintf("host=localhost user=postgres password=%s dbname=shumi port=5432 sslmode=disable TimeZone=Asia/Yekaterinburg", dbPassword)
-	dbConnection, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	err = dbConnection.AutoMigrate(
+		&database.User{}, 
+		&database.TgUser{}, 
+		&database.Widget{}, 
+		&database.Namespace{}, 
+		&database.Vote{}, 
+		&database.Interest{},
+		&database.View{},
+		&database.NamespaceInvite{},
+		&database.UserNamespace{},
+	)
 	if err != nil {
-		panic(err)
+		log.Fatalf("failed to migrate %v", err)
 	}
 
 	auth := tgauth.AuthClient{

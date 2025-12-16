@@ -147,7 +147,7 @@ func (h *NamespaceHandler) CreateNamespace(w http.ResponseWriter, r *http.Reques
 		Title:       title,
 		Picture:     pictureBytes,
 		Description: description,
-		Admin:       tgId,
+		AdminId:       tgId,
 	}).Error
 	if err != nil {
 		tx.Rollback()
@@ -157,7 +157,7 @@ func (h *NamespaceHandler) CreateNamespace(w http.ResponseWriter, r *http.Reques
 	}
 
 	err = tx.Table("namespace_invite").Create(database.NamespaceInvite{
-		Namespace:         namespaceId,
+		NamespaceId:         namespaceId,
 		InviteCode: randomstring.CookieFriendlyString(20),
 	}).Error
 	if err != nil {
@@ -194,7 +194,7 @@ func (h *NamespaceHandler) UpdateNamespace(w http.ResponseWriter, r *http.Reques
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
-	if namespace.Admin != tgId {
+	if namespace.AdminId != tgId {
 		log.Println("access denied!")
 		http.Error(w, "you are not an admin", http.StatusForbidden)
 		return
@@ -251,7 +251,7 @@ func (h *NamespaceHandler) DeleteNamespace(w http.ResponseWriter, r *http.Reques
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
-	if namespace.Admin != tgId {
+	if namespace.AdminId != tgId {
 		log.Println("access denied!")
 		http.Error(w, "you are not an admin", http.StatusForbidden)
 		return

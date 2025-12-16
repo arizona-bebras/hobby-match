@@ -2,6 +2,7 @@ package database
 
 import (
 	"github.com/lib/pq"
+	// "gorm.io/gorm"
 )
 
 type contextKey string
@@ -9,53 +10,89 @@ type contextKey string
 const AuthContextKey = contextKey("TgID")
 
 type TgUser struct {
-	TgID        string `json:"id"`
-	TgUsername  string `json:"username"`
-	TgFirstname string `json:"firstname"`
+	UserId      string `json:"id" gorm:"primaryKey;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;column:id"`
+	TgUsername  string `json:"username" gorm:"column:username"`
+	TgFirstname string `json:"firstname" gorm:"column:firstname"`
 }
 
 // @Description Основные данные профиля и связанные виджеты.
 type User struct {
-	TgID      string         `json:"tg_user" gorm:"primaryKey;column:tg_id"`
-	Name      string         `json:"miniapp_name" gorm:"column:name"`
-	Location  string         `json:"location" gorm:"column:location"`
-	Gender    string         `json:"gender" gorm:"column:gender"`
-	BirthDate string         `json:"birth_date" gorm:"column:birth_date"`
-	Interests pq.StringArray `json:"interests" gorm:"type:text[];column:interests"`
-	Photo     []byte         `json:"user_photo" gorm:"column:photo"`
-	Info      string         `json:"user_info" gorm:"column:info"`
-	Widgets   []Widget       `json:"widgets" gorm:"-"`
+	Id            string         `json:"tg_user" gorm:"primaryKey;type:text;column:id"`
+	Name          string         `json:"miniapp_name" gorm:"column:name"`
+	Location      string         `json:"location" gorm:"column:location"`
+	Gender        string         `json:"gender" gorm:"column:gender"`
+	BirthDate     string         `json:"birth_date" gorm:"column:birth_date"`
+	Interests     pq.StringArray `json:"interests" gorm:"type:text[];column:interests"`
+	Photo         []byte         `json:"user_photo" gorm:"column:photo"`
+	Info          string         `json:"user_info" gorm:"column:info"`
+	Widgets       []Widget       `json:"widgets" gorm:"-"`
+	TgUser        TgUser
+	UserNamespace UserNamespace
+	Vote          Vote
 }
 
 // @Description Виджет
 type Widget struct {
 	Id             string        `json:"id" gorm:"primaryKey;column:id"`
-	User           string        `json:"user" gorm:"column:user;type:bigint"`
+	UserId         string        `json:"user" gorm:"column:user;type:text;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	User           User          `gorm:"foreignKey:UserId;references:Id"`
 	Order          int           `json:"order" gorm:"column:order"`
 	Files          pq.ByteaArray `json:"files" gorm:"type:bytea[];column:files"`
 	Data           string        `json:"data" gorm:"column:data"`
 	Namespace      string        `json:"namespace" gorm:"column:namespace"`
 	AdditionalData string        `json:"additionalData" gorm:"-"`
+	Vote           Vote
 }
 
 // @Description Голос в опросе
 type Vote struct {
-	User   string `json:"user" gorm:"column:user"`
-	Survey string `json:"survey" gorm:"column:survey"`
-	Option int    `json:"option" gorm:"column:option"`
+	UserId   string `json:"user" gorm:"column:user;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	WidgetId string `json:"survey" gorm:"column:survey;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Option   int    `json:"option" gorm:"column:option"`
 }
 
 // @Description Неймспейс
 type Namespace struct {
-	Id          string `json:"id" gorm:"primaryKey;column:id"`
-	Title       string `json:"title" gorm:"column:title"`
-	Picture     []byte `json:"picture" gorm:"column:picture"`
-	Description string `json:"description" gorm:"column:description"`
-	Admin       string `json:"admin" gorm:"column:admin"`
+	Id              string `json:"id" gorm:"primaryKey;column:id"`
+	Title           string `json:"title" gorm:"column:title"`
+	Picture         []byte `json:"picture" gorm:"column:picture"`
+	Description     string `json:"description" gorm:"column:description"`
+	AdminId         string `json:"admin" gorm:"column:admin_id"`
+	Admin           User   `gorm:"foreignKey:AdminId;references:Id"`
+	NamespaceInvite NamespaceInvite
+	UserNamespace   UserNamespace
 }
 
 // @Description Инвайт код для неймспейса
 type NamespaceInvite struct {
-	Namespace  string `json:"namespace" gorm:"column:namespace"`
-	InviteCode string `json:"invite_code" gorm:"column:invite_code"`
+	NamespaceId string `json:"namespace_id" gorm:"column:namespace;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	InviteCode  string `json:"invite_code" gorm:"column:invite_code"`
+}
+
+func (NamespaceInvite) TableName() string {
+	return "namespace_invite"
+}
+
+// @UserNamespace many-to-many Пользователь - Неймспейс + уникальня для неймспейса инфа
+type UserNamespace struct {
+	UserId      string `json:"user" gorm:"column:user_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	NamespaceId string `json:"namespace" gorm:"column:namespace_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+}
+
+func (UserNamespace) TableName() string {
+	return "user_namespace"
+}
+
+// @Interest Интерес
+type Interest struct {
+	Id  string `json:"id" gorm:"primaryKey;column:id"`
+	Tag string `json:"tag" gorm:"column:tag"`
+}
+
+type View struct {
+	ViewerId    string `json:"viewer"`
+	Viewer      User   `gorm:"foreignKey:ViewerId;references:Id"`
+	PageOwnerId string `json:"page_owner"`
+	PageOwner   User   `gorm:"foreignKey:PageOwnerId;references:Id"`
+	Date        string `json:"date"`
 }

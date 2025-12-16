@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { Base64 } from 'js-base64';
 
 export const createSchema = z.object({
   title: z

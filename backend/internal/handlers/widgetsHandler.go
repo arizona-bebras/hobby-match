@@ -59,7 +59,7 @@ func (h *UserDataHandler) CreateWidget(w http.ResponseWriter, r *http.Request) {
 
 	widget := database.Widget{
 		Id:    uuid.NewString(),
-		User:  TgID,
+		UserId:  TgID,
 		Order: 0,
 		Files: files,
 		Data:  data,

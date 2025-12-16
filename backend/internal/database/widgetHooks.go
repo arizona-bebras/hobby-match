@@ -43,7 +43,7 @@ type WidgetDataType struct {
 
 func (w *Widget) BeforeCreate(db *gorm.DB) error {
 	result := db.Table("widgets").
-		Where(`"user" = ?`, w.User).
+		Where(`"user" = ?`, w.UserId).
 		Update("order", gorm.Expr(`"order" + ?`, 1))
 
 	if result.Error != nil {
@@ -96,7 +96,7 @@ func (w *Widget) AfterFind(db *gorm.DB) error {
 				ORDER BY option ASC
 			)
 			SELECT * FROM vote_stats
-		`, w.Id, w.User).Scan(&results).Error
+		`, w.Id, w.UserId).Scan(&results).Error
 
 		if err != nil {
 			log.Printf("failed to get votes %v", err)
@@ -193,7 +193,7 @@ func (w *Widget) AfterFind(db *gorm.DB) error {
 func (w *Widget) BeforeDelete(db *gorm.DB) error {
 	log.Printf("widget: %v", w)
 	result := db.Debug().Table("widgets").
-		Where(`"user" = ? AND "order" > ?`, w.User, w.Order).
+		Where(`"user" = ? AND "order" > ?`, w.UserId, w.Order).
 		Update("order", gorm.Expr(`"order" - ?`, 1))
 
 	if result.Error != nil {

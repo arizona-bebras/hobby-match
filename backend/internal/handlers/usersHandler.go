@@ -109,7 +109,7 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 	var user database.User
 	log.Printf("GOT DATA %v", user)
 	err = json.Unmarshal(body, &user)
-	user.TgID = tgID.(string)
+	user.Id = tgID.(string)
 
 	log.Printf("%v", user)
 	log.Printf("%s", getStructFieldNames(user))

@@ -20,7 +20,7 @@ type UserVector struct {
 
 func upsertUser(user User) error {
 	userVector := UserVector {
-		Id: user.TgID,
+		Id: user.Id,
 		Interests: user.Interests,
 		Text: user.Info,
 	}
