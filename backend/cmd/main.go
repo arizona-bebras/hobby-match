@@ -83,7 +83,7 @@ func main() {
 	registerHandler := handlers.RegistrationHandler{
 		DB: dbConnection,
 	}
-	mux.Handle("/api/register", registerHandler)
+	mux.Handle("/api/registration/", registerHandler)
 
 	userDataHandler := handlers.UserDataHandler{
 		DB: dbConnection,

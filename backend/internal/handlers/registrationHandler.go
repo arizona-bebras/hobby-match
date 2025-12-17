@@ -1,8 +1,10 @@
 package handlers
 
 import (
-	"net/http"
+	"encoding/json"
+	"io"
 	"log"
+	"net/http"
 
 	"gorm.io/gorm"
 
@@ -13,10 +15,29 @@ type RegistrationHandler struct {
 	DB *gorm.DB
 }
 
+type RegisterData struct {
+	TgId      string `json:"tg_id"`
+	Username  string `json:"username"`
+	Firstname string `json:"firstname"`
+}
+
 func (h *RegistrationHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
-	r.ParseMultipartForm(5000000)
-	id := r.PostFormValue("id")
-	result := h.DB.Find(&database.User{}, "id = ?", id)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("failed to read body %v", err)
+		http.Error(w, "failed to read body", http.StatusInternalServerError)
+		return
+	}
+
+	var regData RegisterData
+	err = json.Unmarshal(body, &regData)
+	if err != nil {
+		log.Printf("failed to marshal reg data %v", err)
+		http.Error(w, "failed to marshal reg data", http.StatusInternalServerError)
+		return
+	}
+
+	result := h.DB.Find(&database.User{}, "id = ?", regData.TgId)
 	if result.Error != nil {
 		log.Printf("failed to find user %v", result.Error)
 		http.Error(w, "failed to find user", http.StatusInternalServerError)
@@ -30,8 +51,8 @@ func (h *RegistrationHandler) RegisterUser(w http.ResponseWriter, r *http.Reques
 	}
 
 	tx := h.DB.Begin()
-	err := tx.Create(&database.User{
-		Id: id,
+	err = tx.Create(&database.User{
+		Id: regData.TgId,
 	}).Error
 	if err != nil {
 		tx.Rollback()
@@ -41,9 +62,9 @@ func (h *RegistrationHandler) RegisterUser(w http.ResponseWriter, r *http.Reques
 	}
 
 	err = tx.Create(&database.TgUser{
-		UserId: id,
-		TgUsername: r.PostFormValue("username"),
-		TgFirstname: r.PostFormValue("firstname"),
+		UserId:      regData.TgId,
+		TgUsername:  regData.Username,
+		TgFirstname: regData.Firstname,
 	}).Error
 	if err != nil {
 		tx.Rollback()
@@ -58,7 +79,7 @@ func (h *RegistrationHandler) RegisterUser(w http.ResponseWriter, r *http.Reques
 }
 
 func (h RegistrationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
+	if r.Method == http.MethodPost {
 		h.RegisterUser(w, r)
 	}
 	http.Error(w, "method not allowed", http.StatusMethodNotAllowed)

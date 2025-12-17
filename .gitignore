@@ -1,6 +1,6 @@
 node_modules
 pocketbase
-venv
+.venv
 __pychache__
 backend/pb_data
 go.mod
