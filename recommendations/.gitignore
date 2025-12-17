@@ -28,7 +28,7 @@ lib-cov
 coverage
 \*.lcov
 
-# nyc test coverage
+# nyc api coverage
 
 .nyc_output
 
