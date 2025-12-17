@@ -2,8 +2,9 @@ import * as Sentry from '@sentry/sveltekit';
 import { pb } from '$lib/index';
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
-import { db } from '$lib/index'
+import { db } from '$lib/index';
 import Plausible from 'plausible-tracker';
+import { accessToken } from './lib/storage/accessToken.svelte';
 
 export const plausible = Plausible({
   domain: 'shumi.space',
@@ -26,43 +27,51 @@ if (browser) {
   //   plausible.enableAutoPageviews();
   // }
   window.Telegram.WebApp.disableVerticalSwipes();
-  fetch(`${db}/api/auth`, {
-    headers: {
-      "Authorization": `tma ${window.Telegram.WebApp.initData}`
-    },
-  }).then(async (res) => {
-    const data = await res.json()
-    const user = data.response.user
-    window.localStorage.setItem("access_token", data.response.access_token)
-    window.localStorage.setItem("refresh_token", data.response.refresh_token)
-    // try {
-    //   const ban = await pb.collection('bans').getFirstListItem('');
-    //   if (ban.reason) {
-    //     await goto(`/ban?reason=${encodeURIComponent(ban.reason)}`);
-    //   } else {
-    //     await goto(`/ban`);
-    //   }
-    //   return;
-    // } catch (_) {
-    //   // ok
-    // }
-    if (
-      !user.miniapp_name ||
-      !user.gender ||
-      !user.birth_date ||
-      !user.location ||
-      !user.user_info ||
-      !user.user_photo
-      // user.interests.length < 3
-    ) {
-      await goto('/registration');
-    } else if (window.location.pathname !== '/search') {
-      await goto('/profile');
-    }
-  })
-  .catch((error) => {
-    console.error("Fetch-запрос завершился ошибкой (сработал catch):", error);
-  });;
 }
 
-// export const handleError = Sentry.handleErrorWithSentry();
+//   const res = await fetch(`${db}/api/auth`, {
+//     headers: {
+//       Authorization: `tma ${window.Telegram.WebApp.initData}`,
+//     },
+//   });
+//
+//   const data = await res.json();
+//   const user = data.response.user;
+//   window.localStorage.setItem('access_token', data.response.access_token);
+//   window.localStorage.setItem('refresh_token', data.response.refresh_token);
+//   accessToken.current = 'O{SPAIKDOPAISDJAIOPDJWa';
+//   console.log('TOKEN CHANGE!');
+//   // try {
+//   //   const ban = await pb.collection('bans').getFirstListItem('');
+//   //   if (ban.reason) {
+//   //     await goto(`/ban?reason=${encodeURIComponent(ban.reason)}`);
+//   //   } else {
+//   //     await goto(`/ban`);
+//   //   }
+//   //   return;
+//   // } catch (_) {
+//   //   // ok
+//   // }
+//
+//   // if (
+//   //   !user.miniapp_name ||
+//   //   !user.gender ||
+//   //   !user.birth_date ||
+//   //   !user.location ||
+//   //   !user.user_info ||
+//   //   !user.user_photo
+//   //   // user.interests.length < 3
+//   // ) {
+//   //   await goto('/registration');
+//   // } else if (window.location.pathname !== '/search') {
+//   //   await goto('/profile');
+//   // }
+//
+//   // .then(
+//   // })
+//   // .catch((error) => {
+//   //   console.error('Fetch-запрос завершился ошибкой (сработал catch):', error);
+//   // });
+// }
+//
+// // export const handleError = Sentry.handleErrorWithSentry();
