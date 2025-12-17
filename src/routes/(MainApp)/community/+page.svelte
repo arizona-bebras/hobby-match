@@ -2,6 +2,11 @@
   import { Input } from '$lib/components/ui/input/index.js';
   import UserNamespaces from '$lib/components/namespaces/UserNamespaces.svelte';
   import CreateGroupBtn from '$lib/components/namespaces/CreateGroupBtn.svelte';
+  import { db } from '$lib';
+  import client from '$lib/api/client';
+  import { onMount } from 'svelte';
+  import { createQuery } from '@tanstack/svelte-query';
+  import { accessToken } from '$lib/storage/accessToken.svelte';
 
   let testNameSpaceses = [
     {
@@ -74,6 +79,11 @@
 
   let searchFilter = $state('');
   $inspect(searchFilter);
+  const aboba = createQuery(() => ({
+    queryKey: ['user'],
+    queryFn: async () => await client.GET('/api/me'),
+    select: (data) => data.data,
+  }));
 </script>
 
 <div class="p-4 w-full text-text-color">
