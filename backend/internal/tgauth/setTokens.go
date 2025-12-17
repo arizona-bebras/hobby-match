@@ -25,6 +25,16 @@ type TgAuthClaims struct {
 	jwt.RegisteredClaims
 }
 
+
+// SetTokens
+// @Summary Получить токен авторизации
+// @Produce json
+// @Param initData body string true "tma initData"
+// @Success 200 {string} string "Токен выдан"
+// @Failure 401 {string} string "Не валидный токен авторизации"
+// @Failure 403 {string} string "Пользователь не записан в базу данных"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /api/auth [post]
 func (auth *AuthClient) SetTokens(w http.ResponseWriter, r *http.Request) {
 	log.Println("Trying auth")
 	token := os.Getenv("BOT_TOKEN")

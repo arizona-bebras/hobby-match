@@ -15,6 +15,82 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/auth": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Получить токен авторизации",
+                "parameters": [
+                    {
+                        "description": "tma initData",
+                        "name": "initData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Токен выдан",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Не валидный токен авторизации",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Пользователь не записан в базу данных",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/games": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Игры пользователя из его steam профиля для виджета",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ссылка на профиль",
+                        "name": "link",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "JSON, содержащий список игр",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/me": {
             "get": {
                 "produces": [
@@ -587,9 +663,59 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/worker/autocomplete": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Предложенные пользователю интересы",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ввод пользователя",
+                        "name": "q",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.AutocompleteResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "database.TgUser": {
+            "type": "object",
+            "properties": {
+                "firstname": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "database.User": {
             "description": "Основные данные профиля и связанные виджеты.",
             "type": "object",
@@ -612,8 +738,14 @@ const docTemplate = `{
                 "miniapp_name": {
                     "type": "string"
                 },
+                "tgUser": {
+                    "$ref": "#/definitions/database.TgUser"
+                },
                 "tg_user": {
                     "type": "string"
+                },
+                "userNamespace": {
+                    "$ref": "#/definitions/database.UserNamespace"
                 },
                 "user_info": {
                     "type": "string"
@@ -624,11 +756,40 @@ const docTemplate = `{
                         "type": "integer"
                     }
                 },
+                "vote": {
+                    "$ref": "#/definitions/database.Vote"
+                },
                 "widgets": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/database.Widget"
                     }
+                }
+            }
+        },
+        "database.UserNamespace": {
+            "type": "object",
+            "properties": {
+                "namespace": {
+                    "type": "string"
+                },
+                "user": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.Vote": {
+            "description": "Голос в опросе",
+            "type": "object",
+            "properties": {
+                "option": {
+                    "type": "integer"
+                },
+                "survey": {
+                    "type": "string"
+                },
+                "user": {
+                    "type": "string"
                 }
             }
         },
@@ -662,7 +823,25 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "user": {
+                    "$ref": "#/definitions/database.User"
+                },
+                "vote": {
+                    "$ref": "#/definitions/database.Vote"
+                }
+            }
+        },
+        "handlers.AutocompleteResponse": {
+            "description": "Ответ autocomplete эндпоинта воркера.",
+            "type": "object",
+            "properties": {
+                "q": {
                     "type": "string"
+                },
+                "response": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         }
@@ -676,7 +855,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/api",
 	Schemes:          []string{},
 	Title:            "Shumi API",
-	Description:      "Отососи пидрила гнойная",
+	Description:      "Shumi API",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

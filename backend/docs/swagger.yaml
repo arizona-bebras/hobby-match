@@ -1,5 +1,14 @@
 basePath: /api
 definitions:
+  database.TgUser:
+    properties:
+      firstname:
+        type: string
+      id:
+        type: string
+      username:
+        type: string
+    type: object
   database.User:
     description: Основные данные профиля и связанные виджеты.
     properties:
@@ -17,16 +26,39 @@ definitions:
         type: string
       tg_user:
         type: string
+      tgUser:
+        $ref: '#/definitions/database.TgUser'
       user_info:
         type: string
       user_photo:
         items:
           type: integer
         type: array
+      userNamespace:
+        $ref: '#/definitions/database.UserNamespace'
+      vote:
+        $ref: '#/definitions/database.Vote'
       widgets:
         items:
           $ref: '#/definitions/database.Widget'
         type: array
+    type: object
+  database.UserNamespace:
+    properties:
+      namespace:
+        type: string
+      user:
+        type: string
+    type: object
+  database.Vote:
+    description: Голос в опросе
+    properties:
+      option:
+        type: integer
+      survey:
+        type: string
+      user:
+        type: string
     type: object
   database.Widget:
     description: Виджет
@@ -49,14 +81,75 @@ definitions:
       order:
         type: integer
       user:
+        $ref: '#/definitions/database.User'
+      vote:
+        $ref: '#/definitions/database.Vote'
+    type: object
+  handlers.AutocompleteResponse:
+    description: Ответ autocomplete эндпоинта воркера.
+    properties:
+      q:
         type: string
+      response:
+        items:
+          type: string
+        type: array
     type: object
 info:
   contact: {}
-  description: Отососи пидрила гнойная
+  description: Shumi API
   title: Shumi API
   version: "1.0"
 paths:
+  /api/auth:
+    post:
+      parameters:
+      - description: tma initData
+        in: body
+        name: initData
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Токен выдан
+          schema:
+            type: string
+        "401":
+          description: Не валидный токен авторизации
+          schema:
+            type: string
+        "403":
+          description: Пользователь не записан в базу данных
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Получить токен авторизации
+  /api/games:
+    get:
+      parameters:
+      - description: Ссылка на профиль
+        in: query
+        name: link
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: JSON, содержащий список игр
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Игры пользователя из его steam профиля для виджета
   /api/me:
     get:
       produces:
@@ -430,4 +523,27 @@ paths:
           schema:
             type: string
       summary: Проголосовать в опросе
+  /api/worker/autocomplete:
+    get:
+      parameters:
+      - description: Ввод пользователя
+        in: query
+        name: q
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.AutocompleteResponse'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Предложенные пользователю интересы
 swagger: "2.0"

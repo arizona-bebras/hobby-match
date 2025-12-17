@@ -18,12 +18,11 @@ type AutocompleteHandler struct {
 // Autocomplete
 // @Summary Предложенные пользователю интересы
 // @Produce json
-// @Param q string query false Ввод пользователя
+// @Param q query string false "Ввод пользователя"
 // @Success 200 {object} handlers.AutocompleteResponse
 // @Failure 401 {string} string "Ошибка авторизации"
 // @Failure 500 {string} string "Внутренняя ошибка сервера"
 // @Router /api/worker/autocomplete [get]
-
 func (_ *AutocompleteHandler) Autocomplete(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("query")
 	request, err := http.NewRequest("POST", fmt.Sprintf("%s/interests/query", os.Getenv("WORKER_ENDPOINT")), strings.NewReader(fmt.Sprintf(`{ "query": "%s" }`, q)))

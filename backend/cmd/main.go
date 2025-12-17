@@ -80,6 +80,11 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/auth", auth.SetTokens)
 
+	registerHandler := handlers.RegistrationHandler{
+		DB: dbConnection,
+	}
+	mux.Handle("/api/register", registerHandler)
+
 	userDataHandler := handlers.UserDataHandler{
 		DB: dbConnection,
 	}
