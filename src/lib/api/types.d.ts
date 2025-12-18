@@ -4,6 +4,122 @@
  */
 
 export interface paths {
+  '/api/auth': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Получить токен авторизации */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      /** @description tma initData */
+      requestBody: {
+        content: {
+          '*/*': string;
+        };
+      };
+      responses: {
+        /** @description Токен выдан */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': string;
+          };
+        };
+        /** @description Не валидный токен авторизации */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': string;
+          };
+        };
+        /** @description Пользователь не записан в базу данных */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': string;
+          };
+        };
+        /** @description Внутренняя ошибка сервера */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': string;
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/games': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Игры пользователя из его steam профиля для виджета */
+    get: {
+      parameters: {
+        query: {
+          /** @description Ссылка на профиль */
+          link: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description JSON, содержащий список игр */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': string;
+          };
+        };
+        /** @description Внутренняя ошибка сервера */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': string;
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/me': {
     parameters: {
       query?: never;
@@ -706,10 +822,72 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/worker/autocomplete': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Предложенные пользователю интересы */
+    get: {
+      parameters: {
+        query?: {
+          /** @description Ввод пользователя */
+          q?: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': components['schemas']['handlers.AutocompleteResponse'];
+          };
+        };
+        /** @description Ошибка авторизации */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': string;
+          };
+        };
+        /** @description Внутренняя ошибка сервера */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'application/json': string;
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    'database.TgUser': {
+      firstname?: string;
+      id?: string;
+      username?: string;
+    };
     /** @description Основные данные профиля и связанные виджеты. */
     'database.User': {
       birth_date?: string;
@@ -717,10 +895,23 @@ export interface components {
       interests?: string[];
       location?: string;
       miniapp_name?: string;
+      tgUser?: components['schemas']['database.TgUser'];
       tg_user?: string;
+      userNamespace?: components['schemas']['database.UserNamespace'];
       user_info?: string;
       user_photo?: number[];
+      vote?: components['schemas']['database.Vote'];
       widgets?: components['schemas']['database.Widget'][];
+    };
+    'database.UserNamespace': {
+      namespace?: string;
+      user?: string;
+    };
+    /** @description Голос в опросе */
+    'database.Vote': {
+      option?: number;
+      survey?: string;
+      user?: string;
     };
     /** @description Виджет */
     'database.Widget': {
@@ -730,7 +921,13 @@ export interface components {
       id?: string;
       namespace?: string;
       order?: number;
-      user?: string;
+      user?: components['schemas']['database.User'];
+      vote?: components['schemas']['database.Vote'];
+    };
+    /** @description Ответ autocomplete эндпоинта воркера. */
+    'handlers.AutocompleteResponse': {
+      q?: string;
+      response?: string[];
     };
   };
   responses: never;

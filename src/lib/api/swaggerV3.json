@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Shumi API",
-    "description": "Отососи пидрила гнойная",
+    "description": "Shumi API",
     "contact": {},
     "version": "1.0"
   },
@@ -12,6 +12,103 @@
     }
   ],
   "paths": {
+    "/api/auth": {
+      "post": {
+        "summary": "Получить токен авторизации",
+        "requestBody": {
+          "description": "tma initData",
+          "content": {
+            "*/*": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Токен выдан",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Не валидный токен авторизации",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Пользователь не записан в базу данных",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "initData"
+      }
+    },
+    "/api/games": {
+      "get": {
+        "summary": "Игры пользователя из его steam профиля для виджета",
+        "parameters": [
+          {
+            "name": "link",
+            "in": "query",
+            "description": "Ссылка на профиль",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON, содержащий список игр",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/me": {
       "get": {
         "summary": "Профиль пользователя",
@@ -704,10 +801,71 @@
           }
         }
       }
+    },
+    "/api/worker/autocomplete": {
+      "get": {
+        "summary": "Предложенные пользователю интересы",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Ввод пользователя",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/handlers.AutocompleteResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ошибка авторизации",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "database.TgUser": {
+        "type": "object",
+        "properties": {
+          "firstname": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        }
+      },
       "database.User": {
         "type": "object",
         "properties": {
@@ -729,8 +887,14 @@
           "miniapp_name": {
             "type": "string"
           },
+          "tgUser": {
+            "$ref": "#/components/schemas/database.TgUser"
+          },
           "tg_user": {
             "type": "string"
+          },
+          "userNamespace": {
+            "$ref": "#/components/schemas/database.UserNamespace"
           },
           "user_info": {
             "type": "string"
@@ -741,6 +905,9 @@
               "type": "integer"
             }
           },
+          "vote": {
+            "$ref": "#/components/schemas/database.Vote"
+          },
           "widgets": {
             "type": "array",
             "items": {
@@ -749,6 +916,32 @@
           }
         },
         "description": "Основные данные профиля и связанные виджеты."
+      },
+      "database.UserNamespace": {
+        "type": "object",
+        "properties": {
+          "namespace": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          }
+        }
+      },
+      "database.Vote": {
+        "type": "object",
+        "properties": {
+          "option": {
+            "type": "integer"
+          },
+          "survey": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          }
+        },
+        "description": "Голос в опросе"
       },
       "database.Widget": {
         "type": "object",
@@ -779,10 +972,28 @@
             "type": "integer"
           },
           "user": {
-            "type": "string"
+            "$ref": "#/components/schemas/database.User"
+          },
+          "vote": {
+            "$ref": "#/components/schemas/database.Vote"
           }
         },
         "description": "Виджет"
+      },
+      "handlers.AutocompleteResponse": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "type": "string"
+          },
+          "response": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "description": "Ответ autocomplete эндпоинта воркера."
       }
     }
   },
