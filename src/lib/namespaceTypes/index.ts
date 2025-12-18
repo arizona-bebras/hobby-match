@@ -1,4 +1,4 @@
-export type UserNamespaces = {
+export type UserNamespacesType = {
   img: string;
   title: string;
   amount_members: number;

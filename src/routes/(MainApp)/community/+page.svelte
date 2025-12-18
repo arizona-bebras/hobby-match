@@ -1,9 +1,10 @@
 <script lang="ts">
   import { Input } from '$lib/components/ui/input/index.js';
-  import { type UserNamespaces } from '$lib/namespaceTypes';
+  import { type UserNamespacesType } from '$lib/namespaceTypes';
   import CreateGroupBtn from '$lib/components/namespaces/CreateGroupBtn.svelte';
+  import UserNamespaces from '$lib/components/namespaces/UserNamespaces.svelte';
 
-  let testNameSpaceses: UserNamespaces = [
+  let testNameSpaceses: UserNamespacesType = [
     {
       img: '',
       title: 'Hello Lowder',

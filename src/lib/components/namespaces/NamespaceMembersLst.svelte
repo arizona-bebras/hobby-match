@@ -6,7 +6,7 @@
   const { users }: { users: object[] } = $props();
 </script>
 
-<div class="overflow-y-auto h-[calc(100vh-390px)] w-full">
+<div class="overflow-y-auto h-[calc(100vh-390px)] w-full text-text-color">
   {#each users as user (user.username)}
     <div
       class="flex py-1.5 items-center justify-between border-b-[2px] border-text-color/25"
