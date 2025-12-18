@@ -8,8 +8,6 @@
   import LoadingScreen from '$lib/components/search/LoadingScreen.svelte';
   import TransitionBlock from '$lib/components/search/TransitionBlock.svelte';
   import UserProfile from '$lib/components/search/UserProfile.svelte';
-  import NamespaceHeader from '$lib/components/profile/NamespaceHeader.svelte';
-  import { ScrollState } from 'runed';
 
   let { data }: { data: { page?: PageData } } = $props();
 
@@ -106,12 +104,7 @@
 
     return () => clearTimeout(timeout);
   });
-
-  const scroll = new ScrollState({
-    element: () => screenContainer,
-  });
   let isMoving = $state(false);
-  // $inspect(scroll.directions);
 </script>
 
 <div
@@ -169,17 +162,6 @@
       profileContainer.offsetHeight;
   }}
 >
-  <!--{#if scroll.directions.bottom}-->
-  <!--  <div class="w-full h-25 bg-lime-500 absolute">123</div>-->
-  <!--{/if}-->
-
-  <NamespaceHeader
-    scrollDirection={Object.keys(scroll.directions).find(
-      (key) => scroll.directions[key as keyof typeof scroll.directions],
-    ) as 'left' | 'right' | 'top' | 'bottom' | undefined}
-    scrollYPos={scroll.y}
-  />
-
   {#if offeredProfiles.length <= 0}
     <LoadingScreen />
   {:else}

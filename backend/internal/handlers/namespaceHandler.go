@@ -268,9 +268,23 @@ func (h *NamespaceHandler) DeleteNamespace(w http.ResponseWriter, r *http.Reques
 	w.Write([]byte("\n\n"))
 }
 
-func getUserById(tx *gorm.DB, id string) (database.User, error) {
-	var user database.User
-	result := tx.Table("users").First(&user, "id = ?", id)
+func getUserById(tx *gorm.DB, id string) (PageData, error) {
+	var user PageData
+	result := tx.Table("users").
+		Select(
+			"users.id", 
+			"users.name",
+			"users.location",
+			"users.gender",
+			"users.birth_date",
+			"users.interests",
+			"users.photo",
+			"users.info",
+			"users.hide",
+			"tg_users.username",
+		).
+		Joins("JOIN tg_users ON users.id = tg_users.id").
+		First(&user, "users.id = ?", id)
 	if result.Error != nil {
 		return user, fmt.Errorf("failed to get user: %s", result.Error.Error())
 	}
@@ -289,7 +303,7 @@ func getUserById(tx *gorm.DB, id string) (database.User, error) {
 // @Summary Получить ленту из анкет пользователей неймспейса
 // @Produce json
 // @Param id path string true "id неймспейса"
-// @Success 200 {array} database.User
+// @Success 200 {array} PageData
 // @Failure 500 {string} string "Внутренняя ошибка сервера"
 // @Router /api/namespace/{namespace_id} [get]
 func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
@@ -306,9 +320,9 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
                 MAX(v.date) AS last_viewed
             FROM users u
                 LEFT JOIN views v
-                    ON v.page_owner = u.id AND v.viewer = $1
+                    ON v.page_owner_id = u.id AND v.viewer_id = $1
 				INNER JOIN user_namespace un
-					ON un.user = u.id AND un.namespace = $2
+					ON un.user_id = u.id AND un.namespace_id = $2
             WHERE u.id != $1
               AND u.name != ''
               AND u.interests IS NOT NULL
@@ -316,15 +330,9 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
         ),
         total_users AS (
             SELECT COUNT(*) AS total FROM users WHERE id != $1
-        ),
-        limited_users AS (
-            SELECT * FROM user_view_dates 
-                     ORDER BY last_viewed
-                     ASC NULLS FIRST 
-                     LIMIT (
-                         SELECT LEAST(100, GREATEST(3, CAST(total * 0.2 AS INT))) FROM total_users
-                     )
-        ) SELECT * FROM limited_users;
+        ) 
+		SELECT * FROM user_view_dates
+		WHERE last_viewed IS NULL;
   `
 	err := h.DB.Raw(q, tgId, namespace).Scan(&viewsResp).Error
 	if err != nil {
@@ -387,7 +395,7 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 
 	matches := respJSON["matches"].([]interface{})
 
-	pages := []database.User{}
+	pages := []PageData{}
 	for _, match := range matches {
 		pageId, ok := match.(map[string]interface{})["id"].(string)
 		if !ok {

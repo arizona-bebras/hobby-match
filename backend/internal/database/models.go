@@ -27,9 +27,9 @@ type User struct {
 	Info          string         `json:"user_info" gorm:"column:info"`
 	Hide          bool           `json:"hide" gorm:"column:hide"`
 	Widgets       []Widget       `json:"widgets" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-	TgUser        TgUser         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	UserNamespace UserNamespace  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Vote          Vote           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	TgUser        TgUser         `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	UserNamespace UserNamespace  `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Vote          Vote           `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 // @Description Виджет
