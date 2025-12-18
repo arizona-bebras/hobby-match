@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as Sheet from '$lib/components/ui/sheet/index.js';
   import { ArrowRight, AlarmClock, CircleX } from '@lucide/svelte';
+  import { goto } from '$app/navigation';
 
   let testData = {
     img: 'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',
@@ -24,12 +25,13 @@
       </div>
     </div>
     <div class="first:rounded-t-xl last:rounded-b-xl">
-      <div
-        class="flex justify-between border-2 border-text-color/25 rounded-t-xl border-b-0 px-4 py-3 items-center"
+      <button
+        onclick={() => goto('/community/namespace/viewing')}
+        class="flex justify-between border-2 border-text-color/25 rounded-t-xl border-b-0 px-4 py-3 items-center w-full"
       >
-        <p class="w-full">Смотреть анкету</p>
+        <p class="">Смотреть анкету</p>
         <ArrowRight class="size-5" />
-      </div>
+      </button>
       <div
         class="flex justify-between border-2 border-text-color/25 px-4 py-3 items-center"
       >

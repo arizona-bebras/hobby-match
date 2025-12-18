@@ -13,8 +13,6 @@
   );
   let topLayer: boolean = $derived((scrollY.current ?? 0) > height);
   let topLayerContainer: HTMLDivElement | undefined = $state();
-  $inspect(data);
-  console.log(pb.files.getURL(data, data.user_photo));
 </script>
 
 {#if topLayer || changeMode}
