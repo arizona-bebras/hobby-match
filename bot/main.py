@@ -35,9 +35,24 @@ class ApiClient:
     """Класс-обертка для запросов к твоему бэкенду"""
 
     @staticmethod
+    async def get_user(tg_id: int) -> dict | None:
+        """GET запрос: проверяет наличие пользователя"""
+        url = f"{API_BASE_URL}/api/tg/"
+        async with aiohttp.ClientSession() as session:
+            try:
+                # Передаем tg_id как query parameter
+                async with session.get(url, params={ "id": tg_id }) as response:
+                    if response.status == 200:
+                        return await response.json(content_type='text/plain')
+                    return None
+            except Exception as e:
+                logger.error(f"Ошибка подключения к API (check_user): {e}")
+                return None
+
+    @staticmethod
     async def register_user(user_data: dict) -> int:
         """POST запрос: регистрация пользователя"""
-        url = f"{API_BASE_URL}/api/registration/"
+        url = f"{API_BASE_URL}/api/tg/"
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.post(url, json=user_data) as response:
@@ -50,10 +65,10 @@ class ApiClient:
     async def update_hide_status(tg_id: int, hide: bool) -> bool:
         """PATCH запрос: обновить статус видимости"""
         # Предполагаем, что есть эндпоинт для обновления по ID
-        url = f"{API_BASE_URL}/api/users/{tg_id}" 
+        url = f"{API_BASE_URL}/api/tg/" 
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.patch(url, json={"hide": hide}) as response:
+                async with session.patch(url, json={"hide": hide}, params={ "id": tg_id }) as response:
                     return response.status == 200
             except Exception as e:
                 logger.error(f"Ошибка API (update_hide_status): {e}")
@@ -62,10 +77,10 @@ class ApiClient:
     @staticmethod
     async def delete_user(tg_id: int) -> bool:
         """DELETE запрос: удалить пользователя"""
-        url = f"{API_BASE_URL}/api/users/{tg_id}"
+        url = f"{API_BASE_URL}/api/tg/"
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.delete(url) as response:
+                async with session.delete(url, params={ "id": tg_id }) as response:
                     return response.status in [200, 204]
             except Exception as e:
                 logger.error(f"Ошибка API (delete_user): {e}")
@@ -115,11 +130,11 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     tg_id = update.effective_chat.id
     
     # Получаем актуальные данные пользователя, чтобы узнать статус hide
-    user_data = await ApiClient.check_user(tg_id)
+    user_data = await ApiClient.get_user(tg_id)
     
     # Если база недоступна или юзера нет, отправляем на старт
     if not user_data:
-        await start(update, context)
+        await update.message.reply_text("Сначала нужно зарегестрироваться👀. Напиши /start")
         return ConversationHandler.END
 
     # Предполагаем, что API возвращает поле 'hide' или 'is_hidden'

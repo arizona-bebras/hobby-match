@@ -10,7 +10,7 @@ type contextKey string
 const AuthContextKey = contextKey("TgID")
 
 type TgUser struct {
-	UserId      string `json:"id" gorm:"primaryKey;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;column:id"`
+	UserId      string `json:"id" gorm:"primaryKey;column:id"`
 	TgUsername  string `json:"username" gorm:"column:username"`
 	TgFirstname string `json:"firstname" gorm:"column:firstname"`
 }
@@ -25,42 +25,43 @@ type User struct {
 	Interests     pq.StringArray `json:"interests" gorm:"type:text[];column:interests"`
 	Photo         []byte         `json:"user_photo" gorm:"column:photo"`
 	Info          string         `json:"user_info" gorm:"column:info"`
-	Widgets       []Widget       `json:"widgets" gorm:"-"`
-	TgUser        TgUser
-	UserNamespace UserNamespace
-	Vote          Vote
+	Hide          bool           `json:"hide" gorm:"column:hide"`
+	Widgets       []Widget       `json:"widgets" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	TgUser        TgUser         `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	UserNamespace UserNamespace  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Vote          Vote           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 // @Description Виджет
 type Widget struct {
 	Id             string        `json:"id" gorm:"primaryKey;column:id"`
-	UserId         string        `json:"user" gorm:"column:user;type:text;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	UserId         string        `json:"user" gorm:"column:user;type:text"`
 	User           User          `gorm:"foreignKey:UserId;references:Id"`
 	Order          int           `json:"order" gorm:"column:order"`
 	Files          pq.ByteaArray `json:"files" gorm:"type:bytea[];column:files"`
 	Data           string        `json:"data" gorm:"column:data"`
 	Namespace      string        `json:"namespace" gorm:"column:namespace"`
 	AdditionalData string        `json:"additionalData" gorm:"-"`
-	Vote           Vote
+	Vote           Vote          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 // @Description Голос в опросе
 type Vote struct {
-	UserId   string `json:"user" gorm:"column:user;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-	WidgetId string `json:"survey" gorm:"column:survey;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	UserId   string `json:"user" gorm:"column:user;"`
+	WidgetId string `json:"survey" gorm:"column:survey;"`
 	Option   int    `json:"option" gorm:"column:option"`
 }
 
 // @Description Неймспейс
 type Namespace struct {
-	Id              string `json:"id" gorm:"primaryKey;column:id"`
-	Title           string `json:"title" gorm:"column:title"`
-	Picture         []byte `json:"picture" gorm:"column:picture"`
-	Description     string `json:"description" gorm:"column:description"`
-	AdminId         string `json:"admin" gorm:"column:admin_id"`
-	Admin           User   `gorm:"foreignKey:AdminId;references:Id"`
-	NamespaceInvite NamespaceInvite
-	UserNamespace   UserNamespace
+	Id              string          `json:"id" gorm:"primaryKey;column:id"`
+	Title           string          `json:"title" gorm:"column:title"`
+	Picture         []byte          `json:"picture" gorm:"column:picture"`
+	Description     string          `json:"description" gorm:"column:description"`
+	AdminId         string          `json:"admin" gorm:"column:admin_id"`
+	Admin           User            `gorm:"foreignKey:AdminId;references:Id"`
+	NamespaceInvite NamespaceInvite `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	UserNamespace   UserNamespace   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 // @Description Инвайт код для неймспейса
@@ -75,8 +76,8 @@ func (NamespaceInvite) TableName() string {
 
 // @UserNamespace many-to-many Пользователь - Неймспейс + уникальня для неймспейса инфа
 type UserNamespace struct {
-	UserId      string `json:"user" gorm:"column:user_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-	NamespaceId string `json:"namespace" gorm:"column:namespace_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	UserId      string `json:"user" gorm:"column:user_id"`
+	NamespaceId string `json:"namespace" gorm:"column:namespace_id"`
 }
 
 func (UserNamespace) TableName() string {
