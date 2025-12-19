@@ -65,7 +65,7 @@ func (h *TgUsersHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 // @Param id body string true "tg id пользователя"
 // @Param username body string true "tg username пользователя"
 // @Param firstname body string true "tg firstname пользователя"
-// @Success 200 {object} database.User
+// @Success 200 {object} nil
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/tg [post]
 func (h *TgUsersHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
@@ -163,16 +163,13 @@ func (h *TgUsersHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tx.Commit()
-
-	w.Write([]byte("user registred"))
-	w.Write([]byte("\n\n"))
 }
 
 // UpdateHideStatus
 // @Summary Скрыть/показывать анкету другим пользователям
 // @Produce json
 // @Param id query string true "id пользователя"
-// @Success 200 {object} database.User
+// @Success 200 {object} nil
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/tg [patch]
 func (h *TgUsersHandler) UpdateHideStatus(w http.ResponseWriter, r *http.Request) {
@@ -213,16 +210,13 @@ func (h *TgUsersHandler) UpdateHideStatus(w http.ResponseWriter, r *http.Request
 	}
 
 	tx.Commit()
-
-	w.Write([]byte("hide status updated"))
-	w.Write([]byte("\n\n"))
 }
 
-// UpdateHideStatus
+// DeleteUser
 // @Summary Скрыть/показывать анкету другим пользователям
 // @Produce json
 // @Param id query string true "id пользователя"
-// @Success 200 {object} database.User
+// @Success 200 {object} nil
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/tg [delete]
 func (h *TgUsersHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
@@ -243,9 +237,6 @@ func (h *TgUsersHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-
-	w.Write([]byte("user deleted"))
-	w.Write([]byte("\n\n"))
 }
 
 func (h TgUsersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

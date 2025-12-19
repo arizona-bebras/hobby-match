@@ -83,7 +83,6 @@ func (h *GamesHandler) GetGames(w http.ResponseWriter, r *http.Request) {
 	resp.Body.Close()
 
 	w.Write([]byte(fmt.Sprintf("%s", string(body))))
-	w.Write([]byte("\n\n"))
 }
 
 func (h GamesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

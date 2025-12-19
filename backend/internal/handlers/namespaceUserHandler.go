@@ -37,7 +37,7 @@ type Match struct {
 // @Accept multipart/form-data
 // @Param namespace formData string true "id неймспейса"
 // @Param invite_code formData string true "инвайт код для входа в неймспейс"
-// @Success 200 {string} string "Успешный вход"
+// @Success 200 {object} nil "Успешный вход"
 // @Failure 403 {object} database.Error "Неверный код входа"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/namespace/{namespace_id} [post]
@@ -92,15 +92,12 @@ func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request
 		)
 		return
 	}
-
-	w.Write([]byte("you entered namespace"))
-	w.Write([]byte("\n\n"))
 }
 
 // EnterNamespace
 // @Summary Выйти из неймспейса
 // @Param namespace query string true "id неймспейса"
-// @Success 200 {string} string "Успешный вход"
+// @Success 200 {object} nil "Успешный вход"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/namespace/{namespace_id} [delete]
 func (h *NamespaceHandler) LeaveNamespace(w http.ResponseWriter, r *http.Request) {
@@ -122,9 +119,6 @@ func (h *NamespaceHandler) LeaveNamespace(w http.ResponseWriter, r *http.Request
 		)
 		return
 	}
-
-	w.Write([]byte("you leaved namespace"))
-	w.Write([]byte("\n\n"))
 }
 
 func getUserById(tx *gorm.DB, id string) (PageData, error) {
@@ -341,7 +335,6 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(pagesJSON)
-	w.Write([]byte("\n\n"))
 }
 
 func (h NamespaceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

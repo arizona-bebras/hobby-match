@@ -175,10 +175,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Пользователь успешно обновлен",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Пользователь успешно обновлен"
                     },
                     "401": {
                         "description": "Пользователь не авторизован",
@@ -216,10 +213,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Пользователь успешно обновлен",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Пользователь успешно обновлен"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
@@ -437,10 +431,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Неймспейс успешно обновлен",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Неймспейс успешно обновлен"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
@@ -480,10 +471,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Неймспейс успешно создан",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Неймспейс успешно создан"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
@@ -506,10 +494,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Неймспейс успешно удален",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Неймспейс успешно удален"
                     },
                     "403": {
                         "description": "Этот пользователь не админ неймспейса",
@@ -582,10 +567,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Успешный вход",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Успешный вход"
                     },
                     "403": {
                         "description": "Неверный код входа",
@@ -614,10 +596,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Успешный вход",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Успешный вход"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
@@ -697,10 +676,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/database.User"
-                        }
+                        "description": "OK"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
@@ -726,10 +702,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/database.User"
-                        }
+                        "description": "OK"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
@@ -755,10 +728,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/database.User"
-                        }
+                        "description": "OK"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
@@ -791,10 +761,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Голос засчитан",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Голос засчитан"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",

@@ -107,7 +107,6 @@ func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(userJSON)
-	w.Write([]byte("\n\n"))
 }
 
 // UpdateMyProfileInfo
@@ -119,7 +118,7 @@ func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 // @Param birth_date body string false "Дата рождения пользователя"
 // @Param info body string false "Информация о пользователе"
 // @Param interests body array false "Интересы о пользователе"
-// @Success 200 {string} string "Пользователь успешно обновлен"
+// @Success 200 {object} nil "Пользователь успешно обновлен"
 // @Failure 401 {object} database.Error "Пользователь не авторизован"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/me [post]
@@ -170,16 +169,13 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 		)
 		return
 	}
-
-	w.Write([]byte("user updated"))
-	w.Write([]byte("\n\n"))
 }
 
 // UpdateMyProfilePhoto
 // @Summary Обновить информацию профиля пользователя
 // @Accept json
 // @Param user_photo body []byte false "Фото пользователя"
-// @Success 200 {string} string "Пользователь успешно обновлен"
+// @Success 200 {object} nil "Пользователь успешно обновлен"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/me/photo [post]
 func (h *UserDataHandler) UpdateMyProfilePhoto(w http.ResponseWriter, r *http.Request) {
@@ -231,10 +227,6 @@ func (h *UserDataHandler) UpdateMyProfilePhoto(w http.ResponseWriter, r *http.Re
 		)
 		return
 	}
-
-
-	w.Write([]byte("user updated"))
-	w.Write([]byte("\n\n"))
 }
 
 func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

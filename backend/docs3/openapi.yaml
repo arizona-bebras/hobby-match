@@ -52,6 +52,8 @@ paths:
         in: query
         description: Ссылка на профиль
         required: true
+        style: form
+        explode: true
         schema:
           type: string
       responses:
@@ -103,10 +105,7 @@ paths:
       responses:
         '200':
           description: Пользователь успешно обновлен
-          content:
-            "*/*":
-              schema:
-                type: string
+          content: {}
         '401':
           description: Пользователь не авторизован
           content:
@@ -135,10 +134,7 @@ paths:
       responses:
         '200':
           description: Пользователь успешно обновлен
-          content:
-            "*/*":
-              schema:
-                type: string
+          content: {}
         '500':
           description: Внутренняя ошибка сервера
           content:
@@ -196,11 +192,14 @@ paths:
                   items:
                     type: integer
                     format: int32
-                items:
+                files:
                   type: array
+                  description: Файлы виджета
                   items:
-                    type: integer
-                    format: int32
+                    type: array
+                    items:
+                      type: integer
+                      format: int32
       responses:
         '200':
           description: Виджет успешно создан
@@ -221,6 +220,8 @@ paths:
         in: query
         description: id виджета
         required: true
+        style: form
+        explode: true
         schema:
           type: string
       responses:
@@ -277,12 +278,16 @@ paths:
         in: query
         description: id виджета
         required: true
+        style: form
+        explode: true
         schema:
           type: string
       - name: index
         in: query
         description: Позиция фото в списке
         required: true
+        style: form
+        explode: true
         schema:
           type: integer
       responses:
@@ -320,10 +325,7 @@ paths:
       responses:
         '200':
           description: Неймспейс успешно обновлен
-          content:
-            "*/*":
-              schema:
-                type: string
+          content: {}
         '500':
           description: Внутренняя ошибка сервера
           content:
@@ -356,10 +358,7 @@ paths:
       responses:
         '200':
           description: Неймспейс успешно создан
-          content:
-            "*/*":
-              schema:
-                type: string
+          content: {}
         '500':
           description: Внутренняя ошибка сервера
           content:
@@ -373,15 +372,14 @@ paths:
         in: query
         description: Название неймспейса
         required: true
+        style: form
+        explode: true
         schema:
           type: string
       responses:
         '200':
           description: Неймспейс успешно удален
-          content:
-            "*/*":
-              schema:
-                type: string
+          content: {}
         '403':
           description: Этот пользователь не админ неймспейса
           content:
@@ -402,6 +400,8 @@ paths:
         in: path
         description: id неймспейса
         required: true
+        style: simple
+        explode: false
         schema:
           type: string
       responses:
@@ -440,10 +440,7 @@ paths:
       responses:
         '200':
           description: Успешный вход
-          content:
-            "*/*":
-              schema:
-                type: string
+          content: {}
         '403':
           description: Неверный код входа
           content:
@@ -463,15 +460,14 @@ paths:
         in: query
         description: id неймспейса
         required: true
+        style: form
+        explode: true
         schema:
           type: string
       responses:
         '200':
           description: Успешный вход
-          content:
-            "*/*":
-              schema:
-                type: string
+          content: {}
         '500':
           description: Внутренняя ошибка сервера
           content:
@@ -486,6 +482,8 @@ paths:
         in: query
         description: id пользователя
         required: true
+        style: form
+        explode: true
         schema:
           type: string
       responses:
@@ -504,7 +502,7 @@ paths:
               schema:
                 "$ref": "#/components/schemas/database.Error"
     post:
-      summary: Регистрация пользователя
+      summary: Проверить существование пользователя в бд
       requestBody:
         description: tg firstname пользователя
         content:
@@ -515,10 +513,7 @@ paths:
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/database.User"
+          content: {}
         '500':
           description: Внутренняя ошибка сервера
           content:
@@ -527,21 +522,20 @@ paths:
                 "$ref": "#/components/schemas/database.Error"
       x-codegen-request-body-name: firstname
     delete:
-      summary: Удаления пользователя
+      summary: Скрыть/показывать анкету другим пользователям
       parameters:
       - name: id
         in: query
         description: id пользователя
         required: true
+        style: form
+        explode: true
         schema:
           type: string
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/database.User"
+          content: {}
         '500':
           description: Внутренняя ошибка сервера
           content:
@@ -555,15 +549,14 @@ paths:
         in: query
         description: id пользователя
         required: true
+        style: form
+        explode: true
         schema:
           type: string
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/database.User"
+          content: {}
         '500':
           description: Внутренняя ошибка сервера
           content:
@@ -588,10 +581,7 @@ paths:
       responses:
         '200':
           description: Голос засчитан
-          content:
-            "*/*":
-              schema:
-                type: string
+          content: {}
         '500':
           description: Внутренняя ошибка сервера
           content:
@@ -605,6 +595,9 @@ paths:
       - name: q
         in: query
         description: Ввод пользователя
+        required: false
+        style: form
+        explode: true
         schema:
           type: string
       responses:

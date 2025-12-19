@@ -22,7 +22,7 @@ type NamespaceAdminHandler struct {
 // @Param title formData string true "Название неймспейса"
 // @Param photo formData file true "Картинка неймспейса"
 // @Param description formData string true "Описание неймспейса"
-// @Success 200 {string} string "Неймспейс успешно создан"
+// @Success 200 {object} nil "Неймспейс успешно создан"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/namespace [post]
 func (h *NamespaceAdminHandler) CreateNamespace(w http.ResponseWriter, r *http.Request) {
@@ -104,9 +104,6 @@ func (h *NamespaceAdminHandler) CreateNamespace(w http.ResponseWriter, r *http.R
 		return
 	}
 	tx.Commit();
-
-	w.Write([]byte("namespace created"))
-	w.Write([]byte("\n\n"))
 }
 
 // UpdateNamespace
@@ -115,7 +112,7 @@ func (h *NamespaceAdminHandler) CreateNamespace(w http.ResponseWriter, r *http.R
 // @Param title formData string false "Название неймспейса"
 // @Param photo formData file false "Картинка неймспейса"
 // @Param description formData string false "Описание неймспейса"
-// @Success 200 {string} string "Неймспейс успешно обновлен"
+// @Success 200 {object} nil "Неймспейс успешно обновлен"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/namespace [put]
 func (h *NamespaceAdminHandler) UpdateNamespace(w http.ResponseWriter, r *http.Request) {
@@ -193,15 +190,12 @@ func (h *NamespaceAdminHandler) UpdateNamespace(w http.ResponseWriter, r *http.R
 			)
 		return
 	}
-
-	w.Write([]byte("namespace updated"))
-	w.Write([]byte("\n\n"))
 }
 
 // DeleteNamespace
 // @Summary Удалить неймспейс
 // @Param id query string true "Название неймспейса"
-// @Success 200 {string} string "Неймспейс успешно удален"
+// @Success 200 {object} nil "Неймспейс успешно удален"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Failure 403 {object} database.Error "Этот пользователь не админ неймспейса"
 // @Router /api/namespace [delete]
@@ -249,9 +243,6 @@ func (h *NamespaceAdminHandler) DeleteNamespace(w http.ResponseWriter, r *http.R
 		)
 		return
 	}
-
-	w.Write([]byte("namespace deleted"))
-	w.Write([]byte("\n\n"))
 }
 
 func (h NamespaceAdminHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

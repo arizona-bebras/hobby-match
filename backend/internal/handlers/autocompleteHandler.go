@@ -70,7 +70,6 @@ func (_ *AutocompleteHandler) Autocomplete(w http.ResponseWriter, r *http.Reques
 	}
 
 	w.Write([]byte(fmt.Sprintf(`{ "query": "%s", "response": %s}`, q, string(body))))
-	w.Write([]byte("\n\n"))
 }
 
 func (h AutocompleteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

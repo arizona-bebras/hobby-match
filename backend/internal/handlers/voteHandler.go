@@ -19,7 +19,7 @@ type VoteHandler struct {
 // @Accept multipart/form-data
 // @Param survey formData string false "id виджета опроса"
 // @Param option formData string false "вариант опроса"
-// @Success 200 {string} string "Голос засчитан"
+// @Success 200 {object} nil "Голос засчитан"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/vote [post]
 func (h *VoteHandler) Vote(w http.ResponseWriter, r *http.Request) {
@@ -53,9 +53,6 @@ func (h *VoteHandler) Vote(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-
-	w.Write([]byte("voted"))
-	w.Write([]byte("\n\n"))
 }
 
 func (h VoteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
