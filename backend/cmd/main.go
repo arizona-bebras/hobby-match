@@ -72,7 +72,7 @@ func main() {
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"https://qh5zm0g8-5173.euw.devtunnels.ms", "http://192.168.1.156:5173", "http://127.0.0.1:8080"},
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
 		AllowedHeaders: []string{"Authorization", "Content-Type"},
 		Debug:          true,
 	})
@@ -80,10 +80,10 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/auth", auth.SetTokens)
 
-	registerHandler := handlers.RegistrationHandler{
+	registerHandler := handlers.TgUsersHandler{
 		DB: dbConnection,
 	}
-	mux.Handle("/api/registration/", registerHandler)
+	mux.Handle("/api/tg/", registerHandler)
 
 	userDataHandler := handlers.UserDataHandler{
 		DB: dbConnection,
