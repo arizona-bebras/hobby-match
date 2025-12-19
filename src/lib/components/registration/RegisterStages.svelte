@@ -20,7 +20,7 @@
           setCurrentStage(stage.title);
         }
       }}
-      class="border-t-2 w-1/3 p-2.5 {stage.isCurrentStage
+      class="border-t-2 w-1/3 py-2.5 {stage.isCurrentStage
         ? 'text-accent font-bold'
         : stage.isComplete
           ? 'text-accent/50'

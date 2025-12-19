@@ -12,7 +12,7 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
   },
   "devDependencies": {
-    "@internationalized/date": "^3.8.0",
+    "@internationalized/date": "^3.10.0",
     "@lucide/svelte": "^0.503.0",
     "@skeletonlabs/skeleton": "^3.1.0",
     "@skeletonlabs/skeleton-svelte": "^1.0.0",
@@ -22,7 +22,7 @@
     "@tailwindcss/postcss": "^4.1.8",
     "@types/siema": "^1.4.11",
     "@types/telegram-web-app": "^7.10.1",
-    "bits-ui": "^1.4.6",
+    "bits-ui": "^1.8.0",
     "clsx": "^2.1.1",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",

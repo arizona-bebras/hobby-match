@@ -14,7 +14,7 @@
   import { zodClient } from 'sveltekit-superforms/adapters';
   import { onDestroy } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
-  import { updatePhoto } from '$lib/components/registration/';
+  import { type Stages, updatePhoto } from '$lib/components/registration/';
   // import { BOT_TOKEN } from '$env/static/private';
   let fileInput: HTMLInputElement;
   let tgImage = window.Telegram.WebApp.initDataUnsafe.user?.photo_url;
@@ -25,17 +25,19 @@
     markStageComplete,
   }: {
     form: SuperValidated<Infer<FormSchema>>;
-    setCurrentStage: (stage: string) => void;
-    markStageComplete: (stage: 'Информация' | 'Фото' | 'Интересы') => void;
+    setCurrentStage: (stage: Stages) => void;
+    markStageComplete: (stage: Stages) => void;
   } = $props();
 
   export async function save(): Promise<boolean> {
     if (!hasPhoto || formValid) {
       window.Telegram.WebApp.MainButton.showProgress();
-      console.log($formData)
-      const res = await updatePhoto($formData).finally(window.Telegram.WebApp.MainButton.hideProgress)
+      console.log($formData);
+      const res = await updatePhoto($formData).finally(
+        window.Telegram.WebApp.MainButton.hideProgress,
+      );
       if (res != 200) {
-        console.log('failed to update user data')
+        console.log('failed to update user data');
         return false;
       }
       return true;
@@ -55,7 +57,7 @@
   async function handleTelegramButtonClick() {
     if (!(await save())) {
       markStageComplete('Фото');
-      setCurrentStage('Интересы');
+      setCurrentStage('Тест');
     }
   }
 
@@ -130,7 +132,7 @@
       type="button"
       onclick={async () => {
         // const tgPhotoFile = await fetch(`https://api.telegram.org/file/bot${BOT_TOKEN}/${tgImage}`)
-        $formData.user_photo = tgImage ?? ''
+        $formData.user_photo = tgImage ?? '';
       }}
       class="w-full h-12 bg-accent rounded-xl text-white font-medium"
       >Взять текущую фотографию из Telegram</button
