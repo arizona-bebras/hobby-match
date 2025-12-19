@@ -3,6 +3,8 @@
   import UserNamespaces from '$lib/components/namespaces/UserNamespaces.svelte';
   import NamespaceMembersLst from '$lib/components/namespaces/NamespaceMembersLst.svelte';
   import type { NamespaceMembers } from '$lib/namespaceTypes';
+  import { getCorrectForm } from '$lib/utils';
+  import client from '$lib/api/client';
 
   let testNameSpaceses = {
     img: 'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',
@@ -44,7 +46,12 @@
   <div class="mt-2.5">
     <p class="font-medium">{testNameSpaceses.title}</p>
     <p class="text-sm text-inactive">
-      {testNameSpaceses.amount_members} участ-[]
+      {testNameSpaceses.amount_members}
+      {getCorrectForm(testNameSpaceses.amount_members, [
+        'участник',
+        'участника',
+        'участников',
+      ])}
     </p>
   </div>
 </div>
@@ -54,14 +61,22 @@
   class="size-100 rounded-full object-cover absolute -top-[35%] z-0 opacity-60 blur-2xl"
 />
 <div class="px-4 flex flex-col justify-start items-start w-full">
-  <div
-    class="border-text-color/25 border-x-2 border-t-2 rounded-t-xl px-4 py-3 w-full flex justify-between"
+  <button
+    class="border-text-color/25 border-x-2 border-t-2 rounded-t-xl px-4 py-3
+    w-full flex justify-between"
+    onclick={async () => {
+      const response = await client.GET('/api/namespace/{namespace_id}', {
+        params: {
+          path: {
+            id: 'cc99ba47-622a-4949-ae39-bec270067d2e',
+          },
+        },
+      });
+    }}
   >
     <p>Смотреть анкеты</p>
-    <button>
-      <ChevronRight class="size-5" />
-    </button>
-  </div>
+    <ChevronRight class="size-5" />
+  </button>
   <div
     class="border-text-color/25 border-x-2 border-b-2 rounded-b-xl border-t-2 rounded-b-2 px-4 py-3 w-full flex justify-between mb-4"
   >

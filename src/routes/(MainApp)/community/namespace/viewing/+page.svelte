@@ -106,6 +106,6 @@
   });
 </script>
 
-<div class="overflow-y-auto" bind:this={screenContainer}>
+<div class="overflow-y-auto relative" bind:this={screenContainer}>
   <Questionnaire data={testData} isNamespaceProfile={true} {scroll} />
 </div>

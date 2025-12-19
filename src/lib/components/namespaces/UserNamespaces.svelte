@@ -1,29 +1,11 @@
 <script lang="ts">
   import { ArrowRight, ShieldUser, Shield } from '@lucide/svelte';
   import { goto } from '$app/navigation';
-
+  import { getCorrectForm } from '$lib/utils';
   const {
     namespacesList,
     searchFilter,
   }: { namespacesList: object[]; searchFilter: string } = $props();
-
-  function getCorrectForm(count: number): string {
-    const lastDigit = count % 10;
-    const lastTwoDigits = count % 100;
-    let form;
-    if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
-      form = 'участников';
-    } else {
-      if (lastDigit === 1) {
-        form = 'участник';
-      } else if (lastDigit >= 2 && lastDigit <= 4) {
-        form = 'участника';
-      } else {
-        form = 'участников';
-      }
-    }
-    return form;
-  }
 </script>
 
 <div class="overflow-y-auto h-[calc(100vh-200px)]">
@@ -51,7 +33,11 @@
             </div>
             <p>
               {namespace.amount_members}
-              {getCorrectForm(namespace.amount_members)}
+              {getCorrectForm(namespace.amount_members, [
+                'участник',
+                'участника',
+                'участников',
+              ])}
             </p>
           </div>
         </div>

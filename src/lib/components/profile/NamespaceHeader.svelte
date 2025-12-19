@@ -24,10 +24,11 @@
       }
     }
   });
+  $inspect(scrollDirection, scrollYPos);
 </script>
 
 <div
-  class="w-[calc(369px-32px)] ml-4 px-3 rounded-[8px] py-2.5 bg-accent/50 absolute transition-all duration-300 translate-0 z-5 border-2 border-accent-foreground"
+  class="left-4 right-4 px-3 rounded-[8px] py-2.5 bg-accent/50 fixed transition-all duration-300 translate-0 z-5 border-2 border-accent-foreground"
   class:translate-y-[-100%]={isHidden}
 >
   <p class="mb-1 text-sm text-text-color/50">Анкета из неймспейса</p>

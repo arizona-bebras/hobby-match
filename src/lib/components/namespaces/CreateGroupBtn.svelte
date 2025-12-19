@@ -11,6 +11,7 @@
   import QRCode from '@castlenine/svelte-qrcode';
   import copy from 'copy-to-clipboard';
   import { toSvg } from 'jdenticon';
+  import client from '$lib/api/client';
 
   let currentStage = $state(1);
   let fileButton: HTMLInputElement = $state();
@@ -40,8 +41,29 @@
         }
       }
     },
-    onSubmit() {
-      console.log('Форма отправлена!');
+    async onSubmit() {
+      const response = await client.POST('/api/namespace', {
+        body: {
+          title: $formData.title,
+          photo: $formData.photo,
+          description: $formData.description,
+        },
+        bodySerializer(body) {
+          const fd = new FormData();
+          for (const name in body) {
+            //@ts-expect-error i love dockerimage
+            fd.append(name, body[name]);
+          }
+          return fd;
+        },
+      });
+      console.log(response.data);
+      // client.POST('/api/vote', {
+      //   body: {
+      //     aboba: 123,
+      //   },
+      // });
+      console.log('Форма отправлена!', $formData.photo);
     },
   });
 
@@ -51,9 +73,10 @@
     currentStage += 1;
     if (currentStage === 2) {
       Telegram.WebApp.MainButton.text = 'Закрыть';
-      const pngString = toSvg(generateRandomHash(), 100);
+      const svgString = toSvg(generateRandomHash(), 100);
       if (!$formData.photo) {
-        uploadedPhoto = svgXmlToDataURLRobust(pngString);
+        uploadedPhoto = svgXmlToDataURLRobust(svgString);
+        $formData.photo = new Blob([svgString], { type: 'image/svg+xml' });
       }
       form.submit();
     }
@@ -219,7 +242,7 @@
       {:else if currentStage === 2}
         <div class="flex flex-col justify-center items-center mb-6">
           <QRCode
-            data="Hello World!"
+            data={link}
             logoInBase64={uploadedPhoto}
             logoSize={15}
             logoPadding={1}

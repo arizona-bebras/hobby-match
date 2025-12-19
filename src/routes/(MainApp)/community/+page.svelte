@@ -18,7 +18,7 @@
     {
       img: '',
       title: 'Hello Lowders',
-      amount_members: 201,
+      amount_members: 2,
       is_admin: false,
     },
     {
