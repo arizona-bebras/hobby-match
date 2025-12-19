@@ -5,6 +5,7 @@
   import type { NamespaceMembers } from '$lib/namespaceTypes';
   import { getCorrectForm } from '$lib/utils';
   import client from '$lib/api/client';
+  import { goto } from '$app/navigation';
 
   let testNameSpaceses = {
     img: 'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',
@@ -64,15 +65,7 @@
   <button
     class="border-text-color/25 border-x-2 border-t-2 rounded-t-xl px-4 py-3
     w-full flex justify-between"
-    onclick={async () => {
-      const response = await client.GET('/api/namespace/{namespace_id}', {
-        params: {
-          path: {
-            id: 'cc99ba47-622a-4949-ae39-bec270067d2e',
-          },
-        },
-      });
-    }}
+    onclick={() => goto('/view')}
   >
     <p>Смотреть анкеты</p>
     <ChevronRight class="size-5" />
