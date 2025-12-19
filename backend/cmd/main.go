@@ -1,11 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"flag"
 
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
@@ -48,13 +48,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	dbConnection.Exec("CREATE EXTENSION IF NOT EXISTS vector")
 
 	err = dbConnection.AutoMigrate(
-		&database.User{}, 
-		&database.TgUser{}, 
-		&database.Widget{}, 
-		&database.Namespace{}, 
-		&database.Vote{}, 
+		&database.User{},
+		&database.TgUser{},
+		&database.Widget{},
+		&database.Namespace{},
+		&database.Vote{},
 		&database.Interest{},
 		&database.View{},
 		&database.NamespaceInvite{},
@@ -74,7 +75,6 @@ func main() {
 		AllowedHeaders: []string{"Authorization", "Content-Type"},
 		Debug:          true,
 	})
-
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/auth", auth.SetTokens)
@@ -113,8 +113,8 @@ func main() {
 	mux.Handle("/api/namespace/{namespace_id}", tgauth.AuthMiddleware(namespaceHandler))
 
 	mux.Handle("/swagger/", httpSwagger.Handler(
-        httpSwagger.URL("http://localhost:8080/swagger/doc.json"),
-    ))
+		httpSwagger.URL("/swagger/doc.json"),
+	))
 
 	log.Println("Listen started at localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", handlers.JSONMiddleware(c.Handler(mux))))
