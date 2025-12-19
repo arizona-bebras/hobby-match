@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	"fmt"
 	"net/http"
 
 	"gorm.io/gorm"
@@ -15,21 +16,42 @@ type TgUsersHandler struct {
 	DB *gorm.DB
 }
 
+// GetUser
+// @Summary Проверить существование пользователя в бд
+// @Produce json
+// @Param id query string true "id пользователя"
+// @Success 200 {array} database.User
+// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
+// @Router /api/tg [get]
 func (h *TgUsersHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 
 	var user database.User
 	err := h.DB.Select("id", "hide").First(&user, "id = ?", id).Error
 	if err != nil {
-		log.Printf("failed to get user %v", err)
-		http.Error(w, "failed to get user", http.StatusInternalServerError)
+		log.Printf("tg handler: failed to get user %v", err)
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("tg handler: failed to get user %v", err),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
 	userJSON, err := json.Marshal(user)
 	if err != nil {
-		log.Printf("failed to marshal user data %v", err)
-		http.Error(w, "failed to marshal user data", http.StatusInternalServerError)
+		log.Printf("tg handler: failed to marshal user data %v", err)
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("tg handler: failed to marshal user data %v", err),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
@@ -37,32 +59,69 @@ func (h *TgUsersHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("\n\n"))
 }
 
+// RegisterUser
+// @Summary Проверить существование пользователя в бд
+// @Produce json
+// @Param id body string true "tg id пользователя"
+// @Param username body string true "tg username пользователя"
+// @Param firstname body string true "tg firstname пользователя"
+// @Success 200 {object} database.User
+// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
+// @Router /api/tg [post]
 func (h *TgUsersHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Printf("failed to read body %v", err)
-		http.Error(w, "failed to read body", http.StatusInternalServerError)
+		log.Printf("tg handler: failed to read body %v", err)
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("tg handler: failed to read body %v", err),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
 	var regData RegisterData
 	err = json.Unmarshal(body, &regData)
 	if err != nil {
-		log.Printf("failed to unmarshal reg data %v", err)
-		http.Error(w, "failed to unmarshal reg data", http.StatusInternalServerError)
+		log.Printf("tg handler: failed to unmarshal reg data %v", err)
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("tg handler: failed to unmarshal reg data %v", err),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
 	result := h.DB.Find(&database.User{}, "id = ?", regData.TgId)
 	if result.Error != nil {
-		log.Printf("failed to find user %v", result.Error)
-		http.Error(w, "failed to find user", http.StatusInternalServerError)
+		log.Printf("tg handler: failed to find user %v", result.Error)
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("tg handler: failed to find user %v", result.Error),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
 	if result.RowsAffected > 0 {
-		log.Printf("user already exsists")
-		http.Error(w, "user already exsists", http.StatusBadRequest)
+		log.Println("tg handler: user already exsists")
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusBadRequest, 
+				"tg handler: user already exsists",
+			), 
+			http.StatusBadRequest,
+		)
 		return
 	}
 
@@ -73,8 +132,15 @@ func (h *TgUsersHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}).Error
 	if err != nil {
 		tx.Rollback()
-		log.Printf("failed to create user %v", err)
-		http.Error(w, "failed to create user", http.StatusInternalServerError)
+		log.Printf("tg handler: failed to create user %v", err)
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("tg handler: failed to find user %v", result.Error),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
@@ -85,16 +151,30 @@ func (h *TgUsersHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}).Error
 	if err != nil {
 		tx.Rollback()
-		log.Printf("failed to create tg user %v", err)
-		http.Error(w, "failed to create tg user", http.StatusInternalServerError)
+		log.Printf("tg handler: failed to create tg user %v", err)
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("tg handler: failed to find user %v", result.Error),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 	tx.Commit()
 
-	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("user registred"))
 	w.Write([]byte("\n\n"))
 }
 
+// UpdateHideStatus
+// @Summary Скрыть/показывать анкету другим пользователям
+// @Produce json
+// @Param id query string true "id пользователя"
+// @Success 200 {object} database.User
+// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
+// @Router /api/tg [patch]
 func (h *TgUsersHandler) UpdateHideStatus(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 
@@ -104,8 +184,15 @@ func (h *TgUsersHandler) UpdateHideStatus(w http.ResponseWriter, r *http.Request
 	err := tx.First(&user, "id = ?", id).Error
 	if err != nil {
 		tx.Rollback()
-		log.Printf("failed to get user %v", err)
-		http.Error(w, "failed to get user", http.StatusInternalServerError)
+		log.Printf("tg handler: failed to get user, %v", err)
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("tg handler: failed to get user %v", err),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
@@ -113,17 +200,31 @@ func (h *TgUsersHandler) UpdateHideStatus(w http.ResponseWriter, r *http.Request
 	err = tx.Save(&user).Error
 	if err != nil {
 		tx.Rollback()
-		log.Printf("failed to update hide status %v", err)
-		http.Error(w, "failed to update hide status", http.StatusInternalServerError)
+		log.Printf("tg handler: failed to update hide status, %v", err)
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("tg handler: failed to update hide status, %v", err),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
 	tx.Commit()
 
-	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("hide status updated"))
 	w.Write([]byte("\n\n"))
 }
 
+// UpdateHideStatus
+// @Summary Скрыть/показывать анкету другим пользователям
+// @Produce json
+// @Param id query string true "id пользователя"
+// @Success 200 {object} database.User
+// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
+// @Router /api/tg [delete]
 func (h *TgUsersHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 
@@ -131,12 +232,19 @@ func (h *TgUsersHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		Id: id,
 	}).Error
 	if err != nil {
-		log.Printf("failed to delete user %v", err)
-		http.Error(w, "failed to delete user", http.StatusInternalServerError)
+		log.Printf("tg handler: failed to delete user %v", err)
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("tg handler: failed to delete user %v", err),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("user deleted"))
 	w.Write([]byte("\n\n"))
 }
 
@@ -151,6 +259,13 @@ func (h TgUsersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		h.GetUser(w, r)
 	default:
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusMethodNotAllowed, 
+				"tg handler: method not allowed",
+			), 
+			http.StatusMethodNotAllowed,
+		)
 	}
 }

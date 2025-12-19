@@ -25,8 +25,6 @@ import (
 // @version 1.0
 // @description Shumi API
 
-// @BasePath /api
-
 func main() {
 	var prod bool
 	flag.BoolVar(&prod, "prod", false, "dev/prod")
@@ -83,30 +81,35 @@ func main() {
 	registerHandler := handlers.TgUsersHandler{
 		DB: dbConnection,
 	}
-	mux.Handle("/api/tg/", registerHandler)
+	mux.Handle("/api/tg", registerHandler)
 
 	userDataHandler := handlers.UserDataHandler{
 		DB: dbConnection,
 	}
-	mux.Handle("/api/me/", tgauth.AuthMiddleware(userDataHandler))
+	mux.Handle("/api/me", tgauth.AuthMiddleware(userDataHandler))
 
 	voteHandler := handlers.VoteHandler{
 		DB: dbConnection,
 	}
-	mux.Handle("/api/vote/", tgauth.AuthMiddleware(voteHandler))
+	mux.Handle("/api/vote", tgauth.AuthMiddleware(voteHandler))
 
 	autocompleteHandler := handlers.AutocompleteHandler{}
-	mux.Handle("/api/worker/", tgauth.AuthMiddleware(autocompleteHandler))
+	mux.Handle("/api/worker", tgauth.AuthMiddleware(autocompleteHandler))
 
 	gameHandler := handlers.GamesHandler{
 		DB: dbConnection,
 	}
-	mux.Handle("/api/games/", tgauth.AuthMiddleware(gameHandler))
+	mux.Handle("/api/games", tgauth.AuthMiddleware(gameHandler))
+
+	namespaceAdminHandler := handlers.NamespaceAdminHandler{
+		DB: dbConnection,
+	}
+	mux.Handle("/api/namespace", tgauth.AuthMiddleware(namespaceAdminHandler))
 
 	namespaceHandler := handlers.NamespaceHandler{
 		DB: dbConnection,
 	}
-	mux.Handle("/api/namespace/", tgauth.AuthMiddleware(namespaceHandler))
+	mux.Handle("/api/namespace/{namespace_id}", tgauth.AuthMiddleware(namespaceHandler))
 
 	mux.Handle("/swagger/", httpSwagger.Handler(
         httpSwagger.URL("http://localhost:8080/swagger/doc.json"),

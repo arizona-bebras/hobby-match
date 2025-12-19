@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	"fmt"
 	"net/http"
 	"reflect"
 	"shumi/internal/database"
@@ -42,37 +43,65 @@ func getStructFieldNames(s interface{}) []string {
 // @Summary Профиль пользователя
 // @Produce json
 // @Success 200 {object} database.User
-// @Failure 401 {string} string "Пользователь не авторизован"
-// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Failure 401 {object} database.Error "Пользователь не авторизован"
+// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/me [get]
 func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 	tgID, ok := r.Context().Value(database.AuthContextKey).(string)
 	if !ok {
-        log.Printf("Authentication error: TgID is missing or not int64")
-        http.Error(w, "Authentication required", http.StatusUnauthorized)
+        log.Printf("Authentication error, TgID is missing or not int64")
+        http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusUnauthorized, 
+				"Authentication error, TgID is missing or not int64",
+			), 
+			http.StatusUnauthorized,
+		)
         return
     }
 	var user database.User
 	result := h.DB.Model(&user).First(&user, "id = ?", tgID)
 	if result.Error != nil {
-		log.Printf("failed to get user: %s", result.Error.Error())
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		log.Printf("users handler: failed to get user: %s", result.Error.Error())
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("users handler: failed to get user: %s", result.Error.Error()),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
 	var widgets []database.Widget
 	result = h.DB.Table("widgets").Find(&widgets, "widgets.user = ?", tgID)
 	if result.Error != nil {
-		log.Printf("failed to get widgets: %s", result.Error.Error())
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		log.Printf("users handler: failed to get widgets: %s", result.Error.Error())
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("users handler: failed to get widgets: %s", result.Error.Error()),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 	user.Widgets = widgets
 
 	userJSON, err := json.Marshal(user)
 	if err != nil {
-		log.Printf("failed to serialize user: %s", err.Error())
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		log.Printf("users handler: failed to serialize user: %s", err.Error())
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("users handler: failed to serialize user: %s", err.Error()),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
@@ -90,8 +119,8 @@ func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 // @Param info body string false "Информация о пользователе"
 // @Param interests body array false "Интересы о пользователе"
 // @Success 200 {string} string "Пользователь успешно обновлен"
-// @Failure 401 {string} string "Пользователь не авторизован"
-// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Failure 401 {object} database.Error "Пользователь не авторизован"
+// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/me [post]
 func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Request) {
 	tgID := r.Context().Value(database.AuthContextKey)
@@ -99,8 +128,15 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 	body, err := io.ReadAll(r.Body)
 	r.Body.Close()
 	if err != nil {
-		log.Printf("failed read data: %s", err.Error())
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		log.Printf("users handler: failed read data, %s", err.Error())
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("users handler: failed read data, %s", err.Error()),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
@@ -122,8 +158,15 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 	}
 
 	if result.Error != nil {
-		log.Printf("failed to update user: %s", result.Error.Error())
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		log.Printf("users handler: failed to update user, %s", result.Error.Error())
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("users handler: failed to update user, %s", result.Error.Error()),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
@@ -136,22 +179,36 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 // @Accept json
 // @Param user_photo body []byte false "Фото пользователя"
 // @Success 200 {string} string "Пользователь успешно обновлен"
-// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/me/photo [post]
 func (h *UserDataHandler) UpdateMyProfilePhoto(w http.ResponseWriter, r *http.Request) {
 	tgID := r.Context().Value(database.AuthContextKey).(string)
 
 	photoFile, _, err := r.FormFile("user_photo")
 	if err != nil {
-		log.Printf("failed to get photo file: %s", err)
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		log.Printf("users handler: failed to get photo file, %s", err)
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("users handler: failed to get photo file, %s", err),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
 	photoBytes, err := io.ReadAll(photoFile)
 	if err != nil {
-		log.Printf("failed to read photo bytes: %s", err.Error())
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		log.Printf("users handler: failed to read photo bytes, %s", err.Error())
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("users handler: failed to read photo bytes, %s", err.Error()),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
@@ -162,8 +219,15 @@ func (h *UserDataHandler) UpdateMyProfilePhoto(w http.ResponseWriter, r *http.Re
 	})
 
 	if result.Error != nil {
-		log.Printf("failed to update user: %s", result.Error.Error())
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		log.Printf("users handler: failed to update user, %s", result.Error.Error())
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("users handler: failed to update user, %s", result.Error.Error()),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
@@ -183,7 +247,14 @@ func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		case http.MethodGet:
 			h.GetMe(w, r)
 		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			http.Error(
+				w, 
+				database.JSONErr(
+					http.StatusInternalServerError, 
+					"users handler: method not allowed,",
+				), 
+				http.StatusInternalServerError,
+			)
 			return
 		}
 	case "/api/me/photo":
@@ -191,7 +262,14 @@ func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		case http.MethodPost:
 			h.UpdateMyProfilePhoto(w, r)
 		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			http.Error(
+				w, 
+				database.JSONErr(
+					http.StatusInternalServerError, 
+					"users handler: method not allowed,",
+				), 
+				http.StatusInternalServerError,
+			)
 			return
 		}
 
@@ -204,7 +282,14 @@ func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		case http.MethodDelete:
 			h.DeleteWidget(w, r)
 		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			http.Error(
+				w, 
+				database.JSONErr(
+					http.StatusInternalServerError, 
+					"widgets handler: method not allowed,",
+				), 
+				http.StatusInternalServerError,
+			)
 			return
 		}
 
@@ -213,7 +298,14 @@ func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		case http.MethodPut:
 			h.UpdateWidgetOrder(w, r)
 		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			http.Error(
+				w, 
+				database.JSONErr(
+					http.StatusInternalServerError, 
+					"widgets handler: method not allowed,",
+				), 
+				http.StatusInternalServerError,
+			)
 			return
 		}
 
@@ -222,7 +314,14 @@ func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		case http.MethodDelete:
 			h.DeleteWidgetPhoto(w, r)
 		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			http.Error(
+				w, 
+				database.JSONErr(
+					http.StatusInternalServerError, 
+					"widgets handler: method not allowed,",
+				), 
+				http.StatusInternalServerError,
+			)
 			return
 		}
 	}

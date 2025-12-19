@@ -1,13 +1,11 @@
-basePath: /api
 definitions:
-  database.TgUser:
+  database.Error:
+    description: Ошибка
     properties:
-      firstname:
+      cause:
         type: string
-      id:
-        type: string
-      username:
-        type: string
+      status_code:
+        type: integer
     type: object
   database.User:
     description: Основные данные профиля и связанные виджеты.
@@ -16,6 +14,8 @@ definitions:
         type: string
       gender:
         type: string
+      hide:
+        type: boolean
       interests:
         items:
           type: string
@@ -26,29 +26,16 @@ definitions:
         type: string
       tg_user:
         type: string
-      tgUser:
-        $ref: '#/definitions/database.TgUser'
       user_info:
         type: string
       user_photo:
         items:
           type: integer
         type: array
-      userNamespace:
-        $ref: '#/definitions/database.UserNamespace'
-      vote:
-        $ref: '#/definitions/database.Vote'
       widgets:
         items:
           $ref: '#/definitions/database.Widget'
         type: array
-    type: object
-  database.UserNamespace:
-    properties:
-      namespace:
-        type: string
-      user:
-        type: string
     type: object
   database.Vote:
     description: Голос в опросе
@@ -93,6 +80,38 @@ definitions:
       response:
         items:
           type: string
+        type: array
+    type: object
+  handlers.PageData:
+    description: Данные анкеты (все поля database.User + tg username)
+    properties:
+      birth_date:
+        type: string
+      gender:
+        type: string
+      hide:
+        type: boolean
+      interests:
+        items:
+          type: string
+        type: array
+      location:
+        type: string
+      miniapp_name:
+        type: string
+      tg_user:
+        type: string
+      user_info:
+        type: string
+      user_photo:
+        items:
+          type: integer
+        type: array
+      username:
+        type: string
+      widgets:
+        items:
+          $ref: '#/definitions/database.Widget'
         type: array
     type: object
 info:
@@ -148,7 +167,7 @@ paths:
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Игры пользователя из его steam профиля для виджета
   /api/me:
     get:
@@ -162,11 +181,11 @@ paths:
         "401":
           description: Пользователь не авторизован
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Профиль пользователя
     post:
       consumes:
@@ -210,11 +229,11 @@ paths:
         "401":
           description: Пользователь не авторизован
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Обновить информацию профиля пользователя
   /api/me/photo:
     post:
@@ -236,7 +255,7 @@ paths:
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Обновить информацию профиля пользователя
   /api/me/widgets:
     delete:
@@ -254,7 +273,7 @@ paths:
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Удалить виджет
     post:
       consumes:
@@ -280,7 +299,7 @@ paths:
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Создать виджет
     put:
       consumes:
@@ -306,7 +325,7 @@ paths:
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Обновить виджет
   /api/me/widgets/order:
     put:
@@ -331,7 +350,7 @@ paths:
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Обновить очередь виджета
   /api/me/widgets/photo:
     delete:
@@ -354,7 +373,7 @@ paths:
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Удалить фото виджета
   /api/namespace:
     delete:
@@ -372,11 +391,11 @@ paths:
         "403":
           description: Этот пользователь не админ неймспейса
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Удалить неймспейс
     post:
       consumes:
@@ -405,7 +424,7 @@ paths:
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Создать неймспейс
     put:
       consumes:
@@ -431,7 +450,7 @@ paths:
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Обновить информацию о неймспейсе
   /api/namespace/{namespace_id}:
     delete:
@@ -449,13 +468,13 @@ paths:
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Выйти из неймспейса
     get:
       parameters:
       - description: id неймспейса
         in: path
-        name: id
+        name: namespace_id
         required: true
         type: string
       produces:
@@ -465,12 +484,12 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/database.User'
+              $ref: '#/definitions/handlers.PageData'
             type: array
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Получить ленту из анкет пользователей неймспейса
     post:
       consumes:
@@ -494,12 +513,104 @@ paths:
         "403":
           description: Неверный код входа
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Зайти в неймспейс
+  /api/tg:
+    delete:
+      parameters:
+      - description: id пользователя
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.User'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/database.Error'
+      summary: Скрыть/показывать анкету другим пользователям
+    get:
+      parameters:
+      - description: id пользователя
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.User'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/database.Error'
+      summary: Проверить существование пользователя в бд
+    patch:
+      parameters:
+      - description: id пользователя
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.User'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/database.Error'
+      summary: Скрыть/показывать анкету другим пользователям
+    post:
+      parameters:
+      - description: tg id пользователя
+        in: body
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: tg username пользователя
+        in: body
+        name: username
+        required: true
+        schema:
+          type: string
+      - description: tg firstname пользователя
+        in: body
+        name: firstname
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.User'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/database.Error'
+      summary: Проверить существование пользователя в бд
   /api/vote:
     post:
       consumes:
@@ -521,7 +632,7 @@ paths:
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Проголосовать в опросе
   /api/worker/autocomplete:
     get:
@@ -540,10 +651,10 @@ paths:
         "401":
           description: Ошибка авторизации
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
       summary: Предложенные пользователю интересы
 swagger: "2.0"

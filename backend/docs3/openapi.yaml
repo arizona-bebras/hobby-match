@@ -1,0 +1,746 @@
+---
+openapi: 3.0.1
+info:
+  title: Shumi API
+  description: Shumi API
+  contact: {}
+  version: '1.0'
+servers:
+- url: "/"
+paths:
+  "/api/auth":
+    post:
+      summary: Получить токен авторизации
+      requestBody:
+        description: tma initData
+        content:
+          "*/*":
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Токен выдан
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Не валидный токен авторизации
+          content:
+            application/json:
+              schema:
+                type: string
+        '403':
+          description: Пользователь не записан в базу данных
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: string
+      x-codegen-request-body-name: initData
+  "/api/games":
+    get:
+      summary: Игры пользователя из его steam профиля для виджета
+      parameters:
+      - name: link
+        in: query
+        description: Ссылка на профиль
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: JSON, содержащий список игр
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+  "/api/me":
+    get:
+      summary: Профиль пользователя
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.User"
+        '401':
+          description: Пользователь не авторизован
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+    post:
+      summary: Обновить информацию профиля пользователя
+      requestBody:
+        description: Интересы о пользователе
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: false
+      responses:
+        '200':
+          description: Пользователь успешно обновлен
+          content:
+            "*/*":
+              schema:
+                type: string
+        '401':
+          description: Пользователь не авторизован
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+      x-codegen-request-body-name: interests
+  "/api/me/photo":
+    post:
+      summary: Обновить информацию профиля пользователя
+      requestBody:
+        description: Фото пользователя
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+        required: false
+      responses:
+        '200':
+          description: Пользователь успешно обновлен
+          content:
+            "*/*":
+              schema:
+                type: string
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+      x-codegen-request-body-name: user_photo
+  "/api/me/widgets":
+    put:
+      summary: Обновить виджет
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  description: Данные виджета
+                  items:
+                    type: integer
+                    format: int32
+                files:
+                  type: array
+                  description: Файлы виджета
+                  items:
+                    type: array
+                    items:
+                      type: integer
+                      format: int32
+      responses:
+        '200':
+          description: Виджет успешно обновлен
+          content:
+            "*/*":
+              schema:
+                type: string
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+    post:
+      summary: Создать виджет
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  description: Данные виджета
+                  items:
+                    type: integer
+                    format: int32
+                items:
+                  type: array
+                  items:
+                    type: integer
+                    format: int32
+      responses:
+        '200':
+          description: Виджет успешно создан
+          content:
+            "*/*":
+              schema:
+                type: string
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+    delete:
+      summary: Удалить виджет
+      parameters:
+      - name: widget_id
+        in: query
+        description: id виджета
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Виджет удален
+          content:
+            "*/*":
+              schema:
+                type: string
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+  "/api/me/widgets/order":
+    put:
+      summary: Обновить очередь виджета
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - order
+              - widget_id
+              type: object
+              properties:
+                widget_id:
+                  type: string
+                  description: id виджета
+                order:
+                  type: integer
+                  description: Изменение позиции виджета виджета
+                  format: int32
+        required: true
+      responses:
+        '200':
+          description: Очередь успешно обновлена
+          content:
+            "*/*":
+              schema:
+                type: string
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+  "/api/me/widgets/photo":
+    delete:
+      summary: Удалить фото виджета
+      parameters:
+      - name: widget_id
+        in: query
+        description: id виджета
+        required: true
+        schema:
+          type: string
+      - name: index
+        in: query
+        description: Позиция фото в списке
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Фото виджета удалено
+          content:
+            "*/*":
+              schema:
+                type: string
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+  "/api/namespace":
+    put:
+      summary: Обновить информацию о неймспейсе
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Название неймспейса
+                photo:
+                  type: string
+                  description: Картинка неймспейса
+                  format: binary
+                description:
+                  type: string
+                  description: Описание неймспейса
+      responses:
+        '200':
+          description: Неймспейс успешно обновлен
+          content:
+            "*/*":
+              schema:
+                type: string
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+    post:
+      summary: Создать неймспейс
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - description
+              - photo
+              - title
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Название неймспейса
+                photo:
+                  type: string
+                  description: Картинка неймспейса
+                  format: binary
+                description:
+                  type: string
+                  description: Описание неймспейса
+        required: true
+      responses:
+        '200':
+          description: Неймспейс успешно создан
+          content:
+            "*/*":
+              schema:
+                type: string
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+    delete:
+      summary: Удалить неймспейс
+      parameters:
+      - name: id
+        in: query
+        description: Название неймспейса
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Неймспейс успешно удален
+          content:
+            "*/*":
+              schema:
+                type: string
+        '403':
+          description: Этот пользователь не админ неймспейса
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+  "/api/namespace/{namespace_id}":
+    get:
+      summary: Получить ленту из анкет пользователей неймспейса
+      parameters:
+      - name: namespace_id
+        in: path
+        description: id неймспейса
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/handlers.PageData"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+    post:
+      summary: Зайти в неймспейс
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - invite_code
+              - namespace
+              type: object
+              properties:
+                namespace:
+                  type: string
+                  description: id неймспейса
+                invite_code:
+                  type: string
+                  description: инвайт код для входа в неймспейс
+        required: true
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            "*/*":
+              schema:
+                type: string
+        '403':
+          description: Неверный код входа
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+    delete:
+      summary: Выйти из неймспейса
+      parameters:
+      - name: namespace
+        in: query
+        description: id неймспейса
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            "*/*":
+              schema:
+                type: string
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+  "/api/tg":
+    get:
+      summary: Проверить существование пользователя в бд
+      parameters:
+      - name: id
+        in: query
+        description: id пользователя
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/database.User"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+    post:
+      summary: Регистрация пользователя
+      requestBody:
+        description: tg firstname пользователя
+        content:
+          "*/*":
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.User"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+      x-codegen-request-body-name: firstname
+    delete:
+      summary: Удаления пользователя
+      parameters:
+      - name: id
+        in: query
+        description: id пользователя
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.User"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+    patch:
+      summary: Скрыть/показывать анкету другим пользователям
+      parameters:
+      - name: id
+        in: query
+        description: id пользователя
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.User"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+  "/api/vote":
+    post:
+      summary: Проголосовать в опросе
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                survey:
+                  type: string
+                  description: id виджета опроса
+                option:
+                  type: string
+                  description: вариант опроса
+      responses:
+        '200':
+          description: Голос засчитан
+          content:
+            "*/*":
+              schema:
+                type: string
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+  "/api/worker/autocomplete":
+    get:
+      summary: Предложенные пользователю интересы
+      parameters:
+      - name: q
+        in: query
+        description: Ввод пользователя
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/handlers.AutocompleteResponse"
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+components:
+  schemas:
+    database.Error:
+      type: object
+      properties:
+        cause:
+          type: string
+        status_code:
+          type: integer
+      description: Ошибка
+    database.User:
+      type: object
+      properties:
+        birth_date:
+          type: string
+        gender:
+          type: string
+        hide:
+          type: boolean
+        interests:
+          type: array
+          items:
+            type: string
+        location:
+          type: string
+        miniapp_name:
+          type: string
+        tg_user:
+          type: string
+        user_info:
+          type: string
+        user_photo:
+          type: array
+          items:
+            type: integer
+        widgets:
+          type: array
+          items:
+            "$ref": "#/components/schemas/database.Widget"
+      description: Основные данные профиля и связанные виджеты.
+    database.Vote:
+      type: object
+      properties:
+        option:
+          type: integer
+        survey:
+          type: string
+        user:
+          type: string
+      description: Голос в опросе
+    database.Widget:
+      type: object
+      properties:
+        additionalData:
+          type: string
+        data:
+          type: string
+        files:
+          type: array
+          items:
+            type: array
+            items:
+              type: integer
+              format: int32
+        id:
+          type: string
+        namespace:
+          type: string
+        order:
+          type: integer
+        user:
+          "$ref": "#/components/schemas/database.User"
+        vote:
+          "$ref": "#/components/schemas/database.Vote"
+      description: Виджет
+    handlers.AutocompleteResponse:
+      type: object
+      properties:
+        q:
+          type: string
+        response:
+          type: array
+          items:
+            type: string
+      description: Ответ autocomplete эндпоинта воркера.
+    handlers.PageData:
+      type: object
+      properties:
+        birth_date:
+          type: string
+        gender:
+          type: string
+        hide:
+          type: boolean
+        interests:
+          type: array
+          items:
+            type: string
+        location:
+          type: string
+        miniapp_name:
+          type: string
+        tg_user:
+          type: string
+        user_info:
+          type: string
+        user_photo:
+          type: array
+          items:
+            type: integer
+        username:
+          type: string
+        widgets:
+          type: array
+          items:
+            "$ref": "#/components/schemas/database.Widget"
+      description: Данные анкеты (все поля database.User + tg username)
+x-original-swagger-version: '2.0'

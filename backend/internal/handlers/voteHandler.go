@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"log"
+	"fmt"
 
 	"shumi/internal/database"
 )
@@ -19,7 +20,7 @@ type VoteHandler struct {
 // @Param survey formData string false "id виджета опроса"
 // @Param option formData string false "вариант опроса"
 // @Success 200 {string} string "Голос засчитан"
-// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/vote [post]
 func (h *VoteHandler) Vote(w http.ResponseWriter, r *http.Request) {
 	tgID := r.Context().Value(database.AuthContextKey).(string)
@@ -29,7 +30,7 @@ func (h *VoteHandler) Vote(w http.ResponseWriter, r *http.Request) {
 	option, err := strconv.Atoi(r.PostFormValue("option"))
 	if err != nil {
 		log.Println("failed to vote")
-		http.Error(w, "interbal server error", http.StatusInternalServerError)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
 
@@ -41,26 +42,38 @@ func (h *VoteHandler) Vote(w http.ResponseWriter, r *http.Request) {
 
 	result := h.DB.Create(&vote)
 	if result.Error != nil {
-		log.Println("failed to vote")
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		log.Printf("vote handler: failed to vote, %s", result.Error.Error())
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("vote handler: failed to vote, %s", result.Error.Error()),
+			), 
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
-	w.Write([]byte(`voted`))
+	w.Write([]byte("voted"))
 	w.Write([]byte("\n\n"))
 }
 
 func (h VoteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	switch path {
-	case "/api/vote/":
+	case "/api/vote":
 		switch r.Method {
 		case http.MethodPost:
 			h.Vote(w, r)
 		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusMethodNotAllowed, 
+				"vote handler: method not allowed",
+			), 
+			http.StatusMethodNotAllowed,
+		)
 		}
-	default:
-		http.Error(w, "endpoint not found", http.StatusNotFound)
 	}
 }
