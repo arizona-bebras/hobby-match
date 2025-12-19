@@ -19,8 +19,15 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		authData := strings.Split(r.Header.Get("Authorization"), " ")
 
 		if authData[0] != "Bearer" {
-			log.Println("wrong auth type")
-			http.Error(w, "{error: bad request}", http.StatusBadRequest)
+			log.Println("auth: auth data isn`t bearer!")
+			http.Error(
+				w, 
+				database.JSONErr(
+					http.StatusBadRequest, 
+					"auth: auth data isn`t bearer!",
+				), 
+				http.StatusBadRequest,
+			)
 			return
 		}
 
@@ -46,11 +53,25 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		if err != nil || !accessToken.Valid {
 			if err.Error() == "access token expired" {
 				log.Println("Not Authorized! Accession token expired")
-				http.Error(w, "{error: not authorized}", 498)
+				http.Error(
+					w, 
+					database.JSONErr(
+						498, 
+						"Not Authorized! Accession token expired",
+					), 
+					498,
+				)
 				return
 			}
-			log.Println(err)
-			http.Error(w, "{error: not authorized}", http.StatusBadRequest)
+			log.Println("auth: invalid token")
+			http.Error(
+				w, 
+				database.JSONErr(
+					http.StatusForbidden, 
+					"auth: invalid token",
+				), 
+				http.StatusForbidden,
+			)
 			return
 		}
 

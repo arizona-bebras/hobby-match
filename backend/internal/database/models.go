@@ -1,6 +1,8 @@
 package database
 
 import (
+	"encoding/json"
+	"log"
 	"github.com/lib/pq"
 	// "gorm.io/gorm"
 )
@@ -17,32 +19,32 @@ type TgUser struct {
 
 // @Description Основные данные профиля и связанные виджеты.
 type User struct {
-	Id            string         `json:"tg_user" gorm:"primaryKey;type:text;column:id"`
-	Name          string         `json:"miniapp_name" gorm:"column:name"`
-	Location      string         `json:"location" gorm:"column:location"`
-	Gender        string         `json:"gender" gorm:"column:gender"`
-	BirthDate     string         `json:"birth_date" gorm:"column:birth_date"`
-	Interests     pq.StringArray `json:"interests" gorm:"type:text[];column:interests"`
-	Photo         []byte         `json:"user_photo" gorm:"column:photo"`
-	Info          string         `json:"user_info" gorm:"column:info"`
-	Hide          bool           `json:"hide" gorm:"column:hide"`
-	Widgets       []Widget       `json:"widgets" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-	TgUser        TgUser         `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	UserNamespace UserNamespace  `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Vote          Vote           `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Id            string        `json:"tg_user" gorm:"primaryKey;type:text;column:id"`
+	Name          string        `json:"miniapp_name" gorm:"column:name"`
+	Location      string        `json:"location" gorm:"column:location"`
+	Gender        string        `json:"gender" gorm:"column:gender"`
+	BirthDate     string        `json:"birth_date" gorm:"column:birth_date"`
+	Interests     pq.StringArray      `json:"interests" gorm:"type:text[];column:interests"`
+	Photo         []byte        `json:"user_photo" gorm:"column:photo"`
+	Info          string        `json:"user_info" gorm:"column:info"`
+	Hide          bool          `json:"hide" gorm:"column:hide"`
+	Widgets       []Widget      `json:"widgets" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	TgUser        TgUser        `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	UserNamespace UserNamespace `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Vote          Vote          `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 // @Description Виджет
 type Widget struct {
-	Id             string        `json:"id" gorm:"primaryKey;column:id"`
-	UserId         string        `json:"user" gorm:"column:user;type:text"`
-	User           User          `gorm:"foreignKey:UserId;references:Id"`
-	Order          int           `json:"order" gorm:"column:order"`
+	Id             string   `json:"id" gorm:"primaryKey;column:id"`
+	UserId         string   `json:"user" gorm:"column:user;type:text"`
+	User           User     `gorm:"foreignKey:UserId;references:Id"`
+	Order          int      `json:"order" gorm:"column:order"`
 	Files          pq.ByteaArray `json:"files" gorm:"type:bytea[];column:files"`
-	Data           string        `json:"data" gorm:"column:data"`
-	Namespace      string        `json:"namespace" gorm:"column:namespace"`
-	AdditionalData string        `json:"additionalData" gorm:"-"`
-	Vote           Vote          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Data           string   `json:"data" gorm:"column:data"`
+	Namespace      string   `json:"namespace" gorm:"column:namespace"`
+	AdditionalData string   `json:"additionalData" gorm:"-"`
+	Vote           Vote     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 // @Description Голос в опросе
@@ -74,7 +76,7 @@ func (NamespaceInvite) TableName() string {
 	return "namespace_invite"
 }
 
-// @UserNamespace many-to-many Пользователь - Неймспейс + уникальня для неймспейса инфа
+// @Description many-to-many Пользователь - Неймспейс + уникальня для неймспейса инфа
 type UserNamespace struct {
 	UserId      string `json:"user" gorm:"column:user_id"`
 	NamespaceId string `json:"namespace" gorm:"column:namespace_id"`
@@ -84,16 +86,38 @@ func (UserNamespace) TableName() string {
 	return "user_namespace"
 }
 
-// @Interest Интерес
+// @Description Интерес
 type Interest struct {
 	Id  string `json:"id" gorm:"primaryKey;column:id"`
 	Tag string `json:"tag" gorm:"column:tag"`
 }
 
+// @Description Просмотр анкеты
 type View struct {
 	ViewerId    string `json:"viewer"`
 	Viewer      User   `gorm:"foreignKey:ViewerId;references:Id"`
 	PageOwnerId string `json:"page_owner"`
 	PageOwner   User   `gorm:"foreignKey:PageOwnerId;references:Id"`
 	Date        string `json:"date"`
+}
+
+// @Description Ошибка
+type Error struct {
+	StatusCode int    `json:"status_code"`
+	Cause      string `json:"cause"`
+}
+
+func JSONErr(status int, cause string) string {
+	err := Error{
+		StatusCode: status,
+		Cause:      cause,
+	}
+
+	JSONErr, marshalErr := json.Marshal(err)
+	if marshalErr != nil {
+		log.Println("failed to marshal error")
+		return ""
+	}
+
+	return string(JSONErr)
 }

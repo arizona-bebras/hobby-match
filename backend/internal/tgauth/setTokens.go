@@ -44,7 +44,15 @@ func (auth *AuthClient) SetTokens(w http.ResponseWriter, r *http.Request) {
 
 	authParts := strings.Split(r.Header.Get("authorization"), " ")
 	if len(authParts) != 2 {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		log.Println("set tokens: tma token not found")
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusUnauthorized, 
+				"set tokens: tma token not found",
+			), 
+			http.StatusUnauthorized,
+		)
 		return
 	}
 
@@ -54,13 +62,29 @@ func (auth *AuthClient) SetTokens(w http.ResponseWriter, r *http.Request) {
 	switch authType {
 		case "tma":
 			if err := initdata.Validate(authData, token, time.Hour); err != nil {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				log.Printf("set tokens: invalid tma token, %v", err)
+				http.Error(
+					w, 
+					database.JSONErr(
+						http.StatusUnauthorized, 
+						fmt.Sprintf("set tokens: invalid tma token, %v", err),
+					), 
+					http.StatusUnauthorized,
+				)
 				return
 			}
 
 			initData, err := initdata.Parse(authData)
 			if err != nil {
-				http.Error(w, "internal server error", 500)
+				log.Printf("set tokens: failed to parse auth data, %v", err)
+				http.Error(
+					w, 
+					database.JSONErr(
+						http.StatusInternalServerError, 
+						fmt.Sprintf("set tokens: failed to parse auth data, %v", err),
+					), 
+					http.StatusInternalServerError,
+				)
 				return
 			}
 
@@ -78,8 +102,15 @@ func (auth *AuthClient) SetTokens(w http.ResponseWriter, r *http.Request) {
 					w.Write([]byte("\n\n"))
 					return
 				}
-				log.Println(err)
-				http.Error(w, "internal server error", http.StatusInternalServerError)
+				log.Printf("set tokens: user isn't registred, %v", err)
+				http.Error(
+					w, 
+					database.JSONErr(
+						http.StatusInternalServerError, 
+						fmt.Sprintf("set tokens: user isn't registred, %v", err),
+					), 
+					http.StatusInternalServerError,
+				)
 				return
 			}
 
@@ -93,8 +124,15 @@ func (auth *AuthClient) SetTokens(w http.ResponseWriter, r *http.Request) {
 			jwtAccessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, tgAuthClaims)
 			jwtAccessString, err := jwtAccessToken.SignedString([]byte(jwtAccessSecret))
 			if err != nil {
-				log.Println(err)
-				http.Error(w, "internal server error", http.StatusInternalServerError)
+				log.Printf("set tokens: failed to sign claims, %v", err)
+				http.Error(
+					w, 
+					database.JSONErr(
+						http.StatusInternalServerError, 
+						fmt.Sprintf("set tokens: failed to sign claims, %v", err),
+					), 
+					http.StatusInternalServerError,
+				)
 				return
 			}
 
@@ -104,8 +142,15 @@ func (auth *AuthClient) SetTokens(w http.ResponseWriter, r *http.Request) {
 
 			jwtRefreshString, err := jwtRefreshToken.SignedString([]byte(jwtRefreshSecret))
 			if err != nil {
-				log.Println(err)
-				http.Error(w, "internal server error", http.StatusInternalServerError)
+				log.Printf("set tokens: failed to sign claims, %v", err)
+				http.Error(
+					w, 
+					database.JSONErr(
+						http.StatusInternalServerError, 
+						fmt.Sprintf("set tokens: failed to sign claims, %v", err),
+					), 
+					http.StatusInternalServerError,
+				)
 				return
 			}
 
@@ -125,8 +170,15 @@ func (auth *AuthClient) SetTokens(w http.ResponseWriter, r *http.Request) {
 
 			userJSON, err := json.Marshal(user)
 			if err != nil {
-				log.Println(err)
-				http.Error(w, "internal server error", http.StatusInternalServerError)
+				log.Printf("set tokens: failed to marshal user data, %v", err)
+				http.Error(
+					w, 
+					database.JSONErr(
+						http.StatusInternalServerError, 
+						fmt.Sprintf("set tokens: failed to marshal user data, %v", err),
+					), 
+					http.StatusInternalServerError,
+				)
 				return
 			}
 
@@ -136,7 +188,15 @@ func (auth *AuthClient) SetTokens(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(fmt.Sprintf(`{"response": {"access_token": "%s" , "refresh_token": "%s", "user": %s}}`, jwtAccessString, jwtRefreshString, string(userJSON))))
 			w.Write([]byte("\n\n"))
 		default:
-			http.Error(w, "bad request", http.StatusBadRequest)
+			log.Println("set tokens: auth data isn`t tma!")
+			http.Error(
+				w, 
+				database.JSONErr(
+					http.StatusBadRequest, 
+					"set tokens: auth data isn`t tma!",
+				), 
+				http.StatusBadRequest,
+			)
 			return
 		}
 }

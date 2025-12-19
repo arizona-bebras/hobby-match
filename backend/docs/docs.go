@@ -85,7 +85,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -107,13 +107,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Пользователь не авторизован",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -183,13 +183,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Пользователь не авторизован",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -224,7 +224,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -265,7 +265,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -304,7 +304,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -330,7 +330,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -368,7 +368,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -403,7 +403,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -445,7 +445,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -488,7 +488,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -514,13 +514,13 @@ const docTemplate = `{
                     "403": {
                         "description": "Этот пользователь не админ неймспейса",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -536,7 +536,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "id неймспейса",
-                        "name": "id",
+                        "name": "namespace_id",
                         "in": "path",
                         "required": true
                     }
@@ -547,14 +547,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/database.User"
+                                "$ref": "#/definitions/handlers.PageData"
                             }
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -590,13 +590,13 @@ const docTemplate = `{
                     "403": {
                         "description": "Неверный код входа",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -622,7 +622,148 @@ const docTemplate = `{
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tg": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Проверить существование пользователя в бд",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id пользователя",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/database.User"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Проверить существование пользователя в бд",
+                "parameters": [
+                    {
+                        "description": "tg id пользователя",
+                        "name": "id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
                             "type": "string"
+                        }
+                    },
+                    {
+                        "description": "tg username пользователя",
+                        "name": "username",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "tg firstname пользователя",
+                        "name": "firstname",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.User"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Скрыть/показывать анкету другим пользователям",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id пользователя",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.User"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Скрыть/показывать анкету другим пользователям",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id пользователя",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.User"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -658,7 +799,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -688,13 +829,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Ошибка авторизации",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -702,17 +843,15 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "database.TgUser": {
+        "database.Error": {
+            "description": "Ошибка",
             "type": "object",
             "properties": {
-                "firstname": {
+                "cause": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
+                "status_code": {
+                    "type": "integer"
                 }
             }
         },
@@ -726,6 +865,9 @@ const docTemplate = `{
                 "gender": {
                     "type": "string"
                 },
+                "hide": {
+                    "type": "boolean"
+                },
                 "interests": {
                     "type": "array",
                     "items": {
@@ -738,14 +880,8 @@ const docTemplate = `{
                 "miniapp_name": {
                     "type": "string"
                 },
-                "tgUser": {
-                    "$ref": "#/definitions/database.TgUser"
-                },
                 "tg_user": {
                     "type": "string"
-                },
-                "userNamespace": {
-                    "$ref": "#/definitions/database.UserNamespace"
                 },
                 "user_info": {
                     "type": "string"
@@ -756,25 +892,11 @@ const docTemplate = `{
                         "type": "integer"
                     }
                 },
-                "vote": {
-                    "$ref": "#/definitions/database.Vote"
-                },
                 "widgets": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/database.Widget"
                     }
-                }
-            }
-        },
-        "database.UserNamespace": {
-            "type": "object",
-            "properties": {
-                "namespace": {
-                    "type": "string"
-                },
-                "user": {
-                    "type": "string"
                 }
             }
         },
@@ -844,6 +966,54 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "handlers.PageData": {
+            "description": "Данные анкеты (все поля database.User + tg username)",
+            "type": "object",
+            "properties": {
+                "birth_date": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "hide": {
+                    "type": "boolean"
+                },
+                "interests": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "location": {
+                    "type": "string"
+                },
+                "miniapp_name": {
+                    "type": "string"
+                },
+                "tg_user": {
+                    "type": "string"
+                },
+                "user_info": {
+                    "type": "string"
+                },
+                "user_photo": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "username": {
+                    "type": "string"
+                },
+                "widgets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/database.Widget"
+                    }
+                }
+            }
         }
     }
 }`
@@ -852,7 +1022,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
-	BasePath:         "/api",
+	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Shumi API",
 	Description:      "Shumi API",
