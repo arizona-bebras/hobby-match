@@ -18,18 +18,9 @@
   console.log(data);
 </script>
 
-{#if !isNamespaceProfile}
-  <Header {data} />
-{:else}
-  <NamespaceHeader
-    scrollDirection={Object.keys(scroll.directions).find(
-      (key) => scroll.directions[key as keyof typeof scroll.directions],
-    ) as 'left' | 'right' | 'top' | 'bottom' | undefined}
-    scrollYPos={scroll.y}
-  />
-{/if}
+<Header {data} />
 <div class="font-[Inter] px-4 w-full max-w-full relative">
-  <UserInfo {data} {isNamespaceProfile} />
+  <UserInfo {data} {isNamespaceProfile} {scroll} changeMode={false} />
   {#each data.widgets as widget (widget.id)}
     <div class="relative mb-2">
       <RenderWidget {widget} isViewingMode={true} />

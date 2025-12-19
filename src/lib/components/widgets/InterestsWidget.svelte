@@ -21,7 +21,7 @@
       <div
         class="flex gap-[8px] h-fit bg-accent/25 rounded-[28px] px-[12px] py-[8px]"
       >
-        <p class="text-accent">{interest}</p>
+        <p class="text-accent">{interest.tag}</p>
       </div>
     {/each}
     {#if isOpen}

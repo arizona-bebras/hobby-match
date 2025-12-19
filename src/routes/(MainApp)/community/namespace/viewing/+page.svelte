@@ -52,7 +52,8 @@
     location: 'Екатеринбург',
     miniapp_name: 'Эмиль',
     user_info: 'Программирую, пишу музыку и занимаюсь копирайтингом.\n',
-    user_photo: 'avatar_xskzlm0x9g.jpg',
+    user_photo:
+      'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',
     widgets: [
       {
         collectionId: '9fxx39w3wb6ulbf',
@@ -104,6 +105,7 @@
   let scroll = new ScrollState({
     element: () => screenContainer,
   });
+  let userSimilarity = 95;
 </script>
 
 <div class="overflow-y-auto relative" bind:this={screenContainer}>
