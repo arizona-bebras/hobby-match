@@ -75,6 +75,7 @@ func main() {
 		Debug:          true,
 	})
 
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/auth", auth.SetTokens)
 
@@ -116,5 +117,5 @@ func main() {
     ))
 
 	log.Println("Listen started at localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", c.Handler(mux)))
+	log.Fatal(http.ListenAndServe(":8080", handlers.JSONMiddleware(c.Handler(mux))))
 }

@@ -184,7 +184,6 @@ func (auth *AuthClient) SetTokens(w http.ResponseWriter, r *http.Request) {
 
 			log.Println("Tokens set")
 
-			w.Header().Set("Content-Type", "application/json")
 			w.Write([]byte(fmt.Sprintf(`{"response": {"access_token": "%s" , "refresh_token": "%s", "user": %s}}`, jwtAccessString, jwtRefreshString, string(userJSON))))
 			w.Write([]byte("\n\n"))
 		default:

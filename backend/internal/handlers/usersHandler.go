@@ -92,6 +92,7 @@ func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 	user.Widgets = widgets
 
 	userJSON, err := json.Marshal(user)
+	log.Println(string(userJSON))
 	if err != nil {
 		log.Printf("users handler: failed to serialize user: %s", err.Error())
 		http.Error(
@@ -170,7 +171,7 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	w.Write([]byte(`user updated`))
+	w.Write([]byte("user updated"))
 	w.Write([]byte("\n\n"))
 }
 
@@ -232,7 +233,7 @@ func (h *UserDataHandler) UpdateMyProfilePhoto(w http.ResponseWriter, r *http.Re
 	}
 
 
-	w.Write([]byte(`user updated`))
+	w.Write([]byte("user updated"))
 	w.Write([]byte("\n\n"))
 }
 
@@ -240,7 +241,7 @@ func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	log.Println(path)
 	switch path {
-	case "/api/me/":
+	case "/api/me":
 		switch r.Method {
 		case http.MethodPost:
 			h.UpdateMyProfileInfo(w, r)
