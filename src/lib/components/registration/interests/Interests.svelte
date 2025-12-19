@@ -35,12 +35,14 @@
 
   export async function save() {
     window.Telegram.WebApp.MainButton.showProgress();
-    const res = await updateData($formData).finally(window.Telegram.WebApp.MainButton.hideProgress)
+    const res = await updateData($formData).finally(
+      window.Telegram.WebApp.MainButton.hideProgress,
+    );
     if (res != 200) {
-      console.log('failed to update user data')
-      return
+      console.log('failed to update user data');
+      return;
     }
-    return
+    return;
   }
 
   async function handleTelegramButtonClick() {
@@ -96,12 +98,18 @@
     //     query: userInterest,
     //   },
     // });
-    const authHeader: HeadersInit = new Headers()
-    authHeader.set('Authorization', `Bearer ${window.localStorage.getItem("access_token")}`)
-    const result = await fetch(`${db}/api/worker/autocomplete?query=${userInterest}`, {
-      method: 'GET',
-      headers: authHeader,
-    }).then(res => res.json());
+    const authHeader: HeadersInit = new Headers();
+    authHeader.set(
+      'Authorization',
+      `Bearer ${window.localStorage.getItem('access_token')}`,
+    );
+    const result = await fetch(
+      `${db}/api/worker/autocomplete?query=${userInterest}`,
+      {
+        method: 'GET',
+        headers: authHeader,
+      },
+    ).then((res) => res.json());
     suggestedWords = result.response.matches.map(
       (element: { id: string; metadata: { tag: string } }) => ({
         id: element.id,

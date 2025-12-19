@@ -25,7 +25,7 @@
   import { photoSchema } from '$lib/components/registration/photo/PhotoFormShema';
   import { onDestroy } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
-  import { updateData } from '$lib/components/registration/';
+  import { type Stages, updateData } from '$lib/components/registration/';
   let gender = $state('');
 
   let value = $state<DateValue>();
@@ -40,8 +40,8 @@
     markStageComplete,
   }: {
     form: SuperValidated<Infer<FormSchema>>;
-    setCurrentStage: (stage: string) => void;
-    markStageComplete: (stage: 'Информация' | 'Фото' | 'Интересы') => void;
+    setCurrentStage: (stage: Stages) => void;
+    markStageComplete: (stage: Stages) => void;
   } = $props();
 
   const form = superForm(information, {
@@ -53,12 +53,14 @@
 
   export async function save() {
     window.Telegram.WebApp.MainButton.showProgress();
-    const res = await updateData($formData).finally(window.Telegram.WebApp.MainButton.hideProgress)
+    const res = await updateData($formData).finally(
+      window.Telegram.WebApp.MainButton.hideProgress,
+    );
     if (res != 200) {
-      console.log('failed to update user data')
-      return
+      console.log('failed to update user data');
+      return;
     }
-    return
+    return;
   }
   async function handleTelegramButtonClick() {
     await save();
