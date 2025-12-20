@@ -5,12 +5,16 @@ info:
   description: Shumi API
   contact: {}
   version: '1.0'
+security:
+- bearerAuth: []
 servers:
 - url: "/"
 paths:
   "/api/auth":
     post:
       summary: Получить токен авторизации
+      security:
+      - tmaAuth: []
       requestBody:
         description: tma initData
         content:
@@ -52,8 +56,6 @@ paths:
         in: query
         description: Ссылка на профиль
         required: true
-        style: form
-        explode: true
         schema:
           type: string
       responses:
@@ -91,16 +93,16 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/database.Error"
-    post:
+    patch:
       summary: Обновить информацию профиля пользователя
       requestBody:
         description: Интересы о пользователе
         content:
           application/json:
             schema:
-              type: array
               items:
                 type: string
+              type: array
         required: false
       responses:
         '200':
@@ -143,41 +145,6 @@ paths:
                 "$ref": "#/components/schemas/database.Error"
       x-codegen-request-body-name: user_photo
   "/api/me/widgets":
-    put:
-      summary: Обновить виджет
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: array
-                  description: Данные виджета
-                  items:
-                    type: integer
-                    format: int32
-                files:
-                  type: array
-                  description: Файлы виджета
-                  items:
-                    type: array
-                    items:
-                      type: integer
-                      format: int32
-      responses:
-        '200':
-          description: Виджет успешно обновлен
-          content:
-            "*/*":
-              schema:
-                type: string
-        '500':
-          description: Внутренняя ошибка сервера
-          content:
-            "*/*":
-              schema:
-                "$ref": "#/components/schemas/database.Error"
     post:
       summary: Создать виджет
       requestBody:
@@ -203,10 +170,7 @@ paths:
       responses:
         '200':
           description: Виджет успешно создан
-          content:
-            "*/*":
-              schema:
-                type: string
+          content: {}
         '500':
           description: Внутренняя ошибка сервера
           content:
@@ -220,17 +184,44 @@ paths:
         in: query
         description: id виджета
         required: true
-        style: form
-        explode: true
         schema:
           type: string
       responses:
         '200':
           description: Виджет удален
+          content: {}
+        '500':
+          description: Внутренняя ошибка сервера
           content:
             "*/*":
               schema:
-                type: string
+                "$ref": "#/components/schemas/database.Error"
+    patch:
+      summary: Обновить виджет
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  description: Данные виджета
+                  items:
+                    type: integer
+                    format: int32
+                files:
+                  type: array
+                  description: Файлы виджета
+                  items:
+                    type: array
+                    items:
+                      type: integer
+                      format: int32
+      responses:
+        '200':
+          description: Виджет успешно обновлен
+          content: {}
         '500':
           description: Внутренняя ошибка сервера
           content:
@@ -238,7 +229,7 @@ paths:
               schema:
                 "$ref": "#/components/schemas/database.Error"
   "/api/me/widgets/order":
-    put:
+    patch:
       summary: Обновить очередь виджета
       requestBody:
         content:
@@ -260,10 +251,7 @@ paths:
       responses:
         '200':
           description: Очередь успешно обновлена
-          content:
-            "*/*":
-              schema:
-                type: string
+          content: {}
         '500':
           description: Внутренняя ошибка сервера
           content:
@@ -278,53 +266,17 @@ paths:
         in: query
         description: id виджета
         required: true
-        style: form
-        explode: true
         schema:
           type: string
       - name: index
         in: query
         description: Позиция фото в списке
         required: true
-        style: form
-        explode: true
         schema:
           type: integer
       responses:
         '200':
           description: Фото виджета удалено
-          content:
-            "*/*":
-              schema:
-                type: string
-        '500':
-          description: Внутренняя ошибка сервера
-          content:
-            "*/*":
-              schema:
-                "$ref": "#/components/schemas/database.Error"
-  "/api/namespace":
-    put:
-      summary: Обновить информацию о неймспейсе
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                  description: Название неймспейса
-                photo:
-                  type: string
-                  description: Картинка неймспейса
-                  format: binary
-                description:
-                  type: string
-                  description: Описание неймспейса
-      responses:
-        '200':
-          description: Неймспейс успешно обновлен
           content: {}
         '500':
           description: Внутренняя ошибка сервера
@@ -332,6 +284,7 @@ paths:
             "*/*":
               schema:
                 "$ref": "#/components/schemas/database.Error"
+  "/api/namespace":
     post:
       summary: Создать неймспейс
       requestBody:
@@ -372,8 +325,6 @@ paths:
         in: query
         description: Название неймспейса
         required: true
-        style: form
-        explode: true
         schema:
           type: string
       responses:
@@ -392,6 +343,34 @@ paths:
             "*/*":
               schema:
                 "$ref": "#/components/schemas/database.Error"
+    patch:
+      summary: Обновить информацию о неймспейсе
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Название неймспейса
+                photo:
+                  type: string
+                  description: Картинка неймспейса
+                  format: binary
+                description:
+                  type: string
+                  description: Описание неймспейса
+      responses:
+        '200':
+          description: Неймспейс успешно обновлен
+          content: {}
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
   "/api/namespace/{namespace_id}":
     get:
       summary: Получить ленту из анкет пользователей неймспейса
@@ -400,8 +379,6 @@ paths:
         in: path
         description: id неймспейса
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
       responses:
@@ -460,8 +437,6 @@ paths:
         in: query
         description: id неймспейса
         required: true
-        style: form
-        explode: true
         schema:
           type: string
       responses:
@@ -482,8 +457,6 @@ paths:
         in: query
         description: id пользователя
         required: true
-        style: form
-        explode: true
         schema:
           type: string
       responses:
@@ -528,8 +501,6 @@ paths:
         in: query
         description: id пользователя
         required: true
-        style: form
-        explode: true
         schema:
           type: string
       responses:
@@ -549,8 +520,6 @@ paths:
         in: query
         description: id пользователя
         required: true
-        style: form
-        explode: true
         schema:
           type: string
       responses:
@@ -595,9 +564,6 @@ paths:
       - name: q
         in: query
         description: Ввод пользователя
-        required: false
-        style: form
-        explode: true
         schema:
           type: string
       responses:
@@ -620,6 +586,16 @@ paths:
               schema:
                 "$ref": "#/components/schemas/database.Error"
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    tmaAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Введите токен в формате: **tma <your_token>**'
   schemas:
     database.Error:
       type: object
@@ -646,6 +622,10 @@ components:
           type: string
         miniapp_name:
           type: string
+        personality_test:
+          type: array
+          items:
+            type: integer
         tg_user:
           type: string
         user_info:
@@ -721,6 +701,10 @@ components:
           type: string
         miniapp_name:
           type: string
+        personality_test:
+          type: array
+          items:
+            type: integer
         tg_user:
           type: string
         user_info:

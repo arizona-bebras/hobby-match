@@ -48,7 +48,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	dbConnection.Exec("CREATE EXTENSION IF NOT EXISTS vector")
+
+	err = dbConnection.Exec("CREATE EXTENSION IF NOT EXISTS vector").Error
+	if err != nil {
+		log.Fatalf("failed to create extension 'vector', %v", err)
+	}
 
 	err = dbConnection.AutoMigrate(
 		&database.User{},

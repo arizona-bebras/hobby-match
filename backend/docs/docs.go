@@ -118,7 +118,7 @@ const docTemplate = `{
                     }
                 }
             },
-            "post": {
+            "patch": {
                 "consumes": [
                     "application/json"
                 ],
@@ -225,45 +225,6 @@ const docTemplate = `{
             }
         },
         "/api/me/widgets": {
-            "put": {
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "summary": "Обновить виджет",
-                "parameters": [
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "integer",
-                            "format": "int32"
-                        },
-                        "collectionFormat": "csv",
-                        "description": "Данные виджета",
-                        "name": "data",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "array",
-                        "description": "Файлы виджета",
-                        "name": "files",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Виджет успешно обновлен",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            },
             "post": {
                 "consumes": [
                     "multipart/form-data"
@@ -290,10 +251,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Виджет успешно создан",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Виджет успешно создан"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
@@ -316,10 +274,43 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Виджет удален",
+                        "description": "Виджет удален"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
+                    }
+                }
+            },
+            "patch": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "summary": "Обновить виджет",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "format": "int32"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Данные виджета",
+                        "name": "data",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "array",
+                        "description": "Файлы виджета",
+                        "name": "files",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Виджет успешно обновлен"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
@@ -331,7 +322,7 @@ const docTemplate = `{
             }
         },
         "/api/me/widgets/order": {
-            "put": {
+            "patch": {
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -354,10 +345,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Очередь успешно обновлена",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Очередь успешно обновлена"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
@@ -389,10 +377,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Фото виджета удалено",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Фото виджета удалено"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
@@ -404,43 +389,6 @@ const docTemplate = `{
             }
         },
         "/api/namespace": {
-            "put": {
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "summary": "Обновить информацию о неймспейсе",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Название неймспейса",
-                        "name": "title",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "file",
-                        "description": "Картинка неймспейса",
-                        "name": "photo",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Описание неймспейса",
-                        "name": "description",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Неймспейс успешно обновлен"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            },
             "post": {
                 "consumes": [
                     "multipart/form-data"
@@ -501,6 +449,43 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/database.Error"
                         }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "summary": "Обновить информацию о неймспейсе",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Название неймспейса",
+                        "name": "title",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Картинка неймспейса",
+                        "name": "photo",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Описание неймспейса",
+                        "name": "description",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Неймспейс успешно обновлен"
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
@@ -847,6 +832,12 @@ const docTemplate = `{
                 "miniapp_name": {
                     "type": "string"
                 },
+                "personality_test": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "tg_user": {
                     "type": "string"
                 },
@@ -958,6 +949,12 @@ const docTemplate = `{
                 },
                 "miniapp_name": {
                     "type": "string"
+                },
+                "personality_test": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "tg_user": {
                     "type": "string"

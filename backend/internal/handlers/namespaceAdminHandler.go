@@ -114,7 +114,7 @@ func (h *NamespaceAdminHandler) CreateNamespace(w http.ResponseWriter, r *http.R
 // @Param description formData string false "Описание неймспейса"
 // @Success 200 {object} nil "Неймспейс успешно обновлен"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
-// @Router /api/namespace [put]
+// @Router /api/namespace [patch]
 func (h *NamespaceAdminHandler) UpdateNamespace(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey).(string)
 
@@ -251,7 +251,7 @@ func (h NamespaceAdminHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 		h.CreateNamespace(w, r)
 	case http.MethodDelete:
 		h.DeleteNamespace(w, r)
-	case http.MethodPut:
+	case http.MethodPatch:
 		h.UpdateNamespace(w, r)
 	default:
 		http.Error(

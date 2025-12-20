@@ -121,7 +121,7 @@ func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} nil "Пользователь успешно обновлен"
 // @Failure 401 {object} database.Error "Пользователь не авторизован"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
-// @Router /api/me [post]
+// @Router /api/me [patch]
 func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Request) {
 	tgID := r.Context().Value(database.AuthContextKey)
 
@@ -151,11 +151,8 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 	log.Printf("%s", getStructFieldNames(user))
 
 	var result *gorm.DB
-	if len(user.Interests) == 0 {
-		result = h.DB.Model(&user).Select("name", "location", "gender", "birth_date", "info").Updates(&user)
-	} else {
-		result = h.DB.Model(&user).Select("interests").Updates(&user)
-	}
+
+	result = h.DB.Model(&user).Updates(&user)
 
 	if result.Error != nil {
 		log.Printf("users handler: failed to update user, %s", result.Error.Error())
@@ -235,7 +232,7 @@ func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch path {
 	case "/api/me":
 		switch r.Method {
-		case http.MethodPost:
+		case http.MethodPatch:
 			h.UpdateMyProfileInfo(w, r)
 		case http.MethodGet:
 			h.GetMe(w, r)
@@ -252,7 +249,7 @@ func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	case "/api/me/photo":
 		switch r.Method {
-		case http.MethodPost:
+		case http.MethodPatch:
 			h.UpdateMyProfilePhoto(w, r)
 		default:
 			http.Error(
@@ -270,7 +267,7 @@ func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
 			h.CreateWidget(w, r)
-		case http.MethodPut:
+		case http.MethodPatch:
 			h.UpdateWidget(w, r)
 		case http.MethodDelete:
 			h.DeleteWidget(w, r)
@@ -288,7 +285,7 @@ func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	case "/api/me/widgets/order":
 		switch r.Method {
-		case http.MethodPut:
+		case http.MethodPatch:
 			h.UpdateWidgetOrder(w, r)
 		default:
 			http.Error(

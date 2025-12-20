@@ -24,6 +24,10 @@ definitions:
         type: string
       miniapp_name:
         type: string
+      personality_test:
+        items:
+          type: integer
+        type: array
       tg_user:
         type: string
       user_info:
@@ -99,6 +103,10 @@ definitions:
         type: string
       miniapp_name:
         type: string
+      personality_test:
+        items:
+          type: integer
+        type: array
       tg_user:
         type: string
       user_info:
@@ -187,7 +195,7 @@ paths:
           schema:
             $ref: '#/definitions/database.Error'
       summary: Профиль пользователя
-    post:
+    patch:
       consumes:
       - application/json
       parameters:
@@ -264,13 +272,35 @@ paths:
       responses:
         "200":
           description: Виджет удален
-          schema:
-            type: string
         "500":
           description: Внутренняя ошибка сервера
           schema:
             $ref: '#/definitions/database.Error'
       summary: Удалить виджет
+    patch:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - collectionFormat: csv
+        description: Данные виджета
+        in: formData
+        items:
+          format: int32
+          type: integer
+        name: data
+        type: array
+      - description: Файлы виджета
+        in: formData
+        name: files
+        type: array
+      responses:
+        "200":
+          description: Виджет успешно обновлен
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/database.Error'
+      summary: Обновить виджет
     post:
       consumes:
       - multipart/form-data
@@ -290,41 +320,13 @@ paths:
       responses:
         "200":
           description: Виджет успешно создан
-          schema:
-            type: string
         "500":
           description: Внутренняя ошибка сервера
           schema:
             $ref: '#/definitions/database.Error'
       summary: Создать виджет
-    put:
-      consumes:
-      - multipart/form-data
-      parameters:
-      - collectionFormat: csv
-        description: Данные виджета
-        in: formData
-        items:
-          format: int32
-          type: integer
-        name: data
-        type: array
-      - description: Файлы виджета
-        in: formData
-        name: files
-        type: array
-      responses:
-        "200":
-          description: Виджет успешно обновлен
-          schema:
-            type: string
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            $ref: '#/definitions/database.Error'
-      summary: Обновить виджет
   /api/me/widgets/order:
-    put:
+    patch:
       consumes:
       - multipart/form-data
       parameters:
@@ -341,8 +343,6 @@ paths:
       responses:
         "200":
           description: Очередь успешно обновлена
-          schema:
-            type: string
         "500":
           description: Внутренняя ошибка сервера
           schema:
@@ -364,8 +364,6 @@ paths:
       responses:
         "200":
           description: Фото виджета удалено
-          schema:
-            type: string
         "500":
           description: Внутренняя ошибка сервера
           schema:
@@ -391,6 +389,30 @@ paths:
           schema:
             $ref: '#/definitions/database.Error'
       summary: Удалить неймспейс
+    patch:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Название неймспейса
+        in: formData
+        name: title
+        type: string
+      - description: Картинка неймспейса
+        in: formData
+        name: photo
+        type: file
+      - description: Описание неймспейса
+        in: formData
+        name: description
+        type: string
+      responses:
+        "200":
+          description: Неймспейс успешно обновлен
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/database.Error'
+      summary: Обновить информацию о неймспейсе
     post:
       consumes:
       - multipart/form-data
@@ -418,30 +440,6 @@ paths:
           schema:
             $ref: '#/definitions/database.Error'
       summary: Создать неймспейс
-    put:
-      consumes:
-      - multipart/form-data
-      parameters:
-      - description: Название неймспейса
-        in: formData
-        name: title
-        type: string
-      - description: Картинка неймспейса
-        in: formData
-        name: photo
-        type: file
-      - description: Описание неймспейса
-        in: formData
-        name: description
-        type: string
-      responses:
-        "200":
-          description: Неймспейс успешно обновлен
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            $ref: '#/definitions/database.Error'
-      summary: Обновить информацию о неймспейсе
   /api/namespace/{namespace_id}:
     delete:
       parameters:
