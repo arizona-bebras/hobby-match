@@ -102,6 +102,16 @@ definitions:
           type: string
         type: array
     type: object
+  handlers.NamespaceMembers:
+    description: Данные неймспеса и его участники
+    properties:
+      namespace:
+        $ref: '#/definitions/database.Namespace'
+      user_ids:
+        items:
+          type: string
+        type: array
+    type: object
   handlers.PageData:
     description: Данные анкеты (все поля database.User + tg username)
     properties:
@@ -494,27 +504,6 @@ paths:
           schema:
             $ref: '#/definitions/database.Error'
       summary: Выйти из неймспейса
-    get:
-      parameters:
-      - description: id неймспейса
-        in: path
-        name: namespace_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/handlers.PageData'
-            type: array
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            $ref: '#/definitions/database.Error'
-      summary: Получить ленту из анкет пользователей неймспейса
     post:
       consumes:
       - multipart/form-data
@@ -541,6 +530,76 @@ paths:
           schema:
             $ref: '#/definitions/database.Error'
       summary: Зайти в неймспейс
+  /api/namespace/{namespace_id}/feed:
+    get:
+      parameters:
+      - description: id неймспейса
+        in: path
+        name: namespace_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.PageData'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/database.Error'
+      summary: Получить ленту из анкет пользователей неймспейса
+  /api/namespace/{namespace_id}/pages:
+    get:
+      parameters:
+      - description: id неймспейса
+        in: path
+        name: namespace_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.NamespaceMembers'
+            type: array
+        "403":
+          description: Пользователь не участник этого неймспейса
+          schema:
+            $ref: '#/definitions/database.Error'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/database.Error'
+      summary: Получить ленту из анкет пользователей неймспейса
+  /api/pages/{page_id}:
+    get:
+      parameters:
+      - description: id анкеты
+        in: path
+        name: page_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.PageData'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/database.Error'
+      summary: Получить анкету(страницу) одного пользователя
   /api/tg:
     delete:
       parameters:

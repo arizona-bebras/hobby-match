@@ -388,30 +388,6 @@ paths:
               schema:
                 "$ref": "#/components/schemas/database.Error"
   "/api/namespace/{namespace_id}":
-    get:
-      summary: Получить ленту из анкет пользователей неймспейса
-      parameters:
-      - name: namespace_id
-        in: path
-        description: id неймспейса
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/handlers.PageData"
-        '500':
-          description: Внутренняя ошибка сервера
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/database.Error"
     post:
       summary: Зайти в неймспейс
       requestBody:
@@ -463,6 +439,87 @@ paths:
           description: Внутренняя ошибка сервера
           content:
             "*/*":
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+  "/api/namespace/{namespace_id}/feed":
+    get:
+      summary: Получить ленту из анкет пользователей неймспейса
+      parameters:
+      - name: namespace_id
+        in: path
+        description: id неймспейса
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/handlers.PageData"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+  "/api/namespace/{namespace_id}/pages":
+    get:
+      summary: Получить ленту из анкет пользователей неймспейса
+      parameters:
+      - name: namespace_id
+        in: path
+        description: id неймспейса
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/handlers.NamespaceMembers"
+        '403':
+          description: Пользователь не участник этого неймспейса
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+  "/api/pages/{page_id}":
+    get:
+      summary: Получить анкету(страницу) одного пользователя
+      parameters:
+      - name: page_id
+        in: path
+        description: id анкеты
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/handlers.PageData"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
               schema:
                 "$ref": "#/components/schemas/database.Error"
   "/api/tg":
@@ -716,6 +773,16 @@ components:
           items:
             type: string
       description: Ответ autocomplete эндпоинта воркера.
+    handlers.NamespaceMembers:
+      description: Данные неймспеса и его участники
+      type: object
+      properties:
+        namespace:
+          "$ref": "#/components/schemas/database.Namespace"
+        user_ids:
+          type: array
+          items:
+            type: string
     handlers.PageData:
       type: object
       properties:

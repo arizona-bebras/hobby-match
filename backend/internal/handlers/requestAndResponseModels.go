@@ -3,9 +3,10 @@ package handlers
 import (
 	"shumi/internal/database"
 )
+
 // @Description Ответ autocomplete эндпоинта воркера.
 type AutocompleteResponse struct {
-	Q string
+	Q        string
 	Response []string
 }
 
@@ -20,6 +21,12 @@ type RegisterData struct {
 type PageData struct {
 	database.User
 	Username string `json:"username"`
+}
+
+// @Description Данные неймспеса и его участники
+type NamespaceMembers struct {
+	Namespace database.Namespace `json:"namespace"`
+	UserIds   []string           `json:"user_ids"`
 }
 
 // @Description Неймспейсы, в который состоит пользователь

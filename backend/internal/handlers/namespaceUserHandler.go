@@ -9,7 +9,10 @@ import (
 	"net/http"
 	"os"
 	"shumi/internal/database"
+	"slices"
+	"strings"
 	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -158,7 +161,7 @@ func getUserById(tx *gorm.DB, id string) (PageData, error) {
 // @Param namespace_id path string true "id неймспейса"
 // @Success 200 {array} PageData
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
-// @Router /api/namespace/{namespace_id} [get]
+// @Router /api/namespace/{namespace_id}/feed [get]
 func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey).(string)
 
@@ -337,6 +340,82 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	w.Write(pagesJSON)
 }
 
+// GetPages
+// @Summary Получить ленту из анкет пользователей неймспейса
+// @Produce json
+// @Param namespace_id path string true "id неймспейса"
+// @Success 200 {array} handlers.NamespaceMembers
+// @Failure 403 {object} database.Error "Пользователь не участник этого неймспейса"
+// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
+// @Router /api/namespace/{namespace_id}/pages [get]
+func (h *NamespaceHandler) GetPages(w http.ResponseWriter, r *http.Request) {
+	tgId := r.Context().Value(database.AuthContextKey).(string)
+
+	namespaceId := r.PathValue("namespace_id")
+	var namespace database.Namespace
+	var userIds []string
+
+	err := h.DB.Model(&database.Namespace{}).First(&namespace, "id = ?", namespaceId).Error
+	if err != nil {
+		log.Printf("namespace handler: failed to get namespace data, %v", err)
+		http.Error(
+				w, 
+				database.JSONErr(
+					http.StatusInternalServerError, 
+					fmt.Sprintf("namespace handler: failed to get namespace data, %v", err),
+				), 
+				http.StatusInternalServerError,
+			)
+		return
+	}
+
+	err = h.DB.Model(&database.UserNamespace{}).Select("user_id").Find(&userIds, "namespace_id = ?", namespaceId).Error
+	if err != nil {
+		log.Printf("namespace handler: failed to get namespace member`s ids, %v", err)
+		http.Error(
+				w, 
+				database.JSONErr(
+					http.StatusInternalServerError, 
+					fmt.Sprintf("namespace handler: failed to get namespace member`s ids, %v", err),
+				), 
+				http.StatusInternalServerError,
+			)
+		return
+	}
+
+	if !slices.Contains(userIds, tgId) {
+		log.Println("namespace handler: access denied you aren`t namespace member!")
+		http.Error(
+				w, 
+				database.JSONErr(
+					http.StatusForbidden, 
+					"namespace handler: access denied you aren`t namespace member!",
+				), 
+				http.StatusForbidden,
+			)
+		return
+	}
+
+	JSONNamespaceMembers, err := json.Marshal(NamespaceMembers{
+		Namespace: namespace,
+		UserIds: userIds,
+	})
+	if err != nil {
+		log.Printf("namespace handler: failed to marshal namespace data, %v", err)
+		http.Error(
+				w, 
+				database.JSONErr(
+					http.StatusInternalServerError, 
+					fmt.Sprintf("namespace handler: failed to marshal namespace data, %v", err),
+				), 
+				http.StatusInternalServerError,
+			)
+		return
+	}
+
+	w.Write(JSONNamespaceMembers)
+}
+
 func (h NamespaceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
@@ -344,7 +423,21 @@ func (h NamespaceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case http.MethodDelete:
 		h.LeaveNamespace(w, r)
 	case http.MethodGet:
-		h.GetFeed(w, r)
+		switch strings.Split(r.URL.Path, "/")[4] {
+		case "feed":
+			h.GetFeed(w, r)
+		case "pages":
+			h.GetPages(w, r)
+		default:
+			http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusNotFound, 
+				"namespace handler: endpoint not found",
+			), 
+			http.StatusNotFound,
+		)
+		}
 	default:
 		http.Error(
 			w, 

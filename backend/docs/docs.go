@@ -519,38 +519,6 @@ const docTemplate = `{
             }
         },
         "/api/namespace/{namespace_id}": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Получить ленту из анкет пользователей неймспейса",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id неймспейса",
-                        "name": "namespace_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/handlers.PageData"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            },
             "post": {
                 "consumes": [
                     "multipart/form-data"
@@ -604,6 +572,114 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "Успешный вход"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/namespace/{namespace_id}/feed": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Получить ленту из анкет пользователей неймспейса",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id неймспейса",
+                        "name": "namespace_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.PageData"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/namespace/{namespace_id}/pages": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Получить ленту из анкет пользователей неймспейса",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id неймспейса",
+                        "name": "namespace_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.NamespaceMembers"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Пользователь не участник этого неймспейса",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/pages/{page_id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Получить анкету(страницу) одного пользователя",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id анкеты",
+                        "name": "page_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.PageData"
+                            }
+                        }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
@@ -964,6 +1040,21 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "response": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "handlers.NamespaceMembers": {
+            "description": "Данные неймспеса и его участники",
+            "type": "object",
+            "properties": {
+                "namespace": {
+                    "$ref": "#/definitions/database.Namespace"
+                },
+                "user_ids": {
                     "type": "array",
                     "items": {
                         "type": "string"

@@ -116,6 +116,12 @@ func main() {
 		DB: dbConnection,
 	}
 	mux.Handle("/api/namespace/{namespace_id}", tgauth.AuthMiddleware(namespaceHandler))
+	mux.Handle("/api/namespace/{namespace_id}/", tgauth.AuthMiddleware(namespaceHandler))
+
+	pagesHandler := handlers.PagesHandler{
+		DB: dbConnection,
+	}
+	mux.Handle("/api/pages/{page_id}", tgauth.AuthMiddleware(pagesHandler))
 
 	mux.Handle("/swagger/", httpSwagger.Handler(
 		httpSwagger.URL("/swagger/doc.json"),
