@@ -79,11 +79,6 @@
 
   let searchFilter = $state('');
   $inspect(searchFilter);
-  const aboba = createQuery(() => ({
-    queryKey: ['user'],
-    queryFn: async () => await client.GET('/api/me'),
-    select: (data) => data.data,
-  }));
 </script>
 
 <div class="p-4 w-full text-text-color">

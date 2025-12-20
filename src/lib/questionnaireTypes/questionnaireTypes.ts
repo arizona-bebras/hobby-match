@@ -62,7 +62,7 @@ export type PageData = {
   birth_date: Date;
   gender: string;
   id: string;
-  interests: InterestType[];
+  interests: string[];
   location: string;
   miniapp_name: string;
   user_info: string;

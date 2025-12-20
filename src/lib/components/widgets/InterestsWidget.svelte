@@ -1,9 +1,8 @@
 <script lang="ts">
   import { ChevronUp } from '@lucide/svelte';
   import { cn } from '$lib/utils';
-  import type { InterestType } from '$lib/questionnaireTypes/questionnaireTypes';
 
-  let { interests }: { interests: InterestType[] } = $props();
+  let { interests }: { interests: string[] } = $props();
   let isOpen = $state(false);
   console.log('Interests:', interests);
 </script>
