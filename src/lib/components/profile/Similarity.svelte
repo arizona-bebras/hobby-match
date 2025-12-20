@@ -10,13 +10,13 @@
   >
     <div class="flex items-center">
       {#if userSimilarity <= 25}
-        <Emoji symbol="🙁" size={5} />
+        <Emoji symbol="🔥" size={5} class="opacity-35" />
         <p>Вы похожи на 15%</p>
       {:else if userSimilarity >= 15 && userSimilarity < 50}
-        <Emoji symbol="😐" size={5} />
+        <Emoji symbol="🔥" size={5} class="opacity-65" />
         <p>Вы похожи на 33%</p>
       {:else if userSimilarity >= 50 && userSimilarity < 75}
-        <Emoji symbol="🙂" size={5} />
+        <Emoji symbol="🔥" size={5} class="opacity-85" />
         <p>Вы похожи на 50%</p>
       {/if}
     </div>

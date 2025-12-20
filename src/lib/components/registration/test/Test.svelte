@@ -6,7 +6,7 @@
   import { testSchema } from '$lib/components/registration/test/TestFormShema';
   import { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zod4 } from 'sveltekit-superforms/adapters';
-  import { onDestroy } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
   import { updateData } from '$lib/components/registration/';
   let {
@@ -32,11 +32,12 @@
     },
   });
 
-  const { form: formData, enhance, validateForm } = form;
+  const { form: formData, enhance, validateForm, submit } = form;
 
   export async function save() {
+    let testPoints = sliders.map((obj) => obj.value);
     window.Telegram.WebApp.MainButton.showProgress();
-    const res = await updateData($formData).finally(
+    const res = await updateData({ personality_test: testPoints }).finally(
       window.Telegram.WebApp.MainButton.hideProgress,
     );
     if (res != 200) {
@@ -45,13 +46,13 @@
     }
     return;
   }
-
+  let formElem: HTMLFormElement;
   async function handleTelegramButtonClick() {
     // window.Telegram.WebApp.MainButton.showProgress()
     markStageComplete('Тест');
     setCurrentStage('Интересы');
-    // await save();
-    form.submit();
+    await save();
+    // submit(formElem);
   }
 
   useTelegramButton(handleTelegramButtonClick);
@@ -114,9 +115,12 @@
       rightCornerText: 'Фокус на главном',
     },
   ]);
+  onMount(() => {
+    $formData.actionScale = 5;
+  });
 </script>
 
-<form method="POST" use:enhance>
+<form method="POST" use:enhance bind:this={formElem}>
   <div class="flex flex-col gap-y-2">
     <div class="flex w-full items-center">
       <p class="font-medium text-2xl">

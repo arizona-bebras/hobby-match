@@ -13,6 +13,7 @@
   import { onMount } from 'svelte';
   import { Check } from '@lucide/svelte';
   import { goto } from '$app/navigation';
+  import client from '$lib/api/client';
 
   let information: Information | undefined = $state();
   let photo: Photo | undefined = $state();
@@ -27,22 +28,42 @@
   });
   let { data }: PageProps = $props();
 
-  onMount(() => {
+  onMount(async () => {
+    const { data } = await client.GET('/api/me');
     if (
-      pb.authStore.record?.miniapp_name &&
-      pb.authStore.record?.gender &&
-      pb.authStore.record?.birth_date &&
-      pb.authStore.record?.location &&
-      pb.authStore.record?.user_info
+      data?.miniapp_name &&
+      data?.gender &&
+      data?.birth_date &&
+      data?.location &&
+      data?.user_info
     ) {
       markStageComplete('Информация');
     }
-    if (pb.authStore.record?.user_photo) {
+    if (data?.user_photo) {
       markStageComplete('Фото');
     }
-    if (pb.authStore.record?.interests.length >= 1) {
+    if (data?.personality_test) {
+      markStageComplete('Тест');
+    }
+    if (data?.interests) {
       markStageComplete('Интересы');
     }
+
+    // if (
+    //   pb.authStore.record?.miniapp_name &&
+    //   pb.authStore.record?.gender &&
+    //   pb.authStore.record?.birth_date &&
+    //   pb.authStore.record?.location &&
+    //   pb.authStore.record?.user_info
+    // ) {
+    //   markStageComplete('Информация');
+    // }
+    // if (pb.authStore.record?.user_photo) {
+    //   markStageComplete('Фото');
+    // }
+    // if (pb.authStore.record?.interests.length >= 1) {
+    //   markStageComplete('Интересы');
+    // })
   });
 
   let stages = $state([
@@ -122,6 +143,7 @@
         if (currentStage === 'Информация') await information?.save();
         else if (currentStage === 'Фото') await photo?.save();
         else if (currentStage === 'Интересы') await interests?.save();
+        else if (currentStage === 'Тест') await test?.save();
         await goto('/profile');
       }}
     >

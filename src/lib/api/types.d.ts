@@ -167,8 +167,12 @@ export interface paths {
             };
         };
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
         /** Обновить информацию профиля пользователя */
-        post: {
+        patch: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -187,9 +191,7 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "*/*": string;
-                    };
+                    content?: never;
                 };
                 /** @description Пользователь не авторизован */
                 401: {
@@ -211,6 +213,47 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/api/me/namespaces": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Неймспейсы пользователя */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.UserNamespaces"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -246,9 +289,7 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "*/*": string;
-                    };
+                    content?: never;
                 };
                 /** @description Внутренняя ошибка сервера */
                 500: {
@@ -275,8 +316,9 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Обновить виджет */
-        put: {
+        put?: never;
+        /** Создать виджет */
+        post: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -294,52 +336,12 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Виджет успешно обновлен */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "*/*": string;
-                    };
-                };
-                /** @description Внутренняя ошибка сервера */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "*/*": components["schemas"]["database.Error"];
-                    };
-                };
-            };
-        };
-        /** Создать виджет */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "multipart/form-data": {
-                        /** @description Данные виджета */
-                        data?: number[];
-                        items?: number[];
-                    };
-                };
-            };
-            responses: {
                 /** @description Виджет успешно создан */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "*/*": string;
-                    };
+                    content?: never;
                 };
                 /** @description Внутренняя ошибка сервера */
                 500: {
@@ -370,9 +372,7 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "*/*": string;
-                    };
+                    content?: never;
                 };
                 /** @description Внутренняя ошибка сервера */
                 500: {
@@ -387,7 +387,43 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        patch?: never;
+        /** Обновить виджет */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        /** @description Данные виджета */
+                        data?: number[];
+                        /** @description Файлы виджета */
+                        files?: number[][];
+                    };
+                };
+            };
+            responses: {
+                /** @description Виджет успешно обновлен */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/api/me/widgets/order": {
@@ -398,8 +434,13 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
         /** Обновить очередь виджета */
-        put: {
+        patch: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -425,9 +466,7 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "*/*": string;
-                    };
+                    content?: never;
                 };
                 /** @description Внутренняя ошибка сервера */
                 500: {
@@ -440,11 +479,6 @@ export interface paths {
                 };
             };
         };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
         trace?: never;
     };
     "/api/me/widgets/photo": {
@@ -477,9 +511,7 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "*/*": string;
-                    };
+                    content?: never;
                 };
                 /** @description Внутренняя ошибка сервера */
                 500: {
@@ -505,50 +537,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Обновить информацию о неймспейсе */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "multipart/form-data": {
-                        /** @description Название неймспейса */
-                        title?: string;
-                        /**
-                         * Format: binary
-                         * @description Картинка неймспейса
-                         */
-                        photo?: string;
-                        /** @description Описание неймспейса */
-                        description?: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Неймспейс успешно обновлен */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "*/*": string;
-                    };
-                };
-                /** @description Внутренняя ошибка сервера */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "*/*": components["schemas"]["database.Error"];
-                    };
-                };
-            };
-        };
+        put?: never;
         /** Создать неймспейс */
         post: {
             parameters: {
@@ -578,9 +567,7 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "*/*": string;
-                    };
+                    content?: never;
                 };
                 /** @description Внутренняя ошибка сервера */
                 500: {
@@ -611,9 +598,7 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "*/*": string;
-                    };
+                    content?: never;
                 };
                 /** @description Этот пользователь не админ неймспейса */
                 403: {
@@ -637,10 +622,142 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        patch?: never;
+        /** Обновить информацию о неймспейсе */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        /** @description Название неймспейса */
+                        title?: string;
+                        /**
+                         * Format: binary
+                         * @description Картинка неймспейса
+                         */
+                        photo?: string;
+                        /** @description Описание неймспейса */
+                        description?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Неймспейс успешно обновлен */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/api/namespace/{namespace_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Зайти в неймспейс */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /** @description id неймспейса */
+                        namespace: string;
+                        /** @description инвайт код для входа в неймспейс */
+                        invite_code: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Успешный вход */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Неверный код входа */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        /** Выйти из неймспейса */
+        delete: {
+            parameters: {
+                query: {
+                    /** @description id неймспейса */
+                    namespace: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Успешный вход */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/namespace/{namespace_id}/feed": {
         parameters: {
             query?: never;
             header?: never;
@@ -681,41 +798,49 @@ export interface paths {
             };
         };
         put?: never;
-        /** Зайти в неймспейс */
-        post: {
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/namespace/{namespace_id}/pages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить ленту из анкет пользователей неймспейса */
+        get: {
             parameters: {
                 query?: never;
                 header?: never;
-                path?: never;
+                path: {
+                    /** @description id неймспейса */
+                    namespace_id: string;
+                };
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "multipart/form-data": {
-                        /** @description id неймспейса */
-                        namespace: string;
-                        /** @description инвайт код для входа в неймспейс */
-                        invite_code: string;
-                    };
-                };
-            };
+            requestBody?: never;
             responses: {
-                /** @description Успешный вход */
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": string;
+                        "application/json": components["schemas"]["handlers.NamespaceMembers"][];
                     };
                 };
-                /** @description Неверный код входа */
+                /** @description Пользователь не участник этого неймспейса */
                 403: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["database.Error"];
+                        "application/json": components["schemas"]["database.Error"];
                     };
                 };
                 /** @description Внутренняя ошибка сервера */
@@ -724,31 +849,46 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["database.Error"];
+                        "application/json": components["schemas"]["database.Error"];
                     };
                 };
             };
         };
-        /** Выйти из неймспейса */
-        delete: {
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pages/{page_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить анкету(страницу) одного пользователя */
+        get: {
             parameters: {
-                query: {
-                    /** @description id неймспейса */
-                    namespace: string;
-                };
+                query?: never;
                 header?: never;
-                path?: never;
+                path: {
+                    /** @description id анкеты */
+                    page_id: string;
+                };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description Успешный вход */
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": string;
+                        "application/json": components["schemas"]["handlers.PageData"][];
                     };
                 };
                 /** @description Внутренняя ошибка сервера */
@@ -757,11 +897,14 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "*/*": components["schemas"]["database.Error"];
+                        "application/json": components["schemas"]["database.Error"];
                     };
                 };
             };
         };
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -808,7 +951,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Регистрация пользователя */
+        /** Проверить существование пользователя в бд */
         post: {
             parameters: {
                 query?: never;
@@ -828,9 +971,7 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "application/json": components["schemas"]["database.User"];
-                    };
+                    content?: never;
                 };
                 /** @description Внутренняя ошибка сервера */
                 500: {
@@ -843,7 +984,7 @@ export interface paths {
                 };
             };
         };
-        /** Удаления пользователя */
+        /** Скрыть/показывать анкету другим пользователям */
         delete: {
             parameters: {
                 query: {
@@ -861,9 +1002,7 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "application/json": components["schemas"]["database.User"];
-                    };
+                    content?: never;
                 };
                 /** @description Внутренняя ошибка сервера */
                 500: {
@@ -896,9 +1035,7 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "application/json": components["schemas"]["database.User"];
-                    };
+                    content?: never;
                 };
                 /** @description Внутренняя ошибка сервера */
                 500: {
@@ -946,9 +1083,7 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "*/*": string;
-                    };
+                    content?: never;
                 };
                 /** @description Внутренняя ошибка сервера */
                 500: {
@@ -1033,6 +1168,14 @@ export interface components {
             cause?: string;
             status_code?: number;
         };
+        /** @description Неймспейс */
+        "database.Namespace": {
+            admin?: string;
+            description?: string;
+            id?: string;
+            picture?: number[];
+            title?: string;
+        };
         /** @description Основные данные профиля и связанные виджеты. */
         "database.User": {
             birth_date?: string;
@@ -1041,6 +1184,7 @@ export interface components {
             interests?: string[];
             location?: string;
             miniapp_name?: string;
+            personality_test?: number[];
             tg_user?: string;
             user_info?: string;
             user_photo?: number[];
@@ -1068,6 +1212,11 @@ export interface components {
             q?: string;
             response?: string[];
         };
+        /** @description Данные неймспеса и его участники */
+        "handlers.NamespaceMembers": {
+            namespace?: components["schemas"]["database.Namespace"];
+            user_ids?: string[];
+        };
         /** @description Данные анкеты (все поля database.User + tg username) */
         "handlers.PageData": {
             birth_date?: string;
@@ -1076,11 +1225,16 @@ export interface components {
             interests?: string[];
             location?: string;
             miniapp_name?: string;
+            personality_test?: number[];
             tg_user?: string;
             user_info?: string;
             user_photo?: number[];
             username?: string;
             widgets?: components["schemas"]["database.Widget"][];
+        };
+        /** @description Неймспейсы, в который состоит пользователь */
+        "handlers.UserNamespaces": {
+            namespaces?: components["schemas"]["database.Namespace"][];
         };
     };
     responses: never;

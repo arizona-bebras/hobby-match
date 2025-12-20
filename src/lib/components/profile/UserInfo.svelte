@@ -39,7 +39,7 @@
     <span>{data.location}</span>
   </p>
   {#if isNamespaceProfile}
-    <TestResultBtn userSimilarity={85} interests={data.interests} />
+    <TestResultBtn userSimilarity={50} interests={data.interests} />
   {/if}
 {/if}
 
