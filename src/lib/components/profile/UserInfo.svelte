@@ -38,7 +38,9 @@
   <p class="font-semibold text-[20px] break-words">
     <span>{data.location}</span>
   </p>
-  <TestResultBtn userSimilarity={85} />
+  {#if isNamespaceProfile}
+    <TestResultBtn userSimilarity={85} interests={data.interests} />
+  {/if}
 {/if}
 
 <InterestsWidget interests={data.interests} />

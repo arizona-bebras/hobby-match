@@ -29,7 +29,7 @@ export async function updateData(data: object) {
   //     }).then(res => res)
   //     return res.status
   // }
-  const res = await fetch(`${db}/api/me/`, {
+  const res = await fetch(`${db}/api/me`, {
     method: 'POST',
     headers: authHeader,
     body: JSON.stringify(data),

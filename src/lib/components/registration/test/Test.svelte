@@ -130,7 +130,7 @@
   </div>
   {#each sliders as slider (slider.rightCornerText)}
     <div class="mb-6.5">
-      <div class="flex items-center mb-0.5">
+      <div class="flex items-center mb-1">
         <Emoji symbol={slider.leftCornerEmoji} class="mr-1" />
         <p>{slider.leftCornerText}</p>
       </div>
@@ -141,9 +141,9 @@
         step={1}
         class="bg-accent-foreground/25 rounded-full"
       />
-      <div class=" flex items-center justify-end mt-0.5">
-        <Emoji symbol={slider.rightCornerEmoji} class="mr-1" />
+      <div class=" flex items-center justify-end mt-1">
         <p>{slider.rightCornerText}</p>
+        <Emoji symbol={slider.rightCornerEmoji} class="ml-1" />
       </div>
     </div>
   {/each}

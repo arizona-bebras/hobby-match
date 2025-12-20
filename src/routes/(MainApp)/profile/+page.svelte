@@ -94,7 +94,12 @@
       }}
     />
 
-    <RenderEditWidget {addedWidget} {onEditClose} widgetId={editingWidget} files={editingFiles} />
+    <RenderEditWidget
+      {addedWidget}
+      {onEditClose}
+      widgetId={editingWidget}
+      files={editingFiles}
+    />
     {#each widgets as widget, i (widget.id)}
       {console.log(widget)}
       <div class="relative mb-2">
