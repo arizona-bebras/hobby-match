@@ -74,7 +74,7 @@ func main() {
 	}
 
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"https://qh5zm0g8-5173.euw.devtunnels.ms", "http://192.168.1.156:5173", "http://127.0.0.1:8080"},
+		AllowedOrigins: []string{"https://qh5zm0g8-5173.euw.devtunnels.ms", "http://192.168.1.156:5173", "http://127.0.0.1:8080", "https://*.shumi.space"},
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
 		AllowedHeaders: []string{"Authorization", "Content-Type"},
 		Debug:          true,
