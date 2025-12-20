@@ -2,7 +2,6 @@ package database
 
 import (
 	"encoding/json"
-	"github.com/lib/pq"
 	"log"
 	// "gorm.io/gorm"
 	"github.com/pgvector/pgvector-go"
@@ -20,33 +19,33 @@ type TgUser struct {
 
 // @Description Основные данные профиля и связанные виджеты.
 type User struct {
-	Id              string          `json:"tg_user" gorm:"primaryKey;type:text;column:id"`
-	Name            string          `json:"miniapp_name" gorm:"column:name"`
-	Location        string          `json:"location" gorm:"column:location"`
-	Gender          string          `json:"gender" gorm:"column:gender"`
-	BirthDate       string          `json:"birth_date" gorm:"column:birth_date"`
-	Interests       pq.StringArray  `json:"interests" gorm:"type:text[];column:interests"`
-	PersonalityTest pgvector.Vector `json:"personality_test" gorm:"type:vector(5)"`
-	Photo           []byte          `json:"user_photo" gorm:"column:photo"`
-	Info            string          `json:"user_info" gorm:"column:info"`
-	Hide            bool            `json:"hide" gorm:"column:hide"`
-	Widgets         []Widget        `json:"widgets" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
-	TgUser          TgUser          `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	UserNamespace   UserNamespace   `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Vote            Vote            `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Id              string        `json:"tg_user" gorm:"primaryKey;type:text;column:id"`
+	Name            string        `json:"miniapp_name" gorm:"column:name"`
+	Location        string        `json:"location" gorm:"column:location"`
+	Gender          string        `json:"gender" gorm:"column:gender"`
+	BirthDate       string        `json:"birth_date" gorm:"column:birth_date"`
+	Interests       []string      `json:"interests" gorm:"type:text[];column:interests"`
+	PersonalityTest []float32     `json:"personality_test" gorm:"type:vector(5)"`
+	Photo           []byte        `json:"user_photo" gorm:"column:photo"`
+	Info            string        `json:"user_info" gorm:"column:info"`
+	Hide            bool          `json:"hide" gorm:"column:hide"`
+	Widgets         []Widget      `json:"widgets" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	TgUser          TgUser        `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	UserNamespace   UserNamespace `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Vote            Vote          `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 // @Description Виджет
 type Widget struct {
-	Id             string        `json:"id" gorm:"primaryKey;column:id"`
-	UserId         string        `json:"user" gorm:"column:user;type:text"`
-	User           User          `gorm:"foreignKey:UserId;references:Id"`
-	Order          int           `json:"order" gorm:"column:order"`
-	Files          pq.ByteaArray `json:"files" gorm:"type:bytea[];column:files"`
-	Data           string        `json:"data" gorm:"column:data"`
-	Namespace      string        `json:"namespace" gorm:"column:namespace"`
-	AdditionalData string        `json:"additionalData" gorm:"-"`
-	Vote           Vote          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Id             string   `json:"id" gorm:"primaryKey;column:id"`
+	UserId         string   `json:"user" gorm:"column:user;type:text"`
+	User           User     `gorm:"foreignKey:UserId;references:Id"`
+	Order          int      `json:"order" gorm:"column:order"`
+	Files          [][]byte `json:"-" gorm:"type:bytea[];column:files"` // TODO: возвращать отдельным endpoint...
+	Data           string   `json:"data" gorm:"column:data"`
+	Namespace      string   `json:"namespace" gorm:"column:namespace"`
+	AdditionalData string   `json:"additionalData" gorm:"-"`
+	Vote           Vote     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 // @Description Голос в опросе
@@ -90,8 +89,9 @@ func (UserNamespace) TableName() string {
 
 // @Description Интерес
 type Interest struct {
-	Id  string `json:"id" gorm:"primaryKey;column:id"`
-	Tag string `json:"tag" gorm:"column:tag"`
+	Id        string          `json:"id" gorm:"primaryKey;column:id;type:uuid;default:gen_random_uuid()"`
+	Tag       string          `json:"tag" gorm:"column:tag"`
+	Embedding pgvector.Vector `json:"-" gorm:"type:vector(2048)"`
 }
 
 // @Description Просмотр анкеты

@@ -60,6 +60,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/autocomplete": {
+            "get": {
+                "description": "Возвращает список интересов, семантически похожих на запрос 'q'.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Предложенные интересы",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Строка для поиска и автодополнения интересов",
+                        "name": "q",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешное получение списка интересов",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.AutocompleteResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка авторизации",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/games": {
             "get": {
                 "produces": [
@@ -167,6 +204,14 @@ const docTemplate = `{
                     {
                         "description": "Интересы о пользователе",
                         "name": "interests",
+                        "in": "body",
+                        "schema": {
+                            "type": "array"
+                        }
+                    },
+                    {
+                        "description": "Личностный тест (5 слайдеров)",
+                        "name": "personality_test",
                         "in": "body",
                         "schema": {
                             "type": "array"
@@ -854,42 +899,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/api/worker/autocomplete": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Предложенные пользователю интересы",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Ввод пользователя",
-                        "name": "q",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.AutocompleteResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Ошибка авторизации",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -957,7 +966,7 @@ const docTemplate = `{
                 "personality_test": {
                     "type": "array",
                     "items": {
-                        "type": "integer"
+                        "type": "number"
                     }
                 },
                 "tg_user": {
@@ -1005,16 +1014,6 @@ const docTemplate = `{
                 "data": {
                     "type": "string"
                 },
-                "files": {
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "integer",
-                            "format": "int32"
-                        }
-                    }
-                },
                 "id": {
                     "type": "string"
                 },
@@ -1033,17 +1032,24 @@ const docTemplate = `{
             }
         },
         "handlers.AutocompleteResponse": {
-            "description": "Ответ autocomplete эндпоинта воркера.",
             "type": "object",
             "properties": {
-                "q": {
-                    "type": "string"
-                },
-                "response": {
+                "completions": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/handlers.Autocompletion"
                     }
+                }
+            }
+        },
+        "handlers.Autocompletion": {
+            "type": "object",
+            "properties": {
+                "similarity": {
+                    "type": "number"
+                },
+                "tag": {
+                    "type": "string"
                 }
             }
         },
@@ -1090,7 +1096,7 @@ const docTemplate = `{
                 "personality_test": {
                     "type": "array",
                     "items": {
-                        "type": "integer"
+                        "type": "number"
                     }
                 },
                 "tg_user": {

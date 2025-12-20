@@ -99,8 +99,8 @@ func main() {
 	}
 	mux.Handle("/api/vote", tgauth.AuthMiddleware(voteHandler))
 
-	autocompleteHandler := handlers.AutocompleteHandler{}
-	mux.Handle("/api/worker", tgauth.AuthMiddleware(autocompleteHandler))
+	autocompleteHandler := handlers.AutocompleteHandler{DB: dbConnection}
+	mux.Handle("/api/autocomplete", tgauth.AuthMiddleware(autocompleteHandler))
 
 	gameHandler := handlers.GamesHandler{
 		DB: dbConnection,

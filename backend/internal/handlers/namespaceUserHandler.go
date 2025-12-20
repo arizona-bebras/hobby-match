@@ -26,8 +26,8 @@ type WorkerRequest struct {
 }
 
 type UserView struct {
-    UserID     string     `json:"user_id" db:"user_id"`
-    LastViewed *time.Time `json:"last_viewed" db:"last_viewed"` 
+	UserID     string     `json:"user_id" db:"user_id"`
+	LastViewed *time.Time `json:"last_viewed" db:"last_viewed"`
 }
 
 type Match struct {
@@ -57,11 +57,11 @@ func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		log.Printf("namespace handler: failed to find namespace code, %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("namespace handler: failed to find namespace code, %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -70,11 +70,11 @@ func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request
 	if invite_code != namespaceInviteCode.InviteCode {
 		log.Println("namespace handler: wrong invite code!")
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusForbidden, 
+				http.StatusForbidden,
 				"namespace handler: wrong invite code!",
-			), 
+			),
 			http.StatusForbidden,
 		)
 		return
@@ -86,18 +86,18 @@ func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		log.Printf("namespace handler: failed to enter namespace, %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("namespace handler: failed to enter namespace, %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
 	}
 }
 
-// EnterNamespace
+// LeaveNamespace
 // @Summary Выйти из неймспейса
 // @Param namespace query string true "id неймспейса"
 // @Success 200 {object} nil "Успешный вход"
@@ -113,11 +113,11 @@ func (h *NamespaceHandler) LeaveNamespace(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		log.Println("namespace handler: failed to leave namespace")
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				"namespace handler: failed to leave namespace",
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -128,7 +128,7 @@ func getUserById(tx *gorm.DB, id string) (PageData, error) {
 	var user PageData
 	result := tx.Table("users").
 		Select(
-			"users.id", 
+			"users.id",
 			"users.name",
 			"users.location",
 			"users.gender",
@@ -193,11 +193,11 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("namespace handler: failed to get views %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("namespace handler: failed to get views %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -210,7 +210,7 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	workerRequestBody := WorkerRequest{
-		Id: tgId,
+		Id:   tgId,
 		From: views,
 	}
 
@@ -218,11 +218,11 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("namespace handler: failed to get views %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("namespace handler: failed to get views %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -234,11 +234,11 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("worker/feed: failed to create request: %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("worker/feed: failed to create request: %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -249,11 +249,11 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("worker/feed: failed to process request: %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("worker/feed: failed to create request: %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -263,11 +263,11 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("worker/feed: failed to read response: %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("worker/feed: failed to read response: %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -280,11 +280,11 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("worker/feed: failed to read response: %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("worker/feed: failed to read response: %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -298,11 +298,11 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 		if !ok {
 			log.Printf("worker/feed: failed to get user page: %v", err)
 			http.Error(
-				w, 
+				w,
 				database.JSONErr(
-					http.StatusInternalServerError, 
+					http.StatusInternalServerError,
 					fmt.Sprintf("worker/feed: failed to get user page: %v", err),
-				), 
+				),
 				http.StatusInternalServerError,
 			)
 			return
@@ -311,11 +311,11 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Printf("namespace handler: failed to get user page: %v", err)
 			http.Error(
-				w, 
+				w,
 				database.JSONErr(
-					http.StatusInternalServerError, 
+					http.StatusInternalServerError,
 					fmt.Sprintf("namespace handler: failed to get user page: %v", err),
-				), 
+				),
 				http.StatusInternalServerError,
 			)
 			return
@@ -327,13 +327,13 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("namespace handler: failed to serialize user: %s", err.Error())
 		http.Error(
-				w, 
-				database.JSONErr(
-					http.StatusInternalServerError, 
-					fmt.Sprintf("namespace handler: failed to serialize user: %s", err.Error()),
-				), 
+			w,
+			database.JSONErr(
 				http.StatusInternalServerError,
-			)
+				fmt.Sprintf("namespace handler: failed to serialize user: %s", err.Error()),
+			),
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
@@ -359,13 +359,13 @@ func (h *NamespaceHandler) GetPages(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("namespace handler: failed to get namespace data, %v", err)
 		http.Error(
-				w, 
-				database.JSONErr(
-					http.StatusInternalServerError, 
-					fmt.Sprintf("namespace handler: failed to get namespace data, %v", err),
-				), 
+			w,
+			database.JSONErr(
 				http.StatusInternalServerError,
-			)
+				fmt.Sprintf("namespace handler: failed to get namespace data, %v", err),
+			),
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
@@ -373,43 +373,43 @@ func (h *NamespaceHandler) GetPages(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("namespace handler: failed to get namespace member`s ids, %v", err)
 		http.Error(
-				w, 
-				database.JSONErr(
-					http.StatusInternalServerError, 
-					fmt.Sprintf("namespace handler: failed to get namespace member`s ids, %v", err),
-				), 
+			w,
+			database.JSONErr(
 				http.StatusInternalServerError,
-			)
+				fmt.Sprintf("namespace handler: failed to get namespace member`s ids, %v", err),
+			),
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
 	if !slices.Contains(userIds, tgId) {
 		log.Println("namespace handler: access denied you aren`t namespace member!")
 		http.Error(
-				w, 
-				database.JSONErr(
-					http.StatusForbidden, 
-					"namespace handler: access denied you aren`t namespace member!",
-				), 
+			w,
+			database.JSONErr(
 				http.StatusForbidden,
-			)
+				"namespace handler: access denied you aren`t namespace member!",
+			),
+			http.StatusForbidden,
+		)
 		return
 	}
 
 	JSONNamespaceMembers, err := json.Marshal(NamespaceMembers{
 		Namespace: namespace,
-		UserIds: userIds,
+		UserIds:   userIds,
 	})
 	if err != nil {
 		log.Printf("namespace handler: failed to marshal namespace data, %v", err)
 		http.Error(
-				w, 
-				database.JSONErr(
-					http.StatusInternalServerError, 
-					fmt.Sprintf("namespace handler: failed to marshal namespace data, %v", err),
-				), 
+			w,
+			database.JSONErr(
 				http.StatusInternalServerError,
-			)
+				fmt.Sprintf("namespace handler: failed to marshal namespace data, %v", err),
+			),
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
@@ -430,21 +430,21 @@ func (h NamespaceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			h.GetPages(w, r)
 		default:
 			http.Error(
-			w, 
-			database.JSONErr(
-				http.StatusNotFound, 
-				"namespace handler: endpoint not found",
-			), 
-			http.StatusNotFound,
-		)
+				w,
+				database.JSONErr(
+					http.StatusNotFound,
+					"namespace handler: endpoint not found",
+				),
+				http.StatusNotFound,
+			)
 		}
 	default:
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusMethodNotAllowed, 
+				http.StatusMethodNotAllowed,
 				"namespace handler: method not allowed",
-			), 
+			),
 			http.StatusMethodNotAllowed,
 		)
 	}

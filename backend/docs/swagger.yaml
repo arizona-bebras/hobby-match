@@ -42,7 +42,7 @@ definitions:
         type: string
       personality_test:
         items:
-          type: integer
+          type: number
         type: array
       tg_user:
         type: string
@@ -74,13 +74,6 @@ definitions:
         type: string
       data:
         type: string
-      files:
-        items:
-          items:
-            format: int32
-            type: integer
-          type: array
-        type: array
       id:
         type: string
       namespace:
@@ -93,14 +86,18 @@ definitions:
         $ref: '#/definitions/database.Vote'
     type: object
   handlers.AutocompleteResponse:
-    description: Ответ autocomplete эндпоинта воркера.
     properties:
-      q:
-        type: string
-      response:
+      completions:
         items:
-          type: string
+          $ref: '#/definitions/handlers.Autocompletion'
         type: array
+    type: object
+  handlers.Autocompletion:
+    properties:
+      similarity:
+        type: number
+      tag:
+        type: string
     type: object
   handlers.NamespaceMembers:
     description: Данные неймспеса и его участники
@@ -131,7 +128,7 @@ definitions:
         type: string
       personality_test:
         items:
-          type: integer
+          type: number
         type: array
       tg_user:
         type: string
@@ -191,6 +188,30 @@ paths:
           schema:
             type: string
       summary: Получить токен авторизации
+  /api/autocomplete:
+    get:
+      description: Возвращает список интересов, семантически похожих на запрос 'q'.
+      parameters:
+      - description: Строка для поиска и автодополнения интересов
+        in: query
+        name: q
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное получение списка интересов
+          schema:
+            $ref: '#/definitions/handlers.AutocompleteResponse'
+        "401":
+          description: Ошибка авторизации
+          schema:
+            $ref: '#/definitions/database.Error'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/database.Error'
+      summary: Предложенные интересы
   /api/games:
     get:
       parameters:
@@ -261,6 +282,11 @@ paths:
       - description: Интересы о пользователе
         in: body
         name: interests
+        schema:
+          type: array
+      - description: Личностный тест (5 слайдеров)
+        in: body
+        name: personality_test
         schema:
           type: array
       responses:
@@ -707,27 +733,4 @@ paths:
           schema:
             $ref: '#/definitions/database.Error'
       summary: Проголосовать в опросе
-  /api/worker/autocomplete:
-    get:
-      parameters:
-      - description: Ввод пользователя
-        in: query
-        name: q
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.AutocompleteResponse'
-        "401":
-          description: Ошибка авторизации
-          schema:
-            $ref: '#/definitions/database.Error'
-        "500":
-          description: Внутренняя ошибка сервера
-          schema:
-            $ref: '#/definitions/database.Error'
-      summary: Предложенные пользователю интересы
 swagger: "2.0"

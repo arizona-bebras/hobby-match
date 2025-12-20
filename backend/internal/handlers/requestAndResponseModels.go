@@ -4,12 +4,6 @@ import (
 	"shumi/internal/database"
 )
 
-// @Description Ответ autocomplete эндпоинта воркера.
-type AutocompleteResponse struct {
-	Q        string
-	Response []string
-}
-
 // @Description Данные регистрации пользователя
 type RegisterData struct {
 	TgId      string `json:"tg_id"`

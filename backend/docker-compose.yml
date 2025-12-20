@@ -30,6 +30,9 @@ services:
       TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID}
       TWITCH_TOKEN: ${TWITCH_TOKEN}
       STEAM_API_KEY: ${STEAM_API_KEY}
+      OLLAMA_API_URL: ${OLLAMA_API_URL}
+      OLLAMA_API_KEY: ${OLLAMA_API_KEY}
+      OLLAMA_MODEL: ${OLLAMA_MODEL}
     depends_on:
       - db    
     command: ["/server", "-prod=true"]

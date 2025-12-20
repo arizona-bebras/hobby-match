@@ -10,7 +10,7 @@ COPY . /backend
 
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-s -w" -o /backend/server ./cmd/
 
-FROM scratch
+FROM alpine
 
 EXPOSE 8080
 
