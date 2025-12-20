@@ -7,6 +7,22 @@ definitions:
       status_code:
         type: integer
     type: object
+  database.Namespace:
+    description: Неймспейс
+    properties:
+      admin:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      picture:
+        items:
+          type: integer
+        type: array
+      title:
+        type: string
+    type: object
   database.User:
     description: Основные данные профиля и связанные виджеты.
     properties:
@@ -120,6 +136,14 @@ definitions:
       widgets:
         items:
           $ref: '#/definitions/database.Widget'
+        type: array
+    type: object
+  handlers.UserNamespaces:
+    description: Неймспейсы, в который состоит пользователь
+    properties:
+      namespaces:
+        items:
+          $ref: '#/definitions/database.Namespace'
         type: array
     type: object
 info:
@@ -241,6 +265,20 @@ paths:
           schema:
             $ref: '#/definitions/database.Error'
       summary: Обновить информацию профиля пользователя
+  /api/me/namespaces:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.UserNamespaces'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/database.Error'
+      summary: Неймспейсы пользователя
   /api/me/photo:
     post:
       consumes:

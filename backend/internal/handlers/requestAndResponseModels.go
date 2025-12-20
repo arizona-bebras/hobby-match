@@ -9,6 +9,7 @@ type AutocompleteResponse struct {
 	Response []string
 }
 
+// @Description Данные регистрации пользователя
 type RegisterData struct {
 	TgId      string `json:"tg_id"`
 	Username  string `json:"username"`
@@ -19,4 +20,9 @@ type RegisterData struct {
 type PageData struct {
 	database.User
 	Username string `json:"username"`
+}
+
+// @Description Неймспейсы, в который состоит пользователь
+type UserNamespaces struct {
+	Namespaces []database.Namespace `json:"namespaces"`
 }

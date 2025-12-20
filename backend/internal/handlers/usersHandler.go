@@ -94,12 +94,12 @@ func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 	userJSON, err := json.Marshal(user)
 	log.Println(string(userJSON))
 	if err != nil {
-		log.Printf("users handler: failed to serialize user: %s", err.Error())
+		log.Printf("users handler: failed to serialize user, %s", err.Error())
 		http.Error(
 			w, 
 			database.JSONErr(
 				http.StatusInternalServerError, 
-				fmt.Sprintf("users handler: failed to serialize user: %s", err.Error()),
+				fmt.Sprintf("users handler: failed to serialize user, %s", err.Error()),
 			), 
 			http.StatusInternalServerError,
 		)
@@ -107,6 +107,55 @@ func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(userJSON)
+}
+
+// GetMyNamespaces
+// @Summary Неймспейсы пользователя
+// @Produce json
+// @Success 200 {object} handlers.UserNamespaces
+// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
+// @Router /api/me/namespaces [get]
+func (h *UserDataHandler) GetMyNamespaces(w http.ResponseWriter, r *http.Request) {
+	tgId := r.Context().Value(database.AuthContextKey)
+
+	var namespaces []database.Namespace
+	err := h.DB.
+		Table("user_namespace").
+		Select("namespaces.id, namespaces.title, namespaces.picture").
+		Joins("JOIN namespaces ON namespaces.id = user_namespace.namespace_id").
+		Find(&namespaces, "user_id = ?", tgId).Error
+	if err != nil {
+		log.Printf("users handler: failed to get user namespaces, %v", err)
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusInternalServerError,
+				fmt.Sprintf("users handler: failed to get user namespaces, %v", err),
+			),
+		http.StatusInternalServerError,
+		)
+		return
+	}
+	
+	userNamespaces := UserNamespaces{
+		Namespaces: namespaces,
+	}
+
+	namespacesJSON, err := json.Marshal(userNamespaces)
+	if err != nil {
+		log.Printf("users handler: failed to marshal user namespaces, %v", err)
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusInternalServerError,
+				fmt.Sprintf("users handler: failed to marshal user namespaces, %v", err),
+			),
+		http.StatusInternalServerError,
+		)
+		return
+	}
+
+	w.Write(namespacesJSON)
 }
 
 // UpdateMyProfileInfo
@@ -247,6 +296,7 @@ func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			)
 			return
 		}
+
 	case "/api/me/photo":
 		switch r.Method {
 		case http.MethodPatch:
@@ -271,6 +321,22 @@ func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			h.UpdateWidget(w, r)
 		case http.MethodDelete:
 			h.DeleteWidget(w, r)
+		default:
+			http.Error(
+				w, 
+				database.JSONErr(
+					http.StatusInternalServerError, 
+					"widgets handler: method not allowed,",
+				), 
+				http.StatusInternalServerError,
+			)
+			return
+		}
+
+	case "/api/me/namespaces":
+		switch r.Method {
+		case http.MethodGet:
+			h.GetMyNamespaces(w, r)
 		default:
 			http.Error(
 				w, 

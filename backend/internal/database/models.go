@@ -63,14 +63,14 @@ type Namespace struct {
 	Picture         []byte          `json:"picture" gorm:"column:picture"`
 	Description     string          `json:"description" gorm:"column:description"`
 	AdminId         string          `json:"admin" gorm:"column:admin_id"`
-	Admin           User            `gorm:"foreignKey:AdminId;references:Id"`
-	NamespaceInvite NamespaceInvite `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	UserNamespace   UserNamespace   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Admin           User            `json:"-" gorm:"foreignKey:AdminId;references:Id"`
+	NamespaceInvite NamespaceInvite `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	UserNamespace   UserNamespace   `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 // @Description Инвайт код для неймспейса
 type NamespaceInvite struct {
-	NamespaceId string `json:"namespace_id" gorm:"column:namespace;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	NamespaceId string `json:"namespace_id" gorm:"column:namespace_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	InviteCode  string `json:"invite_code" gorm:"column:invite_code"`
 }
 

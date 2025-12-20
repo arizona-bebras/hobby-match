@@ -192,6 +192,28 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/me/namespaces": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Неймспейсы пользователя",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.UserNamespaces"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/me/photo": {
             "post": {
                 "consumes": [
@@ -807,6 +829,30 @@ const docTemplate = `{
                 }
             }
         },
+        "database.Namespace": {
+            "description": "Неймспейс",
+            "type": "object",
+            "properties": {
+                "admin": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "database.User": {
             "description": "Основные данные профиля и связанные виджеты.",
             "type": "object",
@@ -975,6 +1021,18 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/database.Widget"
+                    }
+                }
+            }
+        },
+        "handlers.UserNamespaces": {
+            "description": "Неймспейсы, в который состоит пользователь",
+            "type": "object",
+            "properties": {
+                "namespaces": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/database.Namespace"
                     }
                 }
             }

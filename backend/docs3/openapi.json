@@ -197,6 +197,33 @@
         "x-codegen-request-body-name": "interests"
       }
     },
+    "/api/me/namespaces": {
+      "get": {
+        "summary": "Неймспейсы пользователя",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/handlers.UserNamespaces"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/me/photo": {
       "post": {
         "summary": "Обновить информацию профиля пользователя",
@@ -955,6 +982,30 @@
         },
         "description": "Ошибка"
       },
+      "database.Namespace": {
+            "description": "Неймспейс",
+            "type": "object",
+            "properties": {
+                "admin": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+      },
       "database.User": {
         "type": "object",
         "properties": {
@@ -1126,6 +1177,18 @@
           }
         },
         "description": "Данные анкеты (все поля database.User + tg username)"
+      },
+      "handlers.UserNamespaces": {
+        "type": "object",
+        "properties": {
+          "namespaces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/database.Namespace"
+            }
+          }
+        },
+        "description": "Неймспейсы, в который состоит пользователь"
       }
     }
   },

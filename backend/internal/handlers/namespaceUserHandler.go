@@ -50,7 +50,7 @@ func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request
 
 	var namespaceInviteCode database.NamespaceInvite
 
-	err := h.DB.Table("namespace_invite").First(&namespaceInviteCode, "namespace = ?", namespace).Error
+	err := h.DB.Table("namespace_invite").First(&namespaceInviteCode, "namespace_id = ?", namespace).Error
 	if err != nil {
 		log.Printf("namespace handler: failed to find namespace code, %v", err)
 		http.Error(
@@ -78,7 +78,7 @@ func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request
 	}
 
 	err = h.DB.Table("user_namespace").Create(map[string]interface{}{
-		"namespace": namespace, "user": tgId,
+		"namespace_id": namespace, "user_id": tgId,
 	}).Error
 	if err != nil {
 		log.Printf("namespace handler: failed to enter namespace, %v", err)
