@@ -24,7 +24,7 @@ export async function updatePhoto(photo: Record<string, File | string>) {
   const formData = new FormData();
   formData.append('user_photo', photo.user_photo);
   const res = await fetch(`${db}/api/me/photo`, {
-    method: 'POST',
+    method: 'PATCH',
     headers: authHeader,
     body: formData,
   }).then((res) => res);

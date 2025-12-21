@@ -55,10 +55,9 @@
 
   const file = fileProxy(form, 'user_photo');
   async function handleTelegramButtonClick() {
-    if (!(await save())) {
-      markStageComplete('Фото');
-      setCurrentStage('Тест');
-    }
+    await save();
+    markStageComplete('Фото');
+    setCurrentStage('Тест');
   }
 
   let hasPhoto: boolean = $derived(!!pb.authStore.record!.user_photo);
