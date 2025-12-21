@@ -26,8 +26,8 @@ type User struct {
 	Location        string         `json:"location" gorm:"column:location"`
 	Gender          string         `json:"gender" gorm:"column:gender"`
 	BirthDate       string         `json:"birth_date" gorm:"column:birth_date"`
-	Interests       []string `json:"interests" gorm:"type:text[];column:interests"`
-	PersonalityTest []float32      `json:"personality_test" gorm:"type:vector(5)"`
+	Interests       pq.StringArray `json:"interests" gorm:"type:text[];column:interests"`
+	PersonalityTest pgvector.Vector      `json:"personality_test" gorm:"type:vector(5)"`
 	Photo           []byte         `json:"user_photo" gorm:"column:photo"`
 	Info            string         `json:"user_info" gorm:"column:info"`
 	Hide            bool           `json:"hide" gorm:"column:hide"`
@@ -43,7 +43,7 @@ type Widget struct {
 	UserId         string        `json:"user" gorm:"column:user;type:text"`
 	User           User          `gorm:"foreignKey:UserId;references:Id"`
 	Order          int           `json:"order" gorm:"column:order"`
-	Files          [][]byte `json:"files" gorm:"type:bytea[];column:files"` // TODO: возвращать отдельным endpoint...
+	Files          pq.ByteaArray `json:"files" gorm:"type:bytea[];column:files"` // TODO: возвращать отдельным endpoint...
 	Data           string        `json:"data" gorm:"column:data"`
 	Namespace      string        `json:"namespace" gorm:"column:namespace"`
 	AdditionalData string        `json:"additionalData" gorm:"-"`
