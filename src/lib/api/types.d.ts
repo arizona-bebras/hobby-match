@@ -21,12 +21,7 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            /** @description tma initData */
-            requestBody: {
-                content: {
-                    "*/*": string;
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description Токен выдан */
                 200: {
@@ -34,7 +29,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": string;
+                        "application/json": components["schemas"]["handlers.JWTTokens"];
                     };
                 };
                 /** @description Не валидный токен авторизации */
@@ -43,7 +38,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": string;
+                        "application/json": components["schemas"]["database.Error"];
                     };
                 };
                 /** @description Пользователь не записан в базу данных */
@@ -52,7 +47,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": string;
+                        "application/json": components["schemas"]["database.Error"];
                     };
                 };
                 /** @description Внутренняя ошибка сервера */
@@ -61,11 +56,71 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": string;
+                        "application/json": components["schemas"]["database.Error"];
                     };
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/autocomplete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Предложенные интересы
+         * @description Возвращает список интересов, семантически похожих на запрос 'q'.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Строка для поиска и автодополнения интересов */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Успешное получение списка интересов */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.AutocompleteResponse"];
+                    };
+                };
+                /** @description Ошибка авторизации */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -92,13 +147,13 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description JSON, содержащий список игр */
+                /** @description Игры из steam профиля пользователя */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": string;
+                        "application/json": components["schemas"]["handlers.Games"];
                     };
                 };
                 /** @description Внутренняя ошибка сервера */
@@ -179,7 +234,7 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            /** @description Интересы о пользователе */
+            /** @description Личностный тест (5 слайдеров) */
             requestBody?: {
                 content: {
                     "application/json": string[];
@@ -269,8 +324,12 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Обновить информацию профиля пользователя */
-        post: {
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Обновить фото профиля пользователя */
+        patch: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -302,10 +361,6 @@ export interface paths {
                 };
             };
         };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
         trace?: never;
     };
     "/api/me/widgets": {
@@ -329,7 +384,7 @@ export interface paths {
                 content: {
                     "multipart/form-data": {
                         /** @description Данные виджета */
-                        data?: number[];
+                        data?: string;
                         /** @description Файлы виджета */
                         files?: number[][];
                     };
@@ -398,8 +453,8 @@ export interface paths {
             requestBody?: {
                 content: {
                     "multipart/form-data": {
-                        /** @description Данные виджета */
-                        data?: number[];
+                        /** @description Данные виджета (JSON) */
+                        data?: string;
                         /** @description Файлы виджета */
                         files?: number[][];
                     };
@@ -680,14 +735,15 @@ export interface paths {
             parameters: {
                 query?: never;
                 header?: never;
-                path?: never;
+                path: {
+                    /** @description id неймспейса */
+                    namespace_id: string;
+                };
                 cookie?: never;
             };
             requestBody: {
                 content: {
                     "multipart/form-data": {
-                        /** @description id неймспейса */
-                        namespace: string;
                         /** @description инвайт код для входа в неймспейс */
                         invite_code: string;
                     };
@@ -812,7 +868,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Получить ленту из анкет пользователей неймспейса */
+        /** Получить пользователей неймспейса */
         get: {
             parameters: {
                 query?: never;
@@ -831,7 +887,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["handlers.NamespaceMembers"][];
+                        "application/json": components["schemas"]["handlers.NamespaceMembers"];
                     };
                 };
                 /** @description Пользователь не участник этого неймспейса */
@@ -1102,63 +1158,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/worker/autocomplete": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Предложенные пользователю интересы */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Ввод пользователя */
-                    q?: string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["handlers.AutocompleteResponse"];
-                    };
-                };
-                /** @description Ошибка авторизации */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["database.Error"];
-                    };
-                };
-                /** @description Внутренняя ошибка сервера */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["database.Error"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1200,6 +1199,7 @@ export interface components {
         "database.Widget": {
             additionalData?: string;
             data?: string;
+            /** @description TODO: возвращать отдельным endpoint... */
             files?: number[][];
             id?: string;
             namespace?: string;
@@ -1207,10 +1207,22 @@ export interface components {
             user?: components["schemas"]["database.User"];
             vote?: components["schemas"]["database.Vote"];
         };
-        /** @description Ответ autocomplete эндпоинта воркера. */
         "handlers.AutocompleteResponse": {
-            q?: string;
-            response?: string[];
+            completions?: components["schemas"]["handlers.Autocompletion"][];
+        };
+        "handlers.Autocompletion": {
+            similarity?: number;
+            tag?: string;
+        };
+        /** @description Игры из steam профиля пользователя */
+        "handlers.Games": {
+            games?: components["schemas"]["handlers.SteamGame"][];
+        };
+        /** @description Токены для авторизации и данные пользователя */
+        "handlers.JWTTokens": {
+            auth_token?: string;
+            refresh_token?: string;
+            user?: components["schemas"]["database.User"];
         };
         /** @description Данные неймспеса и его участники */
         "handlers.NamespaceMembers": {
@@ -1231,6 +1243,14 @@ export interface components {
             user_photo?: number[];
             username?: string;
             widgets?: components["schemas"]["database.Widget"][];
+        };
+        "handlers.SteamGame": {
+            appid?: number;
+            content_descriptorids?: number[];
+            has_community_visible_stats?: boolean;
+            img_icon_url?: string;
+            name?: string;
+            playtime_forever?: number;
         };
         /** @description Неймспейсы, в который состоит пользователь */
         "handlers.UserNamespaces": {

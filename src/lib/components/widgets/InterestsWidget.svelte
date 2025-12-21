@@ -4,7 +4,6 @@
 
   let { interests }: { interests: string[] } = $props();
   let isOpen = $state(false);
-  console.log('Interests:', interests);
 </script>
 
 <div class="w-full py-2 transition-all relative" class:h-fit={isOpen}>

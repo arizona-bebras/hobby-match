@@ -28,29 +28,3 @@
     <Questionnaire data={offeredProfiles[0]} />
   </div>
 {/key}
-<button
-  onclick={() => {
-    if (!liked) {
-      pb.collection('likes').create({
-        user: pb.authStore.record?.id,
-        liked_user: offeredProfiles[0].id,
-      });
-      plausible.trackEvent('liked');
-    }
-    liked = !liked;
-    console.log('LIKE');
-  }}
-  disabled={liked}
-  class="bg-accent size-12.5 fixed right-6.5 bottom-20 z-2 flex items-center justify-center rounded-xl"
->
-  {#if !liked}
-    <Heart class="size-6 text-white" />
-  {:else}
-    <Heart
-      fill="#fff"
-      strokeWidth={0}
-      class="size-6 text-white animate-ping"
-      style="animation-iteration-count: 2; animation-direction: alternate; animation-duration: 400ms"
-    />
-  {/if}
-</button>

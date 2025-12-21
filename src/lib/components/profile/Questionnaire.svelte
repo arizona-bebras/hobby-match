@@ -15,7 +15,6 @@
     isNamespaceProfile?: boolean;
     scroll: ScrollState;
   } = $props();
-  console.log(data);
 </script>
 
 <Header {data} />
