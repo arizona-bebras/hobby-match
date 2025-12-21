@@ -16,6 +16,8 @@ definitions:
         type: string
       id:
         type: string
+      members_count:
+        type: integer
       picture:
         items:
           type: integer
@@ -125,14 +127,21 @@ definitions:
       user:
         $ref: '#/definitions/database.User'
     type: object
+  handlers.NamespaceMember:
+    properties:
+      miniapp_name:
+        type: string
+      tg_user:
+        type: string
+    type: object
   handlers.NamespaceMembers:
     description: Данные неймспеса и его участники
     properties:
       namespace:
         $ref: '#/definitions/database.Namespace'
-      user_ids:
+      users:
         items:
-          type: string
+          $ref: '#/definitions/handlers.NamespaceMember'
         type: array
     type: object
   handlers.PageData:

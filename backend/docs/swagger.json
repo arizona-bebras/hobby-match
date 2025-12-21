@@ -900,6 +900,9 @@
                 "id": {
                     "type": "string"
                 },
+                "members_count": {
+                    "type": "integer"
+                },
                 "picture": {
                     "type": "array",
                     "items": {
@@ -1064,6 +1067,17 @@
                 }
             }
         },
+        "handlers.NamespaceMember": {
+            "type": "object",
+            "properties": {
+                "miniapp_name": {
+                    "type": "string"
+                },
+                "tg_user": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.NamespaceMembers": {
             "description": "Данные неймспеса и его участники",
             "type": "object",
@@ -1071,10 +1085,10 @@
                 "namespace": {
                     "$ref": "#/definitions/database.Namespace"
                 },
-                "user_ids": {
+                "users": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/handlers.NamespaceMember"
                     }
                 }
             }

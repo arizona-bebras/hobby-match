@@ -500,9 +500,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/handlers.NamespaceMembers"
+                "$ref": "#/components/schemas/handlers.NamespaceMembers"
         '403':
           description: Пользователь не участник этого неймспейса
           content:
@@ -667,6 +665,8 @@ components:
           type: string
         id:
           type: string
+        members_count:
+          type: integer
         picture:
           type: array
           items:
@@ -776,15 +776,22 @@ components:
         user:
           "$ref": "#/components/schemas/database.User"
       description: Токены для авторизации и данные пользователя
+    handlers.NamespaceMember:
+      type: object
+      properties:
+        miniapp_name:
+          type: string
+        tg_user:
+          type: string
     handlers.NamespaceMembers:
       type: object
       properties:
         namespace:
           "$ref": "#/components/schemas/database.Namespace"
-        user_ids:
+        users:
           type: array
           items:
-            type: string
+            "$ref": "#/components/schemas/handlers.NamespaceMember"
       description: Данные неймспеса и его участники
     handlers.PageData:
       type: object
@@ -849,10 +856,9 @@ components:
       description: Неймспейсы, в который состоит пользователь
   securitySchemes:
     BearerAuth:
-      type: apiKey
-      description: 'Введите: Bearer {token}'
-      name: Authorization
-      in: header
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     TmaAuth:
       type: apiKey
       description: 'Введите: tma {data}'

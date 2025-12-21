@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"shumi/internal/database"
-	"slices"
 	"strings"
 	"time"
 
@@ -340,6 +339,15 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	w.Write(pagesJSON)
 }
 
+func checkMember(namespaceMembers []NamespaceMember, memberId string) bool {
+	for _, namespaceMember := range namespaceMembers {
+		if memberId == namespaceMember.Id {
+			return true
+		}
+	}
+	return false
+}
+
 // GetPages
 // @Summary Получить пользователей неймспейса
 // @Produce json
@@ -353,7 +361,7 @@ func (h *NamespaceHandler) GetPages(w http.ResponseWriter, r *http.Request) {
 
 	namespaceId := r.PathValue("namespace_id")
 	var namespace database.Namespace
-	var userIds []string
+	var members []NamespaceMember
 
 	err := h.DB.Model(&database.Namespace{}).First(&namespace, "id = ?", namespaceId).Error
 	if err != nil {
@@ -369,7 +377,10 @@ func (h *NamespaceHandler) GetPages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.DB.Model(&database.UserNamespace{}).Select("user_id").Find(&userIds, "namespace_id = ?", namespaceId).Error
+	err = h.DB.Model(&database.UserNamespace{}).
+		Joins(`LEFT JOIN users ON users.id = user_namespace.user_id`).
+		Select("users.id, users.name").
+		Find(&members, "namespace_id = ?", namespaceId).Error
 	if err != nil {
 		log.Printf("namespace handler: failed to get namespace member`s ids, %v", err)
 		http.Error(
@@ -383,7 +394,7 @@ func (h *NamespaceHandler) GetPages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !slices.Contains(userIds, tgId) {
+	if !checkMember(members, tgId) {
 		log.Println("namespace handler: access denied you aren`t namespace member!")
 		http.Error(
 			w,
@@ -397,8 +408,8 @@ func (h *NamespaceHandler) GetPages(w http.ResponseWriter, r *http.Request) {
 	}
 
 	JSONNamespaceMembers, err := json.Marshal(NamespaceMembers{
-		Namespace: namespace,
-		UserIds:   userIds,
+		Namespace:        namespace,
+		NamespaceMembers: members,
 	})
 	if err != nil {
 		log.Printf("namespace handler: failed to marshal namespace data, %v", err)

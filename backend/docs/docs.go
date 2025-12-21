@@ -908,6 +908,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "members_count": {
+                    "type": "integer"
+                },
                 "picture": {
                     "type": "array",
                     "items": {
@@ -1072,6 +1075,17 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.NamespaceMember": {
+            "type": "object",
+            "properties": {
+                "miniapp_name": {
+                    "type": "string"
+                },
+                "tg_user": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.NamespaceMembers": {
             "description": "Данные неймспеса и его участники",
             "type": "object",
@@ -1079,10 +1093,10 @@ const docTemplate = `{
                 "namespace": {
                     "$ref": "#/definitions/database.Namespace"
                 },
-                "user_ids": {
+                "users": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/handlers.NamespaceMember"
                     }
                 }
             }
