@@ -4,7 +4,7 @@
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
   import { onMount } from 'svelte';
   import { pb } from '$lib';
-  import { db } from '$lib'
+  import { db } from '$lib';
   import LoadingScreen from '$lib/components/search/LoadingScreen.svelte';
   import TransitionBlock from '$lib/components/search/TransitionBlock.svelte';
   import UserProfile from '$lib/components/search/UserProfile.svelte';
@@ -23,8 +23,11 @@
   let liked: boolean = $state(false);
   useTelegramButton(() => goto('/profile'));
 
-  const authHeader: HeadersInit = new Headers()
-  authHeader.set('Authorization', `Bearer ${window.localStorage.getItem("access_token")}`)
+  const authHeader: HeadersInit = new Headers();
+  authHeader.set(
+    'Authorization',
+    `Bearer ${window.localStorage.getItem('access_token')}`,
+  );
 
   onMount(() => {
     window.Telegram.WebApp.MainButton.setText('Моя анкета');
@@ -74,25 +77,22 @@
     const timeout = setTimeout(
       () => {
         if (offeredProfiles.length > 2) return;
-        fetch (`${db}/api/namespace/00000000-0000-0000-0000-000000000000`, {
-          method: "GET",
+        fetch(`${db}/api/namespace/00000000-0000-0000-0000-000000000000`, {
+          method: 'GET',
           headers: authHeader,
-        }).then(
-            (response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
             }
-        ).then(
-            (data) => {
-                offeredProfiles = [...offeredProfiles, ...data];
-            }
-        ).catch(
-            (error) => {
-                console.error("Fetch error:", error);
-            }
-        );
+            return response.json();
+          })
+          .then((data) => {
+            offeredProfiles = [...offeredProfiles, ...data];
+          })
+          .catch((error) => {
+            console.error('Fetch error:', error);
+          });
         // pb.send('/worker/feed', {
         //   method: 'GET',
         // }).then(

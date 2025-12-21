@@ -2,6 +2,9 @@
   import Questionnaire from '$lib/components/profile/Questionnaire.svelte';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
   import { ScrollState } from 'runed';
+  import { page } from '$app/state';
+  import { createQuery } from '@tanstack/svelte-query';
+  import client from '$lib/api/client';
 
   let testData: PageData = {
     age: 19,
@@ -66,6 +69,18 @@
       },
     ],
   };
+  const userId = page.url.href.split('/').at(-1);
+  const profileData = createQuery(() => ({
+    queryKey: ['profileData'],
+    queryFn: async () =>
+      await client.GET('/api/namespace/{namespace_id}/feed', {
+        params: {
+          path: {
+            namespace_id: userId,
+          },
+        },
+      }),
+  }));
   let screenContainer = $state<HTMLElement>();
   let scroll = new ScrollState({
     element: () => screenContainer,

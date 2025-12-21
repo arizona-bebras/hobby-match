@@ -8,6 +8,12 @@
   import { createQuery } from '@tanstack/svelte-query';
   import { accessToken } from '$lib/storage/accessToken.svelte';
 
+  const namespaces = createQuery(() => ({
+    queryKey: ['namespaces'],
+    queryFn: async () => await client.GET('/api/me/namespaces'),
+    select: (data) => data.data,
+  }));
+
   let testNameSpaceses = [
     {
       img: '',
@@ -91,5 +97,5 @@
     class="mb-6"
     bind:value={searchFilter}
   />
-  <UserNamespaces namespacesList={testNameSpaceses} {searchFilter} />
+  <UserNamespaces namespacesList={namespaces.data?.namespaces} {searchFilter} />
 </div>

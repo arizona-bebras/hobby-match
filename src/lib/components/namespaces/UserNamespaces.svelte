@@ -2,10 +2,18 @@
   import { ArrowRight, ShieldUser, Shield } from '@lucide/svelte';
   import { goto } from '$app/navigation';
   import { getCorrectForm } from '$lib/utils';
+
+  type namespaces = {
+    admin: string;
+    description: string;
+    id: string;
+    picture: number[];
+    title: string;
+  }[];
   const {
     namespacesList,
     searchFilter,
-  }: { namespacesList: object[]; searchFilter: string } = $props();
+  }: { namespacesList: namespaces; searchFilter: string } = $props();
 </script>
 
 <div class="overflow-y-auto h-[calc(100vh-200px)]">
@@ -17,7 +25,7 @@
         <div class="flex gap-2.5 items-center">
           <img
             src="https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg"
-            class="size-8 object-cover"
+            class="size-8 object-cover rounded-[8px]"
             alt="group image"
           />
           <div class="flex flex-col">
@@ -41,7 +49,7 @@
             </p>
           </div>
         </div>
-        <button onclick={() => goto('/community/namespace')}>
+        <button onclick={() => goto(`/community/${namespace.id}}`)}>
           <ArrowRight class="size-5" />
         </button>
       </div>
