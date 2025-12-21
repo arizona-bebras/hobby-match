@@ -622,9 +622,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/handlers.NamespaceMembers'
-            type: array
+            $ref: '#/definitions/handlers.NamespaceMembers'
         "403":
           description: Пользователь не участник этого неймспейса
           schema:

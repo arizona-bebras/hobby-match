@@ -344,7 +344,7 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 // @Summary Получить пользователей неймспейса
 // @Produce json
 // @Param namespace_id path string true "id неймспейса"
-// @Success 200 {array} handlers.NamespaceMembers
+// @Success 200 {object} handlers.NamespaceMembers
 // @Failure 403 {object} database.Error "Пользователь не участник этого неймспейса"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/namespace/{namespace_id}/pages [get]

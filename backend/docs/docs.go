@@ -664,10 +664,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/handlers.NamespaceMembers"
-                            }
+                            "$ref": "#/definitions/handlers.NamespaceMembers"
                         }
                     },
                     "403": {
