@@ -53,3 +53,8 @@ type SteamGame struct {
 type Games struct {
 	Games []SteamGame `json:"games"`
 }
+
+// @Description Изображение
+type Photos struct {
+	Files [][]byte `json:"files"`
+}

@@ -83,6 +83,49 @@
                 }
             }
         },
+        "/api/files/{object}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Получить фото, связанное с объектом",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "тип объекта (users, namespaces, widgets)",
+                        "name": "object",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "id объекта (не нужно передавать для users)",
+                        "name": "id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Photos"
+                        }
+                    },
+                    "403": {
+                        "description": "Для этого пользователя нет доступа к файлу",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/games": {
             "get": {
                 "produces": [
@@ -693,10 +736,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/handlers.PageData"
-                            }
+                            "$ref": "#/definitions/handlers.PageData"
                         }
                     },
                     "500": {
@@ -951,12 +991,6 @@
                 "user_info": {
                     "type": "string"
                 },
-                "user_photo": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
                 "widgets": {
                     "type": "array",
                     "items": {
@@ -989,17 +1023,6 @@
                 },
                 "data": {
                     "type": "string"
-                },
-                "files": {
-                    "description": "TODO: возвращать отдельным endpoint...",
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "integer",
-                            "format": "int32"
-                        }
-                    }
                 },
                 "id": {
                     "type": "string"
@@ -1130,12 +1153,6 @@
                 "user_info": {
                     "type": "string"
                 },
-                "user_photo": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
                 "username": {
                     "type": "string"
                 },
@@ -1143,6 +1160,22 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/database.Widget"
+                    }
+                }
+            }
+        },
+        "handlers.Photos": {
+            "description": "Изображение",
+            "type": "object",
+            "properties": {
+                "files": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
                     }
                 }
             }

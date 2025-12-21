@@ -19,7 +19,7 @@ type PagesHandler struct {
 // @Summary Получить анкету(страницу) одного пользователя
 // @Produce json
 // @Param page_id path string true "id анкеты"
-// @Success 200 {array} handlers.PageData
+// @Success 200 {object} handlers.PageData
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/pages/{page_id} [get]
 func (h *PagesHandler) GetPage(w http.ResponseWriter, r *http.Request) {

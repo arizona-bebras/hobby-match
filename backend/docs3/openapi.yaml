@@ -69,6 +69,40 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/database.Error"
+  "/api/files/{object}":
+    get:
+      summary: Получить фото, связанное с объектом
+      parameters:
+      - name: object
+        in: path
+        description: тип объекта (users, namespaces, widgets)
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: query
+        description: id объекта (не нужно передавать для users)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/handlers.Photos"
+        '403':
+          description: Для этого пользователя нет доступа к файлу
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
   "/api/games":
     get:
       summary: Игры пользователя из его steam профиля для виджета
@@ -529,9 +563,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/handlers.PageData"
+                "$ref": "#/components/schemas/handlers.PageData"
         '500':
           description: Внутренняя ошибка сервера
           content:
@@ -699,10 +731,6 @@ components:
           type: string
         user_info:
           type: string
-        user_photo:
-          type: array
-          items:
-            type: integer
         widgets:
           type: array
           items:
@@ -725,14 +753,6 @@ components:
           type: string
         data:
           type: string
-        files:
-          type: array
-          description: 'TODO: возвращать отдельным endpoint...'
-          items:
-            type: array
-            items:
-              type: integer
-              format: int32
         id:
           type: string
         namespace:
@@ -818,10 +838,6 @@ components:
           type: string
         user_info:
           type: string
-        user_photo:
-          type: array
-          items:
-            type: integer
         username:
           type: string
         widgets:
@@ -829,6 +845,17 @@ components:
           items:
             "$ref": "#/components/schemas/database.Widget"
       description: Данные анкеты (все поля database.User + tg username)
+    handlers.Photos:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            type: array
+            items:
+              type: integer
+              format: int32
+      description: Изображение
     handlers.SteamGame:
       type: object
       properties:
