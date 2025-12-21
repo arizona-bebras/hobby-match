@@ -27,3 +27,25 @@ type NamespaceMembers struct {
 type UserNamespaces struct {
 	Namespaces []database.Namespace `json:"namespaces"`
 }
+
+// @Description Токены для авторизации и данные пользователя
+type JWTTokens struct {
+	AuthToken    string        `json:"auth_token"`
+	RefreshToken string        `json:"refresh_token"`
+	User         database.User `json:"user"`
+}
+
+
+type SteamGame struct {
+	AppId                 uint   `json:"appid"`
+	Name                  string `json:"name"`
+	Playtime              uint   `json:"playtime_forever"`
+	ImgIconUrl            string `json:"img_icon_url"`
+	CommunityVisibleStats bool   `json:"has_community_visible_stats"`
+	ContentDescriptorids  []int  `json:"content_descriptorids"`
+}
+
+// @Description Игры из steam профиля пользователя
+type Games struct {
+	Games []SteamGame `json:"games"`
+}

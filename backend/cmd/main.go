@@ -25,6 +25,17 @@ import (
 // @version 1.0
 // @description Shumi API
 
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Введите: Bearer {token}
+
+// @securityDefinitions.apikey TmaAuth
+// @in header
+// @name Authorization
+// @description Введите: tma {data}
+
+// @security BearerAuth
 func main() {
 	var prod bool
 	flag.BoolVar(&prod, "prod", false, "dev/prod")

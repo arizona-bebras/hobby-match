@@ -17,44 +17,38 @@ const docTemplate = `{
     "paths": {
         "/api/auth": {
             "post": {
+                "security": [
+                    {
+                        "TmaAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "summary": "Получить токен авторизации",
-                "parameters": [
-                    {
-                        "description": "tma initData",
-                        "name": "initData",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Токен выдан",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/handlers.JWTTokens"
                         }
                     },
                     "401": {
                         "description": "Не валидный токен авторизации",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     },
                     "403": {
                         "description": "Пользователь не записан в базу данных",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.Error"
                         }
                     }
                 }
@@ -114,9 +108,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "JSON, содержащий список игр",
+                        "description": "Игры из steam профиля пользователя",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/handlers.Games"
                         }
                     },
                     "500": {
@@ -163,7 +157,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Имя пользователя",
-                        "name": "name",
+                        "name": "miniapp_name",
                         "in": "body",
                         "schema": {
                             "type": "string"
@@ -260,11 +254,11 @@ const docTemplate = `{
             }
         },
         "/api/me/photo": {
-            "post": {
+            "patch": {
                 "consumes": [
                     "application/json"
                 ],
-                "summary": "Обновить информацию профиля пользователя",
+                "summary": "Обновить фото профиля пользователя",
                 "parameters": [
                     {
                         "description": "Фото пользователя",
@@ -299,12 +293,7 @@ const docTemplate = `{
                 "summary": "Создать виджет",
                 "parameters": [
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "integer",
-                            "format": "int32"
-                        },
-                        "collectionFormat": "csv",
+                        "type": "string",
                         "description": "Данные виджета",
                         "name": "data",
                         "in": "formData"
@@ -358,13 +347,8 @@ const docTemplate = `{
                 "summary": "Обновить виджет",
                 "parameters": [
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "integer",
-                            "format": "int32"
-                        },
-                        "collectionFormat": "csv",
-                        "description": "Данные виджета",
+                        "type": "string",
+                        "description": "Данные виджета (JSON)",
                         "name": "data",
                         "in": "formData"
                     },
@@ -573,8 +557,8 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "id неймспейса",
-                        "name": "namespace",
-                        "in": "formData",
+                        "name": "namespace_id",
+                        "in": "path",
                         "required": true
                     },
                     {
@@ -666,7 +650,7 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Получить ленту из анкет пользователей неймспейса",
+                "summary": "Получить пользователей неймспейса",
                 "parameters": [
                     {
                         "type": "string",
@@ -1014,6 +998,17 @@ const docTemplate = `{
                 "data": {
                     "type": "string"
                 },
+                "files": {
+                    "description": "TODO: возвращать отдельным endpoint...",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                },
                 "id": {
                     "type": "string"
                 },
@@ -1050,6 +1045,33 @@ const docTemplate = `{
                 },
                 "tag": {
                     "type": "string"
+                }
+            }
+        },
+        "handlers.Games": {
+            "description": "Игры из steam профиля пользователя",
+            "type": "object",
+            "properties": {
+                "games": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.SteamGame"
+                    }
+                }
+            }
+        },
+        "handlers.JWTTokens": {
+            "description": "Токены для авторизации и данные пользователя",
+            "type": "object",
+            "properties": {
+                "auth_token": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/database.User"
                 }
             }
         },
@@ -1122,6 +1144,32 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.SteamGame": {
+            "type": "object",
+            "properties": {
+                "appid": {
+                    "type": "integer"
+                },
+                "content_descriptorids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "has_community_visible_stats": {
+                    "type": "boolean"
+                },
+                "img_icon_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "playtime_forever": {
+                    "type": "integer"
+                }
+            }
+        },
         "handlers.UserNamespaces": {
             "description": "Неймспейсы, в который состоит пользователь",
             "type": "object",
@@ -1134,7 +1182,26 @@ const docTemplate = `{
                 }
             }
         }
-    }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Введите: Bearer {token}",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "TmaAuth": {
+            "description": "Введите: tma {data}",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+    "security": [
+        {
+            "BearerAuth": []
+        }
+    ]
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it

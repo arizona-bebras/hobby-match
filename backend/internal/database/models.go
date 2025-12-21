@@ -41,7 +41,7 @@ type Widget struct {
 	UserId         string   `json:"user" gorm:"column:user;type:text"`
 	User           User     `gorm:"foreignKey:UserId;references:Id"`
 	Order          int      `json:"order" gorm:"column:order"`
-	Files          [][]byte `json:"-" gorm:"type:bytea[];column:files"` // TODO: возвращать отдельным endpoint...
+	Files          [][]byte `json:"files" gorm:"type:bytea[];column:files"` // TODO: возвращать отдельным endpoint...
 	Data           string   `json:"data" gorm:"column:data"`
 	Namespace      string   `json:"namespace" gorm:"column:namespace"`
 	AdditionalData string   `json:"additionalData" gorm:"-"`

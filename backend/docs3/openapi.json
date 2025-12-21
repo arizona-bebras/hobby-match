@@ -6,40 +6,27 @@
     "contact": {},
     "version": "1.0"
   },
-  "security": [{
-    "bearerAuth": []
-    }
-  ],
   "servers": [
     {
       "url": "/"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
     }
   ],
   "paths": {
     "/api/auth": {
       "post": {
         "summary": "Получить токен авторизации",
-        "security": [{
-          "tmaAuth": []
-        }],
-        "requestBody": {
-          "description": "tma initData",
-          "content": {
-            "*/*": {
-              "schema": {
-                "type": "string"
-              }
-            }
-          },
-          "required": true
-        },
         "responses": {
           "200": {
             "description": "Токен выдан",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/handlers.JWTTokens"
                 }
               }
             }
@@ -49,7 +36,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/database.Error"
                 }
               }
             }
@@ -59,7 +46,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/database.Error"
                 }
               }
             }
@@ -69,13 +56,65 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/database.Error"
                 }
               }
             }
           }
         },
-        "x-codegen-request-body-name": "initData"
+        "security": [
+          {
+            "TmaAuth": []
+          }
+        ]
+      }
+    },
+    "/api/autocomplete": {
+      "get": {
+        "summary": "Предложенные интересы",
+        "description": "Возвращает список интересов, семантически похожих на запрос 'q'.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Строка для поиска и автодополнения интересов",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешное получение списка интересов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/handlers.AutocompleteResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ошибка авторизации",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/games": {
@@ -94,11 +133,11 @@
         ],
         "responses": {
           "200": {
-            "description": "JSON, содержащий список игр",
+            "description": "Игры из steam профиля пользователя",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/handlers.Games"
                 }
               }
             }
@@ -155,14 +194,14 @@
       "patch": {
         "summary": "Обновить информацию профиля пользователя",
         "requestBody": {
-          "description": "Интересы о пользователе",
+          "description": "Личностный тест (5 слайдеров)",
           "content": {
             "application/json": {
               "schema": {
+                "type": "array",
                 "items": {
                   "type": "string"
-                },
-                "type": "array"
+                }
               }
             }
           },
@@ -194,7 +233,7 @@
             }
           }
         },
-        "x-codegen-request-body-name": "interests"
+        "x-codegen-request-body-name": "personality_test"
       }
     },
     "/api/me/namespaces": {
@@ -225,8 +264,8 @@
       }
     },
     "/api/me/photo": {
-      "post": {
-        "summary": "Обновить информацию профиля пользователя",
+      "patch": {
+        "summary": "Обновить фото профиля пользователя",
         "requestBody": {
           "description": "Фото пользователя",
           "content": {
@@ -270,12 +309,8 @@
                 "type": "object",
                 "properties": {
                   "data": {
-                    "type": "array",
-                    "description": "Данные виджета",
-                    "items": {
-                      "type": "integer",
-                      "format": "int32"
-                    }
+                    "type": "string",
+                    "description": "Данные виджета"
                   },
                   "files": {
                     "type": "array",
@@ -349,12 +384,8 @@
                 "type": "object",
                 "properties": {
                   "data": {
-                    "type": "array",
-                    "description": "Данные виджета",
-                    "items": {
-                      "type": "integer",
-                      "format": "int32"
-                    }
+                    "type": "string",
+                    "description": "Данные виджета (JSON)"
                   },
                   "files": {
                     "type": "array",
@@ -614,20 +645,26 @@
     "/api/namespace/{namespace_id}": {
       "post": {
         "summary": "Зайти в неймспейс",
+        "parameters": [
+          {
+            "name": "namespace_id",
+            "in": "path",
+            "description": "id неймспейса",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "multipart/form-data": {
               "schema": {
                 "required": [
-                  "invite_code",
-                  "namespace"
+                  "invite_code"
                 ],
                 "type": "object",
                 "properties": {
-                  "namespace": {
-                    "type": "string",
-                    "description": "id неймспейса"
-                  },
                   "invite_code": {
                     "type": "string",
                     "description": "инвайт код для входа в неймспейс"
@@ -696,7 +733,7 @@
         }
       }
     },
-     "/api/namespace/{namespace_id}/feed": {
+    "/api/namespace/{namespace_id}/feed": {
       "get": {
         "summary": "Получить ленту из анкет пользователей неймспейса",
         "parameters": [
@@ -739,7 +776,7 @@
     },
     "/api/namespace/{namespace_id}/pages": {
       "get": {
-        "summary": "Получить ленту из анкет пользователей неймспейса",
+        "summary": "Получить пользователей неймспейса",
         "parameters": [
           {
             "name": "namespace_id",
@@ -1000,69 +1037,9 @@
           }
         }
       }
-    },
-    "/api/worker/autocomplete": {
-      "get": {
-        "summary": "Предложенные пользователю интересы",
-        "parameters": [
-          {
-            "name": "q",
-            "in": "query",
-            "description": "Ввод пользователя",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/handlers.AutocompleteResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Ошибка авторизации",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/database.Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Внутренняя ошибка сервера",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/database.Error"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
-      },
-      "tmaAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "Authorization",
-        "description": "Введите токен в формате: **tma <your_token>**"
-      }
-    },
     "schemas": {
       "database.Error": {
         "type": "object",
@@ -1077,28 +1054,28 @@
         "description": "Ошибка"
       },
       "database.Namespace": {
-            "description": "Неймспейс",
-            "type": "object",
-            "properties": {
-                "admin": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "picture": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "title": {
-                    "type": "string"
-                }
+        "type": "object",
+        "properties": {
+          "admin": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "picture": {
+            "type": "array",
+            "items": {
+              "type": "integer"
             }
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "description": "Неймспейс"
       },
       "database.User": {
         "type": "object",
@@ -1127,7 +1104,7 @@
           "personality_test": {
             "type": "array",
             "items": {
-              "type": "integer"
+              "type": "number"
             }
           },
           "tg_user": {
@@ -1177,6 +1154,7 @@
           },
           "files": {
             "type": "array",
+            "description": "TODO: возвращать отдельным endpoint...",
             "items": {
               "type": "array",
               "items": {
@@ -1206,32 +1184,66 @@
       "handlers.AutocompleteResponse": {
         "type": "object",
         "properties": {
-          "q": {
+          "completions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/handlers.Autocompletion"
+            }
+          }
+        }
+      },
+      "handlers.Autocompletion": {
+        "type": "object",
+        "properties": {
+          "similarity": {
+            "type": "number"
+          },
+          "tag": {
+            "type": "string"
+          }
+        }
+      },
+      "handlers.Games": {
+        "type": "object",
+        "properties": {
+          "games": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/handlers.SteamGame"
+            }
+          }
+        },
+        "description": "Игры из steam профиля пользователя"
+      },
+      "handlers.JWTTokens": {
+        "type": "object",
+        "properties": {
+          "auth_token": {
             "type": "string"
           },
-          "response": {
+          "refresh_token": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/database.User"
+          }
+        },
+        "description": "Токены для авторизации и данные пользователя"
+      },
+      "handlers.NamespaceMembers": {
+        "type": "object",
+        "properties": {
+          "namespace": {
+            "$ref": "#/components/schemas/database.Namespace"
+          },
+          "user_ids": {
             "type": "array",
             "items": {
               "type": "string"
             }
           }
         },
-        "description": "Ответ autocomplete эндпоинта воркера."
-      },
-      "handlers.NamespaceMembers": {
-          "description": "Данные неймспеса и его участники",
-          "type": "object",
-          "properties": {
-              "namespace": {
-                  "$ref": "#/components/schemas/database.Namespace"
-              },
-              "user_ids": {
-                  "type": "array",
-                  "items": {
-                      "type": "string"
-                  }
-              }
-          }
+        "description": "Данные неймспеса и его участники"
       },
       "handlers.PageData": {
         "type": "object",
@@ -1260,7 +1272,7 @@
           "personality_test": {
             "type": "array",
             "items": {
-              "type": "integer"
+              "type": "number"
             }
           },
           "tg_user": {
@@ -1287,6 +1299,32 @@
         },
         "description": "Данные анкеты (все поля database.User + tg username)"
       },
+      "handlers.SteamGame": {
+        "type": "object",
+        "properties": {
+          "appid": {
+            "type": "integer"
+          },
+          "content_descriptorids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "has_community_visible_stats": {
+            "type": "boolean"
+          },
+          "img_icon_url": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "playtime_forever": {
+            "type": "integer"
+          }
+        }
+      },
       "handlers.UserNamespaces": {
         "type": "object",
         "properties": {
@@ -1298,6 +1336,20 @@
           }
         },
         "description": "Неймспейсы, в который состоит пользователь"
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "apiKey",
+        "description": "Введите: Bearer {token}",
+        "name": "Authorization",
+        "in": "header"
+      },
+      "TmaAuth": {
+        "type": "apiKey",
+        "description": "Введите: tma {data}",
+        "name": "Authorization",
+        "in": "header"
       }
     }
   },

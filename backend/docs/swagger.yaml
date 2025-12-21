@@ -74,6 +74,14 @@ definitions:
         type: string
       data:
         type: string
+      files:
+        description: 'TODO: возвращать отдельным endpoint...'
+        items:
+          items:
+            format: int32
+            type: integer
+          type: array
+        type: array
       id:
         type: string
       namespace:
@@ -98,6 +106,24 @@ definitions:
         type: number
       tag:
         type: string
+    type: object
+  handlers.Games:
+    description: Игры из steam профиля пользователя
+    properties:
+      games:
+        items:
+          $ref: '#/definitions/handlers.SteamGame'
+        type: array
+    type: object
+  handlers.JWTTokens:
+    description: Токены для авторизации и данные пользователя
+    properties:
+      auth_token:
+        type: string
+      refresh_token:
+        type: string
+      user:
+        $ref: '#/definitions/database.User'
     type: object
   handlers.NamespaceMembers:
     description: Данные неймспеса и его участники
@@ -145,6 +171,23 @@ definitions:
           $ref: '#/definitions/database.Widget'
         type: array
     type: object
+  handlers.SteamGame:
+    properties:
+      appid:
+        type: integer
+      content_descriptorids:
+        items:
+          type: integer
+        type: array
+      has_community_visible_stats:
+        type: boolean
+      img_icon_url:
+        type: string
+      name:
+        type: string
+      playtime_forever:
+        type: integer
+    type: object
   handlers.UserNamespaces:
     description: Неймспейсы, в который состоит пользователь
     properties:
@@ -161,32 +204,27 @@ info:
 paths:
   /api/auth:
     post:
-      parameters:
-      - description: tma initData
-        in: body
-        name: initData
-        required: true
-        schema:
-          type: string
       produces:
       - application/json
       responses:
         "200":
           description: Токен выдан
           schema:
-            type: string
+            $ref: '#/definitions/handlers.JWTTokens'
         "401":
           description: Не валидный токен авторизации
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
         "403":
           description: Пользователь не записан в базу данных
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            type: string
+            $ref: '#/definitions/database.Error'
+      security:
+      - TmaAuth: []
       summary: Получить токен авторизации
   /api/autocomplete:
     get:
@@ -224,9 +262,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: JSON, содержащий список игр
+          description: Игры из steam профиля пользователя
           schema:
-            type: string
+            $ref: '#/definitions/handlers.Games'
         "500":
           description: Внутренняя ошибка сервера
           schema:
@@ -256,7 +294,7 @@ paths:
       parameters:
       - description: Имя пользователя
         in: body
-        name: name
+        name: miniapp_name
         schema:
           type: string
       - description: Локация пользователя
@@ -316,7 +354,7 @@ paths:
             $ref: '#/definitions/database.Error'
       summary: Неймспейсы пользователя
   /api/me/photo:
-    post:
+    patch:
       consumes:
       - application/json
       parameters:
@@ -334,7 +372,7 @@ paths:
           description: Внутренняя ошибка сервера
           schema:
             $ref: '#/definitions/database.Error'
-      summary: Обновить информацию профиля пользователя
+      summary: Обновить фото профиля пользователя
   /api/me/widgets:
     delete:
       parameters:
@@ -355,14 +393,10 @@ paths:
       consumes:
       - multipart/form-data
       parameters:
-      - collectionFormat: csv
-        description: Данные виджета
+      - description: Данные виджета (JSON)
         in: formData
-        items:
-          format: int32
-          type: integer
         name: data
-        type: array
+        type: string
       - description: Файлы виджета
         in: formData
         name: files
@@ -379,14 +413,10 @@ paths:
       consumes:
       - multipart/form-data
       parameters:
-      - collectionFormat: csv
-        description: Данные виджета
+      - description: Данные виджета
         in: formData
-        items:
-          format: int32
-          type: integer
         name: data
-        type: array
+        type: string
       - description: Файлы виджета
         in: formData
         name: files
@@ -535,8 +565,8 @@ paths:
       - multipart/form-data
       parameters:
       - description: id неймспейса
-        in: formData
-        name: namespace
+        in: path
+        name: namespace_id
         required: true
         type: string
       - description: инвайт код для входа в неймспейс
@@ -603,7 +633,7 @@ paths:
           description: Внутренняя ошибка сервера
           schema:
             $ref: '#/definitions/database.Error'
-      summary: Получить ленту из анкет пользователей неймспейса
+      summary: Получить пользователей неймспейса
   /api/pages/{page_id}:
     get:
       parameters:
@@ -733,4 +763,17 @@ paths:
           schema:
             $ref: '#/definitions/database.Error'
       summary: Проголосовать в опросе
+security:
+- BearerAuth: []
+securityDefinitions:
+  BearerAuth:
+    description: 'Введите: Bearer {token}'
+    in: header
+    name: Authorization
+    type: apiKey
+  TmaAuth:
+    description: 'Введите: tma {data}'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

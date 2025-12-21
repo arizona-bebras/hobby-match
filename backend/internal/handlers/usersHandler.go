@@ -161,7 +161,7 @@ func (h *UserDataHandler) GetMyNamespaces(w http.ResponseWriter, r *http.Request
 // UpdateMyProfileInfo
 // @Summary Обновить информацию профиля пользователя
 // @Accept json
-// @Param name body string false "Имя пользователя"
+// @Param miniapp_name body string false "Имя пользователя"
 // @Param location body string false "Локация пользователя"
 // @Param gender body string false "Пол пользователя"
 // @Param birth_date body string false "Дата рождения пользователя"
@@ -219,12 +219,12 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 }
 
 // UpdateMyProfilePhoto
-// @Summary Обновить информацию профиля пользователя
+// @Summary Обновить фото профиля пользователя
 // @Accept json
 // @Param user_photo body []byte false "Фото пользователя"
 // @Success 200 {object} nil "Пользователь успешно обновлен"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
-// @Router /api/me/photo [post]
+// @Router /api/me/photo [patch]
 func (h *UserDataHandler) UpdateMyProfilePhoto(w http.ResponseWriter, r *http.Request) {
 	tgID := r.Context().Value(database.AuthContextKey).(string)
 

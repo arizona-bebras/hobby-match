@@ -21,7 +21,7 @@ type GamesHandler struct {
 // @Summary Игры пользователя из его steam профиля для виджета
 // @Produce json
 // @Param link query string true "Ссылка на профиль"
-// @Success 200 {string} string "JSON, содержащий список игр"
+// @Success 200 {object} Games "Игры из steam профиля пользователя"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/games [get]
 func (h *GamesHandler) GetGames(w http.ResponseWriter, r *http.Request) {

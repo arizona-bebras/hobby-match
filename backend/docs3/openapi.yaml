@@ -5,49 +5,70 @@ info:
   description: Shumi API
   contact: {}
   version: '1.0'
-security:
-- bearerAuth: []
 servers:
 - url: "/"
+security:
+- BearerAuth: []
 paths:
   "/api/auth":
     post:
       summary: Получить токен авторизации
-      security:
-      - tmaAuth: []
-      requestBody:
-        description: tma initData
-        content:
-          "*/*":
-            schema:
-              type: string
-        required: true
       responses:
         '200':
           description: Токен выдан
           content:
             application/json:
               schema:
-                type: string
+                "$ref": "#/components/schemas/handlers.JWTTokens"
         '401':
           description: Не валидный токен авторизации
           content:
             application/json:
               schema:
-                type: string
+                "$ref": "#/components/schemas/database.Error"
         '403':
           description: Пользователь не записан в базу данных
           content:
             application/json:
               schema:
-                type: string
+                "$ref": "#/components/schemas/database.Error"
         '500':
           description: Внутренняя ошибка сервера
           content:
             application/json:
               schema:
-                type: string
-      x-codegen-request-body-name: initData
+                "$ref": "#/components/schemas/database.Error"
+      security:
+      - TmaAuth: []
+  "/api/autocomplete":
+    get:
+      summary: Предложенные интересы
+      description: Возвращает список интересов, семантически похожих на запрос 'q'.
+      parameters:
+      - name: q
+        in: query
+        description: Строка для поиска и автодополнения интересов
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Успешное получение списка интересов
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/handlers.AutocompleteResponse"
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
   "/api/games":
     get:
       summary: Игры пользователя из его steam профиля для виджета
@@ -60,11 +81,11 @@ paths:
           type: string
       responses:
         '200':
-          description: JSON, содержащий список игр
+          description: Игры из steam профиля пользователя
           content:
             application/json:
               schema:
-                type: string
+                "$ref": "#/components/schemas/handlers.Games"
         '500':
           description: Внутренняя ошибка сервера
           content:
@@ -96,13 +117,13 @@ paths:
     patch:
       summary: Обновить информацию профиля пользователя
       requestBody:
-        description: Интересы о пользователе
+        description: Личностный тест (5 слайдеров)
         content:
           application/json:
             schema:
+              type: array
               items:
                 type: string
-              type: array
         required: false
       responses:
         '200':
@@ -120,7 +141,7 @@ paths:
             "*/*":
               schema:
                 "$ref": "#/components/schemas/database.Error"
-      x-codegen-request-body-name: interests
+      x-codegen-request-body-name: personality_test
   "/api/me/namespaces":
     get:
       summary: Неймспейсы пользователя
@@ -138,8 +159,8 @@ paths:
               schema:
                 "$ref": "#/components/schemas/database.Error"
   "/api/me/photo":
-    post:
-      summary: Обновить информацию профиля пользователя
+    patch:
+      summary: Обновить фото профиля пользователя
       requestBody:
         description: Фото пользователя
         content:
@@ -170,11 +191,8 @@ paths:
               type: object
               properties:
                 data:
-                  type: array
+                  type: string
                   description: Данные виджета
-                  items:
-                    type: integer
-                    format: int32
                 files:
                   type: array
                   description: Файлы виджета
@@ -221,11 +239,8 @@ paths:
               type: object
               properties:
                 data:
-                  type: array
-                  description: Данные виджета
-                  items:
-                    type: integer
-                    format: int32
+                  type: string
+                  description: Данные виджета (JSON)
                 files:
                   type: array
                   description: Файлы виджета
@@ -390,18 +405,21 @@ paths:
   "/api/namespace/{namespace_id}":
     post:
       summary: Зайти в неймспейс
+      parameters:
+      - name: namespace_id
+        in: path
+        description: id неймспейса
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           multipart/form-data:
             schema:
               required:
               - invite_code
-              - namespace
               type: object
               properties:
-                namespace:
-                  type: string
-                  description: id неймспейса
                 invite_code:
                   type: string
                   description: инвайт код для входа в неймспейс
@@ -468,7 +486,7 @@ paths:
                 "$ref": "#/components/schemas/database.Error"
   "/api/namespace/{namespace_id}/pages":
     get:
-      summary: Получить ленту из анкет пользователей неймспейса
+      summary: Получить пользователей неймспейса
       parameters:
       - name: namespace_id
         in: path
@@ -630,45 +648,7 @@ paths:
             "*/*":
               schema:
                 "$ref": "#/components/schemas/database.Error"
-  "/api/worker/autocomplete":
-    get:
-      summary: Предложенные пользователю интересы
-      parameters:
-      - name: q
-        in: query
-        description: Ввод пользователя
-        schema:
-          type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/handlers.AutocompleteResponse"
-        '401':
-          description: Ошибка авторизации
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/database.Error"
-        '500':
-          description: Внутренняя ошибка сервера
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/database.Error"
 components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-    tmaAuth:
-      type: apiKey
-      in: header
-      name: Authorization
-      description: 'Введите токен в формате: **tma <your_token>**'
   schemas:
     database.Error:
       type: object
@@ -679,7 +659,6 @@ components:
           type: integer
       description: Ошибка
     database.Namespace:
-      description: Неймспейс
       type: object
       properties:
         admin:
@@ -694,6 +673,7 @@ components:
             type: integer
         title:
           type: string
+      description: Неймспейс
     database.User:
       type: object
       properties:
@@ -714,7 +694,7 @@ components:
         personality_test:
           type: array
           items:
-            type: integer
+            type: number
         tg_user:
           type: string
         user_info:
@@ -747,6 +727,7 @@ components:
           type: string
         files:
           type: array
+          description: 'TODO: возвращать отдельным endpoint...'
           items:
             type: array
             items:
@@ -766,15 +747,36 @@ components:
     handlers.AutocompleteResponse:
       type: object
       properties:
-        q:
-          type: string
-        response:
+        completions:
           type: array
           items:
-            type: string
-      description: Ответ autocomplete эндпоинта воркера.
+            "$ref": "#/components/schemas/handlers.Autocompletion"
+    handlers.Autocompletion:
+      type: object
+      properties:
+        similarity:
+          type: number
+        tag:
+          type: string
+    handlers.Games:
+      type: object
+      properties:
+        games:
+          type: array
+          items:
+            "$ref": "#/components/schemas/handlers.SteamGame"
+      description: Игры из steam профиля пользователя
+    handlers.JWTTokens:
+      type: object
+      properties:
+        auth_token:
+          type: string
+        refresh_token:
+          type: string
+        user:
+          "$ref": "#/components/schemas/database.User"
+      description: Токены для авторизации и данные пользователя
     handlers.NamespaceMembers:
-      description: Данные неймспеса и его участники
       type: object
       properties:
         namespace:
@@ -783,6 +785,7 @@ components:
           type: array
           items:
             type: string
+      description: Данные неймспеса и его участники
     handlers.PageData:
       type: object
       properties:
@@ -803,7 +806,7 @@ components:
         personality_test:
           type: array
           items:
-            type: integer
+            type: number
         tg_user:
           type: string
         user_info:
@@ -819,6 +822,23 @@ components:
           items:
             "$ref": "#/components/schemas/database.Widget"
       description: Данные анкеты (все поля database.User + tg username)
+    handlers.SteamGame:
+      type: object
+      properties:
+        appid:
+          type: integer
+        content_descriptorids:
+          type: array
+          items:
+            type: integer
+        has_community_visible_stats:
+          type: boolean
+        img_icon_url:
+          type: string
+        name:
+          type: string
+        playtime_forever:
+          type: integer
     handlers.UserNamespaces:
       type: object
       properties:
@@ -827,4 +847,15 @@ components:
           items:
             "$ref": "#/components/schemas/database.Namespace"
       description: Неймспейсы, в который состоит пользователь
+  securitySchemes:
+    BearerAuth:
+      type: apiKey
+      description: 'Введите: Bearer {token}'
+      name: Authorization
+      in: header
+    TmaAuth:
+      type: apiKey
+      description: 'Введите: tma {data}'
+      name: Authorization
+      in: header
 x-original-swagger-version: '2.0'

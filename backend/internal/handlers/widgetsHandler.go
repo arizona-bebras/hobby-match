@@ -17,7 +17,7 @@ const FORM_SIZE_LIMIT int64 = 50000000
 // CreateWidget
 // @Summary Создать виджет
 // @Accept multipart/form-data
-// @Param data formData []byte false "Данные виджета"
+// @Param data formData string false "Данные виджета"
 // @Param files formData array false "Файлы виджета"
 // @Success 200 {object} nil "Виджет успешно создан"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
@@ -106,7 +106,7 @@ func (h *UserDataHandler) CreateWidget(w http.ResponseWriter, r *http.Request) {
 // UpdateWidget
 // @Summary Обновить виджет
 // @Accept multipart/form-data
-// @Param data formData []byte false "Данные виджета"
+// @Param data formData string false "Данные виджета (JSON)"
 // @Param files formData array false "Файлы виджета"
 // @Success 200 {object} nil "Виджет успешно обновлен"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"

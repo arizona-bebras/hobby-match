@@ -38,7 +38,7 @@ type Match struct {
 // EnterNamespace
 // @Summary Зайти в неймспейс
 // @Accept multipart/form-data
-// @Param namespace formData string true "id неймспейса"
+// @Param namespace_id path string true "id неймспейса"
 // @Param invite_code formData string true "инвайт код для входа в неймспейс"
 // @Success 200 {object} nil "Успешный вход"
 // @Failure 403 {object} database.Error "Неверный код входа"
@@ -341,7 +341,7 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetPages
-// @Summary Получить ленту из анкет пользователей неймспейса
+// @Summary Получить пользователей неймспейса
 // @Produce json
 // @Param namespace_id path string true "id неймспейса"
 // @Success 200 {array} handlers.NamespaceMembers
