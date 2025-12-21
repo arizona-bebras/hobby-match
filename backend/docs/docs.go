@@ -1193,6 +1193,22 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.Photos": {
+            "description": "Изображение",
+            "type": "object",
+            "properties": {
+                "files": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                }
+            }
+        },
         "handlers.SteamGame": {
             "type": "object",
             "properties": {

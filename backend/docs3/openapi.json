@@ -1366,6 +1366,22 @@
         },
         "description": "Данные анкеты (все поля database.User + tg username)"
       },
+      "handlers.Photos": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        },
+        "description": "Изображение"
+      },
       "handlers.SteamGame": {
         "type": "object",
         "properties": {

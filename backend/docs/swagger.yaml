@@ -134,9 +134,7 @@ definitions:
       namespace:
         $ref: '#/definitions/database.Namespace'
       users:
-      users:
         items:
-          $ref: '#/definitions/handlers.NamespaceMember'
           $ref: '#/definitions/handlers.NamespaceMember'
         type: array
     type: object
@@ -170,6 +168,17 @@ definitions:
       widgets:
         items:
           $ref: '#/definitions/database.Widget'
+        type: array
+    type: object
+  handlers.Photos:
+    description: Изображение
+    properties:
+      files:
+        items:
+          items:
+            format: int32
+            type: integer
+          type: array
         type: array
     type: object
   handlers.SteamGame:
@@ -268,6 +277,7 @@ paths:
         in: path
         name: index
         type: string
+        required: false
       produces:
       - application/octet-stream
       responses:
