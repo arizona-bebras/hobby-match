@@ -26,7 +26,7 @@
     </div>
     <div class="first:rounded-t-xl last:rounded-b-xl">
       <button
-        onclick={() => goto(`/view?type=single&userId=${410782566}`)}
+        onclick={() => goto(`/community/${2343242}/${410782566}`)}
         class="flex justify-between border-2 border-text-color/25 rounded-t-xl border-b-0 px-4 py-3 items-center w-full"
       >
         <p class="">Смотреть анкету</p>
