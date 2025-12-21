@@ -961,6 +961,12 @@ const docTemplate = `{
                 "members_count": {
                     "type": "integer"
                 },
+                "picture": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "title": {
                     "type": "string"
                 }
@@ -1114,9 +1120,6 @@ const docTemplate = `{
         "handlers.NamespaceMember": {
             "type": "object",
             "properties": {
-                "date": {
-                    "type": "string"
-                },
                 "miniapp_name": {
                     "type": "string"
                 },
@@ -1133,8 +1136,10 @@ const docTemplate = `{
                     "$ref": "#/definitions/database.Namespace"
                 },
                 "users": {
+                "users": {
                     "type": "array",
                     "items": {
+                        "$ref": "#/definitions/handlers.NamespaceMember"
                         "$ref": "#/definitions/handlers.NamespaceMember"
                     }
                 }

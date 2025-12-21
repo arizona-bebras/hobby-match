@@ -1133,6 +1133,12 @@
           "members_count": {
             "type": "integer"
           },
+          "picture": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
           "title": {
             "type": "string"
           }
@@ -1287,9 +1293,6 @@
       "handlers.NamespaceMember": {
         "type": "object",
         "properties": {
-          "date": {
-            "type": "string"
-          },
           "miniapp_name": {
             "type": "string"
           },
@@ -1305,8 +1308,10 @@
             "$ref": "#/components/schemas/database.Namespace"
           },
           "users": {
+          "users": {
             "type": "array",
             "items": {
+              "$ref": "#/components/schemas/handlers.NamespaceMember"
               "$ref": "#/components/schemas/handlers.NamespaceMember"
             }
           }
@@ -1402,6 +1407,9 @@
     },
     "securitySchemes": {
       "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"

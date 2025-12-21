@@ -18,6 +18,10 @@ definitions:
         type: string
       members_count:
         type: integer
+      picture:
+        items:
+          type: integer
+        type: array
       title:
         type: string
     type: object
@@ -119,8 +123,6 @@ definitions:
     type: object
   handlers.NamespaceMember:
     properties:
-      date:
-        type: string
       miniapp_name:
         type: string
       tg_user:
@@ -132,7 +134,9 @@ definitions:
       namespace:
         $ref: '#/definitions/database.Namespace'
       users:
+      users:
         items:
+          $ref: '#/definitions/handlers.NamespaceMember'
           $ref: '#/definitions/handlers.NamespaceMember'
         type: array
     type: object
