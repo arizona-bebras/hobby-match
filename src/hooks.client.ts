@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/sveltekit';
-import { pb } from '$lib/index';
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { db } from '$lib/index';

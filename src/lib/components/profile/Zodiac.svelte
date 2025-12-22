@@ -11,12 +11,12 @@
   import Capricorn from '../signs/Capricorn.svelte';
   import Aquarius from '../signs/Aquarius.svelte';
   import Pisces from '../signs/Pisces.svelte';
-  import { pb } from '$lib';
 
   // let { birthDate } = $props();
   //
   // console.log(birthDate);
-  let birthDate = pb.authStore.record?.birth_date;
+  let birthDate = new Date();
+  // let birthDate = pb.authStore.record?.birth_date;
 
   type ZodiacSign =
     | 'aquarius'

@@ -9,7 +9,6 @@
     deletePhotoFromWidget,
     updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
-  import { pb } from '$lib';
   import { db } from '$lib';
   import { invalidate } from '$app/navigation';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
@@ -59,9 +58,10 @@
   $effect(() => {
     photoFiles = undefined;
     if (widgetId) {
-      pb.collection('widgets')
-        .getOne(widgetId!)
-        .then((record) => (imageUrls = record.additionalData.urls));
+      // TODO: pocketbase was here
+      // pb.collection('widgets')
+      //   .getOne(widgetId!)
+      //   .then((record) => (imageUrls = record.additionalData.urls));
     } else {
       reset();
     }

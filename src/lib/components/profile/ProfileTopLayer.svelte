@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { pb } from '$lib/index';
   import { cn } from '$lib/utils';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
   import Pencil from '@lucide/svelte/icons/pencil';
@@ -20,7 +19,7 @@
 >
   <!--    src={pb.files.getURL(pb.authStore.record ?? {}, data.user_photo)}-->
   <img
-    src={pb.files.getURL(pb.authStore.record ?? {}, data.user_photo)}
+    src={data.user_photo}
     class="w-14 h-14 rounded-full object-cover"
     alt="UserPhoto"
   />

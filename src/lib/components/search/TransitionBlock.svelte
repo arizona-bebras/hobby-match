@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { pb } from '$lib';
   import { LoaderCircle } from '@lucide/svelte';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
 
@@ -41,9 +40,7 @@
         class="rounded-full p-1 aspect-square object-cover max-w-15 max-h-15 mx-auto"
         style:width="{elementSize - 35}px"
         style:height="{elementSize - 35}px"
-        src={pb.buildURL(
-          `/api/files/_pb_users_auth_/${offeredProfiles[1]?.id}/${offeredProfiles[1]?.user_photo}?thumb=350x0`,
-        )}
+        src={`/api/files/_pb_users_auth_/${offeredProfiles[1]?.id}/${offeredProfiles[1]?.user_photo}?thumb=350x0`}
         alt="userImage"
       />
     {:else}

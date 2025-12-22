@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { pb } from '$lib';
   import * as Sheet from '$lib/components/ui/sheet/index.js';
   import * as Select from '$lib/components/ui/select/index.js';
   import * as Form from '$lib/components/ui/form/index.js';
@@ -27,12 +26,13 @@
     validators: zod4(reportSchema),
     onSubmit: async () => {
       try {
-        await pb.collection('reports').create({
-          reporter: pb.authStore.record?.id,
-          offender,
-          reason: $formData.reason,
-          info: $formData.info,
-        });
+        // await pb.collection('reports').create({
+        //   reporter: pb.authStore.record?.id,
+        //   offender,
+        //   reason: $formData.reason,
+        //   info: $formData.info,
+        // });
+        console.error('TODO: не отправлена...');
         toast.success('Жалоба отправлена. Спасибо!');
       } catch {
         toast.error('Жалоба уже отправлена');

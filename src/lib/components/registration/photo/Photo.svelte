@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { pb } from '$lib';
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';
   import {
     photoSchema,
@@ -60,7 +59,8 @@
     setCurrentStage('Тест');
   }
 
-  let hasPhoto: boolean = $derived(!!pb.authStore.record!.user_photo);
+  // TODO: pocketbase was here
+  let hasPhoto: boolean = $derived(false);
   let formValid: boolean = $state(false);
   useTelegramButton(handleTelegramButtonClick);
   $effect(() => {
@@ -93,10 +93,11 @@
         ? $formData.user_photo
         : URL.createObjectURL($formData.user_photo);
     } else {
-      return pb.files.getURL(
-        pb.authStore.record ?? {},
-        pb.authStore.record?.user_photo,
-      );
+      // TODO: remove pocketbase
+      // return pb.files.getURL(
+      //   pb.authStore.record ?? {},
+      //   pb.authStore.record?.user_photo,
+      // );
     }
   });
 </script>

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { pb } from '$lib';
   import {
     DateFormatter,
     type DateValue,
@@ -100,13 +99,14 @@
     $formData;
   });
   $effect(() => {
-    $formData.miniapp_name = pb.authStore.record!.miniapp_name;
-    $formData.gender = pb.authStore.record!.gender;
-    $formData.birth_date = pb.authStore.record?.birth_date
-      ? new Date(pb.authStore.record?.birth_date).toISOString()
-      : '2000-01-01T00:00:00Z';
-    $formData.location = pb.authStore.record!.location;
-    $formData.user_info = pb.authStore.record!.user_info;
+    // TODO: pocketbase was here
+    // $formData.miniapp_name = pb.authStore.record!.miniapp_name;
+    // $formData.gender = pb.authStore.record!.gender;
+    // $formData.birth_date = pb.authStore.record?.birth_date
+    //   ? new Date(pb.authStore.record?.birth_date).toISOString()
+    //   : '2000-01-01T00:00:00Z';
+    // $formData.location = pb.authStore.record!.location;
+    // $formData.user_info = pb.authStore.record!.user_info;
   });
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();

@@ -4,7 +4,6 @@ import { photoSchema } from '$lib/components/registration/photo/PhotoFormShema';
 import { informationSchema } from '$lib/components/registration/information/InformationFormShema';
 import { interestsScheme } from '$lib/components/registration/interests/InterestsFormShema';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { pb } from '$lib/index';
 import type { PageServerLoad } from './$types';
 import { z } from 'zod';
 //import { goto } from '$app/navigation';

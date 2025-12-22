@@ -1,6 +1,5 @@
 <script lang="ts">
   import InterestsWidget from '$lib/components/widgets/InterestsWidget.svelte';
-  import { pb } from '$lib';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
   import ReportButton from '$lib/components/profile/ReportButton.svelte';
   import Zodiac from '$lib/components/profile/Zodiac.svelte';
@@ -31,7 +30,8 @@
   <div class="font-extrabold text-[32px] mt-2 wrap-anywhere flex gap-1">
     <span>{data.miniapp_name}, {data.age}</span>
     <!--    <Zodiac />-->
-    {#if pb.authStore.record?.id !== data.id}
+    <!-- TODO: fix id -->
+    {#if '' !== data.id}
       <ReportButton offender={data.id} />
     {/if}
   </div>
