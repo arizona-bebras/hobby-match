@@ -2,7 +2,6 @@
   import { fly } from 'svelte/transition';
   import Questionnaire from '$lib/components/profile/Questionnaire.svelte';
   import { Heart } from '@lucide/svelte';
-  import { pb } from '$lib';
   import { plausible } from '../../../hooks.client.js';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
 

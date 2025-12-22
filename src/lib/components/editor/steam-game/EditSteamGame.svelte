@@ -11,7 +11,6 @@
   import { zod, zod4, zodClient } from 'sveltekit-superforms/adapters';
   import * as Select from '$lib/components/ui/select';
   import { gameScheme } from '$lib/components/editor/steam-game/gameScheme';
-  import { pb } from '$lib';
   import { db } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';

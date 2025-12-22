@@ -1,4 +1,3 @@
-import { pb } from '$lib';
 import { db } from '$lib';
 import type { PageLoad } from './$types';
 import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';

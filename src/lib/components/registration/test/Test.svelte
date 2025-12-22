@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { pb } from '$lib';
   import { db } from '$lib';
   import { Slider } from '$lib/components/ui/slider/index.js';
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';

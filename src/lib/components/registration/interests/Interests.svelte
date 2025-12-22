@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { pb } from '$lib';
   import { db } from '$lib';
   import { Input } from '$lib/components/ui/input';
   import { Plus } from '@lucide/svelte';

@@ -1,5 +1,4 @@
 import type { Widget } from '$lib/widgetTypes/widgetTypes';
-import { pb } from '$lib';
 import { db } from '$lib';
 import { invalidate } from '$app/navigation';
 import client from '$lib/api/client';

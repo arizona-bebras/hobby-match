@@ -9,7 +9,6 @@
   } from '$lib/components/registration/index';
 
   import type { PageProps } from '../../../.svelte-kit/types/src/routes/registration/$types';
-  import { pb } from '$lib';
   import { onMount } from 'svelte';
   import { Check } from '@lucide/svelte';
   import { goto } from '$app/navigation';

@@ -10,7 +10,6 @@
     createWidget,
     updateWidget,
   } from '$lib/components/widgetConstructors/widgetsConstructor';
-  import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
   import { Info } from '@lucide/svelte';

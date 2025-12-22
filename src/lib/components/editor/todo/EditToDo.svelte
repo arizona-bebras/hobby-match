@@ -9,7 +9,6 @@
   import { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zod4, zodClient } from 'sveltekit-superforms/adapters';
   import { toDoScheme } from '$lib/components/editor/todo/toDoScheme';
-  import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
   import { X } from '@lucide/svelte';

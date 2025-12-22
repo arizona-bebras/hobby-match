@@ -1,6 +1,5 @@
 <script lang="ts">
   import ProfileTopLayer from '$lib/components/profile/ProfileTopLayer.svelte';
-  import { pb } from '$lib';
   import { scrollY } from 'svelte/reactivity/window';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
   let { data, changeMode = false }: { data: PageData; changeMode?: boolean } =
