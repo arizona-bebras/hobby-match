@@ -13,6 +13,7 @@ export const actions = {
 
 export async function load({ url }): Promise<{ page?: PageData }> {
   if (!url.searchParams.has('opened')) return {};
+  return {};
   // try {
   //   const {
   //     // @ts-expect-error it exists
@@ -36,5 +37,4 @@ export async function load({ url }): Promise<{ page?: PageData }> {
   // } catch (_) {
   //   return {};
   // }
-  return {};
 }
