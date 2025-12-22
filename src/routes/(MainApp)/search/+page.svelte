@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
   import { onMount } from 'svelte';
+  import { pb } from '$lib';
   import { db } from '$lib'
   import LoadingScreen from '$lib/components/search/LoadingScreen.svelte';
   import TransitionBlock from '$lib/components/search/TransitionBlock.svelte';
