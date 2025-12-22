@@ -37,7 +37,7 @@ class ApiClient:
     @staticmethod
     async def get_user(tg_id: int) -> dict | None:
         """GET запрос: проверяет наличие пользователя"""
-        url = f"{API_BASE_URL}/api/tg/"
+        url = f"{API_BASE_URL}/api/tg"
         async with aiohttp.ClientSession() as session:
             try:
                 # Передаем tg_id как query parameter
@@ -52,7 +52,7 @@ class ApiClient:
     @staticmethod
     async def register_user(user_data: dict) -> int:
         """POST запрос: регистрация пользователя"""
-        url = f"{API_BASE_URL}/api/tg/"
+        url = f"{API_BASE_URL}/api/tg"
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.post(url, json=user_data) as response:
@@ -65,7 +65,7 @@ class ApiClient:
     async def update_hide_status(tg_id: int, hide: bool) -> bool:
         """PATCH запрос: обновить статус видимости"""
         # Предполагаем, что есть эндпоинт для обновления по ID
-        url = f"{API_BASE_URL}/api/tg/" 
+        url = f"{API_BASE_URL}/api/tg"
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.patch(url, json={"hide": hide}, params={ "id": tg_id }) as response:
@@ -77,7 +77,7 @@ class ApiClient:
     @staticmethod
     async def delete_user(tg_id: int) -> bool:
         """DELETE запрос: удалить пользователя"""
-        url = f"{API_BASE_URL}/api/tg/"
+        url = f"{API_BASE_URL}/api/tg"
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.delete(url, params={ "id": tg_id }) as response:
