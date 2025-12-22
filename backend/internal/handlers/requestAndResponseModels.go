@@ -58,3 +58,8 @@ type Games struct {
 type Photos struct {
 	Files [][]byte `json:"files"`
 }
+
+// @Description Ответ на успешное создание неймспейса
+type CreatedNamespace struct {
+	NamespaceId string `json:"namespace_id"`
+}

@@ -79,8 +79,10 @@ func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = h.DB.Table("user_namespace").Create(map[string]interface{}{
-		"namespace_id": namespace, "user_id": tgId,
+	err = h.DB.Create(&database.UserNamespace{
+		NamespaceId: namespace, 
+		UserId: tgId, 
+		Date: time.Now().Format(time.RFC3339),
 	}).Error
 	if err != nil {
 		log.Printf("namespace handler: failed to enter namespace, %v", err)
@@ -108,7 +110,11 @@ func (h *NamespaceHandler) LeaveNamespace(w http.ResponseWriter, r *http.Request
 	namespace := r.PathValue("namespace_id")
 
 	// type UserNamespace struct{}
-	err := h.DB.Debug().Table("user_namespace").Where(`"user" = ? AND namespace = ?`, tgId, namespace).Delete(&struct{}{}).Error
+	err := h.DB.Delete(&database.UserNamespace{
+		NamespaceId: namespace, 
+		UserId: tgId, 
+		Date: time.Now().Format(time.RFC3339),
+	}).Error
 	if err != nil {
 		log.Println("namespace handler: failed to leave namespace")
 		http.Error(
