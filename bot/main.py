@@ -35,56 +35,58 @@ class ApiClient:
     """Класс-обертка для запросов к твоему бэкенду"""
 
     @staticmethod
+    async def _api_call(method: str, **kwargs: Any) -> tuple[int, Any | None]:
+        """
+        Выполняет HTTP-запрос к API, обрабатывает ошибки и логирует не-200 ответы.
+        Возвращает кортеж (status_code, response_data).
+        """
+        url = f"{API_BASE_URL}/api/tg"
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.request(method, url, **kwargs) as response:
+                    if response.status not in [200, 201, 204]:
+                        logger.warning(
+                            f"API Call {method} {url} returned non-success status: {response.status}. "
+                            f"Payload: {kwargs.get('json')}. Response: {await response.text()}"
+                        )
+
+                    data = None
+                    if response.content_length and response.content_length > 0:
+                        content_type = response.headers.get('Content-Type', '')
+                        if 'application/json' in content_type:
+                            data = await response.json()
+                        elif 'text/plain' in content_type:
+                            # Для get_user, который отдает json с content_type text/plain
+                            data = await response.json(content_type='text/plain')
+
+                    return response.status, data
+        except aiohttp.ClientError as e:
+            logger.error(f"Ошибка подключения к API ({method} {url}): {e}")
+            return 500, None
+
+    @staticmethod
     async def get_user(tg_id: int) -> dict | None:
         """GET запрос: проверяет наличие пользователя"""
-        url = f"{API_BASE_URL}/api/tg/"
-        async with aiohttp.ClientSession() as session:
-            try:
-                # Передаем tg_id как query parameter
-                async with session.get(url, params={ "id": tg_id }) as response:
-                    if response.status == 200:
-                        return await response.json(content_type='text/plain')
-                    return None
-            except Exception as e:
-                logger.error(f"Ошибка подключения к API (check_user): {e}")
-                return None
+        status, data = await ApiClient._api_call("GET", params={"id": tg_id})
+        return data if status == 200 else None
 
     @staticmethod
     async def register_user(user_data: dict) -> int:
         """POST запрос: регистрация пользователя"""
-        url = f"{API_BASE_URL}/api/tg/"
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.post(url, json=user_data) as response:
-                    return response.status
-            except Exception as e:
-                logger.error(f"Ошибка подключения к API (register_user): {e}")
-                return 500
+        status, _ = await ApiClient._api_call("POST", json=user_data)
+        return status
 
     @staticmethod
     async def update_hide_status(tg_id: int, hide: bool) -> bool:
         """PATCH запрос: обновить статус видимости"""
-        # Предполагаем, что есть эндпоинт для обновления по ID
-        url = f"{API_BASE_URL}/api/tg/" 
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.patch(url, json={"hide": hide}, params={ "id": tg_id }) as response:
-                    return response.status == 200
-            except Exception as e:
-                logger.error(f"Ошибка API (update_hide_status): {e}")
-                return False
+        status, _ = await ApiClient._api_call("PATCH", params={"id": tg_id}, json={"hide": hide})
+        return status == 200
 
     @staticmethod
     async def delete_user(tg_id: int) -> bool:
         """DELETE запрос: удалить пользователя"""
-        url = f"{API_BASE_URL}/api/tg/"
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.delete(url, params={ "id": tg_id }) as response:
-                    return response.status in [200, 204]
-            except Exception as e:
-                logger.error(f"Ошибка API (delete_user): {e}")
-                return False
+        status, _ = await ApiClient._api_call("DELETE", params={"id": tg_id})
+        return status in [200, 204]
 
 # --- Хендлеры ---
 
