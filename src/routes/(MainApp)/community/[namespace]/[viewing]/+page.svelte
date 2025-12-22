@@ -70,24 +70,28 @@
     ],
   };
   const userId = page.url.href.split('/').at(-1);
+  console.log(userId);
   const profileData = createQuery(() => ({
     queryKey: ['profileData'],
     queryFn: async () =>
-      await client.GET('/api/namespace/{namespace_id}/feed', {
+      await client.GET('/api/pages/{page_id}', {
         params: {
           path: {
-            namespace_id: userId,
+            page_id: userId,
           },
         },
       }),
+    select: (data) => data.data,
   }));
+  console.log(profileData.data);
   let screenContainer = $state<HTMLElement>();
   let scroll = new ScrollState({
     element: () => screenContainer,
   });
-  let userSimilarity = 95;
 </script>
 
-<div class="overflow-y-auto relative" bind:this={screenContainer}>
-  <Questionnaire data={testData} isNamespaceProfile={true} {scroll} />
-</div>
+{#if profileData.data}
+  <div class="overflow-y-auto relative" bind:this={screenContainer}>
+    <Questionnaire data={profileData.data} isNamespaceProfile={true} {scroll} />
+  </div>
+{/if}

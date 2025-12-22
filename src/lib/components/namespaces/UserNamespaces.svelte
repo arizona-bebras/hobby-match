@@ -4,11 +4,12 @@
   import { getCorrectForm } from '$lib/utils';
 
   type namespaces = {
-    admin: string;
+    admin_id: string;
     description: string;
     id: string;
     picture: number[];
     title: string;
+    members_count: number;
   }[];
   const {
     namespacesList,
@@ -40,8 +41,8 @@
               {/if}
             </div>
             <p>
-              {namespace.amount_members}
-              {getCorrectForm(namespace.amount_members, [
+              {namespace.members_count}
+              {getCorrectForm(namespace.members_count, [
                 'участник',
                 'участника',
                 'участников',
@@ -49,7 +50,7 @@
             </p>
           </div>
         </div>
-        <button onclick={() => goto(`/community/${namespace.id}}`)}>
+        <button onclick={() => goto(`/community/${namespace.id}`)}>
           <ArrowRight class="size-5" />
         </button>
       </div>

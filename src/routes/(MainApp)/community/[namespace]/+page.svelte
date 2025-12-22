@@ -2,11 +2,11 @@
   import { ChevronRight, PencilLine } from '@lucide/svelte';
   import UserNamespaces from '$lib/components/namespaces/UserNamespaces.svelte';
   import NamespaceMembersLst from '$lib/components/namespaces/NamespaceMembersLst.svelte';
-  import type { NamespaceMembers } from '$lib/namespaceTypes';
   import { getCorrectForm } from '$lib/utils';
   import client from '$lib/api/client';
   import { goto } from '$app/navigation';
   import { createQuery } from '@tanstack/svelte-query';
+  import { page } from '$app/state';
 
   let testNameSpaceses = {
     img: 'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',
@@ -15,7 +15,7 @@
     is_admin: true,
   };
 
-  let namespaceUsers: NamespaceMembers = [
+  let namespaceUsers = [
     {
       img: 'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',
       username: 'Valera',
@@ -38,13 +38,15 @@
     },
   ];
 
+  const namespaceId = page.url.pathname.split('/').pop();
+  console.log(namespaceId);
   const namespaceInfo = createQuery(() => ({
     queryKey: ['namespaceInfo'],
     queryFn: async () =>
       await client.GET('/api/namespace/{namespace_id}/pages', {
         params: {
           path: {
-            namespace_id: '00000000-0000-0000-0000-000000000000',
+            namespace_id: namespaceId,
           },
         },
       }),
@@ -78,7 +80,7 @@
     <div class="mt-2.5 text-center">
       <p class="font-medium">{namespaceInfo.data?.namespace?.title}</p>
       <p class="text-sm text-inactive">
-        {testNameSpaceses.amount_members}
+        {namespaceInfo.data?.namespace?.members_count}
         {getCorrectForm(testNameSpaceses.amount_members, [
           'участник',
           'участника',
@@ -111,6 +113,9 @@
       </button>
     </div>
     <p>Участники</p>
-    <NamespaceMembersLst users={namespaceUsers} />
+    <NamespaceMembersLst
+      users={namespaceInfo.data?.users}
+      adminId={namespaceInfo.data?.namespace?.admin}
+    />
   </div>
 {/if}

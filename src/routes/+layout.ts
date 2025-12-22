@@ -1,6 +1,7 @@
 import { db } from '$lib';
 import { accessToken } from '$lib/storage/accessToken.svelte';
 import { goto } from '$app/navigation';
+import client from '$lib/api/client';
 
 export const ssr = false;
 
@@ -10,10 +11,16 @@ export const load = async () => {
     return;
   }
   const res = await fetch(`${db}/api/auth`, {
+    method: 'POST',
     headers: {
       Authorization: `tma ${window.Telegram.WebApp.initData}`,
     },
   });
+  // const response = await client.POST('/api/auth', {
+  //   headers: {
+  //     Authorization: `tma ${window.Telegram.WebApp.initData}`,
+  //   },
+  // });
 
   const data = await res.json();
   const user = data.response.user;

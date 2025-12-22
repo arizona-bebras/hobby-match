@@ -30,6 +30,13 @@
 
   onMount(async () => {
     const { data } = await client.GET('/api/me');
+    const photo = await client.GET('/api/files/{object}', {
+      params: {
+        path: {
+          object: 'users',
+        },
+      },
+    });
     if (
       data?.miniapp_name &&
       data?.gender &&
@@ -39,7 +46,7 @@
     ) {
       markStageComplete('Информация');
     }
-    if (data?.user_photo) {
+    if (photo.data?.files) {
       markStageComplete('Фото');
     }
     if (data?.personality_test) {

@@ -127,6 +127,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/files/{object}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить фото, связанное с объектом */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description id объекта (не нужно передавать для users) */
+                    id?: string;
+                };
+                header?: never;
+                path: {
+                    /** @description тип объекта (users, namespaces, widgets) */
+                    object: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Photos"];
+                    };
+                };
+                /** @description Для этого пользователя нет доступа к файлу */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/games": {
         parameters: {
             query?: never;
@@ -944,7 +1004,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["handlers.PageData"][];
+                        "application/json": components["schemas"]["handlers.PageData"];
                     };
                 };
                 /** @description Внутренняя ошибка сервера */
@@ -1172,6 +1232,7 @@ export interface components {
             admin?: string;
             description?: string;
             id?: string;
+            members_count?: number;
             picture?: number[];
             title?: string;
         };
@@ -1186,7 +1247,6 @@ export interface components {
             personality_test?: number[];
             tg_user?: string;
             user_info?: string;
-            user_photo?: number[];
             widgets?: components["schemas"]["database.Widget"][];
         };
         /** @description Голос в опросе */
@@ -1199,8 +1259,6 @@ export interface components {
         "database.Widget": {
             additionalData?: string;
             data?: string;
-            /** @description TODO: возвращать отдельным endpoint... */
-            files?: number[][];
             id?: string;
             namespace?: string;
             order?: number;
@@ -1224,10 +1282,14 @@ export interface components {
             refresh_token?: string;
             user?: components["schemas"]["database.User"];
         };
+        "handlers.NamespaceMember": {
+            miniapp_name?: string;
+            tg_user?: string;
+        };
         /** @description Данные неймспеса и его участники */
         "handlers.NamespaceMembers": {
             namespace?: components["schemas"]["database.Namespace"];
-            user_ids?: string[];
+            users?: components["schemas"]["handlers.NamespaceMember"][];
         };
         /** @description Данные анкеты (все поля database.User + tg username) */
         "handlers.PageData": {
@@ -1240,9 +1302,12 @@ export interface components {
             personality_test?: number[];
             tg_user?: string;
             user_info?: string;
-            user_photo?: number[];
             username?: string;
             widgets?: components["schemas"]["database.Widget"][];
+        };
+        /** @description Изображение */
+        "handlers.Photos": {
+            files?: number[][];
         };
         "handlers.SteamGame": {
             appid?: number;
