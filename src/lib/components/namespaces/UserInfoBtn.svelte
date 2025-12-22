@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as Sheet from '$lib/components/ui/sheet/index.js';
-  import { ArrowRight, AlarmClock, CircleX } from '@lucide/svelte';
+  import { ArrowRight, AlarmClock, CircleX, type User } from '@lucide/svelte';
   import { goto } from '$app/navigation';
 
   let testData = {
@@ -8,6 +8,11 @@
     username: 'Valerka',
     register_date: '11.09.2006',
   };
+  type NamespaceMembers = {
+    tg_user: number;
+    miniapp_name: string;
+  };
+  let { user }: { user: NamespaceMembers } = $props();
 </script>
 
 <Sheet.Root>
@@ -20,13 +25,13 @@
         class="size-24 rounded-full object-cover"
       />
       <div class="text-center mt-2.5">
-        <p class="font-medium">{testData.username}</p>
+        <p class="font-medium">{user.miniapp_name}</p>
         <p class="text-inactive text-sm">С нами с {testData.register_date}</p>
       </div>
     </div>
     <div class="first:rounded-t-xl last:rounded-b-xl">
       <button
-        onclick={() => goto(`/community/${2343242}/${410782566}`)}
+        onclick={() => goto(`/community/${'CheatExe)'}/${user.tg_user}`)}
         class="flex justify-between border-2 border-text-color/25 rounded-t-xl border-b-0 px-4 py-3 items-center w-full"
       >
         <p class="">Смотреть анкету</p>

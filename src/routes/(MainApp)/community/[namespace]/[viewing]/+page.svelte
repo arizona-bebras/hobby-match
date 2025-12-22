@@ -81,17 +81,17 @@
           },
         },
       }),
+    select: (data) => data.data,
   }));
   console.log(profileData.data);
   let screenContainer = $state<HTMLElement>();
   let scroll = new ScrollState({
     element: () => screenContainer,
   });
-  let userSimilarity = 95;
 </script>
 
 {#if profileData.data}
   <div class="overflow-y-auto relative" bind:this={screenContainer}>
-    <Questionnaire data={testData} isNamespaceProfile={true} {scroll} />
+    <Questionnaire data={profileData.data} isNamespaceProfile={true} {scroll} />
   </div>
 {/if}
