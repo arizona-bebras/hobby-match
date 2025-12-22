@@ -14,12 +14,14 @@
     interestsScheme,
   } from '$lib/components/registration/interests/InterestsFormShema';
   import { zodClient } from 'sveltekit-superforms/adapters';
-  import { onDestroy } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
   import { updateData } from '$lib/components/registration/';
+  import client from '$lib/api/client';
+  import { createQuery } from '@tanstack/svelte-query';
   type Word = {
-    id: string;
     tag: string;
+    similarity: number;
   };
   let selectedInterests: Word[] = $state([]);
   let userInterest: string = $state('');
@@ -44,6 +46,8 @@
     }
     return;
   }
+
+  onMount(async () => {});
 
   async function handleTelegramButtonClick() {
     // window.Telegram.WebApp.MainButton.showProgress()
@@ -90,7 +94,6 @@
     window.Telegram.WebApp.MainButton.hide();
   });
   let suggestedWords: Word[] = $state([]);
-  $inspect(suggestedWords);
   async function getWords(userInterest: string) {
     // const result = await pb.send('/worker/autocomplete', {
     //   method: 'GET',
@@ -98,24 +101,32 @@
     //     query: userInterest,
     //   },
     // });
-    const authHeader: HeadersInit = new Headers();
-    authHeader.set(
-      'Authorization',
-      `Bearer ${window.localStorage.getItem('access_token')}`,
-    );
-    const result = await fetch(
-      `${db}/api/worker/autocomplete?query=${userInterest}`,
-      {
-        method: 'GET',
-        headers: authHeader,
+    // const authHeader: HeadersInit = new Headers();
+    // authHeader.set(
+    //   'Authorization',
+    //   `Bearer ${window.localStorage.getItem('access_token')}`,
+    // );
+    const suggestedInterests = await client.GET('/api/autocomplete', {
+      params: {
+        query: {
+          q: userInterest,
+        },
       },
-    ).then((res) => res.json());
-    suggestedWords = result.response.matches.map(
-      (element: { id: string; metadata: { tag: string } }) => ({
-        id: element.id,
-        tag: element.metadata.tag,
-      }),
-    );
+    });
+    // const result = await fetch(
+    //   `${db}/api/worker/autocomplete?query=${userInterest}`,
+    //   {
+    //     method: 'GET',
+    //     headers: authHeader,
+    //   },
+    // ).then((res) => res.json());
+    // suggestedWords = result.response.matches.map(
+    //   (element: { id: string; metadata: { tag: string } }) => ({
+    //     id: element.id,
+    //     tag: element.metadata.tag,
+    //   }),
+    // );
+    suggestedWords = suggestedInterests.data?.completions;
     // response['response']['matches'].forEach((element) => {
     //   if (!suggestedWords.includes(element['metadata']['tag'])) {
     //     suggestedWords.push({
@@ -142,7 +153,7 @@
     ...suggestedWords
       .filter(
         (element) =>
-          !selectedInterests.find((selected) => selected.id === element.id),
+          !selectedInterests.find((selected) => selected.tag === element.tag),
       )
       .map((element) => ({ ...element, selected: false })),
   ]);
