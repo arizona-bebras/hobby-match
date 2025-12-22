@@ -27,7 +27,7 @@ type User struct {
 	Gender          string          `json:"gender" gorm:"column:gender"`
 	BirthDate       string          `json:"birth_date" gorm:"column:birth_date"`
 	Interests       pq.StringArray  `json:"interests" gorm:"type:text[];column:interests"`
-	PersonalityTest pgvector.Vector `json:"personality_test" gorm:"type:vector(5)"`
+	PersonalityTest pgvector.Vector `json:"personality_test" gorm:"type:vector(5);default:null"`
 	Photo           []byte          `json:"-" gorm:"type:bytea;column:photo"`
 	Info            string          `json:"user_info" gorm:"column:info"`
 	Hide            bool            `json:"hide" gorm:"column:hide"`
