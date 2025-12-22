@@ -121,7 +121,7 @@ func (h *UserDataHandler) GetMyNamespaces(w http.ResponseWriter, r *http.Request
 	var namespaces []database.Namespace
 	err := h.DB.
 		Table("user_namespace").
-		Select("namespaces.id, namespaces.title, namespaces.picture").
+		Select("namespaces.id, namespaces.title, namespaces.members_count").
 		Joins("JOIN namespaces ON namespaces.id = user_namespace.namespace_id").
 		Find(&namespaces, "user_id = ?", tgId).Error
 	if err != nil {

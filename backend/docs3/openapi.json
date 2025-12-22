@@ -117,6 +117,62 @@
         }
       }
     },
+    "/api/files/{object}": {
+      "get": {
+        "summary": "Получить фото, связанное с объектом",
+        "parameters": [
+          {
+            "name": "object",
+            "in": "path",
+            "description": "тип объекта (users, namespaces, widgets)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "id объекта (не нужно передавать для users)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/handlers.Photos"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Для этого пользователя нет доступа к файлу",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/games": {
       "get": {
         "summary": "Игры пользователя из его steam профиля для виджета",
@@ -794,7 +850,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                    "$ref": "#/components/schemas/handlers.NamespaceMembers"
+                  "$ref": "#/components/schemas/handlers.NamespaceMembers"
                 }
               }
             }
@@ -842,10 +898,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/handlers.PageData"
-                  }
+                  "$ref": "#/components/schemas/handlers.PageData"
                 }
               }
             }
@@ -1062,6 +1115,9 @@
           "id": {
             "type": "string"
           },
+          "members_count": {
+            "type": "integer"
+          },
           "picture": {
             "type": "array",
             "items": {
@@ -1110,12 +1166,6 @@
           "user_info": {
             "type": "string"
           },
-          "user_photo": {
-            "type": "array",
-            "items": {
-              "type": "integer"
-            }
-          },
           "widgets": {
             "type": "array",
             "items": {
@@ -1148,17 +1198,6 @@
           },
           "data": {
             "type": "string"
-          },
-          "files": {
-            "type": "array",
-            "description": "TODO: возвращать отдельным endpoint...",
-            "items": {
-              "type": "array",
-              "items": {
-                "type": "integer",
-                "format": "int32"
-              }
-            }
           },
           "id": {
             "type": "string"
@@ -1227,16 +1266,27 @@
         },
         "description": "Токены для авторизации и данные пользователя"
       },
+      "handlers.NamespaceMember": {
+        "type": "object",
+        "properties": {
+          "miniapp_name": {
+            "type": "string"
+          },
+          "tg_user": {
+            "type": "string"
+          }
+        }
+      },
       "handlers.NamespaceMembers": {
         "type": "object",
         "properties": {
           "namespace": {
             "$ref": "#/components/schemas/database.Namespace"
           },
-          "user_ids": {
+          "users": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/handlers.NamespaceMember"
             }
           }
         },
@@ -1278,12 +1328,6 @@
           "user_info": {
             "type": "string"
           },
-          "user_photo": {
-            "type": "array",
-            "items": {
-              "type": "integer"
-            }
-          },
           "username": {
             "type": "string"
           },
@@ -1295,6 +1339,22 @@
           }
         },
         "description": "Данные анкеты (все поля database.User + tg username)"
+      },
+      "handlers.Photos": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        },
+        "description": "Изображение"
       },
       "handlers.SteamGame": {
         "type": "object",
@@ -1337,10 +1397,9 @@
     },
     "securitySchemes": {
       "BearerAuth": {
-        "type": "apiKey",
-        "description": "Введите: Bearer {token}",
-        "name": "Authorization",
-        "in": "header"
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       },
       "TmaAuth": {
         "type": "apiKey",

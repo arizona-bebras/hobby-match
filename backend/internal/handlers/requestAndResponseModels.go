@@ -17,10 +17,15 @@ type PageData struct {
 	Username string `json:"username"`
 }
 
+type NamespaceMember struct {
+	Id   string `json:"tg_user" gorm:"primaryKey;type:text;column:id"`
+	Name string `json:"miniapp_name" gorm:"column:name"`
+}
+
 // @Description Данные неймспеса и его участники
 type NamespaceMembers struct {
-	Namespace database.Namespace `json:"namespace"`
-	UserIds   []string           `json:"user_ids"`
+	Namespace        database.Namespace `json:"namespace"`
+	NamespaceMembers []NamespaceMember  `json:"users"`
 }
 
 // @Description Неймспейсы, в который состоит пользователь
@@ -35,7 +40,6 @@ type JWTTokens struct {
 	User         database.User `json:"user"`
 }
 
-
 type SteamGame struct {
 	AppId                 uint   `json:"appid"`
 	Name                  string `json:"name"`
@@ -48,4 +52,9 @@ type SteamGame struct {
 // @Description Игры из steam профиля пользователя
 type Games struct {
 	Games []SteamGame `json:"games"`
+}
+
+// @Description Изображение
+type Photos struct {
+	Files [][]byte `json:"files"`
 }

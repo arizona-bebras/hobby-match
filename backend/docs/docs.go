@@ -91,6 +91,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/files/{object}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Получить фото, связанное с объектом",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "тип объекта (users, namespaces, widgets)",
+                        "name": "object",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "id объекта (не нужно передавать для users)",
+                        "name": "id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Photos"
+                        }
+                    },
+                    "403": {
+                        "description": "Для этого пользователя нет доступа к файлу",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/games": {
             "get": {
                 "produces": [
@@ -701,10 +744,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/handlers.PageData"
-                            }
+                            "$ref": "#/definitions/handlers.PageData"
                         }
                     },
                     "500": {
@@ -908,6 +948,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "members_count": {
+                    "type": "integer"
+                },
                 "picture": {
                     "type": "array",
                     "items": {
@@ -956,12 +999,6 @@ const docTemplate = `{
                 "user_info": {
                     "type": "string"
                 },
-                "user_photo": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
                 "widgets": {
                     "type": "array",
                     "items": {
@@ -994,17 +1031,6 @@ const docTemplate = `{
                 },
                 "data": {
                     "type": "string"
-                },
-                "files": {
-                    "description": "TODO: возвращать отдельным endpoint...",
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "integer",
-                            "format": "int32"
-                        }
-                    }
                 },
                 "id": {
                     "type": "string"
@@ -1072,6 +1098,17 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.NamespaceMember": {
+            "type": "object",
+            "properties": {
+                "miniapp_name": {
+                    "type": "string"
+                },
+                "tg_user": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.NamespaceMembers": {
             "description": "Данные неймспеса и его участники",
             "type": "object",
@@ -1079,10 +1116,10 @@ const docTemplate = `{
                 "namespace": {
                     "$ref": "#/definitions/database.Namespace"
                 },
-                "user_ids": {
+                "users": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/handlers.NamespaceMember"
                     }
                 }
             }
@@ -1124,12 +1161,6 @@ const docTemplate = `{
                 "user_info": {
                     "type": "string"
                 },
-                "user_photo": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
                 "username": {
                     "type": "string"
                 },
@@ -1137,6 +1168,22 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/database.Widget"
+                    }
+                }
+            }
+        },
+        "handlers.Photos": {
+            "description": "Изображение",
+            "type": "object",
+            "properties": {
+                "files": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
                     }
                 }
             }

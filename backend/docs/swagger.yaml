@@ -16,6 +16,8 @@ definitions:
         type: string
       id:
         type: string
+      members_count:
+        type: integer
       picture:
         items:
           type: integer
@@ -48,10 +50,6 @@ definitions:
         type: string
       user_info:
         type: string
-      user_photo:
-        items:
-          type: integer
-        type: array
       widgets:
         items:
           $ref: '#/definitions/database.Widget'
@@ -74,14 +72,6 @@ definitions:
         type: string
       data:
         type: string
-      files:
-        description: 'TODO: возвращать отдельным endpoint...'
-        items:
-          items:
-            format: int32
-            type: integer
-          type: array
-        type: array
       id:
         type: string
       namespace:
@@ -125,14 +115,21 @@ definitions:
       user:
         $ref: '#/definitions/database.User'
     type: object
+  handlers.NamespaceMember:
+    properties:
+      miniapp_name:
+        type: string
+      tg_user:
+        type: string
+    type: object
   handlers.NamespaceMembers:
     description: Данные неймспеса и его участники
     properties:
       namespace:
         $ref: '#/definitions/database.Namespace'
-      user_ids:
+      users:
         items:
-          type: string
+          $ref: '#/definitions/handlers.NamespaceMember'
         type: array
     type: object
   handlers.PageData:
@@ -160,15 +157,22 @@ definitions:
         type: string
       user_info:
         type: string
-      user_photo:
-        items:
-          type: integer
-        type: array
       username:
         type: string
       widgets:
         items:
           $ref: '#/definitions/database.Widget'
+        type: array
+    type: object
+  handlers.Photos:
+    description: Изображение
+    properties:
+      files:
+        items:
+          items:
+            format: int32
+            type: integer
+          type: array
         type: array
     type: object
   handlers.SteamGame:
@@ -250,6 +254,34 @@ paths:
           schema:
             $ref: '#/definitions/database.Error'
       summary: Предложенные интересы
+  /api/files/{object}:
+    get:
+      parameters:
+      - description: тип объекта (users, namespaces, widgets)
+        in: path
+        name: object
+        required: true
+        type: string
+      - description: id объекта (не нужно передавать для users)
+        in: query
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Photos'
+        "403":
+          description: Для этого пользователя нет доступа к файлу
+          schema:
+            $ref: '#/definitions/database.Error'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/database.Error'
+      summary: Получить фото, связанное с объектом
   /api/games:
     get:
       parameters:
@@ -646,9 +678,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/handlers.PageData'
-            type: array
+            $ref: '#/definitions/handlers.PageData'
         "500":
           description: Внутренняя ошибка сервера
           schema:
