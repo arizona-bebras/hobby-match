@@ -12,13 +12,16 @@
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
+  import type { Post, Text } from '$lib/widgetTypes/widgetTypes';
   let {
     widgetId,
     onClose,
+    widgetData,
     open = $bindable(false),
   }: {
     open: boolean;
     widgetId?: string;
+    widgetData: Post;
     onClose: CallableFunction;
   } = $props();
   const form = superForm(defaults(zod4(postScheme)), {
@@ -51,11 +54,7 @@
   });
   $effect(() => {
     if (widgetId) {
-      pb.collection('widgets')
-        .getOne(widgetId)
-        .then(
-          (result) => ($formData.link = `https://t.me/${result.data.link}`),
-        );
+      $formData.link = 'https://t.me/' + widgetData.link;
     } else {
       reset();
     }

@@ -14,15 +14,18 @@
   import { invalidate } from '$app/navigation';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
+  import type { PhotoData } from '$lib/widgetTypes/widgetTypes';
 
   let {
     widgetId,
     onClose,
     open = $bindable(false),
-    files
+    widgetData,
+    files,
   }: {
     open: boolean;
     widgetId?: string;
+    widgetData: PhotoData;
     onClose: CallableFunction;
     files: string[];
   } = $props();
@@ -52,17 +55,17 @@
     },
   });
 
-  // let imageUrls: string[] = $state([]);
-  // $effect(() => {
-  //   photoFiles = undefined;
-  //   if (widgetId) {
-  //     pb.collection('widgets')
-  //       .getOne(widgetId!)
-  //       .then((record) => (imageUrls = record.additionalData.urls));
-  //   } else {
-  //     reset();
-  //   }
-  // });
+  let imageUrls: string[] = $state([]);
+  $effect(() => {
+    photoFiles = undefined;
+    if (widgetId) {
+      pb.collection('widgets')
+        .getOne(widgetId!)
+        .then((record) => (imageUrls = record.additionalData.urls));
+    } else {
+      reset();
+    }
+  });
 
   const { form: formData, enhance, validateForm, reset } = form;
   let isButtonActive = $state(false);
@@ -100,7 +103,7 @@
                 <button
                   class="absolute right-4 top-4"
                   onclick={async () => {
-                    await deletePhotoFromWidget(widgetId, i)
+                    await deletePhotoFromWidget(widgetId, i);
                     files.splice(i, 1);
                     await invalidate('user:widgets');
                     isButtonActive = true;

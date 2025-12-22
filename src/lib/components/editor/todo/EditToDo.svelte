@@ -13,14 +13,16 @@
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
   import { X } from '@lucide/svelte';
-  import type { Todo } from '$lib/widgetTypes/widgetTypes';
+  import type { Text, Todo } from '$lib/widgetTypes/widgetTypes';
   let {
     widgetId,
     onClose,
+    widgetData,
     open = $bindable(false),
   }: {
     open: boolean;
     widgetId?: string;
+    widgetData: Todo;
     onClose: CallableFunction;
   } = $props();
 
@@ -48,12 +50,8 @@
 
   $effect(() => {
     if (widgetId) {
-      pb.collection('widgets')
-        .getOne(widgetId)
-        .then((result) => {
-          $formData.title = result.data.title;
-          $formData.tasks = result.data.tasks;
-        });
+      $formData.title = widgetData.title;
+      $formData.tasks = widgetData.tasks;
     } else {
       reset();
     }

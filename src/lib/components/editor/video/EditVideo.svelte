@@ -14,13 +14,16 @@
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
   import { Info } from '@lucide/svelte';
+  import type { Video } from '$lib/widgetTypes/widgetTypes';
   let {
     widgetId,
     onClose,
+    widgetData,
     open = $bindable(false),
   }: {
     open: boolean;
     widgetId?: string;
+    widgetData: Video;
     onClose: CallableFunction;
   } = $props();
 
@@ -57,9 +60,7 @@
 
   $effect(() => {
     if (widgetId) {
-      pb.collection('widgets')
-        .getOne(widgetId)
-        .then((result) => ($formData.link = result.data.link));
+      $formData.link = widgetData.link;
     } else {
       reset();
     }

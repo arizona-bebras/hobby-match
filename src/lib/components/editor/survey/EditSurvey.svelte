@@ -13,15 +13,18 @@
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
-  import type { Survey } from '$lib/widgetTypes/widgetTypes';
+  import type { Survey, Text } from '$lib/widgetTypes/widgetTypes';
+  import { onMount } from 'svelte';
 
   let {
     widgetId,
     onClose,
+    widgetData,
     open = $bindable(false),
   }: {
     open: boolean;
     widgetId?: string;
+    widgetData: Survey;
     onClose: CallableFunction;
   } = $props();
   const form = superForm(defaults(zod4(surveyScheme)), {
@@ -58,19 +61,23 @@
   });
 
   $inspect($formData.options);
-  $effect(() => {
+  onMount(() => {
     if (widgetId) {
-      pb.collection('widgets')
-        .getOne(widgetId)
-        .then((result) => {
-          console.log(result);
-          $formData.question = result.data.question;
-          result.data.options.forEach(
-            (element: { description: string; votes: number }) => {
-              $formData.options = [...$formData.options, element.description];
-            },
-          );
-        });
+      $formData.question = widgetData.question;
+      widgetData.options.forEach((element) => {
+        $formData.options = [...$formData.options, element.description];
+      });
+      // pb.collection('widgets')
+      //   .getOne(widgetId)
+      //   .then((result) => {
+      //     console.log(result);
+      //     $formData.question = result.data.question;
+      //     result.data.options.forEach(
+      //       (element: { description: string; votes: number }) => {
+      //         $formData.options = [...$formData.options, element.description];
+      //       },
+      //     );
+      //   });
     } else {
       reset();
     }

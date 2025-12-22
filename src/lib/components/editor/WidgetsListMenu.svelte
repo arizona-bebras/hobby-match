@@ -21,7 +21,7 @@
     Game,
     Video,
   } from '$lib/components/widgets/index';
-  console.log(DuckHello, DuckUmbrella)
+  console.log(DuckHello, DuckUmbrella);
   let {
     onClick,
     open = $bindable(),

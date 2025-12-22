@@ -12,14 +12,16 @@
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
-  import type { Audio } from '$lib/widgetTypes/widgetTypes';
+  import type { Audio, Text } from '$lib/widgetTypes/widgetTypes';
   let {
     widgetId,
     onClose,
+    widgetData,
     open = $bindable(false),
   }: {
     open: boolean;
     widgetId?: string;
+    widgetData: Audio;
     onClose: CallableFunction;
   } = $props();
   const form = superForm(defaults(zod4(audioScheme)), {
@@ -54,9 +56,7 @@
   });
   $effect(() => {
     if (widgetId !== undefined) {
-      pb.collection('widgets')
-        .getOne(widgetId)
-        .then((result) => ($formData.link = result.data.link));
+      $formData.link = widgetData.link;
     } else {
       reset();
     }

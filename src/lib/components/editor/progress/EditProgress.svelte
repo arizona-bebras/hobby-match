@@ -12,15 +12,17 @@
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
-  import type { ProgressBar } from '$lib/widgetTypes/widgetTypes';
+  import type { ProgressBar, Video } from '$lib/widgetTypes/widgetTypes';
   let {
-    open = $bindable(),
-    onClose,
     widgetId,
+    onClose,
+    widgetData,
+    open = $bindable(false),
   }: {
-    onClose: CallableFunction;
     open: boolean;
     widgetId?: string;
+    widgetData: ProgressBar;
+    onClose: CallableFunction;
   } = $props();
 
   const form = superForm(defaults(zod4(progressScheme)), {
@@ -56,13 +58,9 @@
   let isLoading = $state(false);
   $effect(() => {
     if (widgetId) {
-      pb.collection('widgets')
-        .getOne(widgetId)
-        .then((result) => {
-          $formData.description = result.data.description;
-          $formData.currentProgress = parseInt(result.data.currentProgress);
-          $formData.maxProgress = parseInt(result.data.maxProgress);
-        });
+      $formData.description = widgetData.description;
+      $formData.currentProgress = widgetData.currentProgress;
+      $formData.maxProgress = widgetData.maxProgress;
     } else {
       reset();
     }

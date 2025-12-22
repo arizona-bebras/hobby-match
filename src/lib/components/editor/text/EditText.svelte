@@ -12,14 +12,17 @@
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
-  import type { Text } from '$lib/widgetTypes/widgetTypes';
+  import type { Text, Widget } from '$lib/widgetTypes/widgetTypes';
+  import client from '$lib/api/client';
   let {
     widgetId,
     onClose,
+    widgetData,
     open = $bindable(false),
   }: {
     open: boolean;
     widgetId?: string;
+    widgetData: Text;
     onClose: CallableFunction;
   } = $props();
 
@@ -42,14 +45,11 @@
       onClose();
     },
   });
-
   const { form: formData, enhance, validateForm, reset } = form;
 
   $effect(() => {
-    if (widgetId) {
-      pb.collection('widgets')
-        .getOne(widgetId)
-        .then((result) => ($formData.text = result.data.text));
+    if (widgetData) {
+      $formData.text = widgetData.text;
     } else {
       reset();
     }

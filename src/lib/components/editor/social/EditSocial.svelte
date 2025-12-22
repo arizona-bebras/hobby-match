@@ -12,15 +12,22 @@
   import { pb } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
-  import type { SocialMediaLink } from '$lib/widgetTypes/widgetTypes';
+  import type {
+    SocialMediaData,
+    SocialMediaLink,
+    Text,
+  } from '$lib/widgetTypes/widgetTypes';
   import { Info } from '@lucide/svelte';
+  import { onMount } from 'svelte';
   let {
     widgetId,
     onClose,
+    widgetData,
     open = $bindable(false),
   }: {
     open: boolean;
     widgetId?: string;
+    widgetData: SocialMediaLink;
     onClose: CallableFunction;
   } = $props();
   let isButtonActive = $state(false);
@@ -55,11 +62,9 @@
     $formData;
   });
 
-  $effect(() => {
+  onMount(() => {
     if (widgetId) {
-      pb.collection('widgets')
-        .getOne(widgetId)
-        .then((result) => ($formData.link = result.data.link));
+      $formData.link = widgetData.link;
     } else {
       reset();
     }

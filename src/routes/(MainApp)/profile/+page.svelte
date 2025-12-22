@@ -48,6 +48,7 @@
   let addedWidget: WidgetType | undefined = $state(undefined);
   let editingWidget: string | undefined = $state(undefined);
   let editingFiles: string[] | undefined = $state(undefined);
+  let widgetData = $state(undefined);
   let { data }: { data: PageData } = $props();
   console.log(data);
   let widgets: Widget[] = $state(data.widgets);
@@ -98,6 +99,7 @@
       {addedWidget}
       {onEditClose}
       widgetId={editingWidget}
+      {widgetData}
       files={editingFiles}
     />
     {#each widgets as widget, i (widget.id)}
@@ -110,6 +112,7 @@
               addedWidget = widget.data.type;
               editingWidget = widget.id;
               editingFiles = widget.files;
+              widgetData = widget.data;
             }}
             onMove={(delta) => {
               if (

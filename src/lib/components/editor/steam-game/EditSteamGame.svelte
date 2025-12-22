@@ -15,7 +15,7 @@
   import { db } from '$lib';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
-  import type { SteamGame } from '$lib/widgetTypes/widgetTypes';
+  import type { SteamGame, Text } from '$lib/widgetTypes/widgetTypes';
   interface steamGames {
     appid: number;
     img_icon_url: string;
@@ -26,10 +26,12 @@
   let {
     widgetId,
     onClose,
+    widgetData,
     open = $bindable(false),
   }: {
     open: boolean;
     widgetId?: string;
+    widgetData: SteamGame;
     onClose: CallableFunction;
   } = $props();
   function onOpenChange() {
@@ -65,13 +67,8 @@
   $effect(() => {
     console.log('Сработало');
     if (widgetId) {
-      pb.collection('widgets')
-        .getOne(widgetId)
-        .then((result) => {
-          console.log(result.data.accountLink);
-          userSteamUrl = result.data.accountLink;
-          $formData.gameId = result.data.gameId;
-        });
+      userSteamUrl = widgetData.accountLink;
+      $formData.gameId = widgetData.gameId;
     } else {
       console.log('Сработал RESET');
       reset();
@@ -113,11 +110,14 @@
   let steamGames: steamGames[] = $state([]);
   async function getUserGames(accountLink: string) {
     console.log('ЗАПУСК ФУНКЦИИ getUserGames');
-    const authHeader: HeadersInit = new Headers()
-    authHeader.set('Authorization', `Bearer ${window.localStorage.getItem("access_token")}`)
+    const authHeader: HeadersInit = new Headers();
+    authHeader.set(
+      'Authorization',
+      `Bearer ${window.localStorage.getItem('access_token')}`,
+    );
     const res = await fetch(`${db}/api/games?link=${accountLink}`, {
       headers: authHeader,
-    }).then(res => res.json());
+    }).then((res) => res.json());
     steamGames = res.games.sort((a: any, b: any) =>
       a.name.localeCompare(b.name),
     );
