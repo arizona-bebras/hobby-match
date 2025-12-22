@@ -18,6 +18,7 @@
   import { updateData } from '$lib/components/registration/';
   import client from '$lib/api/client';
   import { createQuery } from '@tanstack/svelte-query';
+  import { userData } from '$lib/storage/userData.svelte';
   type Word = {
     tag: string;
     similarity: number;
@@ -45,8 +46,6 @@
     }
     return;
   }
-
-  onMount(async () => {});
 
   async function handleTelegramButtonClick() {
     // window.Telegram.WebApp.MainButton.showProgress()
@@ -89,6 +88,13 @@
   // $effect(() => {
   //   $formData.interests = selectedInterests;
   // });
+  onMount(() => {
+    $formData.interests = userData.current!.interests!;
+    selectedInterests = userData.current!.interests!.map((interest) => ({
+      tag: interest,
+      similarity: 0.42,
+    }));
+  });
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
   });

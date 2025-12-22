@@ -8,6 +8,7 @@
   import { onDestroy, onMount } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
   import { updateData } from '$lib/components/registration/';
+  import { userData } from '$lib/storage/userData.svelte';
   let {
     setCurrentStage,
     markStageComplete,
@@ -115,7 +116,10 @@
     },
   ]);
   onMount(() => {
-    $formData.actionScale = 5;
+    userData.current!.personality_test?.forEach(
+      (test, i) => (sliders[i]!.value = test),
+    );
+    console.log(sliders, 319238120328109, userData.current!.personality_test);
   });
 </script>
 

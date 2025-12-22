@@ -16,33 +16,33 @@
 
   let changeMode = $state(false);
 
-  $effect(() => {
-    window.Telegram.WebApp.MainButton.setParams({
-      text: changeMode ? 'Сохранить' : 'Искать анкеты',
-      is_visible: !addedWidget && !showWidgetMenu,
-      color:
-        widgets.length < 2 && !changeMode
-          ? '#AAAAAA'
-          : Telegram.WebApp.themeParams.button_color,
-    });
-  });
+  // $effect(() => {
+  //   window.Telegram.WebApp.MainButton.setParams({
+  //     text: changeMode ? 'Сохранить' : 'Искать анкеты',
+  //     is_visible: !addedWidget && !showWidgetMenu,
+  //     color:
+  //       widgets.length < 2 && !changeMode
+  //         ? '#AAAAAA'
+  //         : Telegram.WebApp.themeParams.button_color,
+  //   });
+  // });
 
-  useTelegramButton(async () => {
-    if (!changeMode) {
-      if (widgets.length < 2) {
-        toast.error('Просмотр анкет недоступен', {
-          description: 'Добавьте ДВА или более виджетов',
-          position: 'top-center',
-        });
-      } else {
-        window.Telegram.WebApp.MainButton.showProgress();
-        await goto('/search');
-        window.Telegram.WebApp.MainButton.hideProgress();
-      }
-    } else {
-      changeMode = false;
-    }
-  });
+  // useTelegramButton(async () => {
+  //   if (!changeMode) {
+  //     if (widgets.length < 2) {
+  //       toast.error('Просмотр анкет недоступен', {
+  //         description: 'Добавьте ДВА или более виджетов',
+  //         position: 'top-center',
+  //       });
+  //     } else {
+  //       window.Telegram.WebApp.MainButton.showProgress();
+  //       await goto('/search');
+  //       window.Telegram.WebApp.MainButton.hideProgress();
+  //     }
+  //   } else {
+  //     changeMode = false;
+  //   }
+  // });
 
   let showWidgetMenu = $state(false);
   let addedWidget: WidgetType | undefined = $state(undefined);

@@ -11,9 +11,11 @@
     fileProxy,
   } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
-  import { onDestroy } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
   import { type Stages, updatePhoto } from '$lib/components/registration/';
+  import { userData } from '$lib/storage/userData.svelte';
+  import client from '$lib/api/client';
   // import { BOT_TOKEN } from '$env/static/private';
   let fileInput: HTMLInputElement;
   let tgImage = window.Telegram.WebApp.initDataUnsafe.user?.photo_url;
@@ -86,7 +88,18 @@
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
   });
-  let previewSrc = $derived.by(() => {
+
+  onMount(async () => {
+    let userImage = await client.GET('/api/files/{object}', {
+      params: {
+        path: {
+          object: 'users',
+        },
+      },
+    });
+    $formData.user_photo = userImage.data?.files;
+  });
+  let previewSrc = $derived.by(async () => {
     if (!hasPhoto || formValid) {
       if (!$formData.user_photo) return null;
       return typeof $formData.user_photo === 'string'
@@ -94,6 +107,7 @@
         : URL.createObjectURL($formData.user_photo);
     } else {
       // TODO: remove pocketbase
+      return userImage.data?.files ?? {};
       // return pb.files.getURL(
       //   pb.authStore.record ?? {},
       //   pb.authStore.record?.user_photo,

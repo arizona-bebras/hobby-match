@@ -13,6 +13,7 @@
   import { Check } from '@lucide/svelte';
   import { goto } from '$app/navigation';
   import client from '$lib/api/client';
+  import { updateUserData } from '$lib/components/registration/updateUserData';
 
   let information: Information | undefined = $state();
   let photo: Photo | undefined = $state();
@@ -150,6 +151,7 @@
         else if (currentStage === 'Фото') await photo?.save();
         else if (currentStage === 'Интересы') await interests?.save();
         else if (currentStage === 'Тест') await test?.save();
+        await updateUserData();
         await goto('/profile');
       }}
     >

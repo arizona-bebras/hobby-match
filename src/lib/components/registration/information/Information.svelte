@@ -25,6 +25,7 @@
   import { onDestroy } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
   import { type Stages, updateData } from '$lib/components/registration/';
+  import { userData } from '$lib/storage/userData.svelte';
   let gender = $state('');
 
   let value = $state<DateValue>();
@@ -100,13 +101,13 @@
   });
   $effect(() => {
     // TODO: pocketbase was here
-    // $formData.miniapp_name = pb.authStore.record!.miniapp_name;
-    // $formData.gender = pb.authStore.record!.gender;
-    // $formData.birth_date = pb.authStore.record?.birth_date
-    //   ? new Date(pb.authStore.record?.birth_date).toISOString()
-    //   : '2000-01-01T00:00:00Z';
-    // $formData.location = pb.authStore.record!.location;
-    // $formData.user_info = pb.authStore.record!.user_info;
+    $formData.miniapp_name = userData.current!.miniapp_name!;
+    $formData.gender = userData.current!.gender! as 'male' | 'female';
+    $formData.birth_date = userData.current!.birth_date!
+      ? new Date(userData.current!.birth_date!).toISOString()
+      : '2000-01-01T00:00:00Z';
+    $formData.location = userData.current!.location!;
+    $formData.user_info = userData.current!.user_info!;
   });
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();

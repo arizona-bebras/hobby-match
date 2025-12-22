@@ -6,6 +6,7 @@ import { interestsScheme } from '$lib/components/registration/interests/Interest
 import { zod4 } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad } from './$types';
 import { z } from 'zod';
+import { updateUserData } from '$lib/components/registration/updateUserData';
 //import { goto } from '$app/navigation';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -51,6 +52,7 @@ export const actions: Actions = {
         interests,
       });
     }
+    await updateUserData();
     redirect(303, '/profile');
     return {
       interests,
