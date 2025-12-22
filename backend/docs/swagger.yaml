@@ -18,10 +18,6 @@ definitions:
         type: string
       members_count:
         type: integer
-      picture:
-        items:
-          type: integer
-        type: array
       title:
         type: string
     type: object
@@ -95,6 +91,12 @@ definitions:
       similarity:
         type: number
       tag:
+        type: string
+    type: object
+  handlers.CreatedNamespace:
+    description: Ответ на успешное создание неймспейса
+    properties:
+      namespace_id:
         type: string
     type: object
   handlers.Games:
@@ -571,6 +573,8 @@ paths:
       responses:
         "200":
           description: Неймспейс успешно создан
+          schema:
+            $ref: '#/definitions/handlers.CreatedNamespace'
         "500":
           description: Внутренняя ошибка сервера
           schema:

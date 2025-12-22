@@ -10,14 +10,13 @@ import (
 func (un *UserNamespace) AfterCreate(tx *gorm.DB) error {
 	var namespace Namespace
 
-	err := tx.First(&namespace, "id = ?", un.NamespaceId).Error
+	err := tx.Model(&namespace).First(&namespace, "id = ?", un.NamespaceId).Error
 	if err != nil {
 		log.Printf("failed to count member, %v", err)
 		return fmt.Errorf("failed to count member, %v", err)
 	}
 
-	namespace.MembersCount += 1
-	err = tx.Save(namespace).Error
+	err = tx.Model(&namespace).Update("members_count", gorm.Expr("members_count + 1")).Error
 	if err != nil {
 		log.Printf("failed to count member, %v", err)
 		return fmt.Errorf("failed to count member, %v", err)
@@ -29,14 +28,13 @@ func (un *UserNamespace) AfterCreate(tx *gorm.DB) error {
 func (un *UserNamespace) AfterDelete(tx *gorm.DB) error {
 	var namespace Namespace
 
-	err := tx.First(&namespace, "id = ?", un.NamespaceId).Error
+	err := tx.Model(&namespace).First(&namespace, "id = ?", un.NamespaceId).Error
 	if err != nil {
 		log.Printf("failed to count member, %v", err)
 		return fmt.Errorf("failed to count member, %v", err)
 	}
 
-	namespace.MembersCount -= 1
-	err = tx.Save(namespace).Error
+	err = tx.Model(&namespace).Update("members_count", gorm.Expr("members_count + 1")).Error
 	if err != nil {
 		log.Printf("failed to count member, %v", err)
 		return fmt.Errorf("failed to count member, %v", err)

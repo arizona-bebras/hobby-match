@@ -513,7 +513,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Неймспейс успешно создан"
+                        "description": "Неймспейс успешно создан",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CreatedNamespace"
+                        }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
@@ -951,12 +954,6 @@ const docTemplate = `{
                 "members_count": {
                     "type": "integer"
                 },
-                "picture": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
                 "title": {
                     "type": "string"
                 }
@@ -1067,6 +1064,15 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "tag": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.CreatedNamespace": {
+            "description": "Ответ на успешное создание неймспейса",
+            "type": "object",
+            "properties": {
+                "namespace_id": {
                     "type": "string"
                 }
             }

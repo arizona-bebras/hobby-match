@@ -61,7 +61,7 @@ type Vote struct {
 type Namespace struct {
 	Id              string          `json:"id" gorm:"primaryKey;column:id"`
 	Title           string          `json:"title" gorm:"column:title"`
-	Picture         []byte          `json:"" gorm:"type:bytea;column:picture"`
+	Picture         []byte          `json:"-" gorm:"type:bytea;column:picture"`
 	Description     string          `json:"description" gorm:"column:description"`
 	MembersCount    int64           `json:"members_count" gorm:"column:members_count"`
 	AdminId         string          `json:"admin" gorm:"column:admin_id"`
@@ -84,6 +84,7 @@ func (NamespaceInvite) TableName() string {
 type UserNamespace struct {
 	UserId      string `json:"user" gorm:"column:user_id"`
 	NamespaceId string `json:"namespace" gorm:"column:namespace_id"`
+	Date        string `json:"date" gorm:"column:date;type:Date"`
 }
 
 func (UserNamespace) TableName() string {

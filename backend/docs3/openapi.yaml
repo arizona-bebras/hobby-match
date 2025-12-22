@@ -376,7 +376,10 @@ paths:
       responses:
         '200':
           description: Неймспейс успешно создан
-          content: {}
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/handlers.CreatedNamespace"
         '500':
           description: Внутренняя ошибка сервера
           content:
@@ -699,10 +702,6 @@ components:
           type: string
         members_count:
           type: integer
-        picture:
-          type: array
-          items:
-            type: integer
         title:
           type: string
       description: Неймспейс
@@ -778,6 +777,12 @@ components:
           type: number
         tag:
           type: string
+    handlers.CreatedNamespace:
+      type: object
+      properties:
+        namespace_id:
+          type: string
+      description: Ответ на успешное создание неймспейса
     handlers.Games:
       type: object
       properties:
