@@ -2,9 +2,10 @@
   import { ArrowRight, ShieldUser, Shield } from '@lucide/svelte';
   import { goto } from '$app/navigation';
   import { getCorrectForm } from '$lib/utils';
+  import { userData } from '$lib/storage/userData.svelte';
 
   type namespaces = {
-    admin_id: string;
+    admin: string;
     description: string;
     id: string;
     picture: number[];
@@ -15,6 +16,7 @@
     namespacesList,
     searchFilter,
   }: { namespacesList: namespaces; searchFilter: string } = $props();
+  console.log(userData.current);
 </script>
 
 <div class="overflow-y-auto h-[calc(100vh-200px)]">
@@ -32,7 +34,7 @@
           <div class="flex flex-col">
             <div class="font-medium flex items-center gap-2">
               {namespace.title}
-              {#if namespace.is_admin}
+              {#if userData.current?.tg_user === namespace.admin.toString()}
                 <div
                   class="size-4 bg-accent rounded-[4px] flex items-center justify-center"
                 >

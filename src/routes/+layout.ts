@@ -2,6 +2,8 @@ import { db } from '$lib';
 import { accessToken } from '$lib/storage/accessToken.svelte';
 import { goto } from '$app/navigation';
 import client from '$lib/api/client';
+import { userData } from '$lib/storage/userData.svelte';
+import type { NamespaceMembers } from '$lib/api/utils';
 
 export const ssr = false;
 
@@ -16,6 +18,7 @@ export const load = async () => {
       Authorization: `tma ${window.Telegram.WebApp.initData}`,
     },
   });
+
   // const response = await client.POST('/api/auth', {
   //   headers: {
   //     Authorization: `tma ${window.Telegram.WebApp.initData}`,
@@ -24,6 +27,7 @@ export const load = async () => {
 
   const data = await res.json();
   const user = data.response.user;
+  userData.current = user;
   window.localStorage.setItem('access_token', data.response.access_token);
   window.localStorage.setItem('refresh_token', data.response.refresh_token);
   accessToken.current = data.response.access_token;

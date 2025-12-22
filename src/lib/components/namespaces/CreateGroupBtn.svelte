@@ -16,6 +16,7 @@
   let currentStage = $state(1);
   let fileButton: HTMLInputElement = $state();
   let uploadedPhoto = $state('');
+  let namespaceId = $state('');
   let isSheetOpen = $state(false);
 
   $inspect(uploadedPhoto);
@@ -57,6 +58,7 @@
           return fd;
         },
       });
+      namespaceId = response.data.namespace_id;
       console.log(response.data);
       // client.POST('/api/vote', {
       //   body: {
@@ -70,6 +72,7 @@
   const { form: formData, enhance } = form;
 
   useTelegramButton(async () => {
+    //t.me/@botfather?start=9127099d-971f-4b75-9966-b2c24c2dd79a
     currentStage += 1;
     if (currentStage === 2) {
       Telegram.WebApp.MainButton.text = 'Закрыть';
@@ -108,8 +111,10 @@
       color: Telegram.WebApp.themeParams.hint_color,
     });
   }
-  let link = `https://t.me/share/url?url=${encodeURI('https://core.telegram.org/widgets/share')}&text=${encodeURI('hello world')}
-           `;
+  let link = $derived(
+    `https://t.me/newshumibot?start=${encodeURI(namespaceId)}`,
+  );
+
   function svgXmlToDataURLRobust(svgXml) {
     const utf8Bytes = new TextEncoder().encode(svgXml);
     const binaryString = String.fromCharCode.apply(null, utf8Bytes);
@@ -259,12 +264,12 @@
           type="button"
           class="py-2 w-full bg-accent/20 mb-2 rounded-xl text-accent-foreground"
           onclick={() => {
-            copy('Hello World Telegram miniapp');
+            copy(link);
           }}>Скопировать ссылку</button
         >
         <a
           class="py-2 w-full bg-accent rounded-xl mb-4 block text-center"
-          href={link}>Поделиться</a
+          href={`https://t.me/share/url?url=${encodeURI(link)}`}>Поделиться</a
         >
       {/if}
       <SuperDebug data={formData} />
