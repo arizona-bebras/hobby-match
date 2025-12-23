@@ -410,8 +410,9 @@ async def group_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             # Предположим, API вернул созданный ID
             ns_id = res_data.get('namespace_id', 'unknown') if res_data else "123"
             await query.edit_message_text(
-                f"✅ Неймспейс создан!\nТеперь участники могут заходить: \nhttps://t.me/{context.bot.username}?start={ns_id}",
-                disable_web_page_preview=True
+                f"✅ Неймспейс создан\!\nТеперь участники могут заходить: \n[Открыть Shumi](https://t.me/{context.bot.username}?start={ns_id})",
+                disable_web_page_preview=True,
+                parse_mode=ParseMode.MARKDOWN_V2
             )
         else:
             await query.edit_message_text("❌ Ошибка при создании неймспейса на сервере.")
