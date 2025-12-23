@@ -45,13 +45,13 @@ export const load = async () => {
   // }
 
   if (
-    !user.miniapp_name ||
-    !user.gender ||
-    !user.birth_date ||
-    !user.location ||
-    !user.user_info ||
-    !user.user_photo
-    // user.interests.length < 3
+    !userData.current!.miniapp_name! ||
+    !userData.current!.gender! ||
+    !userData.current!.birth_date! ||
+    !userData.current!.location! ||
+    !userData.current!.user_info! ||
+    !userData.current!.personality_test! ||
+    userData.current!.interests!.length < 3
   ) {
     await goto('/registration');
   } else if (window.location.pathname !== '/search') {
