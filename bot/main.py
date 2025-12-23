@@ -360,7 +360,7 @@ async def group_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = query.from_user.id
         admins = await update.effective_chat.get_administrators()
         if not any(admin.user.id == user_id for admin in admins):
-            await query.answer("❌ Только администратор может это сделать", show_alert=True)
+            await query.answer(text="❌ Только администратор может это сделать", show_alert=True)
             return GROUP
         await query.edit_message_text("👌 Понял. Если передумаете — просто тегните меня в сообщении!")
         return ConversationHandler.END # Завершаем, чтобы не висел стейт
@@ -372,7 +372,7 @@ async def group_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Правильная проверка на админа
         admins = await chat.get_administrators()
         if not any(admin.user.id == user_id for admin in admins):
-            await query.answer("❌ Только администратор может это сделать", show_alert=True)
+            await query.answer(text="❌ Только администратор может это сделать", show_alert=True)
             return GROUP
         
         user_data = {
