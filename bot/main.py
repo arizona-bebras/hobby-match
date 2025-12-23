@@ -105,9 +105,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if result == 500:
         await update.message.reply_text("Произошла ошибка при регистрации. Попробуйте позже.")
         return
-    if result == 400:
-        await update.message.reply_text("Пользователь уже зарегестрирован")
-        return
+    # if result == 400:
+    #     await update.message.reply_text("Пользователь уже зарегестрирован")
+    #     return
 
     keyboard = InlineKeyboardMarkup.from_button(InlineKeyboardButton(
         text="Открыть Shumi",
