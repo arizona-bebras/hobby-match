@@ -3,6 +3,10 @@
   import { goto } from '$app/navigation';
   import { getCorrectForm } from '$lib/utils';
   import { userData } from '$lib/storage/userData.svelte';
+  import client from '$lib/api/client';
+  import { onMount } from 'svelte';
+  import { getImage } from '$lib/utils';
+  import { createQuery } from '@tanstack/svelte-query';
 
   type namespaces = {
     admin: string;
@@ -16,7 +20,6 @@
     namespacesList,
     searchFilter,
   }: { namespacesList: namespaces; searchFilter: string } = $props();
-  console.log(userData.current);
 </script>
 
 <div class="overflow-y-auto h-[calc(100vh-200px)]">
@@ -27,7 +30,8 @@
       >
         <div class="flex gap-2.5 items-center">
           <img
-            src="https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg"
+            src={`http://localhost:8090/api/files/namespaces/${namespace.id}/undefined
+`}
             class="size-8 object-cover rounded-[8px]"
             alt="group image"
           />

@@ -16,6 +16,11 @@ const config = {
   vitePlugin: {
     inspector: true,
   },
+  compilerOptions: {
+    experimental: {
+      async: true,
+    },
+  },
 };
 
 export default config;

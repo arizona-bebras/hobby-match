@@ -21,7 +21,8 @@
     <div class="flex flex-col justify-center items-center mb-10 mt-8">
       <img
         alt="Картинка неймспейса"
-        src={testData.img}
+        src={`http://localhost:8090/api/files/users/${user.tg_user}/undefined
+`}
         class="size-24 rounded-full object-cover"
       />
       <div class="text-center mt-2.5">

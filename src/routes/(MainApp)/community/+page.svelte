@@ -85,8 +85,22 @@
 
   let searchFilter = $state('');
   $inspect(searchFilter);
+  //
+  // const query = createQuery(() => ({
+  //   queryKey: ['todos'],
+  //   queryFn: async () =>
+  //     await client.GET('/api/files/{object}', {
+  //       params: {
+  //         path: {
+  //           object: 'users',
+  //         },
+  //       },
+  //     }),
+  // }));
+  // console.log(query.data.data.files[0]);
 </script>
 
+<!--<img src={`data:image/png;base64,${query.data.data.files[0]}`} />-->
 <div class="p-4 w-full text-text-color">
   <div class="flex justify-between font-medium items-center mb-6">
     <p class="">Мои неймспейсы</p>

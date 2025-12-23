@@ -41,6 +41,7 @@
     data,
     socialMediaData,
   }: { data: SocialMediaLink; socialMediaData: SocialMediaData } = $props();
+  console.log(data, socialMediaData, 25234);
 </script>
 
 <button

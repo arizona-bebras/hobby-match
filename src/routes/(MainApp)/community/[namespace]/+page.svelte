@@ -74,7 +74,8 @@
   <div class="flex flex-col justify-center items-center relative z-1 mt-4 mb-4">
     <img
       alt="Картинка неймспейса"
-      src={testNameSpaceses.img}
+      src={`http://localhost:8090/api/files/namespaces/${namespaceInfo.data?.namespace?.id}/undefined
+`}
       class="size-24 rounded-full object-cover"
     />
     <div class="mt-2.5 text-center">
@@ -91,7 +92,8 @@
   </div>
   <img
     alt="Картинка неймспейса"
-    src={testNameSpaceses.img}
+    src={`http://localhost:8090/api/files/namespaces/${namespaceInfo.data?.namespace?.id}/undefined
+`}
     class="size-100 rounded-full object-cover absolute -top-[35%] z-0 opacity-60 blur-2xl"
   />
   <div class="px-4 flex flex-col justify-start items-start w-full">

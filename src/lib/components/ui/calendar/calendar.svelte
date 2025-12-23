@@ -25,11 +25,11 @@
   const currentDate = today(getLocalTimeZone());
 
   const monthFmt = new DateFormatter('ru-RU', {
-    month: 'long',
+    category: 'long',
   });
 
   const monthOptions = Array.from({ length: 12 }, (_, i) => {
-    const month = currentDate.set({ month: i + 1 });
+    const month = currentDate.set({ category: i + 1 });
     return {
       value: month.month,
       label: monthFmt.format(month.toDate(getLocalTimeZone())),
@@ -99,7 +99,7 @@ get along, so we shut typescript up by casting `value` to `never`.
         onValueChange={(v) => {
           if (!placeholder) return;
           if (v === `${placeholder.month}`) return;
-          placeholder = placeholder.set({ month: Number.parseInt(v) });
+          placeholder = placeholder.set({ category: Number.parseInt(v) });
         }}
       >
         <Select.Trigger class="w-[60%] border-0">

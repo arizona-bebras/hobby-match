@@ -117,7 +117,6 @@
       stages[3].isComplete = true;
     }
   }
-  $inspect(stages);
 </script>
 
 <div class="p-4 w-full min-h-screen bg-background text-text-color">

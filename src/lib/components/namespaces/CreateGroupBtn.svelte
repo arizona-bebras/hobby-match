@@ -18,7 +18,7 @@
   let uploadedPhoto = $state('');
   let namespaceId = $state('');
   let isSheetOpen = $state(false);
-
+  let namespaceTitle = $state('');
   $inspect(uploadedPhoto);
   const form = superForm(defaults(zod4(createSchema)), {
     SPA: true,
@@ -43,6 +43,7 @@
       }
     },
     async onSubmit() {
+      namespaceTitle = $formData.title;
       const response = await client.POST('/api/namespace', {
         body: {
           title: $formData.title,
@@ -58,7 +59,7 @@
           return fd;
         },
       });
-      namespaceId = response.data.namespace_id;
+      namespaceId = response.data!.namespace_id!;
       console.log(response.data);
       // client.POST('/api/vote', {
       //   body: {
@@ -77,9 +78,18 @@
     if (currentStage === 2) {
       Telegram.WebApp.MainButton.text = 'Закрыть';
       const svgString = toSvg(generateRandomHash(), 100);
+      console.log(svgString);
       if (!$formData.photo) {
         uploadedPhoto = svgXmlToDataURLRobust(svgString);
-        $formData.photo = new Blob([svgString], { type: 'image/svg+xml' });
+        await svgToPngBlob(svgString, 100, 100).then((pngBlop) => {
+          console.log(pngBlop);
+          $formData.photo = pngBlop as Blob;
+        });
+
+        // const blob = new Blob([svgString], { type: 'image/svg+xml' });
+        // $formData.photo = new File([blob], 'image.svg', {
+        //   type: 'image/svg+xml',
+        // });
       }
       form.submit();
     }
@@ -120,6 +130,45 @@
     const binaryString = String.fromCharCode.apply(null, utf8Bytes);
     const base64 = btoa(binaryString);
     return `data:image/svg+xml;base64,${base64}`;
+  }
+
+  async function svgToPngBlob(svgString: string, width = 500, height = 500) {
+    return new Promise((resolve, reject) => {
+      // 1. Создаем объект Image и Blob из SVG строки
+      const img = new Image();
+      const svgBlob = new Blob([svgString], {
+        type: 'image/svg+xml;charset=utf-8',
+      });
+      const url = URL.createObjectURL(svgBlob);
+
+      img.onload = () => {
+        // 2. Подготавливаем Canvas нужного размера
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+
+        // 3. Рисуем SVG на холст
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // 4. Конвертируем Canvas в Blob (формат image/png)
+        canvas.toBlob((blob) => {
+          URL.revokeObjectURL(url); // Очищаем память
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Ошибка при создании Blob'));
+          }
+        }, 'image/png');
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('Ошибка загрузки SVG'));
+      };
+
+      img.src = url;
+    });
   }
 
   function generateRandomHash(length = 24) {
@@ -256,7 +305,7 @@
             <span class="mb-1"
               ><Emoji symbol="🎉" class="size-4 mr-1" /> Всё готово!</span
             >
-            <p class="text-gray-400">«{$formData.title}»</p>
+            <p class="text-gray-400">«{namespaceTitle}»</p>
             <p class="text-gray-400">готов принимать гостей!</p>
           </div>
         </div>

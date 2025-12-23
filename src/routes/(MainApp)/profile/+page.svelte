@@ -13,6 +13,7 @@
 
   import { goto } from '$app/navigation';
   import RenderEditWidget from '$lib/components/profile/RenderEditWidget.svelte';
+  import { onMount } from 'svelte';
 
   let changeMode = $state(false);
 
@@ -61,6 +62,10 @@
     addedWidget = undefined;
     editingWidget = undefined;
   }
+
+  onMount(() => {
+    window.Telegram.WebApp.MainButton.hide();
+  });
 </script>
 
 <div class="w-full h-full overflow-y-auto">

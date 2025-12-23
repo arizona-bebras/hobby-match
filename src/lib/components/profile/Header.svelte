@@ -2,6 +2,7 @@
   import ProfileTopLayer from '$lib/components/profile/ProfileTopLayer.svelte';
   import { scrollY } from 'svelte/reactivity/window';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
+  import { userData } from '$lib/storage/userData.svelte';
   let { data, changeMode = false }: { data: PageData; changeMode?: boolean } =
     $props();
 
@@ -30,7 +31,8 @@
 <!--src={pb.files.getURL(pb.authStore.record ?? {}, data.user_photo)}-->
 <!--src="https://imgv3.fotor.com/images/slider-image/A-clear-close-up-photo-of-a-woman.jpg"-->
 <img
-  src={`data:image/png;base64,${data.user_photo}`}
+  src={`http://localhost:8090/api/files/users/${data.tg_user}/undefined
+`}
   alt="person"
   class="w-full rounded-b-3xl object-cover transition-[height]"
   style="height: {!changeMode ? height : 0}px"

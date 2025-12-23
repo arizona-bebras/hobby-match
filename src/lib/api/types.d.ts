@@ -127,7 +127,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/files/{object}": {
+    "/api/files/{object}/{id}/{index}": {
         parameters: {
             query?: never;
             header?: never;
@@ -137,26 +137,27 @@ export interface paths {
         /** Получить фото, связанное с объектом */
         get: {
             parameters: {
-                query?: {
-                    /** @description id объекта (не нужно передавать для users) */
-                    id?: string;
-                };
+                query?: never;
                 header?: never;
                 path: {
                     /** @description тип объекта (users, namespaces, widgets) */
                     object: string;
+                    /** @description id объекта */
+                    id: string;
+                    /** @description индекс файла в списке файлов виджета */
+                    index: string;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
+                /** @description Файл */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["handlers.Photos"];
+                        "application/octet-stream": string;
                     };
                 };
                 /** @description Для этого пользователя нет доступа к файлу */
@@ -165,7 +166,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["database.Error"];
+                        "application/octet-stream": components["schemas"]["database.Error"];
                     };
                 };
                 /** @description Внутренняя ошибка сервера */
@@ -174,7 +175,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["database.Error"];
+                        "application/octet-stream": components["schemas"]["database.Error"];
                     };
                 };
             };
@@ -294,10 +295,10 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            /** @description Личностный тест (5 слайдеров) */
-            requestBody?: {
+            /** @description новые данные пользователя в JSON */
+            requestBody: {
                 content: {
-                    "application/json": string[];
+                    "application/json": string;
                 };
             };
             responses: {
@@ -682,7 +683,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "*/*": components["schemas"]["handlers.CreatedNamespace"];
+                    };
                 };
                 /** @description Внутренняя ошибка сервера */
                 500: {
@@ -1233,7 +1236,6 @@ export interface components {
             description?: string;
             id?: string;
             members_count?: number;
-            picture?: number[];
             title?: string;
         };
         /** @description Основные данные профиля и связанные виджеты. */
@@ -1272,6 +1274,10 @@ export interface components {
             similarity?: number;
             tag?: string;
         };
+        /** @description Ответ на успешное создание неймспейса */
+        "handlers.CreatedNamespace": {
+            namespace_id?: string;
+        };
         /** @description Игры из steam профиля пользователя */
         "handlers.Games": {
             games?: components["schemas"]["handlers.SteamGame"][];
@@ -1283,6 +1289,7 @@ export interface components {
             user?: components["schemas"]["database.User"];
         };
         "handlers.NamespaceMember": {
+            date?: string;
             miniapp_name?: string;
             tg_user?: string;
         };
@@ -1304,10 +1311,6 @@ export interface components {
             user_info?: string;
             username?: string;
             widgets?: components["schemas"]["database.Widget"][];
-        };
-        /** @description Изображение */
-        "handlers.Photos": {
-            files?: number[][];
         };
         "handlers.SteamGame": {
             appid?: number;
