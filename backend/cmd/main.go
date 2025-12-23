@@ -138,8 +138,8 @@ func main() {
 	filesHandler := handlers.FilesHandler{
 		DB: dbConnection,
 	}
-	mux.Handle("/api/files/{object}/{id}", tgauth.AuthMiddleware(filesHandler))
-	mux.Handle("/api/files/{object}/{id}/{index}", tgauth.AuthMiddleware(filesHandler))
+	mux.Handle("/api/files/{object}/{id}", filesHandler)
+	mux.Handle("/api/files/{object}/{id}/{index}", filesHandler)
 
 	mux.Handle("/swagger/", httpSwagger.Handler(
 		httpSwagger.URL("/swagger/doc.json"),
