@@ -443,7 +443,7 @@ if __name__ == '__main__':
     group_conv_handler = ConversationHandler(
         entry_points=[
             MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, on_bot_added),
-            MessageHandler(filters.Entity("mention") & filters.ChatType.GROUPS, offer_namespace_creation)
+            MessageHandler(filters.Entity("mention") & filters.Regex(f"@{BOT_USERNAME}") & filters.ChatType.GROUPS, offer_namespace_creation)
         ],
         states={
             GROUP: [CallbackQueryHandler(group_handler, pattern="^(create_ns|cancel_ns)$")]
