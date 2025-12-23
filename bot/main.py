@@ -43,7 +43,7 @@ class ApiClient:
         url = f"{API_BASE_URL}/api/tg"
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.request(method, url, **kwargs) as response:
+                async with session.request(method, url, headers={'Authorization': f"Bearer {os.getenv("BOT_AUTH_TOKEN")}"}, **kwargs) as response:
                     if response.status not in [200, 201, 204]:
                         logger.warning(
                             f"API Call {method} {url} returned non-success status: {response.status}. "

@@ -18,8 +18,9 @@ type PageData struct {
 }
 
 type NamespaceMember struct {
-	Id   string `json:"tg_user" gorm:"primaryKey;type:text;column:id"`
-	Name string `json:"miniapp_name" gorm:"column:name"`
+	Id   string `json:"tg_user"`
+	Name string `json:"miniapp_name"`
+	Date string `json:"date"`
 }
 
 // @Description Данные неймспеса и его участники

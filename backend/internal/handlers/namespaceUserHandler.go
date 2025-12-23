@@ -385,7 +385,7 @@ func (h *NamespaceHandler) GetPages(w http.ResponseWriter, r *http.Request) {
 
 	err = h.DB.Model(&database.UserNamespace{}).
 		Joins(`LEFT JOIN users ON users.id = user_namespace.user_id`).
-		Select("users.id, users.name").
+		Select("users.id, users.name, user_namespace.date").
 		Find(&members, "namespace_id = ?", namespaceId).Error
 	if err != nil {
 		log.Printf("namespace handler: failed to get namespace member`s ids, %v", err)

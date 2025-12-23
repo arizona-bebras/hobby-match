@@ -1107,6 +1107,9 @@ const docTemplate = `{
         "handlers.NamespaceMember": {
             "type": "object",
             "properties": {
+                "date": {
+                    "type": "string"
+                },
                 "miniapp_name": {
                     "type": "string"
                 },

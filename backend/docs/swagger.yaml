@@ -119,6 +119,8 @@ definitions:
     type: object
   handlers.NamespaceMember:
     properties:
+      date:
+        type: string
       miniapp_name:
         type: string
       tg_user:

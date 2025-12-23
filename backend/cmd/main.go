@@ -15,6 +15,7 @@ import (
 	"shumi/internal/database"
 	"shumi/internal/handlers"
 	"shumi/internal/tgauth"
+	"shumi/internal/botauth"
 
 	_ "shumi/docs"
 
@@ -97,7 +98,7 @@ func main() {
 	registerHandler := handlers.TgUsersHandler{
 		DB: dbConnection,
 	}
-	mux.Handle("/api/tg", registerHandler)
+	mux.Handle("/api/tg", botauth.AuthMiddleware(registerHandler))
 
 	userDataHandler := handlers.UserDataHandler{
 		DB: dbConnection,
