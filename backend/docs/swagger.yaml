@@ -168,17 +168,6 @@ definitions:
           $ref: '#/definitions/database.Widget'
         type: array
     type: object
-  handlers.Photos:
-    description: Изображение
-    properties:
-      files:
-        items:
-          items:
-            format: int32
-            type: integer
-          type: array
-        type: array
-    type: object
   handlers.SteamGame:
     properties:
       appid:
@@ -258,7 +247,7 @@ paths:
           schema:
             $ref: '#/definitions/database.Error'
       summary: Предложенные интересы
-  /api/files/{object}:
+  /api/files/{object}/{id}/{index}:
     get:
       parameters:
       - description: тип объекта (users, namespaces, widgets)
@@ -266,17 +255,22 @@ paths:
         name: object
         required: true
         type: string
-      - description: id объекта (не нужно передавать для users)
-        in: query
+      - description: id объекта
+        in: path
         name: id
+        required: true
+        type: string
+      - description: индекс файла в списке файлов виджета
+        in: path
+        name: index
         type: string
       produces:
-      - application/json
+      - application/octet-stream
       responses:
         "200":
-          description: OK
+          description: Файл
           schema:
-            $ref: '#/definitions/handlers.Photos'
+            type: file
         "403":
           description: Для этого пользователя нет доступа к файлу
           schema:

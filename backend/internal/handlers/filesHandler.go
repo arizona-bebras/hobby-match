@@ -1,10 +1,14 @@
 package handlers
 
 import (
-	"encoding/json"
+	"bytes"
+	//"encoding/json"
 	"fmt"
+	"io"
 	"log"
+	//"mime/multipart"
 	"net/http"
+	"strconv"
 
 	"gorm.io/gorm"
 
@@ -17,24 +21,26 @@ type FilesHandler struct {
 
 // GetPhoto
 // @Summary Получить фото, связанное с объектом
-// @Produce json
+// @Produce  application/octet-stream
 // @Param object path string true "тип объекта (users, namespaces, widgets)" 
-// @Param id query string false "id объекта (не нужно передавать для users)" 
-// @Success 200 {object} Photos
+// @Param id path string true "id объекта" 
+// @Param index path string false "индекс файла в списке файлов виджета" 
+// @Success 200 {file} binary "Файл"
 // @Failure 403 {object} database.Error "Для этого пользователя нет доступа к файлу"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
-// @Router /api/files/{object} [get]
+// @Router /api/files/{object}/{id}/{index} [get]
 func (h *FilesHandler) GetPhoto(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey).(string)
 	object := r.PathValue("object")
-	id := r.URL.Query().Get("id")
+	id := r.PathValue("id")
+	w.Header().Set("Content-Type", "application/octet-stream")
 
 	switch object {
 	case "users":
 		var file []byte
 		err := h.DB.Table("users").
 			Select("photo").
-			Where("id = ?", tgId).
+			Where("id = ?", id).
 			Row().
 			Scan(&file)
 		if err != nil {
@@ -50,26 +56,9 @@ func (h *FilesHandler) GetPhoto(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		photo := Photos{
-			Files: [][]byte{file},
-		}
+		binaryFile := bytes.NewReader(file)
 
-		JSONPhoto, err := json.Marshal(photo)
-
-		if err != nil {
-			log.Printf("files handler: failed to marshal photo, %v", err)
-			http.Error(
-				w,
-				database.JSONErr(
-					http.StatusInternalServerError,
-					fmt.Sprintf("files handler: failed to marshal photo, %v", err),
-				),
-				http.StatusInternalServerError,
-			)
-			return
-		}
-
-		w.Write(JSONPhoto)
+		io.Copy(w, binaryFile)
 	case "namespaces":
 		var file []byte
 		err := h.DB.Table("namespaces").
@@ -90,29 +79,27 @@ func (h *FilesHandler) GetPhoto(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		picture := Photos{
-			Files: [][]byte{file},
-		}
+		binaryFile := bytes.NewReader(file)
 
-		JSONPicture, err := json.Marshal(picture)
+		io.Copy(w, binaryFile)
+	case "widgets":
 
+		index, err := strconv.Atoi(r.PathValue("index"))
 		if err != nil {
-			log.Printf("files handler: failed to marshal photo, %v", err)
+			log.Printf("files handler: failed to read index, %v", err)
 			http.Error(
 				w,
 				database.JSONErr(
 					http.StatusInternalServerError,
-					fmt.Sprintf("files handler: failed to marshal photo, %v", err),
+					fmt.Sprintf("files handler: failed to read index, %v", err),
 				),
 				http.StatusInternalServerError,
 			)
 			return
 		}
 
-		w.Write(JSONPicture)
-	case "widgets":
 		var widget database.Widget
-		err := h.DB.Table("widgets").First(&widget, "id = ?", id).Error
+		err = h.DB.Table("widgets").First(&widget, "id = ?", id).Error
 		if err != nil {
 			log.Printf("files handler: failed to get photo, %v", err)
 			http.Error(
@@ -139,26 +126,9 @@ func (h *FilesHandler) GetPhoto(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		photos := Photos{
-			Files: widget.Files,
-		}
+		binaryFile := bytes.NewReader(widget.Files[index])
 
-		JSONPhotos, err := json.Marshal(photos)
-
-		if err != nil {
-			log.Printf("files handler: failed to marshal photo, %v", err)
-			http.Error(
-				w,
-				database.JSONErr(
-					http.StatusInternalServerError,
-					fmt.Sprintf("files handler: failed to marshal photo, %v", err),
-				),
-				http.StatusInternalServerError,
-			)
-			return
-		}
-
-		w.Write(JSONPhotos)
+		io.Copy(w, binaryFile)
 	}
 }
 

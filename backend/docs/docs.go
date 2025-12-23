@@ -91,10 +91,10 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/files/{object}": {
+        "/api/files/{object}/{id}/{index}": {
             "get": {
                 "produces": [
-                    "application/json"
+                    "application/octet-stream"
                 ],
                 "summary": "Получить фото, связанное с объектом",
                 "parameters": [
@@ -107,16 +107,23 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "id объекта (не нужно передавать для users)",
+                        "description": "id объекта",
                         "name": "id",
-                        "in": "query"
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "индекс файла в списке файлов виджета",
+                        "name": "index",
+                        "in": "path"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Файл",
                         "schema": {
-                            "$ref": "#/definitions/handlers.Photos"
+                            "type": "file"
                         }
                     },
                     "403": {
@@ -1177,22 +1184,6 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/database.Widget"
-                    }
-                }
-            }
-        },
-        "handlers.Photos": {
-            "description": "Изображение",
-            "type": "object",
-            "properties": {
-                "files": {
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "integer",
-                            "format": "int32"
-                        }
                     }
                 }
             }

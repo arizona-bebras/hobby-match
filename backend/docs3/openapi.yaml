@@ -69,7 +69,7 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/database.Error"
-  "/api/files/{object}":
+  "/api/files/{object}/{id}/{index}":
     get:
       summary: Получить фото, связанное с объектом
       parameters:
@@ -80,27 +80,35 @@ paths:
         schema:
           type: string
       - name: id
-        in: query
-        description: id объекта (не нужно передавать для users)
+        in: path
+        description: id объекта
+        required: true
+        schema:
+          type: string
+      - name: index
+        in: path
+        description: индекс файла в списке файлов виджета
+        required: true
         schema:
           type: string
       responses:
         '200':
-          description: OK
+          description: Файл
           content:
-            application/json:
+            application/octet-stream:
               schema:
-                "$ref": "#/components/schemas/handlers.Photos"
+                type: string
+                format: binary
         '403':
           description: Для этого пользователя нет доступа к файлу
           content:
-            application/json:
+            application/octet-stream:
               schema:
                 "$ref": "#/components/schemas/database.Error"
         '500':
           description: Внутренняя ошибка сервера
           content:
-            application/json:
+            application/octet-stream:
               schema:
                 "$ref": "#/components/schemas/database.Error"
   "/api/games":
@@ -234,7 +242,6 @@ paths:
                     type: array
                     items:
                       type: integer
-                      format: int32
       responses:
         '200':
           description: Виджет успешно создан
@@ -282,7 +289,6 @@ paths:
                     type: array
                     items:
                       type: integer
-                      format: int32
       responses:
         '200':
           description: Виджет успешно обновлен
@@ -852,17 +858,6 @@ components:
           items:
             "$ref": "#/components/schemas/database.Widget"
       description: Данные анкеты (все поля database.User + tg username)
-    handlers.Photos:
-      type: object
-      properties:
-        files:
-          type: array
-          items:
-            type: array
-            items:
-              type: integer
-              format: int32
-      description: Изображение
     handlers.SteamGame:
       type: object
       properties:
