@@ -354,12 +354,13 @@ async def group_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not query:
         return GROUP
-    await query.answer()
+    # await query.answer()
     
     if query.data == "cancel_ns":
         user_id = query.from_user.id
         admins = await update.effective_chat.get_administrators()
         if not any(admin.user.id == user_id for admin in admins):
+            print("access denied")
             await query.answer(text="❌ Только администратор может это сделать", show_alert=True)
             return GROUP
         await query.edit_message_text("👌 Понял. Если передумаете — просто тегните меня в сообщении!")
@@ -372,6 +373,7 @@ async def group_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Правильная проверка на админа
         admins = await chat.get_administrators()
         if not any(admin.user.id == user_id for admin in admins):
+            print("access denied")
             await query.answer(text="❌ Только администратор может это сделать", show_alert=True)
             return GROUP
         
