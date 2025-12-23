@@ -114,19 +114,6 @@ func (h *FilesHandler) GetPhoto(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if tgId != widget.UserId {
-			log.Println("files handler: access denied, that`s not your widget")
-			http.Error(
-				w,
-				database.JSONErr(
-					http.StatusForbidden,
-					"files handler: access denied, that`s not your widget",
-				),
-				http.StatusForbidden,
-			)
-			return
-		}
-
 		binaryFile := bytes.NewReader(widget.Files[index])
 		w.Header().Set("Content-Type", http.DetectContentType(widget.Files[index]))
 
