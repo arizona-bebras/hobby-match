@@ -67,5 +67,12 @@ type CreatedNamespace struct {
 
 type TgEnterNamespaceData struct {
 	UserId      string `json:"user_id"`
-	NamespaceId string `json:"namepsace_id"`
+	NamespaceId string `json:"namespace_id"`
+}
+
+type CreateNamespaceDara struct {
+	Title       string `json:"title"`
+	Picture     []byte `json:"picture"`
+	Description string `json:"description"`
+	AdminId     string `json:"admin_id"`
 }

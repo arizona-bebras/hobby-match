@@ -99,6 +99,7 @@ func main() {
 		DB: dbConnection,
 	}
 	mux.Handle("/api/tg", botauth.AuthMiddleware(registerHandler))
+	mux.Handle("/api/tg/namespace/{method}", botauth.AuthMiddleware(registerHandler))
 
 	userDataHandler := handlers.UserDataHandler{
 		DB: dbConnection,

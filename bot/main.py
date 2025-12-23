@@ -1,9 +1,11 @@
 import os
+import io
 import logging
 from typing import Any
 
 from dotenv import load_dotenv
 import aiohttp
+from aiohttp import FormData
 from telegram import Update, WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton, MenuButtonWebApp
 from telegram.constants import ParseMode
 from telegram.ext import (
@@ -11,7 +13,9 @@ from telegram.ext import (
     CommandHandler,
     ContextTypes,
     CallbackQueryHandler,
-    ConversationHandler
+    ConversationHandler,
+    MessageHandler,
+    filters
 )
 
 # Загрузка переменных окружения
@@ -20,6 +24,7 @@ load_dotenv('.env')
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 APP_URL = os.getenv("APP_URL")
 API_BASE_URL = os.getenv("API_BASE_URL")
+BOT_USERNAME= os.getenv("BOT_USERNAME")
 
 # Логирование для отладки
 logging.basicConfig(
@@ -30,12 +35,14 @@ logger = logging.getLogger(__name__)
 
 MENU, DELETE = range(2)
 
+GROUP = range(1)
+
 # --- Класс для работы с API ---
 class ApiClient:
     """Класс-обертка для запросов к твоему бэкенду"""
 
     @staticmethod
-    async def _api_call(method: str, endpoint=None, **kwargs: Any) -> tuple[int, Any | None]:
+    async def _api_call(method: str, endpoint=None, form_data=False, **kwargs: Any) -> tuple[int, Any | None]:
         """
         Выполняет HTTP-запрос к API, обрабатывает ошибки и логирует не-200 ответы.
         Возвращает кортеж (status_code, response_data).
@@ -45,7 +52,11 @@ class ApiClient:
             url += f"/{endpoint}"
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.request(method, url, headers={'Authorization': f"Bearer {os.getenv("BOT_AUTH_TOKEN")}"}, **kwargs) as response:
+                headers={
+                    "Authorization": f"Bearer {os.getenv("BOT_AUTH_TOKEN")}",
+                    "Content-Type": "multipart/form-data"
+                }
+                async with session.request(method, url, headers=headers, **kwargs) as response:
                     if response.status not in [200, 201, 204]:
                         logger.warning(
                             f"API Call {method} {url} returned non-success status: {response.status}. "
@@ -92,8 +103,37 @@ class ApiClient:
     
     @staticmethod
     async def enter_namespace(enter_data: dict) -> int:
-        status, _ = await ApiClient._api_call("POST", "namespace", json=enter_data)
+        status, _ = await ApiClient._api_call("POST", "namespace/add", json=enter_data)
         return status
+    
+    @staticmethod
+    async def create_namespace(group_data: dict, photo_bytes: io.BytesIO = None) -> tuple[int, dict | None]:
+        url = f"{API_BASE_URL}/api/tg/namespace/create"
+        
+        # Используем FormData для multipart/form-data
+        data = FormData()
+        
+        # Добавляем текстовые поля
+        for key, value in group_data.items():
+            data.add_field(key, str(value))
+        
+        # Добавляем файл, если он есть
+        if photo_bytes:
+            photo_bytes.seek(0) # Сбрасываем указатель в начало
+            data.add_field('picture', 
+                           photo_bytes, 
+                           filename='group_avatar.jpg', 
+                           content_type='image/jpeg')
+
+        try:
+            async with aiohttp.ClientSession() as session:
+                headers = {'Authorization': f"Bearer {os.getenv('BOT_AUTH_TOKEN')}"}
+                async with session.post(url, data=data, headers=headers) as response:
+                    res_data = await response.json() if response.content_length else None
+                    return response.status, res_data
+        except Exception as e:
+            logger.error(f"API Error: {e}")
+            return 500, None
 
 
 # --- Хендлеры ---
@@ -118,6 +158,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     #     return
 
     if context.args:
+        print(context.args)
         namespace_id = context.args[0]
         result = await ApiClient.enter_namespace({
             "user_id": str(tg_id),
@@ -281,6 +322,96 @@ async def delete_button_handler(update: Update, context: ContextTypes.DEFAULT_TY
         )
         await query.answer()
         return MENU
+    
+async def offer_namespace_creation(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Общая функция для отправки предложения о создании неймспейса"""
+    markup = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("Создать", callback_data="create_ns"),
+            InlineKeyboardButton("Пока не надо", callback_data="cancel_ns")
+        ]
+    ])
+    
+    text = "Привет! Я вижу новую группу. Создать неймспейс (общую ленту) для участников этой группы в Shumi?"
+    
+    if update.callback_query:
+        await update.callback_query.edit_message_text(text, reply_markup=markup)
+    else:
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=text,
+            reply_markup=markup
+        )
+    return GROUP
+
+async def on_bot_added(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    for member in update.message.new_chat_members:
+        if member.id == context.bot.id:
+            return await offer_namespace_creation(update, context)
+
+async def group_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if not query:
+        return GROUP
+    await query.answer()
+    
+    if query.data == "cancel_ns":
+        await query.edit_message_text("👌 Понял. Если передумаете — просто тегните меня в сообщении!")
+        return ConversationHandler.END # Завершаем, чтобы не висел стейт
+
+    if query.data == "create_ns":
+        chat = await context.bot.get_chat(update.effective_chat.id)
+        user_id = query.from_user.id
+        
+        # Правильная проверка на админа
+        admins = await chat.get_administrators()
+        if not any(admin.user.id == user_id for admin in admins):
+            await query.answer("❌ Только администратор может это сделать", show_alert=True)
+            return GROUP
+        
+        user_data = {
+            "tg_id": str(query.from_user.id),
+            "username": query.from_user.username,
+            "firstname": query.from_user.first_name
+        }
+        # 2. Регистрируем админа
+        result = await ApiClient.register_user(user_data)
+        if result == 500:
+            await update.message.reply_text("Произошла ошибка при регистрации пользователя. Попробуйте позже.")
+            return GROUP
+
+        photo_buffer = None
+        
+        # 2. Получаем и скачиваем фото в память
+        if chat.photo:
+            try:
+                tg_file = await context.bot.get_file(chat.photo.big_file_id)
+                photo_buffer = io.BytesIO()
+                # Скачиваем файл напрямую в буфер в оперативной памяти
+                await tg_file.download_to_memory(photo_buffer)
+                photo_buffer.seek(0)
+            except Exception as e:
+                logger.error(f"Ошибка при загрузке фото: {e}")
+
+        # 3. Отправляем данные на бекенд
+        status, res_data = await ApiClient.create_namespace({
+            "title": chat.title,
+            "admin_id": str(user_id),
+            "description": f"Неймспейс группы {chat.title}"
+        }, photo_bytes=photo_buffer)
+
+        if status in [200, 201]:
+            # Предположим, API вернул созданный ID
+            ns_id = res_data.get('namespace_id', 'unknown') if res_data else "123"
+            await query.edit_message_text(
+                f"✅ Неймспейс создан!\nТеперь участники могут заходить: \nhttps://t.me/{context.bot.username}?start={ns_id}",
+                disable_web_page_preview=True
+            )
+        else:
+            await query.edit_message_text("❌ Ошибка при создании неймспейса на сервере.")
+        
+        return ConversationHandler.END
 
 if __name__ == '__main__':
     if not BOT_TOKEN:
@@ -298,6 +429,19 @@ if __name__ == '__main__':
         fallbacks=[CommandHandler('start', start), CommandHandler('menu', menu)]
     )
 
+    group_conv_handler = ConversationHandler(
+        entry_points=[
+            MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, on_bot_added),
+            MessageHandler(filters.Entity("mention") & filters.ChatType.GROUPS, offer_namespace_creation)
+        ],
+        states={
+            GROUP: [CallbackQueryHandler(group_handler, pattern="^(create_ns|cancel_ns)$")]
+        },
+        fallbacks=[],
+        allow_reentry=True
+    )
+
     app.add_handler(conv_handler)
+    app.add_handler(group_conv_handler)
     print("Бот запущен...")
     app.run_polling()
