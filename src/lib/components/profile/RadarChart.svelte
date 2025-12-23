@@ -6,20 +6,40 @@
   import * as Chart from '$lib/components/ui/chart/index.js';
   import * as Card from '$lib/components/ui/card/index.js';
   import { Monitor } from '@lucide/svelte';
+  import { userData } from '$lib/storage/userData.svelte';
 
   const chartData = [
-    { month: 'January', desktop: 3 },
-    { month: 'February', desktop: 4 },
-    { month: 'March', desktop: 3 },
-    { month: 'April', desktop: 2 },
-    { month: 'May', desktop: 5 },
+    {
+      category: 'Общение',
+      me: userData.current?.personality_test![0],
+      anotherUser: 2,
+    },
+    {
+      category: 'Реализация',
+      me: userData.current?.personality_test![1],
+      anotherUser: 1,
+    },
+    {
+      category: 'Структура',
+      me: userData.current?.personality_test![2],
+      anotherUser: 3,
+    },
+    {
+      category: 'Взаимодействие',
+      me: userData.current?.personality_test![4],
+      anotherUser: 5,
+    },
+    {
+      category: 'Концентрация',
+      me: userData.current?.personality_test![0],
+      anotherUser: 3,
+    },
   ];
 
   const chartConfig = {
-    desktop: {
-      label: '1231',
-      color: 'var(--color-accent-foreground)',
-      icon: Monitor,
+    me: { label: 'Я' },
+    anotherUser: {
+      label: 'Пользователь',
     },
   } satisfies Chart.ChartConfig;
 </script>
@@ -40,21 +60,33 @@
         data={chartData}
         series={[
           {
-            key: 'desktop',
+            key: 'me',
             label: 'Desktop',
-            color: chartConfig.desktop.color,
+            color: 'var(--color-accent-foreground)',
+            props: {
+              fill: 'var(--color-accent-foreground)',
+              fillOpacity: 0.5,
+            },
+          },
+          {
+            key: 'anotherUser',
+            label: 'Mobile',
+            color: 'var(--color-inactive)',
+            props: {
+              fill: 'var(--color-inactive)',
+              fillOpacity: 0.5,
+            },
           },
         ]}
-        yDomain={[0, 5]}
+        yDomain={[0, 10]}
         radial
-        x="month"
+        x="category"
         xScale={scaleBand()}
         points={{ r: 4 }}
         padding={12}
         props={{
           spline: {
             curve: curveLinearClosed,
-            fill: 'var(--color-desktop)',
             fillOpacity: 0.6,
             stroke: '0',
             motion: 'tween',
