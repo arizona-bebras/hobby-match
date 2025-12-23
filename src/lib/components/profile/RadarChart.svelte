@@ -10,27 +10,27 @@
 
   const chartData = [
     {
-      category: 'Общение',
+      category: '🥳',
       me: userData.current?.personality_test![0],
       anotherUser: 2,
     },
     {
-      category: 'Реализация',
+      category: '🛠️',
       me: userData.current?.personality_test![1],
       anotherUser: 1,
     },
     {
-      category: 'Структура',
+      category: '🎨',
       me: userData.current?.personality_test![2],
       anotherUser: 3,
     },
     {
-      category: 'Взаимодействие',
+      category: '🤝',
       me: userData.current?.personality_test![4],
       anotherUser: 5,
     },
     {
-      category: 'Концентрация',
+      category: '🎯',
       me: userData.current?.personality_test![0],
       anotherUser: 3,
     },
@@ -51,7 +51,7 @@
     <!--      >Showing total visitors for the last 6 months</Card.Description-->
     <!--    >-->
   </Card.Header>
-  <Card.Content class="flex-1">
+  <Card.Content class="px-2 flex-1">
     <Chart.Container
       config={chartConfig}
       class="mx-auto aspect-square max-h-[250px]"
@@ -113,6 +113,17 @@
       >
         {#snippet tooltip()}
           <Chart.Tooltip />
+        {/snippet}
+        {#snippet legend({ visibleSeries })}
+          <div
+            class="absolute -bottom-14 flex justify-center gap-x-6 pb-4 flex-wrap w-[300px] left-1/2 transform -translate-x-1/2"
+          >
+            <span>🥳 - Общение</span>
+            <span>🛠️ - Реализация</span>
+            <span>🎨 - Структура</span>
+            <span>🤝 - Взаимодействие</span>
+            <span>🎯 - Концентрация</span>
+          </div>
         {/snippet}
       </LineChart>
     </Chart.Container>
