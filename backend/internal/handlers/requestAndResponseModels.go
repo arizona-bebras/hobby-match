@@ -64,3 +64,8 @@ type Photos struct {
 type CreatedNamespace struct {
 	NamespaceId string `json:"namespace_id"`
 }
+
+type TgEnterNamespaceData struct {
+	UserId      string `json:"user_id"`
+	NamespaceId string `json:"namepsace_id"`
+}

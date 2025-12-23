@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"fmt"
+	"time"
 	"net/http"
 
 	"gorm.io/gorm"
@@ -233,6 +234,62 @@ func (h *TgUsersHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 				http.StatusInternalServerError, 
 				fmt.Sprintf("tg handler: failed to delete user %v", err),
 			), 
+			http.StatusInternalServerError,
+		)
+		return
+	}
+}
+
+// EnterNamespace
+// @Summary Записать пользоватея в неймспейс
+// @Produce json
+// @Param data body TgEnterNamespaceData true "данные для записи пользователя"
+// @Success 200 {object} nil
+// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
+// @Router /api/tg/namespace [post]
+func (h *TgUsersHandler) EnterNamespace(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("tg handler: failed to read body %v", err)
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("tg handler: failed to read body %v", err),
+			), 
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	var enterData TgEnterNamespaceData
+	err = json.Unmarshal(body, &enterData)
+	if err != nil {
+		log.Printf("tg handler: failed to unmarshal reg data %v", err)
+		http.Error(
+			w, 
+			database.JSONErr(
+				http.StatusInternalServerError, 
+				fmt.Sprintf("tg handler: failed to unmarshal reg data %v", err),
+			), 
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	err = h.DB.Create(&database.UserNamespace{
+		UserId: enterData.UserId,
+		NamespaceId: enterData.NamespaceId,
+		Date: time.Now().Format(time.RFC3339),
+	}).Error
+	if err != nil {
+		log.Printf("tg handler: failed to enter namespace, %v", err)
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusInternalServerError,
+				fmt.Sprintf("tg handler: failed to enter namespace, %v", err),
+			),
 			http.StatusInternalServerError,
 		)
 		return

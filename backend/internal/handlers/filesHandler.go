@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	//"mime/multipart"
+	// "mime"
 	"net/http"
 	"strconv"
 
@@ -33,7 +34,6 @@ func (h *FilesHandler) GetPhoto(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey).(string)
 	object := r.PathValue("object")
 	id := r.PathValue("id")
-	w.Header().Set("Content-Type", "application/octet-stream")
 
 	switch object {
 	case "users":
@@ -57,6 +57,7 @@ func (h *FilesHandler) GetPhoto(w http.ResponseWriter, r *http.Request) {
 		}
 
 		binaryFile := bytes.NewReader(file)
+		w.Header().Set("Content-Type", http.DetectContentType(file))
 
 		io.Copy(w, binaryFile)
 	case "namespaces":
@@ -80,6 +81,7 @@ func (h *FilesHandler) GetPhoto(w http.ResponseWriter, r *http.Request) {
 		}
 
 		binaryFile := bytes.NewReader(file)
+		w.Header().Set("Content-Type", http.DetectContentType(file))
 
 		io.Copy(w, binaryFile)
 	case "widgets":
@@ -127,6 +129,7 @@ func (h *FilesHandler) GetPhoto(w http.ResponseWriter, r *http.Request) {
 		}
 
 		binaryFile := bytes.NewReader(widget.Files[index])
+		w.Header().Set("Content-Type", http.DetectContentType(widget.Files[index]))
 
 		io.Copy(w, binaryFile)
 	}

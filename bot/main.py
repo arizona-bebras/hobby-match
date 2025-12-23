@@ -35,12 +35,14 @@ class ApiClient:
     """Класс-обертка для запросов к твоему бэкенду"""
 
     @staticmethod
-    async def _api_call(method: str, **kwargs: Any) -> tuple[int, Any | None]:
+    async def _api_call(method: str, endpoint=None, **kwargs: Any) -> tuple[int, Any | None]:
         """
         Выполняет HTTP-запрос к API, обрабатывает ошибки и логирует не-200 ответы.
         Возвращает кортеж (status_code, response_data).
         """
         url = f"{API_BASE_URL}/api/tg"
+        if endpoint != None:
+            url += f"/{endpoint}"
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.request(method, url, headers={'Authorization': f"Bearer {os.getenv("BOT_AUTH_TOKEN")}"}, **kwargs) as response:
@@ -87,6 +89,12 @@ class ApiClient:
         """DELETE запрос: удалить пользователя"""
         status, _ = await ApiClient._api_call("DELETE", params={"id": tg_id})
         return status in [200, 204]
+    
+    @staticmethod
+    async def enter_namespace(enter_data: dict) -> int:
+        status, _ = await ApiClient._api_call("POST", "namespace", json=enter_data)
+        return status
+
 
 # --- Хендлеры ---
 
@@ -95,19 +103,31 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     tg_id = tg_user.id
     
     # Формируем данные согласно твоему ТЗ
-    register_data = {
+    user_data = {
         "tg_id": str(tg_id),
         "username": tg_user.username,
         "firstname": tg_user.first_name
     }
     # 2. Регистрируем, если нет (POST)
-    result = await ApiClient.register_user(register_data)
+    result = await ApiClient.register_user(user_data)
     if result == 500:
         await update.message.reply_text("Произошла ошибка при регистрации. Попробуйте позже.")
         return
     # if result == 400:
     #     await update.message.reply_text("Пользователь уже зарегестрирован")
     #     return
+
+    if context.args:
+        namespace_id = context.args[0]
+        result = await ApiClient.enter_namespace({
+            "user_id": str(tg_id),
+            "namespace_id": namespace_id
+        })
+        if result != 200:
+            await update.message.reply_text("Не удалось зайти в неймспейс. Попробуйте позже.")
+        text = "*Привет, я Shumi\\!* 👋\n\n" + "Я помогу найти тебе новые знакомства\\.\n" + "Заполняй анкету и вперед к поискам\\!\nТы уже приглашен в неймспейс\\!\n"
+    else:
+        text="*Привет, я Shumi\\!* 👋\n\n" + "Я помогу найти тебе новые знакомства\\.\n" + ("Заполняй анкету и вперед к поискам\\!\n" if result == 200 else "Заходи в приложение и находи себе друзей\\!\n")
 
     keyboard = InlineKeyboardMarkup.from_button(InlineKeyboardButton(
         text="Открыть Shumi",
@@ -120,10 +140,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text="*Привет, я Shumi\\!* 👋\n\n" +
-             "Я помогу найти тебе новые знакомства\\.\n" +
-             ("Заполняй анкету и вперед к поискам\\!\n" if result == 200 else
-              "Заходи в приложение и находи себе друзей\\!\n"),
+        text=text,
         parse_mode=ParseMode.MARKDOWN_V2,
         reply_markup=keyboard
     )
