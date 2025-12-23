@@ -162,13 +162,7 @@ func (h *UserDataHandler) GetMyNamespaces(w http.ResponseWriter, r *http.Request
 // UpdateMyProfileInfo
 // @Summary Обновить информацию профиля пользователя
 // @Accept json
-// @Param miniapp_name body string false "Имя пользователя"
-// @Param location body string false "Локация пользователя"
-// @Param gender body string false "Пол пользователя"
-// @Param birth_date body string false "Дата рождения пользователя"
-// @Param info body string false "Информация о пользователе"
-// @Param interests body array false "Интересы о пользователе"
-// @Param personality_test body array false "Личностный тест (5 слайдеров)"
+// @Param date body string true "новые данные пользователя в JSON"
 // @Success 200 {object} nil "Пользователь успешно обновлен"
 // @Failure 401 {object} database.Error "Пользователь не авторизован"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"

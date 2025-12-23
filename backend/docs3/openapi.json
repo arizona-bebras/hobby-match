@@ -261,18 +261,15 @@
       "patch": {
         "summary": "Обновить информацию профиля пользователя",
         "requestBody": {
-          "description": "Личностный тест (5 слайдеров)",
+          "description": "новые данные пользователя в JSON",
           "content": {
             "application/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+                "type": "string"
               }
             }
           },
-          "required": false
+          "required": true
         },
         "responses": {
           "200": {
@@ -300,7 +297,7 @@
             }
           }
         },
-        "x-codegen-request-body-name": "personality_test"
+        "x-codegen-request-body-name": "date"
       }
     },
     "/api/me/namespaces": {
@@ -1133,12 +1130,6 @@
           "members_count": {
             "type": "integer"
           },
-          "picture": {
-            "type": "array",
-            "items": {
-              "type": "integer"
-            }
-          },
           "title": {
             "type": "string"
           }
@@ -1293,6 +1284,9 @@
       "handlers.NamespaceMember": {
         "type": "object",
         "properties": {
+          "date": {
+            "type": "string"
+          },
           "miniapp_name": {
             "type": "string"
           },
@@ -1308,10 +1302,8 @@
             "$ref": "#/components/schemas/database.Namespace"
           },
           "users": {
-          "users": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/handlers.NamespaceMember"
               "$ref": "#/components/schemas/handlers.NamespaceMember"
             }
           }
@@ -1366,22 +1358,6 @@
         },
         "description": "Данные анкеты (все поля database.User + tg username)"
       },
-      "handlers.Photos": {
-        "type": "object",
-        "properties": {
-          "files": {
-            "type": "array",
-            "items": {
-              "type": "array",
-              "items": {
-                "type": "integer",
-                "format": "int32"
-              }
-            }
-          }
-        },
-        "description": "Изображение"
-      },
       "handlers.SteamGame": {
         "type": "object",
         "properties": {
@@ -1423,9 +1399,6 @@
     },
     "securitySchemes": {
       "BearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"

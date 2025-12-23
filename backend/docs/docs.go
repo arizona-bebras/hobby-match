@@ -206,59 +206,12 @@ const docTemplate = `{
                 "summary": "Обновить информацию профиля пользователя",
                 "parameters": [
                     {
-                        "description": "Имя пользователя",
-                        "name": "miniapp_name",
+                        "description": "новые данные пользователя в JSON",
+                        "name": "date",
                         "in": "body",
+                        "required": true,
                         "schema": {
                             "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Локация пользователя",
-                        "name": "location",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Пол пользователя",
-                        "name": "gender",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Дата рождения пользователя",
-                        "name": "birth_date",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Информация о пользователе",
-                        "name": "info",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Интересы о пользователе",
-                        "name": "interests",
-                        "in": "body",
-                        "schema": {
-                            "type": "array"
-                        }
-                    },
-                    {
-                        "description": "Личностный тест (5 слайдеров)",
-                        "name": "personality_test",
-                        "in": "body",
-                        "schema": {
-                            "type": "array"
                         }
                     }
                 ],
@@ -961,12 +914,6 @@ const docTemplate = `{
                 "members_count": {
                     "type": "integer"
                 },
-                "picture": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
                 "title": {
                     "type": "string"
                 }
@@ -1120,6 +1067,9 @@ const docTemplate = `{
         "handlers.NamespaceMember": {
             "type": "object",
             "properties": {
+                "date": {
+                    "type": "string"
+                },
                 "miniapp_name": {
                     "type": "string"
                 },
@@ -1136,10 +1086,8 @@ const docTemplate = `{
                     "$ref": "#/definitions/database.Namespace"
                 },
                 "users": {
-                "users": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handlers.NamespaceMember"
                         "$ref": "#/definitions/handlers.NamespaceMember"
                     }
                 }
@@ -1189,22 +1137,6 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/database.Widget"
-                    }
-                }
-            }
-        },
-        "handlers.Photos": {
-            "description": "Изображение",
-            "type": "object",
-            "properties": {
-                "files": {
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "integer",
-                            "format": "int32"
-                        }
                     }
                 }
             }
