@@ -31,7 +31,6 @@ type FilesHandler struct {
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/files/{object}/{id}/{index} [get]
 func (h *FilesHandler) GetPhoto(w http.ResponseWriter, r *http.Request) {
-	tgId := r.Context().Value(database.AuthContextKey).(string)
 	object := r.PathValue("object")
 	id := r.PathValue("id")
 
