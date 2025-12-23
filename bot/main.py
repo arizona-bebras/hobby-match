@@ -407,12 +407,15 @@ async def group_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         }, photo_bytes=photo_buffer)
 
         if status in [200, 201]:
-            # Предположим, API вернул созданный ID
             ns_id = res_data.get('namespace_id', 'unknown') if res_data else "123"
+            inlineButton = InlineKeyboardMarkup.from_button(InlineKeyboardButton(
+                text="Открыть Shumi",
+                url=f"https://t.me/{context.bot.username}?start={ns_id}"))
             await query.edit_message_text(
-                f"✅ Неймспейс создан\!\nТеперь участники могут заходить: \n[Открыть Shumi](https://t.me/{context.bot.username}?start={ns_id})",
+                f"✅ Неймспейс создан\!\nТеперь участники могут заходить: \n",
                 disable_web_page_preview=True,
-                parse_mode=ParseMode.MARKDOWN_V2
+                parse_mode=ParseMode.MARKDOWN_V2,
+                reply_markup=inlineButton
             )
         else:
             await query.edit_message_text("❌ Ошибка при создании неймспейса на сервере.")
