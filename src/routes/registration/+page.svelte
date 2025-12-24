@@ -30,12 +30,14 @@
 
   onMount(async () => {
     const { data } = await client.GET('/api/me');
-    const photo = await client.GET('/api/files/{object}', {
+    const photo = await client.GET('/api/files/{object}/{id}/{index}', {
       params: {
         path: {
           object: 'users',
+          id: data?.tg_user,
         },
       },
+      parseAs: 'blob',
     });
     if (
       data?.miniapp_name &&
@@ -46,7 +48,7 @@
     ) {
       markStageComplete('Информация');
     }
-    if (photo.data?.files) {
+    if (photo.data?.type.startsWith('image')) {
       markStageComplete('Фото');
     }
     if (data?.personality_test) {

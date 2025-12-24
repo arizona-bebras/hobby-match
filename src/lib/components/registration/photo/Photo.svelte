@@ -31,7 +31,7 @@
   } = $props();
 
   export async function save(): Promise<boolean> {
-    if (!hasPhoto || formValid) {
+    if (!userAvatar || formValid) {
       window.Telegram.WebApp.MainButton.showProgress();
       console.log($formData);
       const res = await updatePhoto($formData).finally(
@@ -62,13 +62,13 @@
   }
 
   // TODO: pocketbase was here
-  let hasPhoto: boolean = $derived(false);
+  let userAvatar = $state<File>();
   let formValid: boolean = $state(false);
   useTelegramButton(handleTelegramButtonClick);
   $effect(() => {
     validateForm().then((response) => {
       formValid = response.valid;
-      if (response.valid || hasPhoto) {
+      if (response.valid || userAvatar) {
         window.Telegram.WebApp.MainButton.setParams({
           color: window.Telegram.WebApp.themeParams.button_color,
           is_active: true,
@@ -89,31 +89,30 @@
     window.Telegram.WebApp.MainButton.hide();
   });
 
+  $effect(() => {
+    if (userAvatar && !$formData.user_photo) {
+      $formData.user_photo = userAvatar;
+    }
+  });
   onMount(async () => {
-    let userImage = await client.GET('/api/files/{object}', {
+    let userImage = await client.GET('/api/files/{object}/{id}/{index}', {
       params: {
         path: {
           object: 'users',
+          id: userData.current?.tg_user,
         },
       },
+      parseAs: 'blob',
     });
-    $formData.user_photo = userImage.data?.files;
+    let avatar = new File([userImage.data], 'avatar.png', {
+      type: 'image/png',
+    });
+    userAvatar = avatar;
   });
-  let previewSrc = $derived.by(async () => {
-    if (!hasPhoto || formValid) {
-      if (!$formData.user_photo) return null;
-      return typeof $formData.user_photo === 'string'
-        ? $formData.user_photo
-        : URL.createObjectURL($formData.user_photo);
-    } else {
-      // TODO: remove pocketbase
-      return userImage.data?.files ?? {};
-      // return pb.files.getURL(
-      //   pb.authStore.record ?? {},
-      //   pb.authStore.record?.user_photo,
-      // );
-    }
-  });
+  let previewSrc = $derived(
+    userAvatar ? URL.createObjectURL(userAvatar) : null,
+  );
+  $inspect(previewSrc, formValid);
 </script>
 
 <form method="POST" action="?/photo" enctype="multipart/form-data" use:enhance>
@@ -138,6 +137,9 @@
       type="file"
       class="hidden"
       bind:this={fileInput}
+      oninput={(e) => {
+        setInterval(() => (userAvatar = $formData.user_photo), 25);
+      }}
       bind:files={$file}
       accept="image/png, image/jpeg, image/svg+xml, image/gif, image/webp"
     />
@@ -153,7 +155,7 @@
     >
     {#if previewSrc}
       <img
-        src={previewSrc}
+        src={await previewSrc}
         class="rounded-3xl object-cover aspect-square my-2"
         alt="аватарка"
       />
