@@ -30,8 +30,9 @@ type AutocompleteResponse struct {
 }
 
 type OllamaEmbeddingRequest struct {
-	Model string   `json:"model"`
-	Input []string `json:"input"`
+	Model     string   `json:"model"`
+	Input     []string `json:"input"`
+	KeepAlive int      `json:"keep_alive"`
 }
 
 type OllamaEmbeddingResponse struct {
@@ -45,8 +46,9 @@ func generateEmbedding(text string) ([]float32, error) {
 	ollamaModel := os.Getenv("OLLAMA_MODEL")
 
 	reqBody := OllamaEmbeddingRequest{
-		Model: ollamaModel,
-		Input: []string{text},
+		Model:     ollamaModel,
+		KeepAlive: -1,
+		Input:     []string{text},
 	}
 
 	reqBytes, err := json.Marshal(reqBody)
