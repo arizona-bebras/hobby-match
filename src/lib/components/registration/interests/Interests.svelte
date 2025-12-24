@@ -1,29 +1,17 @@
 <script lang="ts">
-  import { db } from '$lib';
   import { Input } from '$lib/components/ui/input';
   import { Plus } from '@lucide/svelte';
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';
-  import SuperDebug, {
-    type Infer,
-    superForm,
-    type SuperValidated,
-  } from 'sveltekit-superforms';
-  import {
-    type FormSchema,
-    interestsScheme,
-  } from '$lib/components/registration/interests/InterestsFormShema';
+  import { type Infer, superForm, type SuperValidated } from 'sveltekit-superforms';
+  import { type FormSchema, interestsScheme } from '$lib/components/registration/interests/InterestsFormShema';
   import { zodClient } from 'sveltekit-superforms/adapters';
   import { onDestroy, onMount } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
   import { updateData } from '$lib/components/registration/';
   import client from '$lib/api/client';
-  import { createQuery } from '@tanstack/svelte-query';
   import { userData } from '$lib/storage/userData.svelte';
-  type Word = {
-    id: string;
-    tag: string;
-    similarity: number;
-  };
+  import type { Word } from '$lib/interests';
+
   let selectedInterests: Word[] = $state([]);
   let userInterest: string = $state('');
   let { form: interests }: { form: SuperValidated<Infer<FormSchema>> } =
