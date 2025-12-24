@@ -81,7 +81,7 @@
           window.Telegram.WebApp.MainButton.show();
           window.Telegram.WebApp.MainButton.text = 'Сохранить';
         }}
-        class="bg-accent size-12.5 fixed right-6.5 bottom-5 z-2 flex items-center justify-center rounded-xl"
+        class="bg-accent size-12.5 fixed right-6.5 bottom-20 z-2 flex items-center justify-center rounded-xl"
       >
         <Pencil class="size-6 text-white" />
       </button>

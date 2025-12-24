@@ -24,7 +24,10 @@
 
   $effect(() => {
     let path = page.url.pathname.toLowerCase();
-    if (path.includes('view')) {
+    if (
+      path.includes('view') ||
+      (path.includes('/community') && path.split('/').length - 1 === 3)
+    ) {
       currentPage = 'view';
     } else if (path.includes('community')) {
       currentPage = 'community';
@@ -32,6 +35,7 @@
       currentPage = 'profile';
     }
   });
+  $inspect(page.url.pathname.toLowerCase());
 </script>
 
 <footer
