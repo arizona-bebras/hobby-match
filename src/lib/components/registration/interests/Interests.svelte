@@ -38,14 +38,11 @@
 
   export async function save() {
     window.Telegram.WebApp.MainButton.showProgress();
-    const res = await updateData($formData).finally(
+    await updateData({
+      interests: selectedInterests,
+    }).finally(
       window.Telegram.WebApp.MainButton.hideProgress,
     );
-    if (res != 200) {
-      console.log('failed to update user data');
-      return;
-    }
-    return;
   }
 
   async function handleTelegramButtonClick() {
