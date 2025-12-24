@@ -26,7 +26,7 @@ type User struct {
 	Location        string          `json:"location" gorm:"column:location"`
 	Gender          string          `json:"gender" gorm:"column:gender"`
 	BirthDate       string          `json:"birth_date" gorm:"column:birth_date"`
-	Interests       pq.StringArray  `json:"interests" gorm:"type:text[];column:interests"`
+	Interests       []Interest      `json:"interests" gorm:"many2many:user_interests"`
 	PersonalityTest pgvector.Vector `json:"personality_test" gorm:"type:vector(5);default:null"`
 	Photo           []byte          `json:"-" gorm:"type:bytea;column:photo"`
 	Info            string          `json:"user_info" gorm:"column:info"`

@@ -20,6 +20,7 @@ type AutocompleteHandler struct {
 
 // Autocompletion represents a single suggested tag with its similarity score.
 type Autocompletion struct {
+	Id         string  `json:"id"`
 	Tag        string  `json:"tag"`
 	Similarity float32 `json:"similarity"`
 }
@@ -111,7 +112,7 @@ func (h *AutocompleteHandler) Autocomplete(w http.ResponseWriter, r *http.Reques
 
 	var completions []Autocompletion
 	result := h.DB.Raw(
-		"SELECT tag, 1 - (embedding <-> ?) AS similarity FROM interests ORDER BY embedding <-> ? LIMIT 10",
+		"SELECT id, tag, 1 - (embedding <-> ?) AS similarity FROM interests ORDER BY embedding <-> ? LIMIT 10",
 		pgvector.NewVector(embedding),
 		pgvector.NewVector(embedding)).Scan(&completions)
 	if result.Error != nil {

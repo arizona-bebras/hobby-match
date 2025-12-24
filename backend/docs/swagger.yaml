@@ -7,6 +7,14 @@ definitions:
       status_code:
         type: integer
     type: object
+  database.Interest:
+    description: Интерес
+    properties:
+      id:
+        type: string
+      tag:
+        type: string
+    type: object
   database.Namespace:
     description: Неймспейс
     properties:
@@ -32,16 +40,12 @@ definitions:
         type: boolean
       interests:
         items:
-          type: string
+          $ref: '#/definitions/database.Interest'
         type: array
       location:
         type: string
       miniapp_name:
         type: string
-      personality_test:
-        items:
-          type: number
-        type: array
       tg_user:
         type: string
       user_info:
@@ -88,6 +92,8 @@ definitions:
     type: object
   handlers.Autocompletion:
     properties:
+      id:
+        type: string
       similarity:
         type: number
       tag:
@@ -147,16 +153,14 @@ definitions:
         type: boolean
       interests:
         items:
-          type: string
+          $ref: '#/definitions/database.Interest'
         type: array
       location:
         type: string
       miniapp_name:
         type: string
-      personality_test:
-        items:
-          type: number
-        type: array
+      similarity:
+        type: number
       tg_user:
         type: string
       user_info:
@@ -184,6 +188,13 @@ definitions:
         type: string
       playtime_forever:
         type: integer
+    type: object
+  handlers.TgEnterNamespaceData:
+    properties:
+      namespace_id:
+        type: string
+      user_id:
+        type: string
     type: object
   handlers.UserNamespaces:
     description: Неймспейсы, в который состоит пользователь
@@ -327,7 +338,7 @@ paths:
         name: date
         required: true
         schema:
-          type: string
+          $ref: '#/definitions/database.User'
       responses:
         "200":
           description: Пользователь успешно обновлен
@@ -741,6 +752,44 @@ paths:
           schema:
             $ref: '#/definitions/database.Error'
       summary: Проверить существование пользователя в бд
+  /api/tg/namespace/add:
+    post:
+      parameters:
+      - description: данные для записи пользователя
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.TgEnterNamespaceData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/database.Error'
+      summary: Записать пользоватея в неймспейс
+  /api/tg/namespace/create:
+    post:
+      parameters:
+      - description: данные для записи пользователя
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.TgEnterNamespaceData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/database.Error'
+      summary: Записать пользоватея в неймспейс
   /api/vote:
     post:
       consumes:

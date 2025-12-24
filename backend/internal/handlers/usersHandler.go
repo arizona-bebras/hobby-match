@@ -62,7 +62,7 @@ func (h *UserDataHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var user database.User
-	result := h.DB.Model(&user).First(&user, "id = ?", tgID)
+	result := h.DB.Model(&user).Preload("Interests").First(&user, "id = ?", tgID)
 	if result.Error != nil {
 		log.Printf("users handler: failed to get user: %s", result.Error.Error())
 		http.Error(
@@ -162,7 +162,7 @@ func (h *UserDataHandler) GetMyNamespaces(w http.ResponseWriter, r *http.Request
 // UpdateMyProfileInfo
 // @Summary Обновить информацию профиля пользователя
 // @Accept json
-// @Param date body string true "новые данные пользователя в JSON"
+// @Param date body database.User true "новые данные пользователя в JSON"
 // @Success 200 {object} nil "Пользователь успешно обновлен"
 // @Failure 401 {object} database.Error "Пользователь не авторизован"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
@@ -196,8 +196,7 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 	log.Printf("%s", getStructFieldNames(user))
 
 	var result *gorm.DB
-
-	result = h.DB.Model(&user).Updates(&user)
+	result = h.DB.Model(&user).Omit("Interests.*").Updates(&user)
 
 	if result.Error != nil {
 		log.Printf("users handler: failed to update user, %s", result.Error.Error())
@@ -210,6 +209,23 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 			http.StatusInternalServerError,
 		)
 		return
+	}
+
+	if user.Interests != nil {
+		err := h.DB.Model(&user).Omit("Interests.*").Association("Interests").Replace(&user.Interests)
+
+		if err != nil {
+			log.Printf("users handler: failed to update user, %s", err.Error())
+			http.Error(
+				w,
+				database.JSONErr(
+					http.StatusInternalServerError,
+					fmt.Sprintf("users handler: failed to update user, %s", err.Error()),
+				),
+				http.StatusInternalServerError,
+			)
+			return
+		}
 	}
 }
 

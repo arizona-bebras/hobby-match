@@ -211,7 +211,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/database.User"
                         }
                     }
                 ],
@@ -851,6 +851,66 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/tg/namespace/add": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Записать пользоватея в неймспейс",
+                "parameters": [
+                    {
+                        "description": "данные для записи пользователя",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.TgEnterNamespaceData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tg/namespace/create": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Записать пользоватея в неймспейс",
+                "parameters": [
+                    {
+                        "description": "данные для записи пользователя",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.TgEnterNamespaceData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/vote": {
             "post": {
                 "consumes": [
@@ -898,6 +958,18 @@ const docTemplate = `{
                 }
             }
         },
+        "database.Interest": {
+            "description": "Интерес",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "tag": {
+                    "type": "string"
+                }
+            }
+        },
         "database.Namespace": {
             "description": "Неймспейс",
             "type": "object",
@@ -935,7 +1007,7 @@ const docTemplate = `{
                 "interests": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/database.Interest"
                     }
                 },
                 "location": {
@@ -943,12 +1015,6 @@ const docTemplate = `{
                 },
                 "miniapp_name": {
                     "type": "string"
-                },
-                "personality_test": {
-                    "type": "array",
-                    "items": {
-                        "type": "number"
-                    }
                 },
                 "tg_user": {
                     "type": "string"
@@ -1020,6 +1086,9 @@ const docTemplate = `{
         "handlers.Autocompletion": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "string"
+                },
                 "similarity": {
                     "type": "number"
                 },
@@ -1109,7 +1178,7 @@ const docTemplate = `{
                 "interests": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/database.Interest"
                     }
                 },
                 "location": {
@@ -1118,11 +1187,8 @@ const docTemplate = `{
                 "miniapp_name": {
                     "type": "string"
                 },
-                "personality_test": {
-                    "type": "array",
-                    "items": {
-                        "type": "number"
-                    }
+                "similarity": {
+                    "type": "number"
                 },
                 "tg_user": {
                     "type": "string"
@@ -1164,6 +1230,17 @@ const docTemplate = `{
                 },
                 "playtime_forever": {
                     "type": "integer"
+                }
+            }
+        },
+        "handlers.TgEnterNamespaceData": {
+            "type": "object",
+            "properties": {
+                "namespace_id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
                 }
             }
         },

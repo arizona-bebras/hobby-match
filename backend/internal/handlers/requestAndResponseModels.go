@@ -14,7 +14,8 @@ type RegisterData struct {
 // @Description Данные анкеты (все поля database.User + tg username)
 type PageData struct {
 	database.User
-	Username string `json:"username"`
+	Username   string  `json:"username"`
+	Similarity float32 `json:"similarity"`
 }
 
 type NamespaceMember struct {
