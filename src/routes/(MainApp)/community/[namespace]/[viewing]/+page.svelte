@@ -88,6 +88,7 @@
   let scroll = new ScrollState({
     element: () => screenContainer,
   });
+  window.Telegram.WebApp.MainButton.hide();
 </script>
 
 {#if profileData.data}

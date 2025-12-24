@@ -13,13 +13,13 @@
 
   let { offender }: { offender: string } = $props();
   let open = $state(false);
-  $effect(() => {
-    if (open) {
-      window.Telegram.WebApp.MainButton.hide();
-    } else {
-      window.Telegram.WebApp.MainButton.show();
-    }
-  });
+  // $effect(() => {
+  //   if (open) {
+  //     window.Telegram.WebApp.MainButton.hide();
+  //   } else {
+  //     window.Telegram.WebApp.MainButton.show();
+  //   }
+  // });
 
   const form = superForm(defaults(zod4(reportSchema)), {
     SPA: true,

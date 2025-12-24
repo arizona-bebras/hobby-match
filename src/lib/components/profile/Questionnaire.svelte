@@ -15,6 +15,7 @@
     isNamespaceProfile?: boolean;
     scroll: ScrollState;
   } = $props();
+  window.Telegram.WebApp.MainButton.hide();
 </script>
 
 <Header {data} />

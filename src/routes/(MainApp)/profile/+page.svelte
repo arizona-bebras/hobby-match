@@ -44,6 +44,10 @@
   //     changeMode = false;
   //   }
   // });
+  useTelegramButton(() => {
+    changeMode = false;
+    setTimeout(() => window.Telegram.WebApp.MainButton.hide(), 50);
+  });
 
   let showWidgetMenu = $state(false);
   let addedWidget: WidgetType | undefined = $state(undefined);
@@ -51,7 +55,6 @@
   let editingFiles: string[] | undefined = $state(undefined);
   let widgetData = $state(undefined);
   let { data }: { data: PageData } = $props();
-  console.log(data);
   let widgets: Widget[] = $state(data.widgets);
 
   $effect(() => {
@@ -73,7 +76,11 @@
   <div class="font-[Inter] px-4 w-full max-w-full relative">
     {#if !changeMode}
       <button
-        onclick={() => (changeMode = !changeMode)}
+        onclick={() => {
+          changeMode = !changeMode;
+          window.Telegram.WebApp.MainButton.show();
+          window.Telegram.WebApp.MainButton.text = 'Сохранить';
+        }}
         class="bg-accent size-12.5 fixed right-6.5 bottom-5 z-2 flex items-center justify-center rounded-xl"
       >
         <Pencil class="size-6 text-white" />
