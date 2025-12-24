@@ -95,7 +95,6 @@
 </script>
 
 {#if profileData.isSuccess}
-  <p onclick={() => console.log('hello world')}>hello world</p>
   <div
     class="overflow-y-auto w-full"
     bind:this={screenContainer}
