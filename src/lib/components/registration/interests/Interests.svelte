@@ -20,6 +20,7 @@
   import { createQuery } from '@tanstack/svelte-query';
   import { userData } from '$lib/storage/userData.svelte';
   type Word = {
+    id: string;
     tag: string;
     similarity: number;
   };
@@ -73,27 +74,11 @@
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     $formData;
   });
-  // $effect(() => {
-  //   pb.collection('users')
-  //     .getOne(pb.authStore.record!.id, {
-  //       fields: 'expand',
-  //       expand: 'interests',
-  //       requestKey: null,
-  //     })
-  //     .then((user) => {
-  //       selectedInterests = user.expand?.interests ?? [];
-  //       $formData.interests = selectedInterests.map((i) => i.id);
-  //     });
-  // });
-  // $effect(() => {
-  //   $formData.interests = selectedInterests;
-  // });
   onMount(() => {
-    $formData.interests = userData.current!.interests!;
-    selectedInterests = userData.current!.interests!.map((interest) => ({
-      tag: interest,
-      similarity: 0.42,
-    }));
+    $formData.interests = userData.current!.interests!.map(
+      (interest) => interest.id,
+    );
+    selectedInterests = userData.current!.interests!;
   });
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
@@ -158,7 +143,7 @@
     ...suggestedWords
       .filter(
         (element) =>
-          !selectedInterests.find((selected) => selected.tag === element.tag),
+          !selectedInterests.find((selected) => selected.id === element.id),
       )
       .map((element) => ({ ...element, selected: false })),
   ]);
@@ -196,7 +181,7 @@
                   selectedInterests.splice(i, 1);
                 }
                 $formData.interests = selectedInterests.map(
-                  (element) => element.tag,
+                  (element) => element.id,
                 );
                 // if (selectedInterests.includes (element['id'])) {
                 //   selectedInterests.splice(
