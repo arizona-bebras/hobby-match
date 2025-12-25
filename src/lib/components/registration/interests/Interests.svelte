@@ -1,28 +1,17 @@
 <script lang="ts">
-  import { db } from '$lib';
   import { Input } from '$lib/components/ui/input';
   import { Plus } from '@lucide/svelte';
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';
-  import SuperDebug, {
-    type Infer,
-    superForm,
-    type SuperValidated,
-  } from 'sveltekit-superforms';
-  import {
-    type FormSchema,
-    interestsScheme,
-  } from '$lib/components/registration/interests/InterestsFormShema';
+  import { type Infer, superForm, type SuperValidated } from 'sveltekit-superforms';
+  import { type FormSchema, interestsScheme } from '$lib/components/registration/interests/InterestsFormShema';
   import { zodClient } from 'sveltekit-superforms/adapters';
   import { onDestroy, onMount } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
   import { updateData } from '$lib/components/registration/';
   import client from '$lib/api/client';
-  import { createQuery } from '@tanstack/svelte-query';
   import { userData } from '$lib/storage/userData.svelte';
-  type Word = {
-    tag: string;
-    similarity: number;
-  };
+  import type { Word } from '$lib/interests';
+
   let selectedInterests: Word[] = $state([]);
   let userInterest: string = $state('');
   let { form: interests }: { form: SuperValidated<Infer<FormSchema>> } =
@@ -37,14 +26,11 @@
 
   export async function save() {
     window.Telegram.WebApp.MainButton.showProgress();
-    const res = await updateData($formData).finally(
+    await updateData({
+      interests: selectedInterests,
+    }).finally(
       window.Telegram.WebApp.MainButton.hideProgress,
     );
-    if (res != 200) {
-      console.log('failed to update user data');
-      return;
-    }
-    return;
   }
 
   async function handleTelegramButtonClick() {
@@ -73,27 +59,11 @@
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     $formData;
   });
-  // $effect(() => {
-  //   pb.collection('users')
-  //     .getOne(pb.authStore.record!.id, {
-  //       fields: 'expand',
-  //       expand: 'interests',
-  //       requestKey: null,
-  //     })
-  //     .then((user) => {
-  //       selectedInterests = user.expand?.interests ?? [];
-  //       $formData.interests = selectedInterests.map((i) => i.id);
-  //     });
-  // });
-  // $effect(() => {
-  //   $formData.interests = selectedInterests;
-  // });
   onMount(() => {
-    $formData.interests = userData.current!.interests!;
-    selectedInterests = userData.current!.interests!.map((interest) => ({
-      tag: interest,
-      similarity: 0.42,
-    }));
+    $formData.interests = userData.current!.interests!.map(
+      (interest) => interest.id,
+    );
+    selectedInterests = userData.current!.interests!;
   });
   onDestroy(() => {
     window.Telegram.WebApp.MainButton.hide();
@@ -158,7 +128,7 @@
     ...suggestedWords
       .filter(
         (element) =>
-          !selectedInterests.find((selected) => selected.tag === element.tag),
+          !selectedInterests.find((selected) => selected.id === element.id),
       )
       .map((element) => ({ ...element, selected: false })),
   ]);
@@ -196,7 +166,7 @@
                   selectedInterests.splice(i, 1);
                 }
                 $formData.interests = selectedInterests.map(
-                  (element) => element.tag,
+                  (element) => element.id,
                 );
                 // if (selectedInterests.includes (element['id'])) {
                 //   selectedInterests.splice(
