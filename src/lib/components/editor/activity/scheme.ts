@@ -8,12 +8,18 @@ export const scheme = z
       .union([
         z.object({
           type: z.literal('school'),
-          class: z.number(),
+          class: z
+            .number()
+            .positive({ error: 'Класс не может быть отрицательным' })
+            .lte(12, { error: 'Класс не может быть больше 11' }),
         }),
         z.object({
           type: z.literal('university'),
           educationStage: z.literal(['bachelor', 'master', 'postgraduate']),
-          course: z.number(),
+          course: z
+            .number()
+            .positive({ error: 'Курс не может быть отрицательным' })
+            .lte(7, { error: 'Курс не может быть больше 6' }),
         }),
       ])
 
@@ -22,7 +28,9 @@ export const scheme = z
       .object({
         company: z.string(),
         job_title: z.string(),
-        experience: z.number(),
+        experience: z
+          .number()
+          .positive({ error: 'Стаж не может быть отрицательным' }),
       })
       .optional(),
     // text: z

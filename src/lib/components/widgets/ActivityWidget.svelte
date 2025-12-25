@@ -50,19 +50,19 @@
   <p class="font-semibold text-lg mb-4">Статус занятости</p>
   {#if data.status.isStudent}
     <div
-      class="flex gap-x-4.5 items-center bg-accent/25 p-2 rounded-[12px] border-1 border-accent mb-2"
+      class="flex gap-x-4.5 items-center bg-accent/25 p-2 rounded-[12px] border-1 border-accent mb-2 box-border"
     >
       <div class="bg-accent rounded-[12px] flex items-center">
         <p class="scale-175 m-2.5">🎓</p>
       </div>
-      <div class="flex flex-col">
+      <div class="flex flex-col min-w-0">
         <p class="text-xs font-semibold text-accent">ОБУЧЕНИЕ</p>
         {#if data.education.type === 'school'}
-          <p class="font-semibold text-[14px]">
+          <p class="font-semibold text-[14px] truncate">
             Школа, <span>{data.education.class} класс</span>
           </p>
         {:else}
-          <p class="font-semibold text-[14px]">
+          <p class="font-semibold text-[14px] truncate">
             {educationStages[data.education.educationStage]},
             <span>{data.education.course} курс</span>
           </p>
@@ -74,19 +74,19 @@
     <div
       class="flex justify-between items-center bg-accent/25 p-2 rounded-[12px] border-1 border-accent"
     >
-      <div class="flex gap-x-4.5">
+      <div class="flex gap-x-4.5 min-w-0">
         <div class="bg-accent rounded-[12px] flex items-center">
           <p class="scale-175 m-2.5">💼</p>
         </div>
-        <div class="flex flex-col">
+        <div class="flex flex-col min-w-0">
           <p class="text-xs font-semibold text-accent">РАБОТА</p>
-          <p class="font-semibold text-[14px]">
+          <p class="font-semibold text-[14px] truncate">
             {data.work.job_title} в {data.work.company}
           </p>
         </div>
       </div>
       <p
-        class="text-xs self-start p-1 bg-accent/25 rounded-[8px] border-1 border-accent/75 font-semibold text-[12px]"
+        class="text-xs self-start p-1 bg-accent/25 rounded-[8px] border-1 border-accent/75 font-semibold text-[12px] shrink-0"
       >
         Стаж: {data.work.experience}
         {getCorrectForm(data.work.experience, ['год', 'года', 'лет'])}
