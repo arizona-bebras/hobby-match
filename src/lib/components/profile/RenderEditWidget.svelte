@@ -10,6 +10,7 @@
     EditSocial,
     EditAudio,
     EditSteamGame,
+    EditActivity,
   } from '$lib/components/editor/index.js';
   import {
     type Widget,
@@ -93,5 +94,11 @@
   open={addedWidget === 'steam_game'}
   onClose={onEditClose}
   widgetId={addedWidget === 'steam_game' ? widgetId : undefined}
+  {widgetData}
+/>
+<EditActivity
+  open={addedWidget === 'activity'}
+  onClose={onEditClose}
+  widgetId={addedWidget === 'activity' ? widgetId : undefined}
   {widgetData}
 />

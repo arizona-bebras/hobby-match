@@ -8,3 +8,4 @@ export { default as EditText } from './text/EditText.svelte';
 export { default as EditTgPost } from './tg-post/EditTgPost.svelte';
 export { default as EditToDo } from './todo/EditToDo.svelte';
 export { default as EditVideo } from './video/EditVideo.svelte';
+export { default as EditActivity } from './activity/EditActivity.svelte';

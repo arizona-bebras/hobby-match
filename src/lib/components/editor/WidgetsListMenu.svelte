@@ -20,6 +20,7 @@
     Text,
     Game,
     Video,
+    Activity,
   } from '$lib/components/widgets/index';
   console.log(DuckHello, DuckUmbrella);
   let {
@@ -40,7 +41,8 @@
       | Text
       | TgPost
       | ToDo
-      | Video;
+      | Video
+      | Activity;
     data: Widget['data'] | any;
     additionalData?: Widget['additionalData'];
   }[] = [
@@ -153,6 +155,27 @@
       data: {
         type: 'post',
         link: 'durov/337',
+      },
+    },
+    {
+      type: 'activity',
+      label: 'Деятельность',
+      widget: Activity,
+      data: {
+        status: {
+          isStudent: true,
+          isWorker: true,
+        },
+        education: {
+          type: 'university',
+          educationStage: 'bachelor',
+          course: 2,
+        },
+        work: {
+          company: 'Ducko',
+          job_title: 'full-stack',
+          experience: 2,
+        },
       },
     },
   ];

@@ -13,7 +13,8 @@ export type Widget = {
     | Sticker
     | Survey
     | Text
-    | Post;
+    | Post
+    | Activity;
   files?: string[];
   additionalData?: SocialMediaData | PhotoData | SurveyData | SteamGameData;
 };
@@ -145,4 +146,27 @@ export type Text = {
 export type Post = {
   type: 'post';
   link: string;
+};
+
+export type Activity = {
+  type: 'activity';
+  status: {
+    isStudent: boolean;
+    isWorker: boolean;
+  };
+  education:
+    | {
+        type: 'school';
+        class: number;
+      }
+    | {
+        type: 'university';
+        educationStage: 'bachelor' | 'master' | 'postgraduate';
+        course: number;
+      };
+  work: {
+    company: string;
+    job_title: string;
+    experience: number;
+  };
 };

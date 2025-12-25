@@ -10,3 +10,4 @@ export { default as Text } from './TextWidget.svelte';
 export { default as TgPost } from './TgPostWidget.svelte';
 export { default as ToDo } from './ToDoWidget.svelte';
 export { default as Video } from './VideoWidget.svelte';
+export { default as Activity } from './ActivityWidget.svelte';

@@ -9,6 +9,7 @@
   import SurveyWidget from '$lib/components/widgets/SurveyWidget.svelte';
   import PhotoWidget from '$lib/components/widgets/PhotoWidget.svelte';
   import TgPostWidget from '$lib/components/widgets/TgPostWidget.svelte';
+  import ActivityWidget from '$lib/components/widgets/ActivityWidget.svelte';
   import type { Widget } from '$lib/widgetTypes/widgetTypes';
 
   let { widget, isViewingMode }: { widget: Widget; isViewingMode: boolean } =
@@ -16,7 +17,7 @@
 </script>
 
 {#if widget.data.type === 'text'}
-  {console.log("TRYING RENDER TEXT")}
+  {console.log('TRYING RENDER TEXT')}
   <TextWidget data={widget.data} />
 {:else if widget.data.type === 'audio'}
   <AudioWidget data={widget.data} />
@@ -40,4 +41,6 @@
   <PhotoWidget urls={widget.files} isTestImage={false} />
 {:else if widget.data.type === 'post'}
   <TgPostWidget data={widget.data} />
+{:else if widget.data.type === 'activity'}
+  <ActivityWidget data={widget.data} />
 {/if}
