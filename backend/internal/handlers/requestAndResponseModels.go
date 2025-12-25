@@ -72,6 +72,7 @@ type Photos struct {
 // @Description Ответ на успешное создание неймспейса
 type CreatedNamespace struct {
 	NamespaceId string `json:"namespace_id"`
+	InviteCode  string `json:"invite_code"`
 }
 
 type TgEnterNamespaceData struct {

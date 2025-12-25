@@ -15,6 +15,9 @@ type UserVector struct {
 }
 
 func upsertUser(user *User) error {
+	if user.Info == "" {
+		return nil
+	}
 	embedding, err := embeddings.GenerateEmbedding(user.Info)
 	log.Printf("embedding: %s", embedding)
 

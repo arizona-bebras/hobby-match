@@ -65,11 +65,11 @@ type Namespace struct {
 	Title           string          `json:"title" gorm:"column:title"`
 	Picture         []byte          `json:"-" gorm:"type:bytea;column:picture"`
 	Description     string          `json:"description" gorm:"column:description"`
-	MembersCount    int64           `json:"members_count" gorm:"column:members_count"`
+	MembersCount    int64           `json:"members_count" gorm:"-"`
 	AdminId         string          `json:"admin" gorm:"column:admin_id"`
 	Admin           User            `json:"-" gorm:"foreignKey:AdminId;references:Id"`
 	NamespaceInvite NamespaceInvite `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	UserNamespace   UserNamespace   `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Members         []User          `json:"-" gorm:"many2many:user_namespace"`
 }
 
 // @Description Инвайт код для неймспейса
@@ -84,9 +84,9 @@ func (NamespaceInvite) TableName() string {
 
 // @Description many-to-many Пользователь - Неймспейс + уникальня для неймспейса инфа
 type UserNamespace struct {
-	UserId      string `json:"user" gorm:"column:user_id"`
-	NamespaceId string `json:"namespace" gorm:"column:namespace_id"`
-	Date        string `json:"date" gorm:"column:date;type:Date"`
+	UserId      string    `json:"user" gorm:"primaryKey;column:user_id"`
+	NamespaceId string    `json:"namespace" gorm:"primaryKey;column:namespace_id"`
+	Date        time.Time `json:"date" gorm:"autoCreateTime"`
 }
 
 func (UserNamespace) TableName() string {

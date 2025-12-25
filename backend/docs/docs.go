@@ -599,8 +599,8 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "id неймспейса",
-                        "name": "namespace",
-                        "in": "query",
+                        "name": "namespace_id",
+                        "in": "path",
                         "required": true
                     }
                 ],

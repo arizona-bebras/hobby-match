@@ -576,8 +576,8 @@ paths:
     delete:
       parameters:
       - description: id неймспейса
-        in: query
-        name: namespace
+        in: path
+        name: namespace_id
         required: true
         type: string
       responses:

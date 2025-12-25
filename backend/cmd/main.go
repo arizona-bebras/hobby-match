@@ -12,10 +12,10 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
+	"shumi/internal/botauth"
 	"shumi/internal/database"
 	"shumi/internal/handlers"
 	"shumi/internal/tgauth"
-	"shumi/internal/botauth"
 
 	_ "shumi/docs"
 
@@ -79,6 +79,10 @@ func main() {
 	)
 	if err != nil {
 		log.Fatalf("failed to migrate %v", err)
+	}
+	err = dbConnection.SetupJoinTable(&database.Namespace{}, "Members", &database.UserNamespace{})
+	if err != nil {
+		log.Fatalf("failed to setup join %v", err)
 	}
 
 	auth := tgauth.AuthClient{

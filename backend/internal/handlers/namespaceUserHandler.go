@@ -44,27 +44,17 @@ type Match struct {
 func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey).(string)
 
-	namespace := r.PathValue("namespace_id")
+	//namespace := r.PathValue("namespace_id")
 	r.ParseMultipartForm(FORM_SIZE_LIMIT)
 	invite_code := r.PostFormValue("invite_code")
 
-	var namespaceInviteCode database.NamespaceInvite
+	var namespace database.Namespace
 
-	err := h.DB.Table("namespace_invite").First(&namespaceInviteCode, "namespace_id = ?", namespace).Error
+	err := h.DB.Table("namespace_invite").
+		Joins("left join namespaces on namespaces.id = namespace_invite.namespace_id").
+		Where("namespace_invite.invite_code = ?", invite_code).
+		Scan(&namespace).Error
 	if err != nil {
-		log.Printf("namespace handler: failed to find namespace code, %v", err)
-		http.Error(
-			w,
-			database.JSONErr(
-				http.StatusInternalServerError,
-				fmt.Sprintf("namespace handler: failed to find namespace code, %v", err),
-			),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-
-	if invite_code != namespaceInviteCode.InviteCode {
 		log.Println("namespace handler: wrong invite code!")
 		http.Error(
 			w,
@@ -77,11 +67,7 @@ func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = h.DB.Create(&database.UserNamespace{
-		NamespaceId: namespace,
-		UserId:      tgId,
-		Date:        time.Now().Format(time.RFC3339),
-	}).Error
+	err = h.DB.Model(&namespace).Omit("Members.*").Association("Members").Append(&database.User{Id: tgId})
 	if err != nil {
 		log.Printf("namespace handler: failed to enter namespace, %v", err)
 		http.Error(
@@ -98,7 +84,7 @@ func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request
 
 // LeaveNamespace
 // @Summary Выйти из неймспейса
-// @Param namespace query string true "id неймспейса"
+// @Param namespace_id path string true "id неймспейса"
 // @Success 200 {object} nil "Успешный вход"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/namespace/{namespace_id} [delete]
@@ -108,11 +94,7 @@ func (h *NamespaceHandler) LeaveNamespace(w http.ResponseWriter, r *http.Request
 	namespace := r.PathValue("namespace_id")
 
 	// type UserNamespace struct{}
-	err := h.DB.Delete(&database.UserNamespace{
-		NamespaceId: namespace,
-		UserId:      tgId,
-		Date:        time.Now().Format(time.RFC3339),
-	}).Error
+	err := h.DB.Model(database.Namespace{Id: namespace}).Association("Members").Delete(database.User{Id: tgId})
 	if err != nil {
 		log.Println("namespace handler: failed to leave namespace")
 		http.Error(

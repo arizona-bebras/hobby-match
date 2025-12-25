@@ -774,8 +774,8 @@
         "summary": "Выйти из неймспейса",
         "parameters": [
           {
-            "name": "namespace",
-            "in": "query",
+            "name": "namespace_id",
+            "in": "path",
             "description": "id неймспейса",
             "required": true,
             "schema": {

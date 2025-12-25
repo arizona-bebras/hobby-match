@@ -1,16 +1,14 @@
 package handlers
 
 import (
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
 	"io"
 	"log"
 	"net/http"
 	"shumi/internal/database"
-	"time"
-	"crypto/rand"
-
-	"github.com/google/uuid"
 	// "github.com/xyproto/randomstring"
 	"gorm.io/gorm"
 )
@@ -89,9 +87,10 @@ func (h *NamespaceAdminHandler) CreateNamespace(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	inviteCode := rand.Text()
 	err = tx.Table("namespace_invite").Create(database.NamespaceInvite{
 		NamespaceId: namespaceId,
-		InviteCode:  rand.Text(),
+		InviteCode:  inviteCode,
 	}).Error
 	if err != nil {
 		tx.Rollback()
@@ -106,12 +105,7 @@ func (h *NamespaceAdminHandler) CreateNamespace(w http.ResponseWriter, r *http.R
 		)
 		return
 	}
-
-	err = tx.Create(&database.UserNamespace{
-		NamespaceId: namespaceId, 
-		UserId: tgId, 
-		Date: time.Now().Format(time.RFC3339),
-	}).Error
+	err = tx.Model(&database.Namespace{Id: namespaceId}).Omit("Members.*").Association("Members").Append(&database.User{Id: tgId})
 	if err != nil {
 		tx.Rollback()
 		log.Printf("namespace admin handler: failed to enter namespace, %v", err)
@@ -129,6 +123,7 @@ func (h *NamespaceAdminHandler) CreateNamespace(w http.ResponseWriter, r *http.R
 
 	createdNamespace := CreatedNamespace{
 		NamespaceId: namespaceId,
+		InviteCode:  inviteCode,
 	}
 
 	JSONCreatedNamespace, err := json.Marshal(createdNamespace)

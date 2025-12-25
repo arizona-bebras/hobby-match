@@ -1,16 +1,14 @@
 package handlers
 
 import (
+	"crypto/rand"
 	"encoding/json"
-	"io"
-	"log"
 	"fmt"
-	"time"
-	"net/http"
-
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"crypto/rand"
+	"io"
+	"log"
+	"net/http"
 
 	"shumi/internal/database"
 )
@@ -34,11 +32,11 @@ func (h *TgUsersHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("tg handler: failed to get user %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("tg handler: failed to get user %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -48,11 +46,11 @@ func (h *TgUsersHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("tg handler: failed to marshal user data %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("tg handler: failed to marshal user data %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -76,11 +74,11 @@ func (h *TgUsersHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("tg handler: failed to read body %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("tg handler: failed to read body %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -91,11 +89,11 @@ func (h *TgUsersHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("tg handler: failed to unmarshal reg data %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("tg handler: failed to unmarshal reg data %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -105,11 +103,11 @@ func (h *TgUsersHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	if result.Error != nil {
 		log.Printf("tg handler: failed to find user %v", result.Error)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("tg handler: failed to find user %v", result.Error),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -118,11 +116,11 @@ func (h *TgUsersHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	if result.RowsAffected > 0 {
 		log.Println("tg handler: user already exsists")
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusBadRequest, 
+				http.StatusBadRequest,
 				"tg handler: user already exsists",
-			), 
+			),
 			http.StatusBadRequest,
 		)
 		return
@@ -130,18 +128,18 @@ func (h *TgUsersHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	tx := h.DB.Begin()
 	err = tx.Create(&database.User{
-		Id: regData.TgId,
+		Id:   regData.TgId,
 		Hide: false,
 	}).Error
 	if err != nil {
 		tx.Rollback()
 		log.Printf("tg handler: failed to create user %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("tg handler: failed to find user %v", result.Error),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -156,11 +154,11 @@ func (h *TgUsersHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		tx.Rollback()
 		log.Printf("tg handler: failed to create tg user %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("tg handler: failed to find user %v", result.Error),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -186,11 +184,11 @@ func (h *TgUsersHandler) UpdateHideStatus(w http.ResponseWriter, r *http.Request
 		tx.Rollback()
 		log.Printf("tg handler: failed to get user, %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("tg handler: failed to get user %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -202,11 +200,11 @@ func (h *TgUsersHandler) UpdateHideStatus(w http.ResponseWriter, r *http.Request
 		tx.Rollback()
 		log.Printf("tg handler: failed to update hide status, %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("tg handler: failed to update hide status, %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -231,11 +229,11 @@ func (h *TgUsersHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("tg handler: failed to delete user %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("tg handler: failed to delete user %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -254,11 +252,11 @@ func (h *TgUsersHandler) EnterNamespace(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		log.Printf("tg handler: failed to read body %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("tg handler: failed to read body %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
@@ -269,27 +267,23 @@ func (h *TgUsersHandler) EnterNamespace(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		log.Printf("tg handler: failed to unmarshal reg data %v", err)
 		http.Error(
-			w, 
+			w,
 			database.JSONErr(
-				http.StatusInternalServerError, 
+				http.StatusInternalServerError,
 				fmt.Sprintf("tg handler: failed to unmarshal reg data %v", err),
-			), 
+			),
 			http.StatusInternalServerError,
 		)
 		return
 	}
 
-	rows := h.DB.Table("user_namespace").First(&database.UserNamespace{}, "user_id = ? AND namespace_id = ?", enterData.UserId, enterData.NamespaceId).RowsAffected
+	rows := h.DB.Model(&database.Namespace{Id: enterData.NamespaceId}).Where("id = ?", enterData.UserId).Association("Members").Count()
 	if rows != 0 {
 		log.Println("tg handler: user already in namespace")
 		return
 	}
 
-	err = h.DB.Create(&database.UserNamespace{
-		UserId: enterData.UserId,
-		NamespaceId: enterData.NamespaceId,
-		Date: time.Now().Format(time.RFC3339),
-	}).Error
+	err = h.DB.Model(&database.Namespace{Id: enterData.NamespaceId}).Omit("Members.*").Association("Members").Append(&database.User{Id: enterData.UserId})
 	if err != nil {
 		log.Printf("tg handler: failed to enter namespace, %v", err)
 		http.Error(
@@ -389,11 +383,7 @@ func (h *TgUsersHandler) CreateNamespace(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = tx.Create(&database.UserNamespace{
-		NamespaceId: namespaceId, 
-		UserId: tgId, 
-		Date: time.Now().Format(time.RFC3339),
-	}).Error
+	err = tx.Model(&database.Namespace{Id: namespaceId}).Omit("Members.*").Association("Members").Append(&database.User{Id: tgId})
 	if err != nil {
 		tx.Rollback()
 		log.Printf("namespace admin handler: failed to enter namespace, %v", err)
@@ -438,27 +428,27 @@ func (h TgUsersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		case http.MethodPatch:
 			h.UpdateHideStatus(w, r)
 		case http.MethodDelete:
-			h.DeleteUser(w ,r)
+			h.DeleteUser(w, r)
 		case http.MethodGet:
 			h.GetUser(w, r)
 		default:
 			http.Error(
-				w, 
+				w,
 				database.JSONErr(
-					http.StatusMethodNotAllowed, 
+					http.StatusMethodNotAllowed,
 					"tg handler: method not allowed",
-				), 
+				),
 				http.StatusMethodNotAllowed,
 			)
 		}
 	} else {
 		if r.Method != http.MethodPost {
 			http.Error(
-				w, 
+				w,
 				database.JSONErr(
-					http.StatusMethodNotAllowed, 
+					http.StatusMethodNotAllowed,
 					"tg handler: method not allowed",
-				), 
+				),
 				http.StatusMethodNotAllowed,
 			)
 			return
@@ -470,14 +460,13 @@ func (h TgUsersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			h.CreateNamespace(w, r)
 		default:
 			http.Error(
-				w, 
+				w,
 				database.JSONErr(
-					http.StatusNotFound, 
+					http.StatusNotFound,
 					"tg handler: endpoint not found",
-				), 
+				),
 				http.StatusNotFound,
 			)
 		}
 	}
 }
-
