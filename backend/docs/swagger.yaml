@@ -46,6 +46,10 @@ definitions:
         type: string
       miniapp_name:
         type: string
+      personality_test:
+        items:
+          type: number
+        type: array
       tg_user:
         type: string
       user_info:
@@ -87,17 +91,8 @@ definitions:
     properties:
       completions:
         items:
-          $ref: '#/definitions/handlers.Autocompletion'
+          $ref: '#/definitions/handlers.InterestSimilarity'
         type: array
-    type: object
-  handlers.Autocompletion:
-    properties:
-      id:
-        type: string
-      similarity:
-        type: number
-      tag:
-        type: string
     type: object
   handlers.CreatedNamespace:
     description: Ответ на успешное создание неймспейса
@@ -112,6 +107,15 @@ definitions:
         items:
           $ref: '#/definitions/handlers.SteamGame'
         type: array
+    type: object
+  handlers.InterestSimilarity:
+    properties:
+      id:
+        type: string
+      similarity:
+        type: number
+      tag:
+        type: string
     type: object
   handlers.JWTTokens:
     description: Токены для авторизации и данные пользователя
@@ -151,14 +155,24 @@ definitions:
         type: string
       hide:
         type: boolean
+      info_score:
+        type: number
       interests:
         items:
-          $ref: '#/definitions/database.Interest'
+          $ref: '#/definitions/handlers.InterestSimilarity'
         type: array
+      interests_score:
+        type: number
       location:
         type: string
       miniapp_name:
         type: string
+      personality_score:
+        type: number
+      personality_test:
+        items:
+          type: number
+        type: array
       similarity:
         type: number
       tg_user:
@@ -615,7 +629,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/handlers.PageData'
+              type: string
             type: array
         "500":
           description: Внутренняя ошибка сервера

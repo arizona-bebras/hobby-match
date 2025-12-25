@@ -3,6 +3,7 @@ package database
 import (
 	"encoding/json"
 	"log"
+	"time"
 
 	// "gorm.io/gorm"
 	"github.com/lib/pq"
@@ -30,6 +31,7 @@ type User struct {
 	PersonalityTest pgvector.Vector `json:"personality_test" gorm:"type:vector(5);default:null"`
 	Photo           []byte          `json:"-" gorm:"type:bytea;column:photo"`
 	Info            string          `json:"user_info" gorm:"column:info"`
+	InfoEmbedding   pgvector.Vector `json:"-" gorm:"type:vector(2048)"`
 	Hide            bool            `json:"hide" gorm:"column:hide"`
 	Widgets         []Widget        `json:"widgets" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	TgUser          TgUser          `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
@@ -100,11 +102,11 @@ type Interest struct {
 
 // @Description Просмотр анкеты
 type View struct {
-	ViewerId    string `json:"viewer"`
-	Viewer      User   `gorm:"foreignKey:ViewerId;references:Id"`
-	PageOwnerId string `json:"page_owner"`
-	PageOwner   User   `gorm:"foreignKey:PageOwnerId;references:Id"`
-	Date        string `json:"date"`
+	ViewerId    string    `json:"viewer"`
+	Viewer      User      `gorm:"foreignKey:ViewerId;references:Id"`
+	PageOwnerId string    `json:"page_owner"`
+	PageOwner   User      `gorm:"foreignKey:PageOwnerId;references:Id"`
+	Date        time.Time `gorm:"autoCreateTime"`
 }
 
 // @Description Ошибка

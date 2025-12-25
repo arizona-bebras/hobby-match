@@ -14,8 +14,16 @@ type RegisterData struct {
 // @Description Данные анкеты (все поля database.User + tg username)
 type PageData struct {
 	database.User
-	Username   string  `json:"username"`
-	Similarity float32 `json:"similarity"`
+	SimilarityData
+	Interests []InterestSimilarity `json:"interests"`
+	Username  string               `json:"username"`
+}
+
+type SimilarityData struct {
+	Similarity       float32 `json:"similarity"`
+	InfoScore        float32 `json:"info_score"`
+	InterestsScore   float32 `json:"interests_score"`
+	PersonalityScore float32 `json:"personality_score"`
 }
 
 type NamespaceMember struct {
@@ -71,7 +79,7 @@ type TgEnterNamespaceData struct {
 	NamespaceId string `json:"namespace_id"`
 }
 
-type CreateNamespaceDara struct {
+type CreateNamespaceData struct {
 	Title       string `json:"title"`
 	Picture     []byte `json:"picture"`
 	Description string `json:"description"`

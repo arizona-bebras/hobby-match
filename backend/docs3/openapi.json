@@ -265,7 +265,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "string"
+                "$ref": "#/components/schemas/database.User"
               }
             }
           },
@@ -823,7 +823,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/handlers.PageData"
+                    "type": "string"
                   }
                 }
               }
@@ -1060,6 +1060,72 @@
         }
       }
     },
+    "/api/tg/namespace/add": {
+      "post": {
+        "summary": "Записать пользоватея в неймспейс",
+        "requestBody": {
+          "description": "данные для записи пользователя",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/handlers.TgEnterNamespaceData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "data"
+      }
+    },
+    "/api/tg/namespace/create": {
+      "post": {
+        "summary": "Записать пользоватея в неймспейс",
+        "requestBody": {
+          "description": "данные для записи пользователя",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/handlers.TgEnterNamespaceData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "data"
+      }
+    },
     "/api/vote": {
       "post": {
         "summary": "Проголосовать в опросе",
@@ -1115,6 +1181,18 @@
         },
         "description": "Ошибка"
       },
+      "database.Interest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          }
+        },
+        "description": "Интерес"
+      },
       "database.Namespace": {
         "type": "object",
         "properties": {
@@ -1151,7 +1229,7 @@
           "interests": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/database.Interest"
             }
           },
           "location": {
@@ -1229,19 +1307,8 @@
           "completions": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/handlers.Autocompletion"
+              "$ref": "#/components/schemas/handlers.InterestSimilarity"
             }
-          }
-        }
-      },
-      "handlers.Autocompletion": {
-        "type": "object",
-        "properties": {
-          "similarity": {
-            "type": "number"
-          },
-          "tag": {
-            "type": "string"
           }
         }
       },
@@ -1265,6 +1332,20 @@
           }
         },
         "description": "Игры из steam профиля пользователя"
+      },
+      "handlers.InterestSimilarity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "similarity": {
+            "type": "number"
+          },
+          "tag": {
+            "type": "string"
+          }
+        }
       },
       "handlers.JWTTokens": {
         "type": "object",
@@ -1322,11 +1403,17 @@
           "hide": {
             "type": "boolean"
           },
+          "info_score": {
+            "type": "number"
+          },
           "interests": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/handlers.InterestSimilarity"
             }
+          },
+          "interests_score": {
+            "type": "number"
           },
           "location": {
             "type": "string"
@@ -1334,11 +1421,17 @@
           "miniapp_name": {
             "type": "string"
           },
+          "personality_score": {
+            "type": "number"
+          },
           "personality_test": {
             "type": "array",
             "items": {
               "type": "number"
             }
+          },
+          "similarity": {
+            "type": "number"
           },
           "tg_user": {
             "type": "string"
@@ -1381,6 +1474,17 @@
           },
           "playtime_forever": {
             "type": "integer"
+          }
+        }
+      },
+      "handlers.TgEnterNamespaceData": {
+        "type": "object",
+        "properties": {
+          "namespace_id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
           }
         }
       },

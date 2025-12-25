@@ -638,7 +638,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/handlers.PageData"
+                                "type": "string"
                             }
                         }
                     },
@@ -1016,6 +1016,12 @@ const docTemplate = `{
                 "miniapp_name": {
                     "type": "string"
                 },
+                "personality_test": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
                 "tg_user": {
                     "type": "string"
                 },
@@ -1078,22 +1084,8 @@ const docTemplate = `{
                 "completions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handlers.Autocompletion"
+                        "$ref": "#/definitions/handlers.InterestSimilarity"
                     }
-                }
-            }
-        },
-        "handlers.Autocompletion": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "similarity": {
-                    "type": "number"
-                },
-                "tag": {
-                    "type": "string"
                 }
             }
         },
@@ -1115,6 +1107,20 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/handlers.SteamGame"
                     }
+                }
+            }
+        },
+        "handlers.InterestSimilarity": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "similarity": {
+                    "type": "number"
+                },
+                "tag": {
+                    "type": "string"
                 }
             }
         },
@@ -1175,17 +1181,32 @@ const docTemplate = `{
                 "hide": {
                     "type": "boolean"
                 },
+                "info_score": {
+                    "type": "number"
+                },
                 "interests": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/database.Interest"
+                        "$ref": "#/definitions/handlers.InterestSimilarity"
                     }
+                },
+                "interests_score": {
+                    "type": "number"
                 },
                 "location": {
                     "type": "string"
                 },
                 "miniapp_name": {
                     "type": "string"
+                },
+                "personality_score": {
+                    "type": "number"
+                },
+                "personality_test": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
                 },
                 "similarity": {
                     "type": "number"

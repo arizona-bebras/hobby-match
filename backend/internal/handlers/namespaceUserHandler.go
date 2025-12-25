@@ -1,13 +1,11 @@
 package handlers
 
 import (
-	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
-	"os"
 	"shumi/internal/database"
 	"strings"
 	"time"
@@ -80,9 +78,9 @@ func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request
 	}
 
 	err = h.DB.Create(&database.UserNamespace{
-		NamespaceId: namespace, 
-		UserId: tgId, 
-		Date: time.Now().Format(time.RFC3339),
+		NamespaceId: namespace,
+		UserId:      tgId,
+		Date:        time.Now().Format(time.RFC3339),
 	}).Error
 	if err != nil {
 		log.Printf("namespace handler: failed to enter namespace, %v", err)
@@ -111,9 +109,9 @@ func (h *NamespaceHandler) LeaveNamespace(w http.ResponseWriter, r *http.Request
 
 	// type UserNamespace struct{}
 	err := h.DB.Delete(&database.UserNamespace{
-		NamespaceId: namespace, 
-		UserId: tgId, 
-		Date: time.Now().Format(time.RFC3339),
+		NamespaceId: namespace,
+		UserId:      tgId,
+		Date:        time.Now().Format(time.RFC3339),
 	}).Error
 	if err != nil {
 		log.Println("namespace handler: failed to leave namespace")
@@ -129,213 +127,104 @@ func (h *NamespaceHandler) LeaveNamespace(w http.ResponseWriter, r *http.Request
 	}
 }
 
-func getUserById(tx *gorm.DB, id string) (PageData, error) {
-	var user PageData
-	result := tx.Table("users").
-		Select(
-			"users.id",
-			"users.name",
-			"users.location",
-			"users.gender",
-			"users.birth_date",
-			"users.interests",
-			"users.photo",
-			"users.info",
-			"users.hide",
-			"tg_users.username",
-		).
-		Joins("JOIN tg_users ON users.id = tg_users.id").
-		First(&user, "users.id = ?", id)
-	if result.Error != nil {
-		return user, fmt.Errorf("failed to get user: %s", result.Error.Error())
-	}
-
-	var widgets []database.Widget
-	result = tx.Table("widgets").Find(&widgets, "widgets.user = ?", id)
-	if result.Error != nil {
-		return user, fmt.Errorf("failed to get widgets: %s", result.Error.Error())
-	}
-	user.Widgets = widgets
-
-	return user, nil
-}
-
 // GetFeed
 // @Summary Получить ленту из анкет пользователей неймспейса
 // @Produce json
 // @Param namespace_id path string true "id неймспейса"
-// @Success 200 {array} PageData
+// @Success 200 {array} string
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/namespace/{namespace_id}/feed [get]
 func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
-	tgId := r.Context().Value(database.AuthContextKey).(string)
-
+	selfId := r.Context().Value(database.AuthContextKey).(string)
 	namespace := r.PathValue("namespace_id")
 
-	var viewsResp []UserView
-	q := `
-      WITH user_view_dates AS (
-            SELECT
-                u.id AS user_id,
-                MAX(v.date) AS last_viewed
-            FROM users u
-                LEFT JOIN views v
-                    ON v.page_owner_id = u.id AND v.viewer_id = $1
-				INNER JOIN user_namespace un
-					ON un.user_id = u.id AND un.namespace_id = $2
-            WHERE u.id != $1
-              AND u.name != ''
-              AND u.interests IS NOT NULL
-            GROUP BY u.id
-        ),
-        total_users AS (
-            SELECT COUNT(*) AS total FROM users WHERE id != $1
-        ) 
-		SELECT * FROM user_view_dates
-		WHERE last_viewed IS NULL;
-  `
-	err := h.DB.Raw(q, tgId, namespace).Scan(&viewsResp).Error
-	if err != nil {
-		log.Printf("namespace handler: failed to get views %v", err)
-		http.Error(
-			w,
-			database.JSONErr(
-				http.StatusInternalServerError,
-				fmt.Sprintf("namespace handler: failed to get views %v", err),
-			),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-
 	var views []string
-
-	for _, view := range viewsResp {
-		views = append(views, view.UserID)
-	}
-
-	workerRequestBody := WorkerRequest{
-		Id:   tgId,
-		From: views,
-	}
-
-	workerRequestJSON, err := json.Marshal(workerRequestBody)
+	err := h.DB.Raw(`
+		WITH user_vectors AS (
+		  SELECT u.id, info_embedding, personality_test, AVG(i.embedding) as avg_interest_embedding FROM users AS u
+		  LEFT JOIN user_interests ui ON u.id = ui.user_id
+		  LEFT JOIN interests i ON i.id = ui.interest_id
+		  LEFT JOIN user_namespace un ON u.id = un.user_id
+		  WHERE un.namespace_id = @namespace
+		  GROUP BY u.id
+		), self_user AS (
+		  SELECT * FROM user_vectors WHERE id = @self
+		), scores AS (
+		  SELECT id,(1 - (info_embedding <=> (SELECT info_embedding FROM self_user))) AS info_score,
+			(1 - (avg_interest_embedding <=> (SELECT avg_interest_embedding FROM self_user))) AS interests_score,
+			(1 - ((personality_test <-> (SELECT personality_test FROM self_user)) / SQRT(500))) AS personality_score
+		  FROM user_vectors WHERE id != @self
+		), ranking AS (
+		  SELECT id, info_score, interests_score, personality_score,
+			(0.2 * info_score + 0.5 * interests_score + 0.4 * personality_score) AS similarity 
+		  FROM scores
+		  ORDER BY similarity DESC
+		), total_views AS (
+		  SELECT id AS page_owner_id, MAX(v.date) as date FROM users 
+		  LEFT JOIN views v ON v.page_owner_id = users.id AND v.viewer_id = @self
+		  GROUP BY users.id
+		), ranked_recommendations AS (
+			SELECT
+				u.id,
+				s.similarity,
+				v.date,
+				CASE WHEN v.date IS NULL THEN 1 ELSE 2 END AS priority
+			FROM users u
+			JOIN ranking s ON s.id = u.id
+			LEFT JOIN total_views v ON v.page_owner_id = u.id
+			WHERE u.id != @self
+		)
+		SELECT id FROM ranked_recommendations
+		ORDER BY
+			priority ASC,
+			similarity DESC,
+			CASE WHEN priority = 1 THEN id END DESC,
+			CASE WHEN priority = 2 THEN date END ASC
+		LIMIT 3;
+  	`, sql.Named("self", selfId), sql.Named("namespace", namespace)).Scan(&views).Error
 	if err != nil {
-		log.Printf("namespace handler: failed to get views %v", err)
+		log.Printf("namespace handler: failed to get recommendations %v", err)
 		http.Error(
 			w,
 			database.JSONErr(
 				http.StatusInternalServerError,
-				fmt.Sprintf("namespace handler: failed to get views %v", err),
+				fmt.Sprintf("namespace handler: failed to get recommendations %v", err),
 			),
 			http.StatusInternalServerError,
 		)
 		return
 	}
 
-	log.Println(string(workerRequestJSON))
-
-	request, err := http.NewRequest("POST", fmt.Sprintf("%s/feed/query", os.Getenv("WORKER_ENDPOINT")), bytes.NewReader(workerRequestJSON))
-	if err != nil {
-		log.Printf("worker/feed: failed to create request: %v", err)
-		http.Error(
-			w,
-			database.JSONErr(
-				http.StatusInternalServerError,
-				fmt.Sprintf("worker/feed: failed to create request: %v", err),
-			),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-	request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", os.Getenv("WORKER_SECRET")))
-
-	resp, err := http.DefaultClient.Do(request)
-	if err != nil {
-		log.Printf("worker/feed: failed to process request: %v", err)
-		http.Error(
-			w,
-			database.JSONErr(
-				http.StatusInternalServerError,
-				fmt.Sprintf("worker/feed: failed to create request: %v", err),
-			),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Printf("worker/feed: failed to read response: %v", err)
-		http.Error(
-			w,
-			database.JSONErr(
-				http.StatusInternalServerError,
-				fmt.Sprintf("worker/feed: failed to read response: %v", err),
-			),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-
-	var respJSON map[string]interface{}
-	err = json.Unmarshal(body, &respJSON)
-
-	log.Println(respJSON)
-	if err != nil {
-		log.Printf("worker/feed: failed to read response: %v", err)
-		http.Error(
-			w,
-			database.JSONErr(
-				http.StatusInternalServerError,
-				fmt.Sprintf("worker/feed: failed to read response: %v", err),
-			),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-
-	matches := respJSON["matches"].([]interface{})
-
-	pages := []PageData{}
-	for _, match := range matches {
-		pageId, ok := match.(map[string]interface{})["id"].(string)
-		if !ok {
-			log.Printf("worker/feed: failed to get user page: %v", err)
-			http.Error(
-				w,
-				database.JSONErr(
-					http.StatusInternalServerError,
-					fmt.Sprintf("worker/feed: failed to get user page: %v", err),
-				),
-				http.StatusInternalServerError,
-			)
-			return
+	viewRecords := make([]database.View, len(views))
+	for i, view := range views {
+		viewRecords[i] = database.View{
+			ViewerId:    selfId,
+			PageOwnerId: view,
 		}
-		page, err := getUserById(h.DB, pageId)
-		if err != nil {
-			log.Printf("namespace handler: failed to get user page: %v", err)
-			http.Error(
-				w,
-				database.JSONErr(
-					http.StatusInternalServerError,
-					fmt.Sprintf("namespace handler: failed to get user page: %v", err),
-				),
-				http.StatusInternalServerError,
-			)
-			return
-		}
-		pages = append(pages, page)
 	}
 
-	pagesJSON, err := json.Marshal(pages)
+	err = h.DB.Create(&viewRecords).Error
 	if err != nil {
-		log.Printf("namespace handler: failed to serialize user: %s", err.Error())
+		log.Printf("namespace handler: failed to create views: %s", err.Error())
 		http.Error(
 			w,
 			database.JSONErr(
 				http.StatusInternalServerError,
-				fmt.Sprintf("namespace handler: failed to serialize user: %s", err.Error()),
+				fmt.Sprintf("namespace handler: failed to create views: %s", err.Error()),
+			),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	pagesJSON, err := json.Marshal(views)
+	if err != nil {
+		log.Printf("namespace handler: failed to serialize recommendations: %s", err.Error())
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusInternalServerError,
+				fmt.Sprintf("namespace handler: failed to serialize recommendations: %s", err.Error()),
 			),
 			http.StatusInternalServerError,
 		)

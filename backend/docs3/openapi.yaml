@@ -6,9 +6,9 @@ info:
   contact: {}
   version: '1.0'
 servers:
-- url: "/"
+  - url: "/"
 security:
-- BearerAuth: []
+  - BearerAuth: []
 paths:
   "/api/auth":
     post:
@@ -39,17 +39,17 @@ paths:
               schema:
                 "$ref": "#/components/schemas/database.Error"
       security:
-      - TmaAuth: []
+        - TmaAuth: []
   "/api/autocomplete":
     get:
       summary: Предложенные интересы
       description: Возвращает список интересов, семантически похожих на запрос 'q'.
       parameters:
-      - name: q
-        in: query
-        description: Строка для поиска и автодополнения интересов
-        schema:
-          type: string
+        - name: q
+          in: query
+          description: Строка для поиска и автодополнения интересов
+          schema:
+            type: string
       responses:
         '200':
           description: Успешное получение списка интересов
@@ -73,24 +73,24 @@ paths:
     get:
       summary: Получить фото, связанное с объектом
       parameters:
-      - name: object
-        in: path
-        description: тип объекта (users, namespaces, widgets)
-        required: true
-        schema:
-          type: string
-      - name: id
-        in: path
-        description: id объекта
-        required: true
-        schema:
-          type: string
-      - name: index
-        in: path
-        description: индекс файла в списке файлов виджета
-        required: true
-        schema:
-          type: string
+        - name: object
+          in: path
+          description: тип объекта (users, namespaces, widgets)
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: id объекта
+          required: true
+          schema:
+            type: string
+        - name: index
+          in: path
+          description: индекс файла в списке файлов виджета
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Файл
@@ -115,12 +115,12 @@ paths:
     get:
       summary: Игры пользователя из его steam профиля для виджета
       parameters:
-      - name: link
-        in: query
-        description: Ссылка на профиль
-        required: true
-        schema:
-          type: string
+        - name: link
+          in: query
+          description: Ссылка на профиль
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Игры из steam профиля пользователя
@@ -163,7 +163,7 @@ paths:
         content:
           application/json:
             schema:
-              type: string
+              "$ref": "#/components/schemas/database.User"
         required: true
       responses:
         '200':
@@ -253,12 +253,12 @@ paths:
     delete:
       summary: Удалить виджет
       parameters:
-      - name: widget_id
-        in: query
-        description: id виджета
-        required: true
-        schema:
-          type: string
+        - name: widget_id
+          in: query
+          description: id виджета
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Виджет удален
@@ -305,8 +305,8 @@ paths:
           multipart/form-data:
             schema:
               required:
-              - order
-              - widget_id
+                - order
+                - widget_id
               type: object
               properties:
                 widget_id:
@@ -331,18 +331,18 @@ paths:
     delete:
       summary: Удалить фото виджета
       parameters:
-      - name: widget_id
-        in: query
-        description: id виджета
-        required: true
-        schema:
-          type: string
-      - name: index
-        in: query
-        description: Позиция фото в списке
-        required: true
-        schema:
-          type: integer
+        - name: widget_id
+          in: query
+          description: id виджета
+          required: true
+          schema:
+            type: string
+        - name: index
+          in: query
+          description: Позиция фото в списке
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: Фото виджета удалено
@@ -361,9 +361,9 @@ paths:
           multipart/form-data:
             schema:
               required:
-              - description
-              - photo
-              - title
+                - description
+                - photo
+                - title
               type: object
               properties:
                 title:
@@ -393,12 +393,12 @@ paths:
     delete:
       summary: Удалить неймспейс
       parameters:
-      - name: id
-        in: query
-        description: Название неймспейса
-        required: true
-        schema:
-          type: string
+        - name: id
+          in: query
+          description: Название неймспейса
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Неймспейс успешно удален
@@ -447,18 +447,18 @@ paths:
     post:
       summary: Зайти в неймспейс
       parameters:
-      - name: namespace_id
-        in: path
-        description: id неймспейса
-        required: true
-        schema:
-          type: string
+        - name: namespace_id
+          in: path
+          description: id неймспейса
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           multipart/form-data:
             schema:
               required:
-              - invite_code
+                - invite_code
               type: object
               properties:
                 invite_code:
@@ -484,12 +484,12 @@ paths:
     delete:
       summary: Выйти из неймспейса
       parameters:
-      - name: namespace
-        in: query
-        description: id неймспейса
-        required: true
-        schema:
-          type: string
+        - name: namespace
+          in: query
+          description: id неймспейса
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Успешный вход
@@ -504,12 +504,12 @@ paths:
     get:
       summary: Получить ленту из анкет пользователей неймспейса
       parameters:
-      - name: namespace_id
-        in: path
-        description: id неймспейса
-        required: true
-        schema:
-          type: string
+        - name: namespace_id
+          in: path
+          description: id неймспейса
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK
@@ -518,7 +518,7 @@ paths:
               schema:
                 type: array
                 items:
-                  "$ref": "#/components/schemas/handlers.PageData"
+                  type: string
         '500':
           description: Внутренняя ошибка сервера
           content:
@@ -529,12 +529,12 @@ paths:
     get:
       summary: Получить пользователей неймспейса
       parameters:
-      - name: namespace_id
-        in: path
-        description: id неймспейса
-        required: true
-        schema:
-          type: string
+        - name: namespace_id
+          in: path
+          description: id неймспейса
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK
@@ -558,12 +558,12 @@ paths:
     get:
       summary: Получить анкету(страницу) одного пользователя
       parameters:
-      - name: page_id
-        in: path
-        description: id анкеты
-        required: true
-        schema:
-          type: string
+        - name: page_id
+          in: path
+          description: id анкеты
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK
@@ -581,12 +581,12 @@ paths:
     get:
       summary: Проверить существование пользователя в бд
       parameters:
-      - name: id
-        in: query
-        description: id пользователя
-        required: true
-        schema:
-          type: string
+        - name: id
+          in: query
+          description: id пользователя
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK
@@ -625,12 +625,12 @@ paths:
     delete:
       summary: Скрыть/показывать анкету другим пользователям
       parameters:
-      - name: id
-        in: query
-        description: id пользователя
-        required: true
-        schema:
-          type: string
+        - name: id
+          in: query
+          description: id пользователя
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK
@@ -644,12 +644,12 @@ paths:
     patch:
       summary: Скрыть/показывать анкету другим пользователям
       parameters:
-      - name: id
-        in: query
-        description: id пользователя
-        required: true
-        schema:
-          type: string
+        - name: id
+          in: query
+          description: id пользователя
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK
@@ -660,6 +660,48 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/database.Error"
+  "/api/tg/namespace/add":
+    post:
+      summary: Записать пользоватея в неймспейс
+      requestBody:
+        description: данные для записи пользователя
+        content:
+          "*/*":
+            schema:
+              "$ref": "#/components/schemas/handlers.TgEnterNamespaceData"
+        required: true
+      responses:
+        '200':
+          description: OK
+          content: {}
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+      x-codegen-request-body-name: data
+  "/api/tg/namespace/create":
+    post:
+      summary: Записать пользоватея в неймспейс
+      requestBody:
+        description: данные для записи пользователя
+        content:
+          "*/*":
+            schema:
+              "$ref": "#/components/schemas/handlers.TgEnterNamespaceData"
+        required: true
+      responses:
+        '200':
+          description: OK
+          content: {}
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/database.Error"
+      x-codegen-request-body-name: data
   "/api/vote":
     post:
       summary: Проголосовать в опросе
@@ -695,6 +737,14 @@ components:
         status_code:
           type: integer
       description: Ошибка
+    database.Interest:
+      type: object
+      properties:
+        id:
+          type: string
+        tag:
+          type: string
+      description: Интерес
     database.Namespace:
       type: object
       properties:
@@ -721,7 +771,7 @@ components:
         interests:
           type: array
           items:
-            type: string
+            "$ref": "#/components/schemas/database.Interest"
         location:
           type: string
         miniapp_name:
@@ -773,14 +823,7 @@ components:
         completions:
           type: array
           items:
-            "$ref": "#/components/schemas/handlers.Autocompletion"
-    handlers.Autocompletion:
-      type: object
-      properties:
-        similarity:
-          type: number
-        tag:
-          type: string
+            "$ref": "#/components/schemas/handlers.InterestSimilarity"
     handlers.CreatedNamespace:
       type: object
       properties:
@@ -795,6 +838,15 @@ components:
           items:
             "$ref": "#/components/schemas/handlers.SteamGame"
       description: Игры из steam профиля пользователя
+    handlers.InterestSimilarity:
+      type: object
+      properties:
+        id:
+          type: string
+        similarity:
+          type: number
+        tag:
+          type: string
     handlers.JWTTokens:
       type: object
       properties:
@@ -833,18 +885,26 @@ components:
           type: string
         hide:
           type: boolean
+        info_score:
+          type: number
         interests:
           type: array
           items:
-            type: string
+            "$ref": "#/components/schemas/handlers.InterestSimilarity"
+        interests_score:
+          type: number
         location:
           type: string
         miniapp_name:
           type: string
+        personality_score:
+          type: number
         personality_test:
           type: array
           items:
             type: number
+        similarity:
+          type: number
         tg_user:
           type: string
         user_info:
@@ -873,6 +933,13 @@ components:
           type: string
         playtime_forever:
           type: integer
+    handlers.TgEnterNamespaceData:
+      type: object
+      properties:
+        namespace_id:
+          type: string
+        user_id:
+          type: string
     handlers.UserNamespaces:
       type: object
       properties:
