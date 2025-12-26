@@ -674,6 +674,10 @@
               "schema": {
                 "type": "object",
                 "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "id неймспейса"
+                  },
                   "title": {
                     "type": "string",
                     "description": "Название неймспейса"

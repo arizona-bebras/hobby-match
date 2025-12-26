@@ -146,6 +146,7 @@ func (h *NamespaceAdminHandler) CreateNamespace(w http.ResponseWriter, r *http.R
 // UpdateNamespace
 // @Summary Обновить информацию о неймспейсе
 // @Accept multipart/form-data
+// @Param id formData string false "id неймспейса"
 // @Param title formData string false "Название неймспейса"
 // @Param photo formData file false "Картинка неймспейса"
 // @Param description formData string false "Описание неймспейса"
