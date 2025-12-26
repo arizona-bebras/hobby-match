@@ -31,7 +31,7 @@ type User struct {
 	PersonalityTest pgvector.Vector `json:"personality_test" gorm:"type:vector(5);default:null"`
 	Photo           []byte          `json:"-" gorm:"type:bytea;column:photo"`
 	Info            string          `json:"user_info" gorm:"column:info"`
-	InfoEmbedding   pgvector.Vector `json:"-" gorm:"type:vector(2048)"`
+	InfoEmbedding   pgvector.Vector `json:"-" gorm:"type:vector(2048);default:null"`
 	Hide            bool            `json:"hide" gorm:"column:hide"`
 	Widgets         []Widget        `json:"widgets" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	TgUser          TgUser          `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
