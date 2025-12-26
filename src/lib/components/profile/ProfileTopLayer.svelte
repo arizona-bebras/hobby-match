@@ -3,6 +3,7 @@
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
   import Pencil from '@lucide/svelte/icons/pencil';
   import { Plus } from '@lucide/svelte';
+  import { userData } from '$lib/storage/userData.svelte';
   let {
     data,
     shadow = true,
@@ -19,7 +20,7 @@
 >
   <!--    src={pb.files.getURL(pb.authStore.record ?? {}, data.user_photo)}-->
   <img
-    src={data.user_photo}
+    src={userData.current.image}
     class="w-14 h-14 rounded-full object-cover"
     alt="UserPhoto"
   />

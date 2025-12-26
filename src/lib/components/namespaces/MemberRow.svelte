@@ -3,6 +3,7 @@
   import UserInfoBtn from '$lib/components/namespaces/UserInfoBtn.svelte';
   import { ShieldUser } from '@lucide/svelte';
   import { IsInViewport } from 'runed';
+  import { db } from '$lib';
 
   let targetNode = $state<HTMLElement>();
   const inViewport = new IsInViewport(() => targetNode, {
@@ -26,9 +27,9 @@
 >
   <div class="flex gap-2.5 items-center">
     <img
-      src={`http://localhost:8090/api/files/users/${user.tg_user}/undefined
+      src={`${db}/api/files/users/${user.tg_user}/undefined
 `}
-      class="size-8 object-cover"
+      class="size-8 object-cover rounded-[8px]"
       alt="group image"
     />
     <div class="flex flex-col">

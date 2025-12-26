@@ -2,6 +2,7 @@
   import * as Sheet from '$lib/components/ui/sheet/index.js';
   import { ArrowRight, AlarmClock, CircleX, type User } from '@lucide/svelte';
   import { goto } from '$app/navigation';
+  import { db } from '$lib';
 
   let testData = {
     img: 'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',
@@ -21,7 +22,7 @@
     <div class="flex flex-col justify-center items-center mb-10 mt-8">
       <img
         alt="Картинка неймспейса"
-        src={`http://localhost:8090/api/files/users/${user.tg_user}/undefined
+        src={`${db}/api/files/users/${user.tg_user}/undefined
 `}
         class="size-24 rounded-full object-cover"
       />

@@ -4,1332 +4,1442 @@
  */
 
 export interface paths {
-  '/api/auth': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/auth": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Получить токен авторизации */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Токен выдан */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.JWTTokens"];
+                    };
+                };
+                /** @description Не валидный токен авторизации */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+                /** @description Пользователь не записан в базу данных */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Получить токен авторизации */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Токен выдан */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['handlers.JWTTokens'];
-          };
+    "/api/autocomplete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        /** @description Не валидный токен авторизации */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
+        /**
+         * Предложенные интересы
+         * @description Возвращает список интересов, семантически похожих на запрос 'q'.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Строка для поиска и автодополнения интересов */
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Успешное получение списка интересов */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.AutocompleteResponse"];
+                    };
+                };
+                /** @description Ошибка авторизации */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
         };
-        /** @description Пользователь не записан в базу данных */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/autocomplete': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/files/{object}/{id}/{index}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить фото, связанное с объектом */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description тип объекта (users, namespaces, widgets) */
+                    object: string;
+                    /** @description id объекта */
+                    id: string;
+                    /** @description индекс файла в списке файлов виджета */
+                    index: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Файл */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/octet-stream": string;
+                    };
+                };
+                /** @description Для этого пользователя нет доступа к файлу */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/octet-stream": components["schemas"]["database.Error"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/octet-stream": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Предложенные интересы
-     * @description Возвращает список интересов, семантически похожих на запрос 'q'.
-     */
-    get: {
-      parameters: {
-        query?: {
-          /** @description Строка для поиска и автодополнения интересов */
-          q?: string;
+    "/api/games": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Успешное получение списка интересов */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['handlers.AutocompleteResponse'];
-          };
+        /** Игры пользователя из его steam профиля для виджета */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Ссылка на профиль */
+                    link: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Игры из steam профиля пользователя */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Games"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
         };
-        /** @description Ошибка авторизации */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/files/{object}/{id}/{index}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Профиль пользователя */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.User"];
+                    };
+                };
+                /** @description Пользователь не авторизован */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Обновить информацию профиля пользователя */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description новые данные пользователя в JSON */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["database.User"];
+                };
+            };
+            responses: {
+                /** @description Пользователь успешно обновлен */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Пользователь не авторизован */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
     };
-    /** Получить фото, связанное с объектом */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description тип объекта (users, namespaces, widgets) */
-          object: string;
-          /** @description id объекта */
-          id: string;
-          /** @description индекс файла в списке файлов виджета */
-          index: string;
+    "/api/me/namespaces": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Файл */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/octet-stream': string;
-          };
+        /** Неймспейсы пользователя */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.UserNamespaces"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
         };
-        /** @description Для этого пользователя нет доступа к файлу */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/octet-stream': components['schemas']['database.Error'];
-          };
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/octet-stream': components['schemas']['database.Error'];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/games': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/me/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Обновить фото профиля пользователя */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Фото пользователя */
+            requestBody?: {
+                content: {
+                    "application/json": number[];
+                };
+            };
+            responses: {
+                /** @description Пользователь успешно обновлен */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
     };
-    /** Игры пользователя из его steam профиля для виджета */
-    get: {
-      parameters: {
-        query: {
-          /** @description Ссылка на профиль */
-          link: string;
+    "/api/me/widgets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Игры из steam профиля пользователя */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['handlers.Games'];
-          };
+        get?: never;
+        put?: never;
+        /** Создать виджет */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        /** @description Данные виджета */
+                        data?: string;
+                        /** @description Файлы виджета */
+                        files?: number[][];
+                    };
+                };
+            };
+            responses: {
+                /** @description Виджет успешно создан */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
         };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
+        /** Удалить виджет */
+        delete: {
+            parameters: {
+                query: {
+                    /** @description id виджета */
+                    widget_id: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Виджет удален */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
         };
-      };
+        options?: never;
+        head?: never;
+        /** Обновить виджет */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        /** @description Данные виджета (JSON) */
+                        data?: string;
+                        /** @description Файлы виджета */
+                        files?: number[][];
+                    };
+                };
+            };
+            responses: {
+                /** @description Виджет успешно обновлен */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/me': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/me/widgets/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Обновить очередь виджета */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /** @description id виджета */
+                        widget_id: string;
+                        /**
+                         * Format: int32
+                         * @description Изменение позиции виджета виджета
+                         */
+                        order: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Очередь успешно обновлена */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
     };
-    /** Профиль пользователя */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.User'];
-          };
+    "/api/me/widgets/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        /** @description Пользователь не авторизован */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Удалить фото виджета */
+        delete: {
+            parameters: {
+                query: {
+                    /** @description id виджета */
+                    widget_id: string;
+                    /** @description Позиция фото в списке */
+                    index: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Фото виджета удалено */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
         };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
-        };
-      };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /** Обновить информацию профиля пользователя */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      /** @description новые данные пользователя в JSON */
-      requestBody: {
-        content: {
-          'application/json': string;
+    "/api/namespace": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description Пользователь успешно обновлен */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        get?: never;
+        put?: never;
+        /** Создать неймспейс */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /** @description Название неймспейса */
+                        title: string;
+                        /**
+                         * Format: binary
+                         * @description Картинка неймспейса
+                         */
+                        photo: string;
+                        /** @description Описание неймспейса */
+                        description: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Неймспейс успешно создан */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["handlers.CreatedNamespace"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
         };
-        /** @description Пользователь не авторизован */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
+        /** Удалить неймспейс */
+        delete: {
+            parameters: {
+                query: {
+                    /** @description Название неймспейса */
+                    id: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Неймспейс успешно удален */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Этот пользователь не админ неймспейса */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
         };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
+        options?: never;
+        head?: never;
+        /** Обновить информацию о неймспейсе */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        /** @description Название неймспейса */
+                        title?: string;
+                        /**
+                         * Format: binary
+                         * @description Картинка неймспейса
+                         */
+                        photo?: string;
+                        /** @description Описание неймспейса */
+                        description?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Неймспейс успешно обновлен */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
         };
-      };
+        trace?: never;
     };
-    trace?: never;
-  };
-  '/api/me/namespaces': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/namespace/{namespace_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Зайти в неймспейс */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description id неймспейса */
+                    namespace_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /** @description инвайт код для входа в неймспейс */
+                        invite_code: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Успешный вход */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Неверный код входа */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        /** Выйти из неймспейса */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description id неймспейса */
+                    namespace_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Успешный вход */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Неймспейсы пользователя */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['handlers.UserNamespaces'];
-          };
+    "/api/namespace/{namespace_id}/feed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
+        /** Получить ленту из анкет пользователей неймспейса */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description id неймспейса */
+                    namespace_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": string[];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
         };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/me/photo': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/namespace/{namespace_id}/pages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить пользователей неймспейса */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description id неймспейса */
+                    namespace_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.NamespaceMembers"];
+                    };
+                };
+                /** @description Пользователь не участник этого неймспейса */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /** Обновить фото профиля пользователя */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      /** @description Фото пользователя */
-      requestBody?: {
-        content: {
-          'application/json': number[];
+    "/api/pages/{page_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description Пользователь успешно обновлен */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        /** Получить анкету(страницу) одного пользователя */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description id анкеты */
+                    page_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.PageData"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
         };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    trace?: never;
-  };
-  '/api/me/widgets': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/tg": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Проверить существование пользователя в бд */
+        get: {
+            parameters: {
+                query: {
+                    /** @description id пользователя */
+                    id: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.User"][];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Проверить существование пользователя в бд */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description tg firstname пользователя */
+            requestBody: {
+                content: {
+                    "*/*": string;
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        /** Скрыть/показывать анкету другим пользователям */
+        delete: {
+            parameters: {
+                query: {
+                    /** @description id пользователя */
+                    id: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Скрыть/показывать анкету другим пользователям */
+        patch: {
+            parameters: {
+                query: {
+                    /** @description id пользователя */
+                    id: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Создать виджет */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          'multipart/form-data': {
-            /** @description Данные виджета */
-            data?: string;
-            /** @description Файлы виджета */
-            files?: number[][];
-          };
+    "/api/tg/namespace/add": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description Виджет успешно создан */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        get?: never;
+        put?: never;
+        /** Записать пользоватея в неймспейс */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description данные для записи пользователя */
+            requestBody: {
+                content: {
+                    "*/*": components["schemas"]["handlers.TgEnterNamespaceData"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
         };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Удалить виджет */
-    delete: {
-      parameters: {
-        query: {
-          /** @description id виджета */
-          widget_id: string;
+    "/api/tg/namespace/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Виджет удален */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        get?: never;
+        put?: never;
+        /** Записать пользоватея в неймспейс */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description данные для записи пользователя */
+            requestBody: {
+                content: {
+                    "*/*": components["schemas"]["handlers.TgEnterNamespaceData"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["database.Error"];
+                    };
+                };
+            };
         };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    options?: never;
-    head?: never;
-    /** Обновить виджет */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          'multipart/form-data': {
-            /** @description Данные виджета (JSON) */
-            data?: string;
-            /** @description Файлы виджета */
-            files?: number[][];
-          };
+    "/api/vote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description Виджет успешно обновлен */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        get?: never;
+        put?: never;
+        /** Проголосовать в опросе */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        /** @description id виджета опроса */
+                        survey?: string;
+                        /** @description вариант опроса */
+                        option?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Голос засчитан */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
         };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    trace?: never;
-  };
-  '/api/me/widgets/order': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /** Обновить очередь виджета */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'multipart/form-data': {
-            /** @description id виджета */
-            widget_id: string;
-            /**
-             * Format: int32
-             * @description Изменение позиции виджета виджета
-             */
-            order: number;
-          };
-        };
-      };
-      responses: {
-        /** @description Очередь успешно обновлена */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
-        };
-      };
-    };
-    trace?: never;
-  };
-  '/api/me/widgets/photo': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Удалить фото виджета */
-    delete: {
-      parameters: {
-        query: {
-          /** @description id виджета */
-          widget_id: string;
-          /** @description Позиция фото в списке */
-          index: number;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Фото виджета удалено */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/namespace': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Создать неймспейс */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'multipart/form-data': {
-            /** @description Название неймспейса */
-            title: string;
-            /**
-             * Format: binary
-             * @description Картинка неймспейса
-             */
-            photo: string;
-            /** @description Описание неймспейса */
-            description: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Неймспейс успешно создан */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['handlers.CreatedNamespace'];
-          };
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
-        };
-      };
-    };
-    /** Удалить неймспейс */
-    delete: {
-      parameters: {
-        query: {
-          /** @description Название неймспейса */
-          id: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Неймспейс успешно удален */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Этот пользователь не админ неймспейса */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Обновить информацию о неймспейсе */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          'multipart/form-data': {
-            /** @description Название неймспейса */
-            title?: string;
-            /**
-             * Format: binary
-             * @description Картинка неймспейса
-             */
-            photo?: string;
-            /** @description Описание неймспейса */
-            description?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Неймспейс успешно обновлен */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
-        };
-      };
-    };
-    trace?: never;
-  };
-  '/api/namespace/{namespace_id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Зайти в неймспейс */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description id неймспейса */
-          namespace_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'multipart/form-data': {
-            /** @description инвайт код для входа в неймспейс */
-            invite_code: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Успешный вход */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Неверный код входа */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
-        };
-      };
-    };
-    /** Выйти из неймспейса */
-    delete: {
-      parameters: {
-        query: {
-          /** @description id неймспейса */
-          namespace: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Успешный вход */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/namespace/{namespace_id}/feed': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Получить ленту из анкет пользователей неймспейса */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description id неймспейса */
-          namespace_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['handlers.PageData'][];
-          };
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/namespace/{namespace_id}/pages': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Получить пользователей неймспейса */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description id неймспейса */
-          namespace_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['handlers.NamespaceMembers'];
-          };
-        };
-        /** @description Пользователь не участник этого неймспейса */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/pages/{page_id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Получить анкету(страницу) одного пользователя */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description id анкеты */
-          page_id: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['handlers.PageData'];
-          };
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/tg': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Проверить существование пользователя в бд */
-    get: {
-      parameters: {
-        query: {
-          /** @description id пользователя */
-          id: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.User'][];
-          };
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
-        };
-      };
-    };
-    put?: never;
-    /** Проверить существование пользователя в бд */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      /** @description tg firstname пользователя */
-      requestBody: {
-        content: {
-          '*/*': string;
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
-        };
-      };
-    };
-    /** Скрыть/показывать анкету другим пользователям */
-    delete: {
-      parameters: {
-        query: {
-          /** @description id пользователя */
-          id: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Скрыть/показывать анкету другим пользователям */
-    patch: {
-      parameters: {
-        query: {
-          /** @description id пользователя */
-          id: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['database.Error'];
-          };
-        };
-      };
-    };
-    trace?: never;
-  };
-  '/api/vote': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Проголосовать в опросе */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          'multipart/form-data': {
-            /** @description id виджета опроса */
-            survey?: string;
-            /** @description вариант опроса */
-            option?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Голос засчитан */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Внутренняя ошибка сервера */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            '*/*': components['schemas']['database.Error'];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description Ошибка */
-    'database.Error': {
-      cause?: string;
-      status_code?: number;
+    schemas: {
+        /** @description Ошибка */
+        "database.Error": {
+            cause?: string;
+            status_code?: number;
+        };
+        /** @description Интерес */
+        "database.Interest": {
+            id?: string;
+            tag?: string;
+        };
+        /** @description Неймспейс */
+        "database.Namespace": {
+            admin?: string;
+            description?: string;
+            id?: string;
+            members_count?: number;
+            title?: string;
+        };
+        /** @description Основные данные профиля и связанные виджеты. */
+        "database.User": {
+            birth_date?: string;
+            gender?: string;
+            hide?: boolean;
+            interests?: components["schemas"]["database.Interest"][];
+            location?: string;
+            miniapp_name?: string;
+            personality_test?: number[];
+            tg_user?: string;
+            user_info?: string;
+            widgets?: components["schemas"]["database.Widget"][];
+        };
+        /** @description Голос в опросе */
+        "database.Vote": {
+            option?: number;
+            survey?: string;
+            user?: string;
+        };
+        /** @description Виджет */
+        "database.Widget": {
+            additionalData?: string;
+            data?: string;
+            id?: string;
+            namespace?: string;
+            order?: number;
+            user?: components["schemas"]["database.User"];
+            vote?: components["schemas"]["database.Vote"];
+        };
+        "handlers.AutocompleteResponse": {
+            completions?: components["schemas"]["handlers.InterestSimilarity"][];
+        };
+        /** @description Ответ на успешное создание неймспейса */
+        "handlers.CreatedNamespace": {
+            namespace_id?: string;
+        };
+        /** @description Игры из steam профиля пользователя */
+        "handlers.Games": {
+            games?: components["schemas"]["handlers.SteamGame"][];
+        };
+        "handlers.InterestSimilarity": {
+            id?: string;
+            similarity?: number;
+            tag?: string;
+        };
+        /** @description Токены для авторизации и данные пользователя */
+        "handlers.JWTTokens": {
+            auth_token?: string;
+            refresh_token?: string;
+            user?: components["schemas"]["database.User"];
+        };
+        "handlers.NamespaceMember": {
+            date?: string;
+            miniapp_name?: string;
+            tg_user?: string;
+        };
+        /** @description Данные неймспеса и его участники */
+        "handlers.NamespaceMembers": {
+            namespace?: components["schemas"]["database.Namespace"];
+            users?: components["schemas"]["handlers.NamespaceMember"][];
+        };
+        /** @description Данные анкеты (все поля database.User + tg username) */
+        "handlers.PageData": {
+            birth_date?: string;
+            gender?: string;
+            hide?: boolean;
+            info_score?: number;
+            interests?: components["schemas"]["handlers.InterestSimilarity"][];
+            interests_score?: number;
+            location?: string;
+            miniapp_name?: string;
+            personality_score?: number;
+            personality_test?: number[];
+            similarity?: number;
+            tg_user?: string;
+            user_info?: string;
+            username?: string;
+            widgets?: components["schemas"]["database.Widget"][];
+        };
+        "handlers.SteamGame": {
+            appid?: number;
+            content_descriptorids?: number[];
+            has_community_visible_stats?: boolean;
+            img_icon_url?: string;
+            name?: string;
+            playtime_forever?: number;
+        };
+        "handlers.TgEnterNamespaceData": {
+            namespace_id?: string;
+            user_id?: string;
+        };
+        /** @description Неймспейсы, в который состоит пользователь */
+        "handlers.UserNamespaces": {
+            namespaces?: components["schemas"]["database.Namespace"][];
+        };
     };
-    /** @description Неймспейс */
-    'database.Namespace': {
-      admin?: string;
-      description?: string;
-      id?: string;
-      members_count?: number;
-      title?: string;
-    };
-    /** @description Основные данные профиля и связанные виджеты. */
-    'database.User': {
-      birth_date?: string;
-      gender?: string;
-      hide?: boolean;
-      interests?: string[];
-      location?: string;
-      miniapp_name?: string;
-      personality_test?: number[];
-      tg_user?: string;
-      user_info?: string;
-      widgets?: components['schemas']['database.Widget'][];
-    };
-    /** @description Голос в опросе */
-    'database.Vote': {
-      option?: number;
-      survey?: string;
-      user?: string;
-    };
-    /** @description Виджет */
-    'database.Widget': {
-      additionalData?: string;
-      data?: string;
-      id?: string;
-      namespace?: string;
-      order?: number;
-      user?: components['schemas']['database.User'];
-      vote?: components['schemas']['database.Vote'];
-    };
-    'handlers.AutocompleteResponse': {
-      completions?: components['schemas']['handlers.Autocompletion'][];
-    };
-    'handlers.Autocompletion': {
-      similarity?: number;
-      tag?: string;
-    };
-    /** @description Ответ на успешное создание неймспейса */
-    'handlers.CreatedNamespace': {
-      namespace_id?: string;
-    };
-    /** @description Игры из steam профиля пользователя */
-    'handlers.Games': {
-      games?: components['schemas']['handlers.SteamGame'][];
-    };
-    /** @description Токены для авторизации и данные пользователя */
-    'handlers.JWTTokens': {
-      auth_token?: string;
-      refresh_token?: string;
-      user?: components['schemas']['database.User'];
-    };
-    'handlers.NamespaceMember': {
-      date?: string;
-      miniapp_name?: string;
-      tg_user?: string;
-    };
-    /** @description Данные неймспеса и его участники */
-    'handlers.NamespaceMembers': {
-      namespace?: components['schemas']['database.Namespace'];
-      users?: components['schemas']['handlers.NamespaceMember'][];
-    };
-    /** @description Данные анкеты (все поля database.User + tg username) */
-    'handlers.PageData': {
-      birth_date?: string;
-      gender?: string;
-      hide?: boolean;
-      interests?: string[];
-      location?: string;
-      miniapp_name?: string;
-      personality_test?: number[];
-      tg_user?: string;
-      user_info?: string;
-      username?: string;
-      widgets?: components['schemas']['database.Widget'][];
-    };
-    'handlers.SteamGame': {
-      appid?: number;
-      content_descriptorids?: number[];
-      has_community_visible_stats?: boolean;
-      img_icon_url?: string;
-      name?: string;
-      playtime_forever?: number;
-    };
-    /** @description Неймспейсы, в который состоит пользователь */
-    'handlers.UserNamespaces': {
-      namespaces?: components['schemas']['database.Namespace'][];
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export type operations = Record<string, never>;

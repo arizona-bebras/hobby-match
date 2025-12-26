@@ -7,6 +7,7 @@
   import { onMount } from 'svelte';
   import { getImage } from '$lib/utils';
   import { createQuery } from '@tanstack/svelte-query';
+  import { db } from '$lib';
 
   type namespaces = {
     admin: string;
@@ -30,7 +31,7 @@
       >
         <div class="flex gap-2.5 items-center">
           <img
-            src={`http://localhost:8090/api/files/namespaces/${namespace.id}/undefined
+            src={`${db}/api/files/namespaces/${namespace.id}/undefined
 `}
             class="size-8 object-cover rounded-[8px]"
             alt="group image"

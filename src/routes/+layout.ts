@@ -28,6 +28,7 @@ export const load = async () => {
   const data = await res.json();
   const user = data.response.user;
   userData.current = user;
+  userData.current.image = `${db}/api/files/users/${userData.current?.tg_user}/undefined`;
   window.localStorage.setItem('access_token', data.response.access_token);
   window.localStorage.setItem('refresh_token', data.response.refresh_token);
   accessToken.current = data.response.access_token;
