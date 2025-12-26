@@ -751,6 +751,8 @@ export interface paths {
             requestBody?: {
                 content: {
                     "multipart/form-data": {
+                        /** @description id неймспейса */
+                        id?: string;
                         /** @description Название неймспейса */
                         title?: string;
                         /**

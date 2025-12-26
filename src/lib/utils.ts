@@ -38,3 +38,17 @@ export async function getImage(
     return '';
   }
 }
+
+export function activateTgBtn() {
+  Telegram.WebApp.MainButton.setParams({
+    is_active: true,
+    color: Telegram.WebApp.themeParams.button_color,
+  });
+}
+
+export function disableTgBtn() {
+  Telegram.WebApp.MainButton.setParams({
+    is_active: false,
+    color: Telegram.WebApp.themeParams.hint_color,
+  });
+}

@@ -7,6 +7,7 @@
   import { goto } from '$app/navigation';
   import { createQuery } from '@tanstack/svelte-query';
   import { page } from '$app/state';
+  import EditGroup from '$lib/components/namespaces/EditGroup.svelte';
 
   let testNameSpaceses = {
     img: 'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',
@@ -37,9 +38,8 @@
       is_admin: false,
     },
   ];
-
+  let isEditOpen = $state(false);
   const namespaceId = page.url.pathname.split('/').pop();
-  console.log(namespaceId);
   const namespaceInfo = createQuery(() => ({
     queryKey: ['namespaceInfo'],
     queryFn: async () =>
@@ -51,23 +51,9 @@
         },
       }),
     select: (data) => data.data,
+    gcTime: 0,
+    staleTime: 0,
   }));
-
-  // const b = client.GET('/api/pages/{page_id}', {
-  //   params: {
-  //     path: {
-  //       page_id: '980810881',
-  //     },
-  //   },
-  // });
-  // const e = client.GET('/api/autocomplete', {
-  //   params: {
-  //     query: {
-  //       q: 'Спорт',
-  //     },
-  //   },
-  // });
-  console.log(namespaceInfo.data);
 </script>
 
 {#if namespaceInfo.isSuccess}
@@ -106,18 +92,22 @@
       <p>Смотреть анкеты</p>
       <ChevronRight class="size-5" />
     </button>
-    <div
+    <button
       class="border-text-color/25 border-x-2 border-b-2 rounded-b-xl border-t-2 rounded-b-2 px-4 py-3 w-full flex justify-between mb-4"
+      onclick={() => (isEditOpen = !isEditOpen)}
     >
       <p>Редактировать</p>
-      <button>
-        <PencilLine class="size-5" />
-      </button>
-    </div>
+      <PencilLine class="size-5" />
+    </button>
     <p>Участники</p>
     <NamespaceMembersLst
       users={namespaceInfo.data?.users}
       adminId={namespaceInfo.data?.namespace?.admin}
     />
   </div>
+  <EditGroup
+    bind:open={isEditOpen}
+    namespaceData={namespaceInfo.data?.namespace}
+    onSave={() => namespaceInfo.refetch()}
+  />
 {/if}
