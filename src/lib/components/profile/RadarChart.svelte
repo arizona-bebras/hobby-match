@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { LineChart } from 'layerchart';
+  import { LineChart, Axis, Text } from 'layerchart';
   import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
   import { curveLinearClosed } from 'd3-shape';
   import { scaleBand } from 'd3-scale';
@@ -10,27 +10,27 @@
 
   const chartData = [
     {
-      category: '🥳',
+      category: 'Общение',
       me: userData.current?.personality_test![0],
       anotherUser: 2,
     },
     {
-      category: '🛠️',
+      category: 'Реализация',
       me: userData.current?.personality_test![1],
       anotherUser: 1,
     },
     {
-      category: '🎨',
+      category: 'Структура',
       me: userData.current?.personality_test![2],
       anotherUser: 3,
     },
     {
-      category: '🤝',
+      category: 'Взаимодействие',
       me: userData.current?.personality_test![4],
       anotherUser: 5,
     },
     {
-      category: '🎯',
+      category: 'Концентрация',
       me: userData.current?.personality_test![0],
       anotherUser: 3,
     },
@@ -91,9 +91,6 @@
             stroke: '0',
             motion: 'tween',
           },
-          xAxis: {
-            tickLength: 0,
-          },
           yAxis: {
             format: () => '',
           },
@@ -111,19 +108,29 @@
           },
         }}
       >
+        {#snippet axis({ getAxisProps })}
+          <Axis {...getAxisProps('x')}>
+            {#snippet tickLabel({ props, index })}
+              {@const y = props.y
+                ? typeof props.y === 'number'
+                  ? props.y
+                  : Number.parseInt(props.y)
+                : 0}
+              {@const data = chartData[index]}
+              <Text
+                rotate={index === 1 ? 50 : index === 4 ? -50 : 0}
+                {...props}
+                {y}
+                textAnchor="middle"
+                verticalAlign="start"
+              />
+            {/snippet}
+          </Axis>
+          <Axis {...getAxisProps('y')} />
+        {/snippet}
+
         {#snippet tooltip()}
           <Chart.Tooltip />
-        {/snippet}
-        {#snippet legend({ visibleSeries })}
-          <div
-            class="absolute -bottom-14 flex justify-center gap-x-6 pb-4 flex-wrap w-[300px] left-1/2 transform -translate-x-1/2"
-          >
-            <span>🥳 - Общение</span>
-            <span>🛠️ - Реализация</span>
-            <span>🎨 - Структура</span>
-            <span>🤝 - Взаимодействие</span>
-            <span>🎯 - Концентрация</span>
-          </div>
         {/snippet}
       </LineChart>
     </Chart.Container>
