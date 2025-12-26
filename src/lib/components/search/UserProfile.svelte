@@ -16,6 +16,19 @@
     offeredProfiles: PageData[];
     liked: boolean;
   } = $props();
+  let profile = $derived.by(() => {
+    let pageData: PageData = JSON.parse(JSON.stringify(offeredProfiles[0]!));
+    for (const widget of pageData.widgets) {
+      widget.data = JSON.parse(widget.data!);
+      if (widget.additionalData != '') {
+        widget.additionalData = JSON.parse(widget.additionalData!);
+      }
+    }
+    pageData!.widgets = pageData?.widgets?.sort((a, b) => {
+      return a.order! - b.order!;
+    });
+    return pageData;
+  });
 </script>
 
 {#key currentProfile}
@@ -24,6 +37,6 @@
     bind:this={profileContainer}
     class="min-h-full"
   >
-    <Questionnaire data={offeredProfiles[0]} isNamespaceProfile={true} />
+    <Questionnaire data={profile} isNamespaceProfile={true} />
   </div>
 {/key}

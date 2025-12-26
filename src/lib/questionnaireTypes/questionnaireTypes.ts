@@ -58,4 +58,4 @@ type WidgetType = {
   user: string;
 };
 
-export type PageData = components['schemas']['handlers.PageData'];
+export type PageData = Required<components['schemas']['handlers.PageData']>;
