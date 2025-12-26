@@ -1,6 +1,8 @@
 <script lang="ts">
   import { LoaderCircle } from '@lucide/svelte';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
+  import { db } from '$lib';
+  import { userData } from '$lib/storage/userData.svelte';
 
   function close(node: HTMLDivElement, { duration }: { duration: number }) {
     const startWidth = node.offsetWidth;
@@ -40,7 +42,8 @@
         class="rounded-full p-1 aspect-square object-cover max-w-15 max-h-15 mx-auto"
         style:width="{elementSize - 35}px"
         style:height="{elementSize - 35}px"
-        src={`/api/files/_pb_users_auth_/${offeredProfiles[1]?.id}/${offeredProfiles[1]?.user_photo}?thumb=350x0`}
+        src={`${db}/api/files/users/${userData.current?.tg_user}/undefined
+`}
         alt="userImage"
       />
     {:else}

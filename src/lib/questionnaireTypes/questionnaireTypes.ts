@@ -16,6 +16,7 @@ import type {
   Todo,
   Video,
 } from '$lib/widgetTypes/widgetTypes';
+import type { components } from '$lib/api/types';
 
 // export type PageData = {
 //   user_photo: string;
@@ -57,15 +58,4 @@ type WidgetType = {
   user: string;
 };
 
-export type PageData = {
-  age: number;
-  birth_date: Date;
-  gender: string;
-  id: string;
-  interests: string[];
-  location: string;
-  miniapp_name: string;
-  user_info: string;
-  user_photo: string;
-  widgets: WidgetType[];
-};
+export type PageData = components['schemas']['handlers.PageData'];

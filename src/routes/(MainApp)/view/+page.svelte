@@ -7,10 +7,11 @@
   import TransitionBlock from '$lib/components/search/TransitionBlock.svelte';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes.ts';
   import { goto } from '$app/navigation';
+  import { untrack } from 'svelte';
 
   let namespaceId = page.url.searchParams.get('namespaceId');
   const profileData = createQuery(() => ({
-    queryKey: ['profilesData'],
+    queryKey: ['profileData1'],
     queryFn: async () =>
       await client.GET('/api/namespace/{namespace_id}/feed', {
         params: {
@@ -31,43 +32,9 @@
 
   let liked: boolean = $state(false);
 
-  const authHeader: HeadersInit = new Headers();
-  authHeader.set(
-    'Authorization',
-    `Bearer ${window.localStorage.getItem('access_token')}`,
-  );
-
   let elementSize = $state(0);
   let isProfileEnd = $state(false);
   let touchStartPosition: { x: number; y: number } | null = $state(null);
-
-  async function fillOfferedProfiles() {
-    if (!profileData.data) return;
-    const tempProfiles = [];
-    for (const profileId of profileData.data) {
-      try {
-        console.log('Загрузка ID:', profileId);
-        const response = await client.GET('/api/pages/{page_id}', {
-          params: {
-            path: { page_id: profileId },
-          },
-        });
-        if (response.data) {
-          tempProfiles.push(response.data);
-        }
-      } catch (err) {
-        console.error(`Ошибка при загрузке профиля ${profileId}:`, err);
-      }
-    }
-    offeredProfiles = tempProfiles;
-  }
-  $inspect(offeredProfiles);
-  $effect(() => {
-    if (profileData.isSuccess && offeredProfiles.length < 3) {
-      console.log('Offered profiles have been successfully');
-      fillOfferedProfiles();
-    }
-  });
   $effect(() => {
     if (touchStartPosition === null) {
       if (elementSize >= 108) {
@@ -80,9 +47,13 @@
       elementSize = 0;
     }
   });
+  $effect(() => {
+    if (profileData.isSuccess) {
+      untrack(() => offeredProfiles.push(...profileData.data));
+    }
+  });
   let hapticAvailable = $state(true);
   let hapticDisable = $state(false);
-
   $effect(() => {
     if (
       profileContainer &&
@@ -91,6 +62,13 @@
     ) {
       isProfileEnd = true;
     }
+  });
+  $effect(() => {
+    if (offeredProfiles.length < 2) {
+      profileData.refetch();
+    }
+    console.log(offeredProfiles);
+    currentProfile;
   });
   // $effect(() => {
   //   const timeout = setTimeout(
@@ -171,18 +149,12 @@
       }
     }}
     onscroll={() => {
-      console.log(1, screenContainer, profileContainer);
       if (!screenContainer || !profileContainer) {
         return;
       }
-      console.log(2);
       isProfileEnd =
         screenContainer.scrollTop + screenContainer.offsetHeight >=
         profileContainer.offsetHeight;
-      console.log(
-        screenContainer.scrollTop + screenContainer.offsetHeight,
-        profileContainer.offsetHeight,
-      );
     }}
   >
     {#if offeredProfiles.length <= 0}
