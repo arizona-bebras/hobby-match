@@ -56,9 +56,9 @@ func (h *PagesHandler) GetPage(w http.ResponseWriter, r *http.Request) {
 		  SELECT * FROM user_vectors WHERE id = @other
 		), scores AS (
 		  SELECT 
-			(1 - ((SELECT info_embedding FROM self_user) <=> (SELECT info_embedding FROM other_user))) AS info_score,
-			(1 - ((SELECT avg_interest_embedding FROM self_user) <=> (SELECT avg_interest_embedding FROM other_user))) AS interests_score,
-			(1 - (((SELECT personality_test FROM self_user) <-> (SELECT personality_test FROM other_user)) / SQRT(500))) AS personality_score
+			coalesce(1 - ((SELECT info_embedding FROM self_user) <=> (SELECT info_embedding FROM other_user)), 0) AS info_score,
+			coalesce(1 - ((SELECT avg_interest_embedding FROM self_user) <=> (SELECT avg_interest_embedding FROM other_user)), 0) AS interests_score,
+			coalesce(1 - (((SELECT personality_test FROM self_user) <-> (SELECT personality_test FROM other_user)) / SQRT(500)), 0) AS personality_score
 		)
 		SELECT info_score, interests_score, personality_score,
 			(0.1 * info_score + 0.5 * interests_score + 0.4 * personality_score) AS similarity 

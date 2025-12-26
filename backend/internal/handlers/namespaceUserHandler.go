@@ -132,9 +132,10 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 		), self_user AS (
 		  SELECT * FROM user_vectors WHERE id = @self
 		), scores AS (
-		  SELECT id,(1 - (info_embedding <=> (SELECT info_embedding FROM self_user))) AS info_score,
-			(1 - (avg_interest_embedding <=> (SELECT avg_interest_embedding FROM self_user))) AS interests_score,
-			(1 - ((personality_test <-> (SELECT personality_test FROM self_user)) / SQRT(500))) AS personality_score
+		  SELECT id,
+			coalesce(1 - (info_embedding <=> (SELECT info_embedding FROM self_user)), 0) AS info_score,
+			coalesce(1 - (avg_interest_embedding <=> (SELECT avg_interest_embedding FROM self_user)), 0) AS interests_score,
+			coalesce(1 - ((personality_test <-> (SELECT personality_test FROM self_user)) / SQRT(500)), 0) AS personality_score
 		  FROM user_vectors WHERE id != @self
 		), ranking AS (
 		  SELECT id, info_score, interests_score, personality_score,
