@@ -16,35 +16,16 @@ type PagesHandler struct {
 	DB *gorm.DB
 }
 
-// GetPage
-// @Summary Получить анкету(страницу) одного пользователя
-// @Produce json
-// @Param page_id path string true "id анкеты"
-// @Success 200 {object} handlers.PageData
-// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
-// @Router /api/pages/{page_id} [get]
-func (h *PagesHandler) GetPage(w http.ResponseWriter, r *http.Request) {
-	selfId := r.Context().Value(database.AuthContextKey).(string)
-	otherId := r.PathValue("page_id")
-
+func GetPageById(db *gorm.DB, selfId string, otherId string) (*PageData, error) {
 	var user PageData
 
-	err := h.DB.Preload("Widgets").Preload("TgUser").First(&user.User, "id = ?", otherId).Error
+	err := db.Preload("Widgets").Preload("TgUser").First(&user.User, "id = ?", otherId).Error
 	if err != nil {
-		log.Printf("pages handler: failed to get user, %v", err)
-		http.Error(
-			w,
-			database.JSONErr(
-				http.StatusInternalServerError,
-				fmt.Sprintf("pages handler: failed to get user, %v", err),
-			),
-			http.StatusInternalServerError,
-		)
-		return
+		return nil, err
 	}
 	user.Username = user.TgUser.TgUsername
 
-	err = h.DB.Raw(`
+	err = db.Raw(`
 		WITH user_vectors AS (
 		  SELECT u.id, info_embedding, personality_test, AVG(i.embedding) as avg_interest_embedding FROM users AS u
 		  LEFT JOIN user_interests ui ON u.id = ui.user_id
@@ -65,19 +46,10 @@ func (h *PagesHandler) GetPage(w http.ResponseWriter, r *http.Request) {
 		FROM scores;
 	`, sql.Named("self", selfId), sql.Named("other", otherId)).Scan(&user.SimilarityData).Error
 	if err != nil {
-		log.Printf("pages handler: failed to calculate similarity, %v", err)
-		http.Error(
-			w,
-			database.JSONErr(
-				http.StatusInternalServerError,
-				fmt.Sprintf("pages handler: failed to calculate similarity, %v", err),
-			),
-			http.StatusInternalServerError,
-		)
-		return
+		return nil, err
 	}
 
-	err = h.DB.Raw(`
+	err = db.Raw(`
 		WITH self_user_interests AS (
 		  SELECT i.id, i.embedding FROM user_interests AS ui
 		  LEFT JOIN interests i ON i.id = ui.interest_id
@@ -101,12 +73,30 @@ func (h *PagesHandler) GetPage(w http.ResponseWriter, r *http.Request) {
 		SELECT * FROM q_interests;
 	`, sql.Named("self", selfId), sql.Named("other", otherId)).Scan(&user.Interests).Error
 	if err != nil {
-		log.Printf("pages handler: failed to calculate interest similarity, %v", err)
+		return nil, err
+	}
+	return &user, nil
+}
+
+// GetPage
+// @Summary Получить анкету(страницу) одного пользователя
+// @Produce json
+// @Param page_id path string true "id анкеты"
+// @Success 200 {object} handlers.PageData
+// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
+// @Router /api/pages/{page_id} [get]
+func (h *PagesHandler) GetPage(w http.ResponseWriter, r *http.Request) {
+	selfId := r.Context().Value(database.AuthContextKey).(string)
+	otherId := r.PathValue("page_id")
+
+	user, err := GetPageById(h.DB, selfId, otherId)
+	if err != nil {
+		log.Printf("pages handler: failed to get user, %v", err)
 		http.Error(
 			w,
 			database.JSONErr(
 				http.StatusInternalServerError,
-				fmt.Sprintf("pages handler: failed to calculate interest similarity, %v", err),
+				fmt.Sprintf("pages handler: failed to get user, %v", err),
 			),
 			http.StatusInternalServerError,
 		)

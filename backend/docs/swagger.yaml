@@ -635,7 +635,7 @@ paths:
           description: OK
           schema:
             items:
-              type: string
+              $ref: '#/definitions/handlers.PageData'
             type: array
         "500":
           description: Внутренняя ошибка сервера

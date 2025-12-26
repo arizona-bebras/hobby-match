@@ -827,7 +827,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "$ref": "#/components/schemas/handlers.PageData"
                   }
                 }
               }
@@ -1319,6 +1319,9 @@
       "handlers.CreatedNamespace": {
         "type": "object",
         "properties": {
+          "invite_code": {
+            "type": "string"
+          },
           "namespace_id": {
             "type": "string"
           }

@@ -113,7 +113,7 @@ func (h *NamespaceHandler) LeaveNamespace(w http.ResponseWriter, r *http.Request
 // @Summary Получить ленту из анкет пользователей неймспейса
 // @Produce json
 // @Param namespace_id path string true "id неймспейса"
-// @Success 200 {array} string
+// @Success 200 {array} handlers.PageData
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Router /api/namespace/{namespace_id}/feed [get]
 func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
@@ -160,9 +160,10 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 		SELECT id FROM ranked_recommendations
 		ORDER BY
 			priority ASC,
-			similarity DESC,
+			CASE WHEN priority = 1 THEN similarity END DESC,
 			CASE WHEN priority = 1 THEN id END DESC,
-			CASE WHEN priority = 2 THEN date END ASC
+			CASE WHEN priority = 2 THEN date END ASC,
+			CASE WHEN priority = 2 THEN similarity END DESC
 		LIMIT 3;
   	`, sql.Named("self", selfId), sql.Named("namespace", namespace)).Scan(&views).Error
 	if err != nil {
@@ -199,8 +200,26 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
+	pages := make([]PageData, len(views))
+	for i, view := range views {
+		var page *PageData
+		page, err = GetPageById(h.DB, selfId, view)
+		if err != nil {
+			log.Printf("pages handler: failed to get user, %v", err)
+			http.Error(
+				w,
+				database.JSONErr(
+					http.StatusInternalServerError,
+					fmt.Sprintf("pages handler: failed to get user, %v", err),
+				),
+				http.StatusInternalServerError,
+			)
+			return
+		}
+		pages[i] = *page
+	}
 
-	pagesJSON, err := json.Marshal(views)
+	pagesJSON, err := json.Marshal(pages)
 	if err != nil {
 		log.Printf("namespace handler: failed to serialize recommendations: %s", err.Error())
 		http.Error(
