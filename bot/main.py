@@ -351,57 +351,65 @@ async def on_bot_added(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def group_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-
     if not query:
         return GROUP
-    # await query.answer()
+
+    # 1. Сразу отвечаем Telegram, чтобы убрать "часики" 
+    # (для алертов вызовем ответ позже с текстом)
+    user_id = query.from_user.id
+    chat_id = update.effective_chat.id
     
+    # Получаем список админов
+    try:
+        admins = await context.bot.get_chat_administrators(chat_id)
+        is_admin = any(admin.user.id == user_id for admin in admins)
+    except Exception as e:
+        logger.error(f"Error getting admins: {e}")
+        await query.answer("Ошибка проверки прав", show_alert=True)
+        return GROUP
+
+    # 2. Проверка на админа для всех кнопок в этой группе
+    if not is_admin:
+        await query.answer(text="❌ Только администратор может это сделать", show_alert=True)
+        return GROUP
+
+    # Если админ — убираем загрузку (если не будет другого answer ниже)
+    print(query.data)
     if query.data == "cancel_ns":
-        user_id = query.from_user.id
-        admins = await update.effective_chat.get_administrators()
-        if not any(admin.user.id == user_id for admin in admins):
-            print("access denied")
-            await query.answer(text="❌ Только администратор может это сделать", show_alert=True)
-            return GROUP
+        await query.answer() # Убираем лоадер
         await query.edit_message_text("👌 Понял. Если передумаете — просто тегните меня в сообщении!")
-        return ConversationHandler.END # Завершаем, чтобы не висел стейт
+        return ConversationHandler.END
 
     if query.data == "create_ns":
-        chat = await context.bot.get_chat(update.effective_chat.id)
-        user_id = query.from_user.id
+        # Сначала отвечаем, чтобы кнопка не висела
+        await query.answer()
         
-        # Правильная проверка на админа
-        admins = await chat.get_administrators()
-        if not any(admin.user.id == user_id for admin in admins):
-            print("access denied")
-            await query.answer(text="❌ Только администратор может это сделать", show_alert=True)
-            return GROUP
+        chat = await context.bot.get_chat(chat_id)
         
         user_data = {
-            "tg_id": str(query.from_user.id),
+            "tg_id": str(user_id),
             "username": query.from_user.username,
             "firstname": query.from_user.first_name
         }
-        # 2. Регистрируем админа
+        
+        # Регистрация админа
         result = await ApiClient.register_user(user_data)
         if result == 500:
-            await update.message.reply_text("Произошла ошибка при регистрации пользователя. Попробуйте позже.")
+            # ВАЖНО: используем query.message, а не update.message
+            await query.edit_message_text("Произошла ошибка при регистрации. Попробуйте позже.")
             return GROUP
 
         photo_buffer = None
-        
-        # 2. Получаем и скачиваем фото в память
         if chat.photo:
             try:
                 tg_file = await context.bot.get_file(chat.photo.big_file_id)
                 photo_buffer = io.BytesIO()
-                # Скачиваем файл напрямую в буфер в оперативной памяти
                 await tg_file.download_to_memory(photo_buffer)
                 photo_buffer.seek(0)
             except Exception as e:
                 logger.error(f"Ошибка при загрузке фото: {e}")
 
-        # 3. Отправляем данные на бекенд
+        # Создание неймспейса
         status, res_data = await ApiClient.create_namespace({
             "title": chat.title,
             "admin_id": str(user_id),
@@ -413,8 +421,9 @@ async def group_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             inlineButton = InlineKeyboardMarkup.from_button(InlineKeyboardButton(
                 text="Открыть Shumi",
                 url=f"https://t.me/{context.bot.username}?start={ns_id}"))
+            
             await query.edit_message_text(
-                f"✅ Неймспейс создан\!\nТеперь участники могут заходить: \n",
+                f"✅ Неймспейс создан\!\nТеперь участники могут заходить:",
                 disable_web_page_preview=True,
                 parse_mode=ParseMode.MARKDOWN_V2,
                 reply_markup=inlineButton
@@ -449,7 +458,9 @@ if __name__ == '__main__':
             GROUP: [CallbackQueryHandler(group_handler, pattern="^(create_ns|cancel_ns)$")]
         },
         fallbacks=[],
-        allow_reentry=True
+        allow_reentry=True,
+        per_user=False,
+        per_chat=True
     )
 
     app.add_handler(conv_handler)
