@@ -523,6 +523,12 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "id неймспейса",
+                        "name": "id",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
                         "description": "Название неймспейса",
                         "name": "title",
                         "in": "formData"
@@ -1093,6 +1099,9 @@ const docTemplate = `{
             "description": "Ответ на успешное создание неймспейса",
             "type": "object",
             "properties": {
+                "invite_code": {
+                    "type": "string"
+                },
                 "namespace_id": {
                     "type": "string"
                 }

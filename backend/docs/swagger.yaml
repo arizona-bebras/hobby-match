@@ -97,6 +97,8 @@ definitions:
   handlers.CreatedNamespace:
     description: Ответ на успешное создание неймспейса
     properties:
+      invite_code:
+        type: string
       namespace_id:
         type: string
     type: object
@@ -523,6 +525,10 @@ paths:
       consumes:
       - multipart/form-data
       parameters:
+      - description: id неймспейса
+        in: formData
+        name: id
+        type: string
       - description: Название неймспейса
         in: formData
         name: title
