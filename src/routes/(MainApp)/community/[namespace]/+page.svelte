@@ -8,6 +8,7 @@
   import { createQuery } from '@tanstack/svelte-query';
   import { page } from '$app/state';
   import EditGroup from '$lib/components/namespaces/EditGroup.svelte';
+  import { db } from '$lib';
 
   let testNameSpaceses = {
     img: 'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',
@@ -60,7 +61,7 @@
   <div class="flex flex-col justify-center items-center relative z-1 mt-4 mb-4">
     <img
       alt="Картинка неймспейса"
-      src={`http://localhost:8090/api/files/namespaces/${namespaceInfo.data?.namespace?.id}/undefined
+      src={`${db}/api/files/namespaces/${namespaceInfo.data?.namespace?.id}/undefined
 `}
       class="size-24 rounded-full object-cover"
     />
@@ -78,7 +79,7 @@
   </div>
   <img
     alt="Картинка неймспейса"
-    src={`http://localhost:8090/api/files/namespaces/${namespaceInfo.data?.namespace?.id}/undefined
+    src={`${db}/api/files/namespaces/${namespaceInfo.data?.namespace?.id}/undefined
 `}
     class="size-100 rounded-full object-cover absolute -top-[35%] z-0 opacity-60 blur-2xl"
   />
