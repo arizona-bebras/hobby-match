@@ -10,7 +10,7 @@
 
   let namespaceId = page.url.searchParams.get('namespaceId');
   const profileData = createQuery(() => ({
-    queryKey: ['profileData1'],
+    queryKey: ['profilesData'],
     queryFn: async () =>
       await client.GET('/api/namespace/{namespace_id}/feed', {
         params: {
@@ -26,7 +26,7 @@
   let profileContainer: HTMLDivElement | undefined = $state();
 
   let screenContainer: HTMLDivElement | undefined = $state();
-  let offeredProfiles: PageData[] = $derived(profileData.data ?? []);
+  let offeredProfiles: PageData[] = $state([]);
   let currentProfile = $state(0);
 
   let liked: boolean = $state(false);
@@ -40,6 +40,34 @@
   let elementSize = $state(0);
   let isProfileEnd = $state(false);
   let touchStartPosition: { x: number; y: number } | null = $state(null);
+
+  async function fillOfferedProfiles() {
+    if (!profileData.data) return;
+    const tempProfiles = [];
+    for (const profileId of profileData.data) {
+      try {
+        console.log('Загрузка ID:', profileId);
+        const response = await client.GET('/api/pages/{page_id}', {
+          params: {
+            path: { page_id: profileId },
+          },
+        });
+        if (response.data) {
+          tempProfiles.push(response.data);
+        }
+      } catch (err) {
+        console.error(`Ошибка при загрузке профиля ${profileId}:`, err);
+      }
+    }
+    offeredProfiles = tempProfiles;
+  }
+  $inspect(offeredProfiles);
+  $effect(() => {
+    if (profileData.isSuccess && offeredProfiles.length < 3) {
+      console.log('Offered profiles have been successfully');
+      fillOfferedProfiles();
+    }
+  });
   $effect(() => {
     if (touchStartPosition === null) {
       if (elementSize >= 108) {

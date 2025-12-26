@@ -24,6 +24,6 @@
     bind:this={profileContainer}
     class="min-h-full"
   >
-    <Questionnaire data={offeredProfiles[0]} />
+    <Questionnaire data={offeredProfiles[0]} isNamespaceProfile={true} />
   </div>
 {/key}

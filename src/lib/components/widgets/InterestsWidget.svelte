@@ -17,10 +17,16 @@
     class:gradient={!isOpen}
   >
     {#each interests as interest}
+      {@const similarity = 100 - Math.round(interest.similarity * 100)}
+      {@const bgOpacity = similarity > 15 ? similarity : 15}
       <div
-        class="flex gap-[8px] h-fit bg-accent/25 rounded-[28px] px-[12px] py-[8px]"
+        class="flex gap-[8px] h-fit rounded-[28px] px-[12px] py-[8px]"
+        style="background-color: color-mix(in srgb, var(--color-accent), transparent {bgOpacity}%)"
+        style:box-shadow={similarity <= 50
+          ? '0px 3px 10px color-mix(in srgb, var(--color-accent), transparent 40%)'
+          : ''}
       >
-        <p class="text-accent">{interest.tag}</p>
+        <p class="text-text-color">{interest.tag}</p>
       </div>
     {/each}
     {#if isOpen}
