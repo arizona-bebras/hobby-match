@@ -24,7 +24,7 @@
 </script>
 
 <div class="overflow-y-auto h-[calc(100vh-200px)]">
-  {#each namespacesList as namespace (namespace.title)}
+  {#each namespacesList as namespace (namespace.id)}
     {#if namespace.title.toLowerCase().includes(searchFilter.toLowerCase())}
       <div
         class="flex py-1.5 items-center justify-between border-b-[2px] border-text-color/25"
