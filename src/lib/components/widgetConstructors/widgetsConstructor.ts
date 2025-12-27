@@ -83,7 +83,7 @@ export async function changeWidgetPosition(
     `Bearer ${window.localStorage.getItem('access_token')}`,
   );
   await fetch(`${db}/api/me/widgets/order`, {
-    method: 'PUT',
+    method: 'PATCH',
     headers: authHeader,
     body: form,
   });
