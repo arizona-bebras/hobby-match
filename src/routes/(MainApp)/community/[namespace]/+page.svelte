@@ -10,6 +10,7 @@
   import EditGroup from '$lib/components/namespaces/EditGroup.svelte';
   import { db } from '$lib';
   import CreateGroupBtn from '$lib/components/namespaces/CreateGroupBtn.svelte';
+  import { userData } from '$lib/storage/userData.svelte';
 
   let testNameSpaceses = {
     img: 'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',
@@ -98,16 +99,21 @@
       <p>Смотреть анкеты</p>
       <ChevronRight class="size-5" />
     </button>
-    <button
-      class="border-text-color/25 border-x-2 px-4 py-3
+    {#if namespaceInfo.data?.namespace?.admin === userData.current.tg_user}
+      <button
+        class="border-text-color/25 border-x-2 px-4 py-3
     w-full flex justify-between"
-      onclick={() => (isShareOpen = !isShareOpen)}
-    >
-      <p>Поделиться</p>
-      <Share2 class="size-5" />
-    </button>
+        onclick={() => (isShareOpen = !isShareOpen)}
+      >
+        <p>Поделиться</p>
+        <Share2 class="size-5" />
+      </button>
+    {/if}
     <button
-      class="border-text-color/25 border-x-2 border-b-2 rounded-b-xl border-t-2 rounded-b-2 px-4 py-3 w-full flex justify-between mb-4"
+      class="border-text-color/25 border-x-2 border-b-2 rounded-b-xl {namespaceInfo
+        .data?.namespace?.admin === userData.current.tg_user
+        ? 'border-t-2'
+        : ''}  rounded-b-2 px-4 py-3 w-full flex justify-between mb-4"
       onclick={() => (isEditOpen = !isEditOpen)}
     >
       <p>Редактировать</p>
