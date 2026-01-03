@@ -96,7 +96,7 @@
         uploadedPhoto = svgXmlToDataURLRobust(svgString);
         await svgToPngBlob(svgString, 100, 100).then((pngBlop) => {
           console.log(pngBlop);
-          $formData.photo = pngBlop as Blob;
+          $formData.photo = new File([pngBlop], 'avatar');
         });
 
         // const blob = new Blob([svgString], { type: 'image/svg+xml' });
