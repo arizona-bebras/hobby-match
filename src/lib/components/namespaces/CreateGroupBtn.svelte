@@ -19,10 +19,12 @@
     currentStage = 1,
     isSheetOpen = $bindable(),
     data = {},
+    onCreate = () => {},
   }: {
     currentStage: number;
     isSheetOpen: boolean;
     data: { id: string; title: string };
+    onCreate: () => void;
   } = $props();
 
   let fileButton: HTMLInputElement = $state();
@@ -70,6 +72,7 @@
         },
       });
       namespaceId = response.data!.namespace_id!;
+      onCreate();
       console.log('DATA:', response.data, namespaceId);
       // client.POST('/api/vote', {
       //   body: {

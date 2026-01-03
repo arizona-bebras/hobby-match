@@ -92,7 +92,12 @@
 <div class="p-4 w-full text-text-color">
   <div class="flex justify-between font-medium items-center mb-6">
     <p class="">Мои неймспейсы</p>
-    <CreateGroupBtn bind:isSheetOpen />
+    <CreateGroupBtn
+      bind:isSheetOpen
+      onCreate={() => {
+        namespaces.refetch();
+      }}
+    />
   </div>
   <Input
     placeholder="Введи название неймспейса..."
