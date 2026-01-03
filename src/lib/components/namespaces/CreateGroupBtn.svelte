@@ -12,12 +12,22 @@
   import copy from 'copy-to-clipboard';
   import { toSvg } from 'jdenticon';
   import client from '$lib/api/client';
+  import { onMount } from 'svelte';
+  import { db } from '$lib';
 
-  let currentStage = $state(1);
+  let {
+    currentStage = 1,
+    isSheetOpen = $bindable(),
+    data = {},
+  }: {
+    currentStage: number;
+    isSheetOpen: boolean;
+    data: { id: string; title: string };
+  } = $props();
+
   let fileButton: HTMLInputElement = $state();
   let uploadedPhoto = $state('');
   let namespaceId = $state('');
-  let isSheetOpen = $state(false);
   let namespaceTitle = $state('');
   $inspect(uploadedPhoto);
   const form = superForm(defaults(zod4(createSchema)), {
@@ -60,7 +70,7 @@
         },
       });
       namespaceId = response.data!.namespace_id!;
-      console.log(response.data);
+      console.log('DATA:', response.data, namespaceId);
       // client.POST('/api/vote', {
       //   body: {
       //     aboba: 123,
@@ -100,6 +110,13 @@
     }
   });
 
+  onMount(async () => {
+    let photo = await getBase64Image(
+      `${db}/api/files/namespaces/${data.id}/undefined`,
+    );
+    uploadedPhoto = photo;
+  });
+
   function onSheetOpenHandle() {
     Telegram.WebApp.MainButton.setParams({
       text: 'Далее',
@@ -108,6 +125,7 @@
       is_visible: true,
     });
   }
+
   function activateTgBtn() {
     Telegram.WebApp.MainButton.setParams({
       is_active: true,
@@ -121,9 +139,14 @@
       color: Telegram.WebApp.themeParams.hint_color,
     });
   }
-  let link = $derived(
-    `https://t.me/newshumibot?start=${encodeURI(namespaceId)}`,
-  );
+
+  let link = $derived.by(() => {
+    let basePath = 'https://t.me/newshumibot?start=';
+    if (data.id) basePath += encodeURI(data.id);
+    else basePath += encodeURI(namespaceId);
+    console.log(basePath, 'id:', namespaceId);
+    return basePath;
+  });
 
   function svgXmlToDataURLRobust(svgXml) {
     const utf8Bytes = new TextEncoder().encode(svgXml);
@@ -180,6 +203,16 @@
     }
     return randomString.substring(0, length);
   }
+  async function getBase64Image(url) {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
 </script>
 
 <Sheet.Root
@@ -187,7 +220,8 @@
   onOpenChange={(open) => {
     if (!open) {
       Telegram.WebApp.MainButton.hide();
-      currentStage = 1;
+      if (data.title) currentStage = 2;
+      else currentStage = 1;
       isSheetOpen = false;
     }
   }}
@@ -196,8 +230,9 @@
     class="px-6 py-1.5 rounded-[8px] bg-accent text-[14px]"
     onclick={() => {
       onSheetOpenHandle();
-    }}>Создать</Sheet.Trigger
-  >
+    }}
+    >Создать
+  </Sheet.Trigger>
   <Sheet.Content side="bottom" class="max-h-[calc(100vh-65px)]">
     <Sheet.Header>
       <Sheet.Title class="text-center text-[16px] font-medium"
@@ -254,8 +289,8 @@
                   fileButton.click();
                 }}
                 class="w-full bg-accent py-1.5 rounded-lg"
-                >Выбрать файл...</button
-              >
+                >Выбрать файл...
+              </button>
             {/snippet}
           </Form.Control>
           <Form.FieldErrors />
@@ -293,7 +328,7 @@
         <!--    </Form.Control>-->
         <!--    <Form.FieldErrors />-->
         <!--  </Form.Field>-->
-      {:else if currentStage === 2}
+      {:else if currentStage === 2 && (namespaceId || data.title) && uploadedPhoto}
         <div class="flex flex-col justify-center items-center mb-6">
           <QRCode
             data={link}
@@ -305,7 +340,9 @@
             <span class="mb-1"
               ><Emoji symbol="🎉" class="size-4 mr-1" /> Всё готово!</span
             >
-            <p class="text-gray-400">«{namespaceTitle}»</p>
+            <p class="text-gray-400">
+              «{data.title ? data.title : namespaceTitle}»
+            </p>
             <p class="text-gray-400">готов принимать гостей!</p>
           </div>
         </div>
@@ -314,8 +351,9 @@
           class="py-2 w-full bg-accent/20 mb-2 rounded-xl text-accent-foreground"
           onclick={() => {
             copy(link);
-          }}>Скопировать ссылку</button
-        >
+          }}
+          >Скопировать ссылку
+        </button>
         <a
           class="py-2 w-full bg-accent rounded-xl mb-4 block text-center"
           href={`https://t.me/share/url?url=${encodeURI(link)}`}>Поделиться</a

@@ -85,13 +85,14 @@
 
   let searchFilter = $state('');
   $inspect(searchFilter);
+  let isSheetOpen = $state(false);
 </script>
 
 <!--<img src={`data:image/png;base64,${query.data.data.files[0]}`} />-->
 <div class="p-4 w-full text-text-color">
   <div class="flex justify-between font-medium items-center mb-6">
     <p class="">Мои неймспейсы</p>
-    <CreateGroupBtn />
+    <CreateGroupBtn bind:isSheetOpen />
   </div>
   <Input
     placeholder="Введи название неймспейса..."

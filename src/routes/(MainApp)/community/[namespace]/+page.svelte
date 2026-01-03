@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ChevronRight, PencilLine } from '@lucide/svelte';
+  import { ChevronRight, PencilLine, Share2 } from '@lucide/svelte';
   import UserNamespaces from '$lib/components/namespaces/UserNamespaces.svelte';
   import NamespaceMembersLst from '$lib/components/namespaces/NamespaceMembersLst.svelte';
   import { getCorrectForm } from '$lib/utils';
@@ -9,6 +9,7 @@
   import { page } from '$app/state';
   import EditGroup from '$lib/components/namespaces/EditGroup.svelte';
   import { db } from '$lib';
+  import CreateGroupBtn from '$lib/components/namespaces/CreateGroupBtn.svelte';
 
   let testNameSpaceses = {
     img: 'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',
@@ -40,6 +41,7 @@
     },
   ];
   let isEditOpen = $state(false);
+  let isShareOpen = $state(false);
   const namespaceId = page.url.pathname.split('/').pop();
   const namespaceInfo = createQuery(() => ({
     queryKey: ['namespaceInfo'],
@@ -85,13 +87,21 @@
   />
   <div class="px-4 flex flex-col justify-start items-start w-full">
     <button
-      class="border-text-color/25 border-x-2 border-t-2 rounded-t-xl px-4 py-3
+      class="border-text-color/25 border-x-2 border-y-2 rounded-t-xl px-4 py-3
     w-full flex justify-between"
       onclick={() =>
         goto(`/view?namespaceId=${namespaceInfo.data?.namespace?.id}`)}
     >
       <p>Смотреть анкеты</p>
       <ChevronRight class="size-5" />
+    </button>
+    <button
+      class="border-text-color/25 border-x-2 px-4 py-3
+    w-full flex justify-between"
+      onclick={() => (isShareOpen = !isShareOpen)}
+    >
+      <p>Поделиться</p>
+      <Share2 class="size-5" />
     </button>
     <button
       class="border-text-color/25 border-x-2 border-b-2 rounded-b-xl border-t-2 rounded-b-2 px-4 py-3 w-full flex justify-between mb-4"
@@ -111,4 +121,14 @@
     namespaceData={namespaceInfo.data?.namespace}
     onSave={() => namespaceInfo.refetch()}
   />
+  <div class="hidden">
+    <CreateGroupBtn
+      bind:isSheetOpen={isShareOpen}
+      currentStage={2}
+      data={{
+        id: namespaceId,
+        title: namespaceInfo.data?.namespace?.title,
+      }}
+    />
+  </div>
 {/if}
