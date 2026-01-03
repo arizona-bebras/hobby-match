@@ -71,11 +71,14 @@
       <p class="font-medium">{namespaceInfo.data?.namespace?.title}</p>
       <p class="text-sm text-inactive">
         {namespaceInfo.data?.namespace?.members_count}
-        {getCorrectForm(testNameSpaceses.amount_members, [
+        {getCorrectForm(namespaceInfo.data?.namespace?.members_count, [
           'участник',
           'участника',
           'участников',
         ])}
+      </p>
+      <p class="max-w-[300px] line-clamp-3 text-sm break-words">
+        {namespaceInfo.data?.namespace?.description}
       </p>
     </div>
   </div>
