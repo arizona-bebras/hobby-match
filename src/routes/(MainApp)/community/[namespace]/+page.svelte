@@ -63,7 +63,7 @@
   <div class="flex flex-col justify-center items-center relative z-1 mt-4 mb-4">
     <img
       alt="Картинка неймспейса"
-      src={`${db}/api/files/namespaces/${namespaceInfo.data?.namespace?.id}/undefined
+      src={`${db}/api/files/namespaces/${namespaceInfo.data?.namespace?.id}/undefined?t=${Date.now()}
 `}
       class="size-24 rounded-full object-cover"
     />
@@ -81,7 +81,7 @@
   </div>
   <img
     alt="Картинка неймспейса"
-    src={`${db}/api/files/namespaces/${namespaceInfo.data?.namespace?.id}/undefined
+    src={`${db}/api/files/namespaces/${namespaceInfo.data?.namespace?.id}/undefined?t=${Date.now()}
 `}
     class="size-100 rounded-full object-cover absolute -top-[35%] z-0 opacity-60 blur-2xl"
   />
@@ -119,7 +119,7 @@
   <EditGroup
     bind:open={isEditOpen}
     namespaceData={namespaceInfo.data?.namespace}
-    onSave={() => namespaceInfo.refetch()}
+    onSave={() => setTimeout(() => namespaceInfo.refetch(), 200)}
   />
   <div class="hidden">
     <CreateGroupBtn
