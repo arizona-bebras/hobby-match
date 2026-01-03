@@ -3,7 +3,7 @@
   import * as Form from '$lib/components/ui/form';
   import { Input } from '$lib/components/ui/input';
   import { Info, X } from '@lucide/svelte';
-  import { superForm, defaults } from 'sveltekit-superforms';
+  import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zod4, zodClient } from 'sveltekit-superforms/adapters';
   import { surveyScheme } from '$lib/components/editor/survey/surveySheme';
   import {
@@ -148,7 +148,9 @@
           }}
           {isButtonActive}
         />
-        <!--        <SuperDebug data={$formData} />-->
+        {#if import.meta.env.DEV}
+          <SuperDebug data={$formData} />
+        {/if}
       </form>
     </Sheet.Header>
   </Sheet.Content>

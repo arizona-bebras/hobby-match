@@ -244,5 +244,7 @@
       </a>.
     </div>
   </div>
-  <!--  <SuperDebug data={$formData} />-->
+  {#if import.meta.env.DEV}
+    <SuperDebug data={$formData} />
+  {/if}
 </form>

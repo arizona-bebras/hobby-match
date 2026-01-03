@@ -13,11 +13,12 @@
     tg_user: number;
     miniapp_name: string;
   };
-  let { user }: { user: NamespaceMembers } = $props();
+  let { user, open = $bindable() }: { user: NamespaceMembers; open: boolean } =
+    $props();
 </script>
 
-<Sheet.Root>
-  <Sheet.Trigger><ArrowRight class="size-5" /></Sheet.Trigger>
+<Sheet.Root bind:open>
+  <!--  <Sheet.Trigger><ArrowRight class="size-5" /></Sheet.Trigger>-->
   <Sheet.Content side="bottom">
     <div class="flex flex-col justify-center items-center mb-10 mt-8">
       <img

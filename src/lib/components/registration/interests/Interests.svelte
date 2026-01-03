@@ -2,8 +2,15 @@
   import { Input } from '$lib/components/ui/input';
   import { Plus } from '@lucide/svelte';
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';
-  import { type Infer, superForm, type SuperValidated } from 'sveltekit-superforms';
-  import { type FormSchema, interestsScheme } from '$lib/components/registration/interests/InterestsFormShema';
+  import SuperDebug, {
+    type Infer,
+    superForm,
+    type SuperValidated,
+  } from 'sveltekit-superforms';
+  import {
+    type FormSchema,
+    interestsScheme,
+  } from '$lib/components/registration/interests/InterestsFormShema';
   import { zodClient } from 'sveltekit-superforms/adapters';
   import { onDestroy, onMount } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
@@ -28,9 +35,7 @@
     window.Telegram.WebApp.MainButton.showProgress();
     await updateData({
       interests: selectedInterests,
-    }).finally(
-      window.Telegram.WebApp.MainButton.hideProgress,
-    );
+    }).finally(window.Telegram.WebApp.MainButton.hideProgress);
   }
 
   async function handleTelegramButtonClick() {
@@ -246,5 +251,7 @@
       <!--      </div>-->
     </div>
   </div>
-  <!--  <SuperDebug data={$formData} />-->
+  {#if import.meta.env.DEV}
+    <SuperDebug data={$formData} />
+  {/if}
 </form>

@@ -26,10 +26,11 @@
 <div class="overflow-y-auto h-[calc(100vh-200px)]">
   {#each namespacesList as namespace (namespace.id)}
     {#if namespace.title.toLowerCase().includes(searchFilter.toLowerCase())}
-      <div
-        class="flex py-1.5 items-center justify-between border-b-[2px] border-text-color/25"
+      <button
+        onclick={() => goto(`/community/${namespace.id}`)}
+        class="flex py-1.5 items-center justify-between border-b-[2px] border-text-color/25 w-full"
       >
-        <div class="flex gap-2.5 items-center">
+        <div class="flex gap-2.5 items-center text-justify">
           <img
             src={`${db}/api/files/namespaces/${namespace.id}/undefined
 `}
@@ -57,10 +58,8 @@
             </p>
           </div>
         </div>
-        <button onclick={() => goto(`/community/${namespace.id}`)}>
-          <ArrowRight class="size-5" />
-        </button>
-      </div>
+        <ArrowRight class="size-5" />
+      </button>
     {/if}
   {/each}
 </div>

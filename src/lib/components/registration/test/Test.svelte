@@ -3,7 +3,7 @@
   import { Slider } from '$lib/components/ui/slider/index.js';
   import Emoji from '$lib/components/ui/emoji/emogi.svelte';
   import { testSchema } from '$lib/components/registration/test/TestFormShema';
-  import { superForm, defaults } from 'sveltekit-superforms';
+  import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zod4 } from 'sveltekit-superforms/adapters';
   import { onDestroy, onMount } from 'svelte';
   import { useTelegramButton } from '$lib/components/registration/useTelegramButton.svelte.js';
@@ -154,5 +154,7 @@
       </div>
     </div>
   {/each}
-  <!--  <SuperDebug data={$formData} />-->
+  {#if import.meta.env.DEV}
+    <SuperDebug data={$formData} />
+  {/if}
 </form>

@@ -2,7 +2,7 @@
   import * as Sheet from '$lib/components/ui/sheet';
   import * as Form from '$lib/components/ui/form';
   import { Input } from '$lib/components/ui/input';
-  import { superForm, defaults } from 'sveltekit-superforms';
+  import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zod4 } from 'sveltekit-superforms/adapters';
   import { socialScheme } from '$lib/components/editor/social/socialScheme';
   import {
@@ -121,6 +121,8 @@
         />
       </form>
     </Sheet.Header>
-    <!--    <SuperDebug data={$formData} />-->
+    {#if import.meta.env.DEV}
+      <SuperDebug data={$formData} />
+    {/if}
   </Sheet.Content>
 </Sheet.Root>

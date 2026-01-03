@@ -7,7 +7,7 @@
   } from '$lib/components/widgetConstructors/widgetsConstructor';
   import * as Form from '$lib/components/ui/form';
   import { textSchema } from '$lib/components/editor/text/textSheme';
-  import { superForm, defaults } from 'sveltekit-superforms';
+  import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zod4, zodClient } from 'sveltekit-superforms/adapters';
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
@@ -92,7 +92,9 @@
           }}
           {isButtonActive}
         />
-        <!--        <SuperDebug data={$formData} />-->
+        {#if import.meta.env.DEV}
+          <SuperDebug data={$formData} />
+        {/if}
       </form>
     </Sheet.Header>
   </Sheet.Content>

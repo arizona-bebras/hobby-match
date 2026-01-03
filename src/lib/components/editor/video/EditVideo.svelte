@@ -3,7 +3,7 @@
   import { Input } from '$lib/components/ui/input';
   import * as Form from '$lib/components/ui/form';
 
-  import { superForm, defaults } from 'sveltekit-superforms';
+  import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zod4, zodClient } from 'sveltekit-superforms/adapters';
   import { videoSchema } from '$lib/components/editor/video/videoSheme';
   import {
@@ -112,6 +112,8 @@
         />
       </form>
     </Sheet.Header>
-    <!--    <SuperDebug data={$formData} />-->
+    {#if import.meta.env.DEV}
+      <SuperDebug data={$formData} />
+    {/if}
   </Sheet.Content>
 </Sheet.Root>

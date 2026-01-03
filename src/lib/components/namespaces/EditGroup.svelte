@@ -155,6 +155,8 @@
         <Form.FieldErrors />
       </Form.Field>
     </form>
-    <SuperDebug data={$formData} />
+    {#if import.meta.env.DEV}
+      <SuperDebug data={$formData} />
+    {/if}
   </Sheet.Content>
 </Sheet.Root>

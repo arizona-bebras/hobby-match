@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { superForm, defaults } from 'sveltekit-superforms';
+  import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zod4, zodClient } from 'sveltekit-superforms/adapters';
   import { audioScheme } from '$lib/components/editor/audio/audioScheme';
   import * as Sheet from '$lib/components/ui/sheet';
@@ -105,6 +105,8 @@
         />
       </form>
     </Sheet.Header>
-    <!--    <SuperDebug data={$formData} />-->
+    {#if import.meta.env.DEV}
+      <SuperDebug data={$formData} />
+    {/if}
   </Sheet.Content>
 </Sheet.Root>

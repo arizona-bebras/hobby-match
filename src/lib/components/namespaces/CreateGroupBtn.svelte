@@ -359,7 +359,9 @@
           href={`https://t.me/share/url?url=${encodeURI(link)}`}>Поделиться</a
         >
       {/if}
-      <SuperDebug data={formData} />
+      {#if import.meta.env.DEV}
+        <SuperDebug data={$formData} />
+      {/if}
     </form>
   </Sheet.Content>
 </Sheet.Root>

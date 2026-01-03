@@ -45,7 +45,7 @@
     {@const Icon = button.icon}
     {@const isActive = currentPage === button.redirectTo}
     <button
-      class="flex flex-col items-center py-2 bg-background"
+      class="flex flex-col items-center py-2"
       onclick={() => goto(`/${button.redirectTo}`)}
     >
       <Icon class={isActive ? 'stroke-accent' : ''} />

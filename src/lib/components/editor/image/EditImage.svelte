@@ -1,7 +1,7 @@
 <script lang="ts">
   import * as Sheet from '$lib/components/ui/sheet';
   import { X } from '@lucide/svelte';
-  import { superForm, defaults } from 'sveltekit-superforms';
+  import SuperDebug, { superForm, defaults } from 'sveltekit-superforms';
   import { zod, zod4 } from 'sveltekit-superforms/adapters';
   import { imageScheme } from '$lib/components/editor/image/imageSheme';
   import {
@@ -171,6 +171,8 @@
         />
       </form>
     </Sheet.Header>
-    <!--      <SuperDebug data={$formData} />-->
+    {#if import.meta.env.DEV}
+      <SuperDebug data={$formData} />
+    {/if}
   </Sheet.Content>
 </Sheet.Root>

@@ -302,7 +302,9 @@
           }}
           {isButtonActive}
         />
-        <!--        <SuperDebug data={$formData} />-->
+        {#if import.meta.env.DEV}
+          <SuperDebug data={$formData} />
+        {/if}
       </form>
     </Sheet.Header>
   </Sheet.Content>
