@@ -29,7 +29,14 @@
     {#each interests as interest}
       {@const similarity =
         100 - Math.round(easeInOutExpo(interest.similarity) * 100)}
-      {@const bgOpacity = similarity > 15 ? similarity : 15}
+      {@const bgOpacity =
+        similarity <= 25
+          ? 25
+          : similarity <= 50
+            ? 50
+            : similarity <= 75
+              ? 75
+              : 90}
       <div
         class="flex gap-[8px] h-fit rounded-[28px] px-[12px] py-[8px]"
         style="background-color: color-mix(in srgb, var(--color-accent), transparent {bgOpacity}%)"
