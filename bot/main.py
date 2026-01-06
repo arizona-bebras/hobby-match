@@ -198,25 +198,20 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         return ConversationHandler.END
 
     # Предполагаем, что API возвращает поле 'hide' или 'is_hidden'
-    is_hidden = user_data.get('hide', False) 
+    # is_hidden = user_data.get('hide', False) 
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(
-                text="👀 Скрыть анкету" if not is_hidden else "👀 Показывать анкету",
-                callback_data="hide" if not is_hidden else "reveal"),
             InlineKeyboardButton(
                 text="🗑 Удалить анкету",
                 callback_data="delete")
         ]
     ])
     
-    text = ("⚙️ *Параметры*\n\n" +
-            "Ты можешь _временно_ скрыть свою анкету из поиска, " +
-            "она не будет отображаться у других\\. " +
-            "Анкета активируется автоматически, когда ты снова зайдешь в ленту\\.\n\n" +
+    text = ("⚙️ *Меню*\n\n" +
             "Удаление анкеты уничтожает все твои данные *безвозвратно*\\. " +
-            "После этого нужно будет заново заполнять анкету\\.")
+            "После этого нужно будет заново заполнять анкету\\." +
+            "\(И заново написать /start\)")
             
     if update.callback_query and update.callback_query.message:
         await update.callback_query.edit_message_text(
@@ -254,34 +249,34 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.answer()
         return DELETE
         
-    elif query.data == "hide" or query.data == "reveal":
-        should_hide = (query.data == "hide")
+    # elif query.data == "hide" or query.data == "reveal":
+    #     should_hide = (query.data == "hide")
         
-        # Обновляем статус через API
-        success = await ApiClient.update_hide_status(tg_id, should_hide)
+    #     # Обновляем статус через API
+    #     success = await ApiClient.update_hide_status(tg_id, should_hide)
         
-        if success:
-            msg_text = ("✅ *Анкета скрыта*\n" +
-                        "Анкета активируется автоматически, когда ты снова зайдешь в ленту\\.\n\n" +
-                        "Ждем тебя ещё\\!" if should_hide else "✅ Твою анкету снова видно")
+    #     if success:
+    #         msg_text = ("✅ *Анкета скрыта*\n" +
+    #                     "Анкета активируется автоматически, когда ты снова зайдешь в ленту\\.\n\n" +
+    #                     "Ждем тебя ещё\\!" if should_hide else "✅ Твою анкету снова видно")
             
-            # Клавиатура обновляется в зависимости от нового состояния
-            reply_markup = InlineKeyboardMarkup(inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text="👀 Показывать" if should_hide else "👀 Скрыть",
-                        callback_data="reveal" if should_hide else "hide"),
-                    InlineKeyboardButton(
-                        text="⬅️ К меню",
-                        callback_data="menu"),
-                ]
-            ])
-            await query.edit_message_text(msg_text, parse_mode=ParseMode.MARKDOWN_V2, reply_markup=reply_markup)
-        else:
-            await query.answer("Ошибка связи с сервером", show_alert=True)
+    #         # Клавиатура обновляется в зависимости от нового состояния
+    #         reply_markup = InlineKeyboardMarkup(inline_keyboard=[
+    #             [
+    #                 InlineKeyboardButton(
+    #                     text="👀 Показывать" if should_hide else "👀 Скрыть",
+    #                     callback_data="reveal" if should_hide else "hide"),
+    #                 InlineKeyboardButton(
+    #                     text="⬅️ К меню",
+    #                     callback_data="menu"),
+    #             ]
+    #         ])
+    #         await query.edit_message_text(msg_text, parse_mode=ParseMode.MARKDOWN_V2, reply_markup=reply_markup)
+    #     else:
+    #         await query.answer("Ошибка связи с сервером", show_alert=True)
             
-        await query.answer()
-        return MENU
+    #     await query.answer()
+    #     return MENU
         
     elif query.data == "menu":
         await menu(update, context)
