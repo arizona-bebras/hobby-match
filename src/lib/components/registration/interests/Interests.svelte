@@ -147,7 +147,7 @@
       </p>
     </div>
     <p>Выберите наиболее интересующие вас темы</p>
-    <p class="pb-1 text-gray-400">Отметьте от 3-x до 5-и тем</p>
+    <p class="pb-1 text-gray-400">Отметьте от 3-x до 10-и тем</p>
     <div class="flex flex-col gap-y-4">
       <Input
         type="text"

@@ -24,11 +24,10 @@
       !isOpen && 'max-h-25',
     )}
     class:overflow-visible={isOpen}
-    class:gradient={!isOpen}
+    class:gradient={!isOpen && interests.length > 5}
   >
     {#each interests as interest}
-      {@const similarity =
-        100 - Math.round(easeInOutExpo(interest.similarity) * 100)}
+      {@const similarity = 100 - Math.round(interest.similarity) * 100}
       {@const bgOpacity =
         similarity <= 25
           ? 25
@@ -57,11 +56,13 @@
       </button>
     {/if}
   </div>
-  <button
-    class="justify-center justify-self-center text-accent absolute bottom-0 left-0 right-0"
-    onclick={() => (isOpen = true)}
-    class:hidden={isOpen}>Развернуть</button
-  >
+  {#if interests.length > 5}
+    <button
+      class="justify-center justify-self-center text-accent absolute bottom-0 left-0 right-0"
+      onclick={() => (isOpen = true)}
+      class:hidden={isOpen}>Развернуть</button
+    >
+  {/if}
 </div>
 
 <style>
