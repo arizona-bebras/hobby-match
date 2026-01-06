@@ -85,12 +85,14 @@
           </p>
         </div>
       </div>
-      <p
-        class="text-xs self-start p-1 bg-accent/25 rounded-[8px] border-1 border-accent/75 font-semibold text-[12px] shrink-0"
-      >
-        Стаж: {data.work.experience}
-        {getCorrectForm(data.work.experience, ['год', 'года', 'лет'])}
-      </p>
+      {#if data.work.experience}
+        <p
+          class="text-xs self-start p-1 bg-accent/25 rounded-[8px] border-1 border-accent/75 font-semibold text-[12px] shrink-0"
+        >
+          Стаж: {data.work.experience}
+          {getCorrectForm(data.work.experience, ['год', 'года', 'лет'])}
+        </p>
+      {/if}
     </div>
   {/if}
 </div>

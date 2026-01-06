@@ -38,7 +38,7 @@
   const INITIAL_WORK_OBJ = {
     company: '',
     job_title: '',
-    experience: 1,
+    experience: null,
   };
   let isLoading = $state(false);
   const form = superForm(defaults(zod4(scheme)), {

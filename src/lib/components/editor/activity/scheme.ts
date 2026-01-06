@@ -30,7 +30,9 @@ export const scheme = z
         job_title: z.string(),
         experience: z
           .number()
-          .positive({ error: 'Стаж не может быть отрицательным' }),
+          .min(0, { error: 'Стаж не может быть отрицательным' })
+          .optional()
+          .nullable(),
       })
       .optional(),
     // text: z
