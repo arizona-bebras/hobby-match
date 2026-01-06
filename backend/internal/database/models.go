@@ -27,7 +27,7 @@ type User struct {
 	Location        string          `json:"location" gorm:"column:location"`
 	Gender          string          `json:"gender" gorm:"column:gender"`
 	BirthDate       string          `json:"birth_date" gorm:"column:birth_date"`
-	Interests       []Interest      `json:"interests" gorm:"many2many:user_interests"`
+	Interests       []Interest      `json:"interests" gorm:"many2many:user_interests;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	PersonalityTest pgvector.Vector `json:"personality_test" gorm:"type:vector(5);default:null"`
 	Photo           []byte          `json:"-" gorm:"type:bytea;column:photo"`
 	Info            string          `json:"user_info" gorm:"column:info"`
@@ -45,7 +45,7 @@ type Widget struct {
 	UserId         string        `json:"user" gorm:"column:user;type:text"`
 	User           User          `gorm:"foreignKey:UserId;references:Id"`
 	Order          int           `json:"order" gorm:"column:order"`
-	Files          pq.ByteaArray `json:"-" gorm:"type:bytea[];column:files"` // TODO: возвращать отдельным endpoint...
+	Files          pq.ByteaArray `json:"-" gorm:"type:bytea[];column:files"`
 	Data           string        `json:"data" gorm:"column:data"`
 	Namespace      string        `json:"namespace" gorm:"column:namespace"`
 	AdditionalData string        `json:"additionalData" gorm:"-"`
@@ -67,7 +67,7 @@ type Namespace struct {
 	Description     string          `json:"description" gorm:"column:description"`
 	MembersCount    int64           `json:"members_count" gorm:"-"`
 	AdminId         string          `json:"admin" gorm:"column:admin_id"`
-	Admin           User            `json:"-" gorm:"foreignKey:AdminId;references:Id"`
+	Admin           User            `json:"-" gorm:"foreignKey:AdminId;references:Id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	NamespaceInvite NamespaceInvite `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Members         []User          `json:"-" gorm:"many2many:user_namespace"`
 }
