@@ -11,6 +11,7 @@
   import { db } from '$lib';
   import CreateGroupBtn from '$lib/components/namespaces/CreateGroupBtn.svelte';
   import { userData } from '$lib/storage/userData.svelte';
+  import { toast } from 'svelte-sonner';
 
   let testNameSpaceses = {
     img: 'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',

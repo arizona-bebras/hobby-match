@@ -2,12 +2,26 @@
   import { goto } from '$app/navigation';
   import { User, MessagesSquare, Eye } from '@lucide/svelte';
   import { page } from '$app/state';
-  import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
+  import {
+    QueryCache,
+    QueryClient,
+    QueryClientProvider,
+  } from '@tanstack/svelte-query';
   import { SvelteQueryDevtools } from '@tanstack/svelte-query-devtools';
   import NavBar from '$lib/components/NavBar.svelte';
+  import { toast } from 'svelte-sonner';
 
   let { children } = $props();
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    queryCache: new QueryCache({
+      onSuccess: (data) => {
+        if (data.error) {
+          console.error('Возникла ошибка!');
+          toast.error('Возникла ошибка при получении данных!');
+        }
+      },
+    }),
+  });
 </script>
 
 <QueryClientProvider client={queryClient}>
