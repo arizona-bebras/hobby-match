@@ -20,14 +20,15 @@
 <div class="w-full py-2 transition-all relative" class:h-fit={isOpen}>
   <div
     class={cn(
-      'flex flex-row w-fit gap-[8px] flex-wrap transition-all overflow-hidden',
+      'flex flex-row w-fit gap-[8px] flex-wrap transition-all overflow-y-clip py-2.5',
       !isOpen && 'max-h-25',
     )}
     class:overflow-visible={isOpen}
     class:gradient={!isOpen && interests.length > 5}
   >
     {#each interests as interest}
-      {@const similarity = 100 - Math.round(interest.similarity) * 100}
+      {@const similarity =
+        100 - Math.round(easeInOutExpo(interest.similarity ?? 1)) * 100}
       {@const bgOpacity =
         similarity <= 25
           ? 25
@@ -40,7 +41,7 @@
         class="flex gap-[8px] h-fit rounded-[28px] px-[12px] py-[8px]"
         style="background-color: color-mix(in srgb, var(--color-accent), transparent {bgOpacity}%)"
         style:box-shadow={similarity <= 50
-          ? '0px 3px 10px color-mix(in srgb, var(--color-accent), transparent 40%)'
+          ? `0px 3px 10px color-mix(in srgb, var(--color-accent), transparent ${interest.similarity ? 40 : 100}%)`
           : ''}
       >
         <p class="text-text-color">{interest.tag}</p>
