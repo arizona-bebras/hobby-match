@@ -64,6 +64,7 @@
     "pocketbase": "^0.26.0",
     "runed": "^0.37.0",
     "siema": "^1.5.1",
+    "svelte-language-server": "^0.17.23",
     "tailwindcss": "^4.1.8",
     "typescript-eslint": "^8.27.0",
     "vite-plugin-mkcert": "^1.17.8"

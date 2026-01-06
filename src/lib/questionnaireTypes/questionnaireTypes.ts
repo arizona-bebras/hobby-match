@@ -31,6 +31,7 @@ import type { components } from '$lib/api/types';
 export type InterestType = {
   id: string;
   tag: string;
+  similarity?: number;
 };
 
 type WidgetType = {
