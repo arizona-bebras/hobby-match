@@ -47,6 +47,7 @@ type Widget struct {
 	Order          int           `json:"order" gorm:"column:order"`
 	Files          pq.ByteaArray `json:"-" gorm:"type:bytea[];column:files"`
 	Data           string        `json:"data" gorm:"column:data"`
+	FilesCount     int           `json:"files_count" gorm:"column:files_count"`
 	Namespace      string        `json:"namespace" gorm:"column:namespace"`
 	AdditionalData string        `json:"additionalData" gorm:"-"`
 	Vote           Vote          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`

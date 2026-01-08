@@ -85,6 +85,7 @@ func (h *UserDataHandler) CreateWidget(w http.ResponseWriter, r *http.Request) {
 		Files: files,
 		Data:  data,
 		Namespace: uuid.Nil.String(),
+		FilesCount: fileCount,
 	}
 
 	result := h.DB.Create(&widget)
@@ -173,6 +174,7 @@ func (h *UserDataHandler) UpdateWidget(w http.ResponseWriter, r *http.Request) {
 		Id:    widgetID,
 		Files: files,
 		Data:  data,
+		FilesCount: fileCount,
 	}
 
 	tx := h.DB.Begin()
@@ -194,7 +196,7 @@ func (h *UserDataHandler) UpdateWidget(w http.ResponseWriter, r *http.Request) {
 	if len(files) > 0 {
 		result = tx.Exec(`
 			UPDATE "widgets"
-			SET "files" = "files" || $1
+			SET "files" = "files" || $1, "files_count" = "files_count" + 1
 			WHERE "id" = $2
 		`, files, widgetID)
 		if result.Error != nil {
@@ -417,7 +419,7 @@ func (h *UserDataHandler) DeleteWidgetPhoto(w http.ResponseWriter, r *http.Reque
 
 	if err := h.DB.Debug().Exec(`
 		UPDATE "widgets"
-		SET "files" = files[0:$1] || files[$2+1:]
+		SET "files" = files[0:$1] || files[$2+1:], "files_count" = files_count - 1
 		WHERE "id" = $3
 	`, index, index + 1, id).Error; err != nil {
 		log.Println("widgets handler: failed to delete photo")

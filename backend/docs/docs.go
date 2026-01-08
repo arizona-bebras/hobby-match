@@ -1067,6 +1067,9 @@ const docTemplate = `{
                 "data": {
                     "type": "string"
                 },
+                "files_count": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "string"
                 },

@@ -1296,6 +1296,9 @@
           "order": {
             "type": "integer"
           },
+          "files_count": {
+            "type": "integer"
+          },
           "user": {
             "$ref": "#/components/schemas/database.User"
           },

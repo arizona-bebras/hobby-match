@@ -6,9 +6,9 @@ info:
   contact: {}
   version: '1.0'
 servers:
-  - url: "/"
+- url: "/"
 security:
-  - BearerAuth: []
+- BearerAuth: []
 paths:
   "/api/auth":
     post:
@@ -39,17 +39,17 @@ paths:
               schema:
                 "$ref": "#/components/schemas/database.Error"
       security:
-        - TmaAuth: []
+      - TmaAuth: []
   "/api/autocomplete":
     get:
       summary: Предложенные интересы
       description: Возвращает список интересов, семантически похожих на запрос 'q'.
       parameters:
-        - name: q
-          in: query
-          description: Строка для поиска и автодополнения интересов
-          schema:
-            type: string
+      - name: q
+        in: query
+        description: Строка для поиска и автодополнения интересов
+        schema:
+          type: string
       responses:
         '200':
           description: Успешное получение списка интересов
@@ -73,24 +73,24 @@ paths:
     get:
       summary: Получить фото, связанное с объектом
       parameters:
-        - name: object
-          in: path
-          description: тип объекта (users, namespaces, widgets)
-          required: true
-          schema:
-            type: string
-        - name: id
-          in: path
-          description: id объекта
-          required: true
-          schema:
-            type: string
-        - name: index
-          in: path
-          description: индекс файла в списке файлов виджета
-          required: true
-          schema:
-            type: string
+      - name: object
+        in: path
+        description: тип объекта (users, namespaces, widgets)
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: id объекта
+        required: true
+        schema:
+          type: string
+      - name: index
+        in: path
+        description: индекс файла в списке файлов виджета
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Файл
@@ -115,12 +115,12 @@ paths:
     get:
       summary: Игры пользователя из его steam профиля для виджета
       parameters:
-        - name: link
-          in: query
-          description: Ссылка на профиль
-          required: true
-          schema:
-            type: string
+      - name: link
+        in: query
+        description: Ссылка на профиль
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Игры из steam профиля пользователя
@@ -253,12 +253,12 @@ paths:
     delete:
       summary: Удалить виджет
       parameters:
-        - name: widget_id
-          in: query
-          description: id виджета
-          required: true
-          schema:
-            type: string
+      - name: widget_id
+        in: query
+        description: id виджета
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Виджет удален
@@ -305,8 +305,8 @@ paths:
           multipart/form-data:
             schema:
               required:
-                - order
-                - widget_id
+              - order
+              - widget_id
               type: object
               properties:
                 widget_id:
@@ -331,18 +331,18 @@ paths:
     delete:
       summary: Удалить фото виджета
       parameters:
-        - name: widget_id
-          in: query
-          description: id виджета
-          required: true
-          schema:
-            type: string
-        - name: index
-          in: query
-          description: Позиция фото в списке
-          required: true
-          schema:
-            type: integer
+      - name: widget_id
+        in: query
+        description: id виджета
+        required: true
+        schema:
+          type: string
+      - name: index
+        in: query
+        description: Позиция фото в списке
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Фото виджета удалено
@@ -361,9 +361,9 @@ paths:
           multipart/form-data:
             schema:
               required:
-                - description
-                - photo
-                - title
+              - description
+              - photo
+              - title
               type: object
               properties:
                 title:
@@ -393,12 +393,12 @@ paths:
     delete:
       summary: Удалить неймспейс
       parameters:
-        - name: id
-          in: query
-          description: Название неймспейса
-          required: true
-          schema:
-            type: string
+      - name: id
+        in: query
+        description: Название неймспейса
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Неймспейс успешно удален
@@ -450,18 +450,18 @@ paths:
     post:
       summary: Зайти в неймспейс
       parameters:
-        - name: namespace_id
-          in: path
-          description: id неймспейса
-          required: true
-          schema:
-            type: string
+      - name: namespace_id
+        in: path
+        description: id неймспейса
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           multipart/form-data:
             schema:
               required:
-                - invite_code
+              - invite_code
               type: object
               properties:
                 invite_code:
@@ -487,12 +487,12 @@ paths:
     delete:
       summary: Выйти из неймспейса
       parameters:
-        - name: namespace_id
-          in: path
-          description: id неймспейса
-          required: true
-          schema:
-            type: string
+      - name: namespace_id
+        in: path
+        description: id неймспейса
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Успешный вход
@@ -507,12 +507,12 @@ paths:
     get:
       summary: Получить ленту из анкет пользователей неймспейса
       parameters:
-        - name: namespace_id
-          in: path
-          description: id неймспейса
-          required: true
-          schema:
-            type: string
+      - name: namespace_id
+        in: path
+        description: id неймспейса
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -532,12 +532,12 @@ paths:
     get:
       summary: Получить пользователей неймспейса
       parameters:
-        - name: namespace_id
-          in: path
-          description: id неймспейса
-          required: true
-          schema:
-            type: string
+      - name: namespace_id
+        in: path
+        description: id неймспейса
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -561,12 +561,12 @@ paths:
     get:
       summary: Получить анкету(страницу) одного пользователя
       parameters:
-        - name: page_id
-          in: path
-          description: id анкеты
-          required: true
-          schema:
-            type: string
+      - name: page_id
+        in: path
+        description: id анкеты
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -584,12 +584,12 @@ paths:
     get:
       summary: Проверить существование пользователя в бд
       parameters:
-        - name: id
-          in: query
-          description: id пользователя
-          required: true
-          schema:
-            type: string
+      - name: id
+        in: query
+        description: id пользователя
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -628,12 +628,12 @@ paths:
     delete:
       summary: Скрыть/показывать анкету другим пользователям
       parameters:
-        - name: id
-          in: query
-          description: id пользователя
-          required: true
-          schema:
-            type: string
+      - name: id
+        in: query
+        description: id пользователя
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -647,12 +647,12 @@ paths:
     patch:
       summary: Скрыть/показывать анкету другим пользователям
       parameters:
-        - name: id
-          in: query
-          description: id пользователя
-          required: true
-          schema:
-            type: string
+      - name: id
+        in: query
+        description: id пользователя
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -814,6 +814,8 @@ components:
         namespace:
           type: string
         order:
+          type: integer
+        files_count:
           type: integer
         user:
           "$ref": "#/components/schemas/database.User"

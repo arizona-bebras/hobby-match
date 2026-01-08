@@ -114,6 +114,18 @@ func (h *FilesHandler) GetPhoto(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		if index >= len(widget.Files) {
+			log.Printf("files handler: file not found, %v", err)
+			http.Error(
+				w,
+				database.JSONErr(
+					http.StatusNotFound,
+					fmt.Sprintf("files handler: file not found, %v", err),
+				),
+				http.StatusNotFound,
+			)
+			return
+		}
 		binaryFile := bytes.NewReader(widget.Files[index])
 		w.Header().Set("Content-Type", http.DetectContentType(widget.Files[index]))
 
