@@ -9,7 +9,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "5432:5432"
   backend:
     build: .
     ports:
@@ -36,6 +36,10 @@ services:
     depends_on:
       - db    
     command: ["/server", "-prod=true"]
+  caching:
+    build: ../caching
+    ports:
+      - "1488:1488"
 
 volumes:
   postgres_data:
