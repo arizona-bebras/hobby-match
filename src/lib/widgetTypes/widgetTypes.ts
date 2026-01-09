@@ -16,6 +16,7 @@ export type Widget = {
     | Post
     | Activity;
   files?: string[];
+  files_count: number;
   additionalData?: SocialMediaData | PhotoData | SurveyData | SteamGameData;
 };
 

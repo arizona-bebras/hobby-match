@@ -11,6 +11,7 @@
   import TgPostWidget from '$lib/components/widgets/TgPostWidget.svelte';
   import ActivityWidget from '$lib/components/widgets/ActivityWidget.svelte';
   import type { Widget } from '$lib/widgetTypes/widgetTypes';
+  import { db } from '$lib';
 
   let { widget, isViewingMode }: { widget: Widget; isViewingMode: boolean } =
     $props();
@@ -38,7 +39,12 @@
     survey={widget.additionalData}
   />
 {:else if widget.data.type === 'photo'}
-  <PhotoWidget urls={widget.files} isTestImage={false} />
+  <PhotoWidget
+    urls={[]}
+    isTestImage={false}
+    widgetId={widget.id}
+    filesCount={widget.files_count}
+  />
 {:else if widget.data.type === 'post'}
   <TgPostWidget data={widget.data} />
 {:else if widget.data.type === 'activity'}

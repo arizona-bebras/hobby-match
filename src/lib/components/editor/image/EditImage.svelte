@@ -14,26 +14,24 @@
   import DeleteButton from '$lib/components/editor/DeleteButton.svelte';
   import SaveButton from '$lib/components/editor/SaveButton.svelte';
   import type { PhotoData } from '$lib/widgetTypes/widgetTypes';
+  import { onMount, untrack } from 'svelte';
 
   let {
     widgetId,
     onClose,
     open = $bindable(false),
     widgetData,
-    files,
+    widgetFilesCount,
   }: {
     open: boolean;
     widgetId?: string;
     widgetData: PhotoData;
     onClose: CallableFunction;
-    files: string[];
+    widgetFilesCount: number;
   } = $props();
 
+  let files = $state([]);
   let photoFiles: FileList | undefined = $state();
-  $effect(() => {
-    console.log(photoInput, photoFiles);
-  });
-
   let photoInput: HTMLInputElement;
   let isLoading = $state(false);
   const form = superForm(defaults(zod4(imageScheme)), {
@@ -54,10 +52,22 @@
     },
   });
 
+  function fillImageUrls() {
+    console.log(files);
+    for (let i = 0; i < widgetFilesCount; i++) {
+      files.push(`${db}/api/files/widgets/${widgetId}/${i}`);
+    }
+    isButtonActive = true;
+  }
+
   let imageUrls: string[] = $state([]);
   $effect(() => {
     photoFiles = undefined;
     if (widgetId) {
+      console.log('WIDGET DATA:', widgetData, widgetFilesCount);
+      untrack(() => {
+        fillImageUrls();
+      });
       // TODO: pocketbase was here
       // pb.collection('widgets')
       //   .getOne(widgetId!)
@@ -66,8 +76,14 @@
       reset();
     }
   });
-
-  const { form: formData, enhance, validateForm, reset } = form;
+  const {
+    form: formData,
+    enhance,
+    validateForm,
+    reset,
+    validate,
+    errors,
+  } = form;
   let isButtonActive = $state(false);
   $effect(() => {
     validateForm().then((response) => {
@@ -93,13 +109,9 @@
         </p>
         <div class="overflow-auto max-h-80">
           {#if widgetId !== undefined}
-            {#each files as url, i}
+            {#each files as url, i (url)}
               <div class="w-full h-auto bg-accent/45 rounded-2xl relative mb-4">
-                <img
-                  src={`data:image/png;base64,${url}`}
-                  class="p-4"
-                  alt="loadedImage"
-                />
+                <img src={`${url}`} class="p-4" alt="loadedImage" />
                 <button
                   class="absolute right-4 top-4"
                   onclick={async () => {
@@ -116,6 +128,7 @@
             {/each}
           {/if}
           {#each $formData.files as element, index}
+            <p>{2}</p>
             <div class="w-full h-auto bg-accent/45 rounded-2xl relative mb-4">
               <img
                 src={URL.createObjectURL(element)}

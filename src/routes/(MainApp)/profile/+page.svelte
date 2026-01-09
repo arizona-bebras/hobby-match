@@ -54,6 +54,7 @@
   let editingWidget: string | undefined = $state(undefined);
   let editingFiles: string[] | undefined = $state(undefined);
   let widgetData = $state(undefined);
+  let widgetFilesCount = $state(0);
   let { data }: { data: PageData } = $props();
   let widgets: Widget[] = $state(data.widgets);
 
@@ -113,9 +114,9 @@
       widgetId={editingWidget}
       {widgetData}
       files={editingFiles}
+      {widgetFilesCount}
     />
     {#each widgets as widget, i (widget.id)}
-      {console.log(widget)}
       <div class="relative mb-2">
         {#if changeMode}
           <Edit
@@ -125,6 +126,7 @@
               editingWidget = widget.id;
               editingFiles = widget.files;
               widgetData = widget.data;
+              widgetFilesCount = widget.files_count;
             }}
             onMove={(delta) => {
               if (

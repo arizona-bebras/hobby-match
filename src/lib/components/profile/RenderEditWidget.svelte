@@ -23,14 +23,16 @@
     widgetId,
     widgetData,
     files,
+    widgetFilesCount,
   }: {
     addedWidget: WidgetType;
     onEditClose: () => void;
     widgetId: string;
     widgetData: Widget['data'];
     files: string[];
+    widgetFilesCount: number;
   } = $props();
-  console.log(widgetData, 'Данные виджета!');
+  console.log(widgetFilesCount, 'Данные количества фотографий!');
 </script>
 
 <EditVideo
@@ -74,8 +76,8 @@
   open={addedWidget === 'photo'}
   onClose={onEditClose}
   widgetId={addedWidget === 'photo' ? widgetId : undefined}
-  {files}
   {widgetData}
+  {widgetFilesCount}
 />
 
 <EditToDo
