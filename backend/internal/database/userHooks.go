@@ -19,7 +19,6 @@ func upsertUser(user *User) error {
 		return nil
 	}
 	embedding, err := embeddings.GenerateEmbedding(user.Info)
-	log.Printf("embedding: %s", embedding)
 
 	if err != nil {
 		log.Printf("upsert: failed to create user vector: %v", err)

@@ -11,6 +11,7 @@ import (
 	"github.com/rs/cors"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 
 	"shumi/internal/botauth"
 	"shumi/internal/database"
@@ -56,7 +57,9 @@ func main() {
 	dbAddress := os.Getenv("DB_ADDRESS")
 
 	dsn := fmt.Sprintf("host=%s user=postgres password=%s dbname=shumi port=5432 sslmode=disable", dbAddress, dbPassword)
-	dbConnection, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	dbConnection, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -93,7 +96,6 @@ func main() {
 		AllowedOrigins: []string{"https://qh5zm0g8-5173.euw.devtunnels.ms", "http://192.168.1.156:5173", "http://127.0.0.1:8080", "https://*.shumi.space"},
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
 		AllowedHeaders: []string{"Authorization", "Content-Type"},
-		Debug:          true,
 	})
 
 	mux := http.NewServeMux()

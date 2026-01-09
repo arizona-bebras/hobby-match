@@ -127,7 +127,7 @@ func (h *NamespaceHandler) GetFeed(w http.ResponseWriter, r *http.Request) {
 		  LEFT JOIN user_interests ui ON u.id = ui.user_id
 		  LEFT JOIN interests i ON i.id = ui.interest_id
 		  LEFT JOIN user_namespace un ON u.id = un.user_id
-		  WHERE un.namespace_id = @namespace
+		  WHERE un.namespace_id = @namespace AND u.reg = true
 		  GROUP BY u.id
 		), self_user AS (
 		  SELECT * FROM user_vectors WHERE id = @self
@@ -277,7 +277,7 @@ func (h *NamespaceHandler) GetPages(w http.ResponseWriter, r *http.Request) {
 	err = h.DB.Model(&database.UserNamespace{}).
 		Joins(`LEFT JOIN users ON users.id = user_namespace.user_id`).
 		Select("users.id, users.name, user_namespace.date").
-		Find(&members, "namespace_id = ?", namespaceId).Error
+		Find(&members, "user_namespace.namespace_id = ? AND users.reg = true", namespaceId).Error
 	if err != nil {
 		log.Printf("namespace handler: failed to get namespace member`s ids, %v", err)
 		http.Error(

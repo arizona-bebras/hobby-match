@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	// "gorm.io/gorm"
+	"gorm.io/gorm"
 	"github.com/lib/pq"
 	"github.com/pgvector/pgvector-go"
 )
@@ -33,10 +33,35 @@ type User struct {
 	Info            string          `json:"user_info" gorm:"column:info"`
 	InfoEmbedding   pgvector.Vector `json:"-" gorm:"type:vector(2048);default:null"`
 	Hide            bool            `json:"hide" gorm:"column:hide"`
+	Registred       bool            `json:"-" gorm:"column:reg"`
 	Widgets         []Widget        `json:"widgets" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	TgUser          TgUser          `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	UserNamespace   UserNamespace   `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Vote            Vote            `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+func UpdateRegStatus(tx *gorm.DB, userId string) error {
+	var fullUserInfo User
+	if err := tx.Preload("Interests").First(&fullUserInfo, "id = ?", userId).Error; err != nil {
+		return err
+	}
+	regStatus := fullUserInfo.Name != "" &&
+		fullUserInfo.Location != "" &&
+		fullUserInfo.Gender != "" &&
+		fullUserInfo.BirthDate != "" &&
+		len(fullUserInfo.Interests) != 0 &&
+		len(fullUserInfo.PersonalityTest.Slice()) != 0 &&
+		len(fullUserInfo.Photo) != 0 &&
+		fullUserInfo.Info != ""
+	log.Printf("%v", fullUserInfo.Interests)
+	log.Printf("%v", fullUserInfo.PersonalityTest.Slice())
+	log.Printf("%v", regStatus)
+	if regStatus != fullUserInfo.Registred {
+		if err := tx.Model(&User{}).Where("id = ?", userId).Update("reg", regStatus).Error; err != nil {
+                return err
+            }
+	}
+	return nil
 }
 
 // @Description Виджет

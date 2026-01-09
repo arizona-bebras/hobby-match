@@ -196,9 +196,11 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 	log.Printf("%s", getStructFieldNames(user))
 
 	var result *gorm.DB
-	result = h.DB.Model(&user).Omit("Interests.*").Updates(&user)
+	tx := h.DB.Begin()
+	result = tx.Model(&user).Omit("Interests.*").Updates(&user)
 
 	if result.Error != nil {
+		tx.Rollback()
 		log.Printf("users handler: failed to update user, %s", result.Error.Error())
 		http.Error(
 			w,
@@ -212,9 +214,10 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 	}
 
 	if user.Interests != nil {
-		err := h.DB.Model(&user).Omit("Interests.*").Association("Interests").Replace(&user.Interests)
+		err := tx.Model(&user).Omit("Interests.*").Association("Interests").Replace(&user.Interests)
 
 		if err != nil {
+			tx.Rollback()
 			log.Printf("users handler: failed to update user, %s", err.Error())
 			http.Error(
 				w,
@@ -227,6 +230,22 @@ func (h *UserDataHandler) UpdateMyProfileInfo(w http.ResponseWriter, r *http.Req
 			return
 		}
 	}
+
+	err = database.UpdateRegStatus(tx, user.Id)
+	if err != nil {
+		tx.Rollback()
+		log.Printf("users handler: failed to update user`s reg status, %s", err.Error())
+		http.Error(
+				w,
+				database.JSONErr(
+					http.StatusInternalServerError,
+					fmt.Sprintf("users handler: failed to update user`s reg status, %s", err.Error()),
+				),
+				http.StatusInternalServerError,
+			)
+		return
+	}
+	tx.Commit()
 }
 
 // UpdateMyProfilePhoto
@@ -269,7 +288,9 @@ func (h *UserDataHandler) UpdateMyProfilePhoto(w http.ResponseWriter, r *http.Re
 
 	photoFile.Close()
 
-	result := h.DB.Table("users").Where("id = ?", tgID).Select("photo").Updates(&map[string]interface{}{
+	tx := h.DB.Begin()
+
+	result := tx.Table("users").Where("id = ?", tgID).Select("photo").Updates(&map[string]interface{}{
 		"photo": photoBytes,
 	})
 
@@ -285,6 +306,22 @@ func (h *UserDataHandler) UpdateMyProfilePhoto(w http.ResponseWriter, r *http.Re
 		)
 		return
 	}
+
+	err = database.UpdateRegStatus(tx, tgID)
+	if err != nil {
+		tx.Rollback()
+		log.Printf("users handler: failed to update user`s reg status, %s", err.Error())
+		http.Error(
+				w,
+				database.JSONErr(
+					http.StatusInternalServerError,
+					fmt.Sprintf("users handler: failed to update user`s reg status, %s", err.Error()),
+				),
+				http.StatusInternalServerError,
+			)
+		return
+	}
+	tx.Commit()
 }
 
 func (h UserDataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
