@@ -182,7 +182,15 @@
   $inspect(widgetFilter);
 </script>
 
-<Sheet.Root bind:open onOpenChange={(state) => !state && onClick()}>
+<Sheet.Root
+  bind:open
+  onOpenChange={(state) => {
+    if (!state) {
+      onClick();
+      window.Telegram.WebApp.MainButton.show();
+    }
+  }}
+>
   <Sheet.Content side="bottom" class="max-h-[calc(100vh-75px)]">
     <Sheet.Header>
       <Sheet.Title class="text-center text-[16px] font-medium mb-6"

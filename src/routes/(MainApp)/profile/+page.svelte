@@ -65,6 +65,7 @@
   function onEditClose() {
     addedWidget = undefined;
     editingWidget = undefined;
+    window.Telegram.WebApp.MainButton.show();
   }
 
   onMount(() => {
@@ -93,7 +94,10 @@
     {#if changeMode}
       <button
         class="my-2 w-full h-12 bg-[#34C759] rounded-xl flex justify-center items-center gap-3 font-medium text-white"
-        onclick={() => (showWidgetMenu = true)}
+        onclick={() => {
+          showWidgetMenu = true;
+          window.Telegram.WebApp.MainButton.hide();
+        }}
       >
         <Plus class="size-5" />
         <p class="">Добавить виджет</p>
@@ -127,6 +131,7 @@
               editingFiles = widget.files;
               widgetData = widget.data;
               widgetFilesCount = widget.files_count;
+              window.Telegram.WebApp.MainButton.hide();
             }}
             onMove={(delta) => {
               if (
