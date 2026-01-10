@@ -54,8 +54,5 @@ export const actions: Actions = {
     }
     await updateUserData();
     redirect(303, '/profile');
-    return {
-      interests,
-    };
   },
 };
