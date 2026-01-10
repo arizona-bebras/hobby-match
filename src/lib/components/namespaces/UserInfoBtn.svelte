@@ -3,6 +3,8 @@
   import { ArrowRight, AlarmClock, CircleX, type User } from '@lucide/svelte';
   import { goto } from '$app/navigation';
   import { db } from '$lib';
+  import client from '$lib/api/client';
+  import { getQueryClientContext } from '@tanstack/svelte-query';
 
   let testData = {
     img: 'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',
@@ -13,8 +15,18 @@
     tg_user: number;
     miniapp_name: string;
   };
-  let { user, open = $bindable() }: { user: NamespaceMembers; open: boolean } =
-    $props();
+  let {
+    user,
+    open = $bindable(),
+    namespaceId,
+    adminId,
+  }: {
+    user: NamespaceMembers;
+    open: boolean;
+    namespaceId: string;
+    adminId: number;
+  } = $props();
+  const queryClient = getQueryClientContext();
 </script>
 
 <Sheet.Root bind:open>
@@ -46,12 +58,19 @@
         <p class="w-full">Временно отстранить</p>
         <AlarmClock class="size-5" />
       </div>
-      <div
-        class="flex justify-between border-2 border-text-color/25 rounded-b-xl border-t-0 px-4 py-3 items-center"
-      >
-        <p class="w-full">Исключить</p>
-        <CircleX class="size-5" />
-      </div>
+      {#if user.tg_user === adminId}
+        <button
+          class="flex w-full justify-between border-2 border-text-color/25 rounded-b-xl border-t-0 px-4 py-3"
+          onclick={async () => {
+            await client.DELETE(`/api/admin/${namespaceId}/${user.tg_user}`);
+            open = false;
+            await queryClient.prefetchQuery({ queryKey: ['namespaceInfo'] });
+          }}
+        >
+          <span>Исключить</span>
+          <CircleX class="size-5" />
+        </button>
+      {/if}
     </div>
   </Sheet.Content>
 </Sheet.Root>

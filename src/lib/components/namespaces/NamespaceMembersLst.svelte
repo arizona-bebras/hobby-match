@@ -11,12 +11,16 @@
     miniapp_name: string;
   };
 
-  const { users, adminId }: { users: NamespaceMembers[]; adminId: number } =
+  const {
+    users,
+    adminId,
+    namespaceId,
+  }: { users: NamespaceMembers[]; adminId: number; namespaceId: string } =
     $props();
 </script>
 
 <div class="overflow-y-auto h-[calc(100vh-390px)] w-full text-text-color">
   {#each users as user, i (user.tg_user)}
-    <MemberRow {user} {i} {adminId} />
+    <MemberRow {user} {i} {adminId} {namespaceId} />
   {/each}
 </div>

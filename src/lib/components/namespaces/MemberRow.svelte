@@ -18,7 +18,13 @@
     user,
     adminId,
     i,
-  }: { user: NamespaceMembers; adminId: number; i: number } = $props();
+    namespaceId,
+  }: {
+    user: NamespaceMembers;
+    adminId: number;
+    i: number;
+    namespaceId: number;
+  } = $props();
 
   let isSheetOpen = $state(false);
 </script>
@@ -57,6 +63,6 @@
       </div>
     </div>
     <ArrowRight class="size-5" />
-    <UserInfoBtn {user} bind:open={isSheetOpen} />
+    <UserInfoBtn {user} bind:open={isSheetOpen} {namespaceId} {adminId} } />
   </button>
 </div>

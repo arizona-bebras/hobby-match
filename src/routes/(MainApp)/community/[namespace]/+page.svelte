@@ -124,6 +124,7 @@
     <NamespaceMembersLst
       users={namespaceInfo.data?.users}
       adminId={namespaceInfo.data?.namespace?.admin}
+      namespaceId={namespaceInfo.data?.namespace?.id}
     />
   </div>
   <EditGroup
