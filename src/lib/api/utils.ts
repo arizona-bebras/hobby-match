@@ -5,6 +5,7 @@ export type NamespaceMembers =
 
 export type UserData = components['schemas']['database.User'] & {
   image: string;
+  last_viewed_profile: string;
 };
 
 export type UserNamespaces = components['schemas']['handlers.UserNamespaces'][];

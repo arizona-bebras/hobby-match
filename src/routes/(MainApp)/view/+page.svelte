@@ -8,6 +8,7 @@
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes.ts';
   import { goto } from '$app/navigation';
   import { untrack } from 'svelte';
+  import { userData } from '$lib/storage/userData.svelte';
 
   let namespaceId = page.url.searchParams.get('namespaceId');
   const profileData = createQuery(() => ({
@@ -41,6 +42,8 @@
         screenContainer?.scrollTo(0, 0);
         console.log('Опа! Загружаем новую страницу');
         currentProfile += 1;
+        userData.current.last_viewed_profile =
+          offeredProfiles[currentProfile].tg_user;
         offeredProfiles.shift();
         liked = false;
       }
@@ -49,7 +52,10 @@
   });
   $effect(() => {
     if (profileData.isSuccess) {
-      untrack(() => offeredProfiles.push(...profileData.data));
+      untrack(() => {
+        offeredProfiles.push(...profileData.data);
+        userData.current.last_viewed_profile = offeredProfiles[0].tg_user;
+      });
     }
   });
   let hapticAvailable = $state(true);
@@ -67,7 +73,6 @@
     if (offeredProfiles.length < 2) {
       profileData.refetch();
     }
-    console.log(offeredProfiles);
     currentProfile;
   });
   // $effect(() => {

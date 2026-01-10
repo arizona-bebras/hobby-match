@@ -2,24 +2,28 @@
   import { goto } from '$app/navigation';
   import { Eye, MessagesSquare, User } from '@lucide/svelte';
   import { page } from '$app/state';
+  import { userData } from '$lib/storage/userData.svelte';
 
-  let footerButtons = [
+  let footerButtons = $derived([
     {
       icon: Eye,
       title: 'Просмотр',
-      redirectTo: 'view',
+      redirectTo: [
+        'view',
+        `community/viewing/${userData.current.last_viewed_profile}`,
+      ],
     },
     {
       icon: MessagesSquare,
       title: 'Сообщества',
-      redirectTo: 'community',
+      redirectTo: ['community'],
     },
     {
       icon: User,
       title: 'Моя анкета',
-      redirectTo: 'profile',
+      redirectTo: ['profile'],
     },
-  ];
+  ]);
   let currentPage: 'view' | 'community' | 'profile' = $state('profile');
 
   $effect(() => {
@@ -43,10 +47,10 @@
 >
   {#each footerButtons as button (button.title)}
     {@const Icon = button.icon}
-    {@const isActive = currentPage === button.redirectTo}
+    {@const isActive = button.redirectTo.includes(currentPage)}
     <button
       class="flex flex-col items-center py-2"
-      onclick={() => goto(`/${button.redirectTo}`)}
+      onclick={() => goto(`/${button.redirectTo.at(-1)}`)}
     >
       <Icon class={isActive ? 'stroke-accent' : ''} />
       <span

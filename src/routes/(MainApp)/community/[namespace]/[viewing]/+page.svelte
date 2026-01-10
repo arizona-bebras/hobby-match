@@ -5,6 +5,9 @@
   import { page } from '$app/state';
   import { createQuery } from '@tanstack/svelte-query';
   import client from '$lib/api/client';
+  import WriteUserBtn from '$lib/components/search/WriteUserBtn.svelte';
+  import { userData } from '$lib/storage/userData.svelte';
+  import { onMount, untrack } from 'svelte';
 
   let testData: PageData = {
     age: 19,
@@ -69,30 +72,51 @@
       },
     ],
   };
-  const userId = page.url.href.split('/').at(-1);
-  console.log(userId);
-  const profileData = createQuery(() => ({
-    queryKey: ['profileData'],
-    queryFn: async () =>
-      await client.GET('/api/pages/{page_id}', {
-        params: {
-          path: {
-            page_id: userId,
-          },
-        },
-      }),
-    select: (data) => data.data,
-  }));
-  console.log(profileData.data);
+  let { data } = $props();
+  console.log('userID/Data:', data.pageData);
+  // const profileData = createQuery(() => ({
+  //   queryKey: ['profileData'],
+  //   queryFn: async () =>
+  //     await client.GET('/api/pages/{page_id}', {
+  //       params: {
+  //         path: {
+  //           page_id: userId,
+  //         },
+  //       },
+  //     }),
+  //   select: (data) => data.data,
+  // }));
   let screenContainer = $state<HTMLElement>();
   let scroll = new ScrollState({
     element: () => screenContainer,
   });
   window.Telegram.WebApp.MainButton.hide();
+  onMount(() => {
+    console.log(data.pageData);
+    if (data.pageData)
+      userData.current.last_viewed_profile = data.pageData.data.tg_user;
+  });
+  // $effect(() => {
+  //   if (profileData.isSuccess) {
+  //     untrack(
+  //       () =>
+  //         (userData.current.last_viewed_profile = profileData.data?.tg_user),
+  //     );
+  //   }
+  // });
 </script>
 
-{#if profileData.data}
+{#if data.pageData}
   <div class="overflow-y-auto relative" bind:this={screenContainer}>
-    <Questionnaire data={profileData.data} isNamespaceProfile={true} {scroll} />
+    <Questionnaire
+      data={data.pageData.data}
+      isNamespaceProfile={true}
+      {scroll}
+    />
+    <WriteUserBtn />
+  </div>
+{:else}
+  <div class="flex flex-col items-center items-center mt-5">
+    <p class="text-slate-400">Вы еще не посмотрели ни одной анкеты</p>
   </div>
 {/if}
