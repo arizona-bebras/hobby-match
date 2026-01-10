@@ -3,12 +3,15 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"crypto/rand"
+	"github.com/google/uuid"
 	"fmt"
 	"log"
 	"net/http"
 	"shumi/internal/database"
 	"strings"
 	"time"
+	"io"
 
 	"gorm.io/gorm"
 )
@@ -30,6 +33,132 @@ type UserView struct {
 type Match struct {
 	Id    string  `json:"id"`
 	Score float64 `json:"score"`
+}
+
+// CreateNamespace
+// @Summary Создать неймспейс
+// @Accept multipart/form-data
+// @Param title formData string true "Название неймспейса"
+// @Param photo formData file true "Картинка неймспейса"
+// @Param description formData string true "Описание неймспейса"
+// @Success 200 {object} CreatedNamespace "Неймспейс успешно создан"
+// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
+// @Router /api/namespace [post]
+func (h *NamespaceHandler) CreateNamespace(w http.ResponseWriter, r *http.Request) {
+	tgId := r.Context().Value(database.AuthContextKey).(string)
+
+	r.ParseMultipartForm(FORM_SIZE_LIMIT)
+	title := r.PostFormValue("title")
+
+	picture, _, err := r.FormFile("photo")
+	if err != nil {
+		log.Printf("namesapce handler: failed to get file, %s", err.Error())
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusInternalServerError,
+				fmt.Sprintf("namesapce handler: failed to get file, %s", err.Error()),
+			),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+	pictureBytes, err := io.ReadAll(picture)
+	if err != nil {
+		log.Printf("namespace handler: failed to read picture bytes: %s", err.Error())
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusInternalServerError,
+				fmt.Sprintf("namespace handler: failed to read picture bytes: %s", err.Error()),
+			),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	picture.Close()
+
+	description := r.PostFormValue("description")
+
+	namespaceId := uuid.NewString()
+
+	tx := h.DB.Begin()
+	err = tx.Table("namespaces").Create(database.Namespace{
+		Id:          namespaceId,
+		Title:       title,
+		Picture:     pictureBytes,
+		Description: description,
+		AdminId:     tgId,
+	}).Error
+	if err != nil {
+		tx.Rollback()
+		log.Println("namespace handler: failed to create namespace!")
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusInternalServerError,
+				"namespace handler: failed to create namespace!",
+			),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	inviteCode := rand.Text()
+	err = tx.Table("namespace_invite").Create(database.NamespaceInvite{
+		NamespaceId: namespaceId,
+		InviteCode:  inviteCode,
+	}).Error
+	if err != nil {
+		tx.Rollback()
+		log.Println("failed to create namespace invite code!")
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusInternalServerError,
+				"failed to create namespace invite code!",
+			),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+	err = tx.Model(&database.Namespace{Id: namespaceId}).Omit("Members.*").Association("Members").Append(&database.User{Id: tgId})
+	if err != nil {
+		tx.Rollback()
+		log.Printf("namespace admin handler: failed to enter namespace, %v", err)
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusInternalServerError,
+				fmt.Sprintf("namespace admin handler: failed to enter namespace, %v", err),
+			),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+	tx.Commit()
+
+	createdNamespace := CreatedNamespace{
+		NamespaceId: namespaceId,
+		InviteCode:  inviteCode,
+	}
+
+	JSONCreatedNamespace, err := json.Marshal(createdNamespace)
+	if err != nil {
+		log.Printf("namespace admin handler: failed to marshal response, %v", err)
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusInternalServerError,
+				fmt.Sprintf("namespace admin handler: failed to marshal response, %v", err),
+			),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	w.Write(JSONCreatedNamespace)
 }
 
 // EnterNamespace
@@ -91,10 +220,38 @@ func (h *NamespaceHandler) EnterNamespace(w http.ResponseWriter, r *http.Request
 func (h *NamespaceHandler) LeaveNamespace(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey).(string)
 
-	namespace := r.PathValue("namespace_id")
+	namespaceId := r.PathValue("namespace_id")
 
 	// type UserNamespace struct{}
-	err := h.DB.Model(database.Namespace{Id: namespace}).Association("Members").Delete(database.User{Id: tgId})
+	var namespace database.Namespace
+	err := h.DB.Model(&database.Namespace{}).First(&namespace, "id = ?", namespaceId).Error
+	if err != nil {
+		log.Println("namespace handler: failed to get namespace")
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusInternalServerError,
+				"namespace handler: failed to get namespace",
+			),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	if namespace.AdminId == tgId {
+		log.Println("namespace handler: admin can only delete namespace, not leave")
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusInternalServerError,
+				"namespace handler: admin can only delete namespace, not leave",
+			),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	err = h.DB.Model(database.Namespace{Id: namespaceId}).Association("Members").Delete(database.User{Id: tgId})
 	if err != nil {
 		log.Println("namespace handler: failed to leave namespace")
 		http.Error(
@@ -325,35 +482,51 @@ func (h *NamespaceHandler) GetPages(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h NamespaceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		h.EnterNamespace(w, r)
-	case http.MethodDelete:
-		h.LeaveNamespace(w, r)
-	case http.MethodGet:
-		switch strings.Split(r.URL.Path, "/")[4] {
-		case "feed":
-			h.GetFeed(w, r)
-		case "pages":
-			h.GetPages(w, r)
+	if r.PathValue("namespace_id") != "" {
+		switch r.Method {
+		case http.MethodPost:
+			h.EnterNamespace(w, r)
+		case http.MethodDelete:
+			h.LeaveNamespace(w, r)
+		case http.MethodGet:
+			switch strings.Split(r.URL.Path, "/")[4] {
+			case "feed":
+				h.GetFeed(w, r)
+			case "pages":
+				h.GetPages(w, r)
+			default:
+				http.Error(
+					w,
+					database.JSONErr(
+						http.StatusNotFound,
+						"namespace handler: endpoint not found",
+					),
+					http.StatusNotFound,
+				)
+			}
 		default:
 			http.Error(
 				w,
 				database.JSONErr(
-					http.StatusNotFound,
-					"namespace handler: endpoint not found",
+					http.StatusMethodNotAllowed,
+					"namespace handler: method not allowed",
 				),
-				http.StatusNotFound,
+				http.StatusMethodNotAllowed,
 			)
 		}
-	default:
-		http.Error(
-			w,
-			database.JSONErr(
+	} else {
+		switch r.Method {
+		case http.MethodPost:
+			h.CreateNamespace(w, r)
+		default:
+			http.Error(
+				w,
+				database.JSONErr(
+					http.StatusMethodNotAllowed,
+					"namespace handler: method not allowed",
+				),
 				http.StatusMethodNotAllowed,
-				"namespace handler: method not allowed",
-			),
-			http.StatusMethodNotAllowed,
-		)
+			)
+		}
 	}
 }

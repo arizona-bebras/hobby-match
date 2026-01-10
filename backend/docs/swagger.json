@@ -1,1304 +1,1590 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "description": "Shumi API",
-        "title": "Shumi API",
-        "contact": {},
-        "version": "1.0"
-    },
-    "paths": {
-        "/api/auth": {
-            "post": {
-                "security": [
-                    {
-                        "TmaAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Получить токен авторизации",
-                "responses": {
-                    "200": {
-                        "description": "Токен выдан",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.JWTTokens"
-                        }
-                    },
-                    "401": {
-                        "description": "Не валидный токен авторизации",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    },
-                    "403": {
-                        "description": "Пользователь не записан в базу данных",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Shumi API",
+    "description": "Shumi API",
+    "contact": {},
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/admin/{namespace_id}": {
+      "delete": {
+        "summary": "Удалить неймспейс",
+        "parameters": [
+          {
+            "name": "namespace_id",
+            "in": "path",
+            "description": "Название неймспейса",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
-        },
-        "/api/autocomplete": {
-            "get": {
-                "description": "Возвращает список интересов, семантически похожих на запрос 'q'.",
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Предложенные интересы",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Строка для поиска и автодополнения интересов",
-                        "name": "q",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Успешное получение списка интересов",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.AutocompleteResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Ошибка авторизации",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Неймспейс успешно удален",
+            "content": {}
+          },
+          "403": {
+            "description": "Этот пользователь не админ неймспейса",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
                 }
+              }
             }
-        },
-        "/api/files/{object}/{id}/{index}": {
-            "get": {
-                "produces": [
-                    "application/octet-stream"
-                ],
-                "summary": "Получить фото, связанное с объектом",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "тип объекта (users, namespaces, widgets)",
-                        "name": "object",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "id объекта",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "индекс файла в списке файлов виджета",
-                        "name": "index",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Файл",
-                        "schema": {
-                            "type": "file"
-                        }
-                    },
-                    "403": {
-                        "description": "Для этого пользователя нет доступа к файлу",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
                 }
+              }
             }
-        },
-        "/api/games": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Игры пользователя из его steam профиля для виджета",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Ссылка на профиль",
-                        "name": "link",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Игры из steam профиля пользователя",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.Games"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/me": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Профиль пользователя",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/database.User"
-                        }
-                    },
-                    "401": {
-                        "description": "Пользователь не авторизован",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "consumes": [
-                    "application/json"
-                ],
-                "summary": "Обновить информацию профиля пользователя",
-                "parameters": [
-                    {
-                        "description": "новые данные пользователя в JSON",
-                        "name": "date",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/database.User"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Пользователь успешно обновлен"
-                    },
-                    "401": {
-                        "description": "Пользователь не авторизован",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/me/namespaces": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Неймспейсы пользователя",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.UserNamespaces"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/me/photo": {
-            "patch": {
-                "consumes": [
-                    "application/json"
-                ],
-                "summary": "Обновить фото профиля пользователя",
-                "parameters": [
-                    {
-                        "description": "Фото пользователя",
-                        "name": "user_photo",
-                        "in": "body",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Пользователь успешно обновлен"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/me/widgets": {
-            "post": {
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "summary": "Создать виджет",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Данные виджета",
-                        "name": "data",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "array",
-                        "description": "Файлы виджета",
-                        "name": "files",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Виджет успешно создан"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Удалить виджет",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id виджета",
-                        "name": "widget_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Виджет удален"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "summary": "Обновить виджет",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Данные виджета (JSON)",
-                        "name": "data",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "array",
-                        "description": "Файлы виджета",
-                        "name": "files",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Виджет успешно обновлен"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/me/widgets/order": {
-            "patch": {
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "summary": "Обновить очередь виджета",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id виджета",
-                        "name": "widget_id",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Изменение позиции виджета виджета",
-                        "name": "order",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Очередь успешно обновлена"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/me/widgets/photo": {
-            "delete": {
-                "summary": "Удалить фото виджета",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id виджета",
-                        "name": "widget_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Позиция фото в списке",
-                        "name": "index",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Фото виджета удалено"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/namespace": {
-            "post": {
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "summary": "Создать неймспейс",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Название неймспейса",
-                        "name": "title",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "Картинка неймспейса",
-                        "name": "photo",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Описание неймспейса",
-                        "name": "description",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Неймспейс успешно создан",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.CreatedNamespace"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Удалить неймспейс",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Название неймспейса",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Неймспейс успешно удален"
-                    },
-                    "403": {
-                        "description": "Этот пользователь не админ неймспейса",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "summary": "Обновить информацию о неймспейсе",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id неймспейса",
-                        "name": "id",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Название неймспейса",
-                        "name": "title",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "file",
-                        "description": "Картинка неймспейса",
-                        "name": "photo",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Описание неймспейса",
-                        "name": "description",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Неймспейс успешно обновлен"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/namespace/{namespace_id}": {
-            "post": {
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "summary": "Зайти в неймспейс",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id неймспейса",
-                        "name": "namespace_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "инвайт код для входа в неймспейс",
-                        "name": "invite_code",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Успешный вход"
-                    },
-                    "403": {
-                        "description": "Неверный код входа",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Выйти из неймспейса",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id неймспейса",
-                        "name": "namespace_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Успешный вход"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/namespace/{namespace_id}/feed": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Получить ленту из анкет пользователей неймспейса",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id неймспейса",
-                        "name": "namespace_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/handlers.PageData"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/namespace/{namespace_id}/pages": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Получить пользователей неймспейса",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id неймспейса",
-                        "name": "namespace_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.NamespaceMembers"
-                        }
-                    },
-                    "403": {
-                        "description": "Пользователь не участник этого неймспейса",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/pages/{page_id}": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Получить анкету(страницу) одного пользователя",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id анкеты",
-                        "name": "page_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.PageData"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/tg": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Проверить существование пользователя в бд",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id пользователя",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.User"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Проверить существование пользователя в бд",
-                "parameters": [
-                    {
-                        "description": "tg id пользователя",
-                        "name": "id",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "tg username пользователя",
-                        "name": "username",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "tg firstname пользователя",
-                        "name": "firstname",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Скрыть/показывать анкету другим пользователям",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id пользователя",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Скрыть/показывать анкету другим пользователям",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id пользователя",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/tg/namespace/add": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Записать пользоватея в неймспейс",
-                "parameters": [
-                    {
-                        "description": "данные для записи пользователя",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.TgEnterNamespaceData"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/tg/namespace/create": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Записать пользоватея в неймспейс",
-                "parameters": [
-                    {
-                        "description": "данные для записи пользователя",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.TgEnterNamespaceData"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/vote": {
-            "post": {
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "summary": "Проголосовать в опросе",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id виджета опроса",
-                        "name": "survey",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "вариант опроса",
-                        "name": "option",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Голос засчитан"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            }
+          }
         }
+      },
+      "patch": {
+        "summary": "Обновить информацию о неймспейсе",
+        "parameters": [
+          {
+            "name": "namespace_id",
+            "in": "path",
+            "description": "id неймспейса",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Название неймспейса"
+                  },
+                  "photo": {
+                    "type": "string",
+                    "description": "Картинка неймспейса",
+                    "format": "binary"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Описание неймспейса"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Неймспейс успешно обновлен",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
     },
-    "definitions": {
-        "database.Error": {
-            "description": "Ошибка",
-            "type": "object",
-            "properties": {
-                "cause": {
-                    "type": "string"
-                },
-                "status_code": {
-                    "type": "integer"
-                }
+    "/api/admin/{namespace_id}/{member_id}": {
+      "delete": {
+        "summary": "Исключить пользователя из неймспейса",
+        "parameters": [
+          {
+            "name": "namespace_id",
+            "in": "path",
+            "description": "id неймспейса",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
-        },
-        "database.Interest": {
-            "description": "Интерес",
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "tag": {
-                    "type": "string"
-                }
+          },
+          {
+            "name": "member_id",
+            "in": "path",
+            "description": "id пользователя",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
-        },
-        "database.Namespace": {
-            "description": "Неймспейс",
-            "type": "object",
-            "properties": {
-                "admin": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "members_count": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Участник исключен",
+            "content": {}
+          },
+          "403": {
+            "description": "Этот пользователь не админ неймспейса",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
                 }
+              }
             }
-        },
-        "database.User": {
-            "description": "Основные данные профиля и связанные виджеты.",
-            "type": "object",
-            "properties": {
-                "birth_date": {
-                    "type": "string"
-                },
-                "gender": {
-                    "type": "string"
-                },
-                "hide": {
-                    "type": "boolean"
-                },
-                "interests": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/database.Interest"
-                    }
-                },
-                "location": {
-                    "type": "string"
-                },
-                "miniapp_name": {
-                    "type": "string"
-                },
-                "personality_test": {
-                    "type": "array",
-                    "items": {
-                        "type": "number"
-                    }
-                },
-                "tg_user": {
-                    "type": "string"
-                },
-                "user_info": {
-                    "type": "string"
-                },
-                "widgets": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/database.Widget"
-                    }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
                 }
+              }
             }
-        },
-        "database.Vote": {
-            "description": "Голос в опросе",
-            "type": "object",
-            "properties": {
-                "option": {
-                    "type": "integer"
-                },
-                "survey": {
-                    "type": "string"
-                },
-                "user": {
-                    "type": "string"
+          }
+        }
+      }
+    },
+    "/api/auth": {
+      "post": {
+        "summary": "Получить токен авторизации",
+        "responses": {
+          "200": {
+            "description": "Токен выдан",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/handlers.JWTTokens"
                 }
+              }
             }
-        },
-        "database.Widget": {
-            "description": "Виджет",
-            "type": "object",
-            "properties": {
-                "additionalData": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "string"
-                },
-                "files_count": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "namespace": {
-                    "type": "string"
-                },
-                "order": {
-                    "type": "integer"
-                },
-                "user": {
-                    "$ref": "#/definitions/database.User"
-                },
-                "vote": {
-                    "$ref": "#/definitions/database.Vote"
+          },
+          "401": {
+            "description": "Не валидный токен авторизации",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
                 }
+              }
             }
-        },
-        "handlers.AutocompleteResponse": {
-            "type": "object",
-            "properties": {
-                "completions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.InterestSimilarity"
-                    }
+          },
+          "403": {
+            "description": "Пользователь не записан в базу данных",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
                 }
+              }
             }
-        },
-        "handlers.CreatedNamespace": {
-            "description": "Ответ на успешное создание неймспейса",
-            "type": "object",
-            "properties": {
-                "invite_code": {
-                    "type": "string"
-                },
-                "namespace_id": {
-                    "type": "string"
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
                 }
+              }
             }
+          }
         },
-        "handlers.Games": {
+        "security": [
+          {
+            "TmaAuth": []
+          }
+        ]
+      }
+    },
+    "/api/autocomplete": {
+      "get": {
+        "summary": "Предложенные интересы",
+        "description": "Возвращает список интересов, семантически похожих на запрос 'q'.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Строка для поиска и автодополнения интересов",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешное получение списка интересов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/handlers.AutocompleteResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ошибка авторизации",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/files/{object}/{id}/{index}": {
+      "get": {
+        "summary": "Получить фото, связанное с объектом",
+        "parameters": [
+          {
+            "name": "object",
+            "in": "path",
+            "description": "тип объекта (users, namespaces, widgets)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id объекта",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "index",
+            "in": "path",
+            "description": "индекс файла в списке файлов виджета",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Файл",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Для этого пользователя нет доступа к файлу",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/games": {
+      "get": {
+        "summary": "Игры пользователя из его steam профиля для виджета",
+        "parameters": [
+          {
+            "name": "link",
+            "in": "query",
+            "description": "Ссылка на профиль",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
             "description": "Игры из steam профиля пользователя",
-            "type": "object",
-            "properties": {
-                "games": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.SteamGame"
-                    }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/handlers.Games"
                 }
+              }
             }
-        },
-        "handlers.InterestSimilarity": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "similarity": {
-                    "type": "number"
-                },
-                "tag": {
-                    "type": "string"
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
                 }
+              }
             }
-        },
-        "handlers.JWTTokens": {
-            "description": "Токены для авторизации и данные пользователя",
-            "type": "object",
-            "properties": {
-                "auth_token": {
-                    "type": "string"
-                },
-                "refresh_token": {
-                    "type": "string"
-                },
-                "user": {
-                    "$ref": "#/definitions/database.User"
+          }
+        }
+      }
+    },
+    "/api/me": {
+      "get": {
+        "summary": "Профиль пользователя",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.User"
                 }
+              }
             }
-        },
-        "handlers.NamespaceMember": {
-            "type": "object",
-            "properties": {
-                "date": {
-                    "type": "string"
-                },
-                "miniapp_name": {
-                    "type": "string"
-                },
-                "tg_user": {
-                    "type": "string"
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
                 }
+              }
             }
-        },
-        "handlers.NamespaceMembers": {
-            "description": "Данные неймспеса и его участники",
-            "type": "object",
-            "properties": {
-                "namespace": {
-                    "$ref": "#/definitions/database.Namespace"
-                },
-                "users": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.NamespaceMember"
-                    }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
                 }
+              }
             }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Обновить информацию профиля пользователя",
+        "requestBody": {
+          "description": "новые данные пользователя в JSON",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/database.User"
+              }
+            }
+          },
+          "required": true
         },
-        "handlers.PageData": {
-            "description": "Данные анкеты (все поля database.User + tg username)",
-            "type": "object",
-            "properties": {
-                "birth_date": {
-                    "type": "string"
-                },
-                "gender": {
-                    "type": "string"
-                },
-                "hide": {
-                    "type": "boolean"
-                },
-                "info_score": {
-                    "type": "number"
-                },
-                "interests": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/handlers.InterestSimilarity"
-                    }
-                },
-                "interests_score": {
-                    "type": "number"
-                },
-                "location": {
-                    "type": "string"
-                },
-                "miniapp_name": {
-                    "type": "string"
-                },
-                "personality_score": {
-                    "type": "number"
-                },
-                "personality_test": {
-                    "type": "array",
-                    "items": {
-                        "type": "number"
-                    }
-                },
-                "similarity": {
-                    "type": "number"
-                },
-                "tg_user": {
-                    "type": "string"
-                },
-                "user_info": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                },
-                "widgets": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/database.Widget"
-                    }
+        "responses": {
+          "200": {
+            "description": "Пользователь успешно обновлен",
+            "content": {}
+          },
+          "401": {
+            "description": "Пользователь не авторизован",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
                 }
+              }
             }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
         },
-        "handlers.SteamGame": {
-            "type": "object",
-            "properties": {
-                "appid": {
-                    "type": "integer"
-                },
-                "content_descriptorids": {
+        "x-codegen-request-body-name": "date"
+      }
+    },
+    "/api/me/namespaces": {
+      "get": {
+        "summary": "Неймспейсы пользователя",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/handlers.UserNamespaces"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/photo": {
+      "patch": {
+        "summary": "Обновить фото профиля пользователя",
+        "requestBody": {
+          "description": "Фото пользователя",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "Пользователь успешно обновлен",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "user_photo"
+      }
+    },
+    "/api/me/widgets": {
+      "post": {
+        "summary": "Создать виджет",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "string",
+                    "description": "Данные виджета"
+                  },
+                  "files": {
                     "type": "array",
+                    "description": "Файлы виджета",
                     "items": {
+                      "type": "array",
+                      "items": {
                         "type": "integer"
+                      }
                     }
-                },
-                "has_community_visible_stats": {
-                    "type": "boolean"
-                },
-                "img_icon_url": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "playtime_forever": {
-                    "type": "integer"
+                  }
                 }
+              }
             }
+          }
         },
-        "handlers.TgEnterNamespaceData": {
-            "type": "object",
-            "properties": {
-                "namespace_id": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
+        "responses": {
+          "200": {
+            "description": "Виджет успешно создан",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
                 }
+              }
             }
-        },
-        "handlers.UserNamespaces": {
-            "description": "Неймспейсы, в который состоит пользователь",
-            "type": "object",
-            "properties": {
-                "namespaces": {
+          }
+        }
+      },
+      "delete": {
+        "summary": "Удалить виджет",
+        "parameters": [
+          {
+            "name": "widget_id",
+            "in": "query",
+            "description": "id виджета",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Виджет удален",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Обновить виджет",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "string",
+                    "description": "Данные виджета (JSON)"
+                  },
+                  "files": {
                     "type": "array",
+                    "description": "Файлы виджета",
                     "items": {
-                        "$ref": "#/definitions/database.Namespace"
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
                     }
+                  }
                 }
+              }
             }
-        }
-    },
-    "securityDefinitions": {
-        "BearerAuth": {
-            "description": "Введите: Bearer {token}",
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
+          }
         },
-        "TmaAuth": {
-            "description": "Введите: tma {data}",
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
+        "responses": {
+          "200": {
+            "description": "Виджет успешно обновлен",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
         }
+      }
     },
-    "security": [
-        {
-            "BearerAuth": []
+    "/api/me/widgets/order": {
+      "patch": {
+        "summary": "Обновить очередь виджета",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "order",
+                  "widget_id"
+                ],
+                "type": "object",
+                "properties": {
+                  "widget_id": {
+                    "type": "string",
+                    "description": "id виджета"
+                  },
+                  "order": {
+                    "type": "integer",
+                    "description": "Изменение позиции виджета виджета",
+                    "format": "int32"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Очередь успешно обновлена",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
         }
-    ]
+      }
+    },
+    "/api/me/widgets/photo": {
+      "delete": {
+        "summary": "Удалить фото виджета",
+        "parameters": [
+          {
+            "name": "widget_id",
+            "in": "query",
+            "description": "id виджета",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "index",
+            "in": "query",
+            "description": "Позиция фото в списке",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Фото виджета удалено",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/namespace": {
+      "post": {
+        "summary": "Создать неймспейс",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "description",
+                  "photo",
+                  "title"
+                ],
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Название неймспейса"
+                  },
+                  "photo": {
+                    "type": "string",
+                    "description": "Картинка неймспейса",
+                    "format": "binary"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Описание неймспейса"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Неймспейс успешно создан",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/handlers.CreatedNamespace"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/namespace/{namespace_id}": {
+      "post": {
+        "summary": "Зайти в неймспейс",
+        "parameters": [
+          {
+            "name": "namespace_id",
+            "in": "path",
+            "description": "id неймспейса",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "invite_code"
+                ],
+                "type": "object",
+                "properties": {
+                  "invite_code": {
+                    "type": "string",
+                    "description": "инвайт код для входа в неймспейс"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный вход",
+            "content": {}
+          },
+          "403": {
+            "description": "Неверный код входа",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Выйти из неймспейса",
+        "parameters": [
+          {
+            "name": "namespace_id",
+            "in": "path",
+            "description": "id неймспейса",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный вход",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/namespace/{namespace_id}/feed": {
+      "get": {
+        "summary": "Получить ленту из анкет пользователей неймспейса",
+        "parameters": [
+          {
+            "name": "namespace_id",
+            "in": "path",
+            "description": "id неймспейса",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/handlers.PageData"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/namespace/{namespace_id}/pages": {
+      "get": {
+        "summary": "Получить пользователей неймспейса",
+        "parameters": [
+          {
+            "name": "namespace_id",
+            "in": "path",
+            "description": "id неймспейса",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/handlers.NamespaceMembers"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Пользователь не участник этого неймспейса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pages/{page_id}": {
+      "get": {
+        "summary": "Получить анкету(страницу) одного пользователя",
+        "parameters": [
+          {
+            "name": "page_id",
+            "in": "path",
+            "description": "id анкеты",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/handlers.PageData"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tg": {
+      "get": {
+        "summary": "Проверить существование пользователя в бд",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "id пользователя",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/database.User"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Записать пользователя в бд",
+        "requestBody": {
+          "description": "tg firstname пользователя",
+          "content": {
+            "*/*": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "firstname"
+      },
+      "delete": {
+        "summary": "Удалить анкету пользователя",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "id пользователя",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Скрыть/показывать анкету другим пользователям",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "id пользователя",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tg/namespace/add": {
+      "post": {
+        "summary": "Записать пользоватея в неймспейс",
+        "requestBody": {
+          "description": "данные для записи пользователя",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/handlers.TgEnterNamespaceData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "data"
+      }
+    },
+    "/api/tg/namespace/create": {
+      "post": {
+        "summary": "Создать неймспейс из беседы",
+        "requestBody": {
+          "description": "данные для записи пользователя",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/handlers.TgEnterNamespaceData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "data"
+      }
+    },
+    "/api/vote": {
+      "post": {
+        "summary": "Проголосовать в опросе",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "survey": {
+                    "type": "string",
+                    "description": "id виджета опроса"
+                  },
+                  "option": {
+                    "type": "string",
+                    "description": "вариант опроса"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Голос засчитан",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "database.Error": {
+        "type": "object",
+        "properties": {
+          "cause": {
+            "type": "string"
+          },
+          "status_code": {
+            "type": "integer"
+          }
+        },
+        "description": "Ошибка"
+      },
+      "database.Interest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          }
+        },
+        "description": "Интерес"
+      },
+      "database.Namespace": {
+        "type": "object",
+        "properties": {
+          "admin": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "members_count": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "description": "Неймспейс"
+      },
+      "database.User": {
+        "type": "object",
+        "properties": {
+          "birth_date": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "hide": {
+            "type": "boolean"
+          },
+          "interests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/database.Interest"
+            }
+          },
+          "location": {
+            "type": "string"
+          },
+          "miniapp_name": {
+            "type": "string"
+          },
+          "personality_test": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "tg_user": {
+            "type": "string"
+          },
+          "user_info": {
+            "type": "string"
+          },
+          "widgets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/database.Widget"
+            }
+          }
+        },
+        "description": "Основные данные профиля и связанные виджеты."
+      },
+      "database.Vote": {
+        "type": "object",
+        "properties": {
+          "option": {
+            "type": "integer"
+          },
+          "survey": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          }
+        },
+        "description": "Голос в опросе"
+      },
+      "database.Widget": {
+        "type": "object",
+        "properties": {
+          "additionalData": {
+            "type": "string"
+          },
+          "data": {
+            "type": "string"
+          },
+          "files_count": {
+            "type": "integer"
+          },
+          "id": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer"
+          },
+          "user": {
+            "$ref": "#/components/schemas/database.User"
+          },
+          "vote": {
+            "$ref": "#/components/schemas/database.Vote"
+          }
+        },
+        "description": "Виджет"
+      },
+      "handlers.AutocompleteResponse": {
+        "type": "object",
+        "properties": {
+          "completions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/handlers.InterestSimilarity"
+            }
+          }
+        }
+      },
+      "handlers.CreatedNamespace": {
+        "type": "object",
+        "properties": {
+          "invite_code": {
+            "type": "string"
+          },
+          "namespace_id": {
+            "type": "string"
+          }
+        },
+        "description": "Ответ на успешное создание неймспейса"
+      },
+      "handlers.Games": {
+        "type": "object",
+        "properties": {
+          "games": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/handlers.SteamGame"
+            }
+          }
+        },
+        "description": "Игры из steam профиля пользователя"
+      },
+      "handlers.InterestSimilarity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "similarity": {
+            "type": "number"
+          },
+          "tag": {
+            "type": "string"
+          }
+        }
+      },
+      "handlers.JWTTokens": {
+        "type": "object",
+        "properties": {
+          "auth_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/database.User"
+          }
+        },
+        "description": "Токены для авторизации и данные пользователя"
+      },
+      "handlers.NamespaceMember": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "miniapp_name": {
+            "type": "string"
+          },
+          "tg_user": {
+            "type": "string"
+          }
+        }
+      },
+      "handlers.NamespaceMembers": {
+        "type": "object",
+        "properties": {
+          "namespace": {
+            "$ref": "#/components/schemas/database.Namespace"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/handlers.NamespaceMember"
+            }
+          }
+        },
+        "description": "Данные неймспеса и его участники"
+      },
+      "handlers.PageData": {
+        "type": "object",
+        "properties": {
+          "birth_date": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "hide": {
+            "type": "boolean"
+          },
+          "info_score": {
+            "type": "number"
+          },
+          "interests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/handlers.InterestSimilarity"
+            }
+          },
+          "interests_score": {
+            "type": "number"
+          },
+          "location": {
+            "type": "string"
+          },
+          "miniapp_name": {
+            "type": "string"
+          },
+          "personality_score": {
+            "type": "number"
+          },
+          "personality_test": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "similarity": {
+            "type": "number"
+          },
+          "tg_user": {
+            "type": "string"
+          },
+          "user_info": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "widgets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/database.Widget"
+            }
+          }
+        },
+        "description": "Данные анкеты (все поля database.User + tg username)"
+      },
+      "handlers.SteamGame": {
+        "type": "object",
+        "properties": {
+          "appid": {
+            "type": "integer"
+          },
+          "content_descriptorids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "has_community_visible_stats": {
+            "type": "boolean"
+          },
+          "img_icon_url": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "playtime_forever": {
+            "type": "integer"
+          }
+        }
+      },
+      "handlers.TgEnterNamespaceData": {
+        "type": "object",
+        "properties": {
+          "namespace_id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          }
+        }
+      },
+      "handlers.UserNamespaces": {
+        "type": "object",
+        "properties": {
+          "namespaces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/database.Namespace"
+            }
+          }
+        },
+        "description": "Неймспейсы, в который состоит пользователь"
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "apiKey",
+        "description": "Введите: Bearer {token}",
+        "name": "Authorization",
+        "in": "header"
+      },
+      "TmaAuth": {
+        "type": "apiKey",
+        "description": "Введите: tma {data}",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "x-original-swagger-version": "2.0"
 }

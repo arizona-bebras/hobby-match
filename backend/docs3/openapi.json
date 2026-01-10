@@ -17,6 +17,153 @@
     }
   ],
   "paths": {
+    "/api/admin/{namespace_id}": {
+      "delete": {
+        "summary": "Удалить неймспейс",
+        "parameters": [
+          {
+            "name": "namespace_id",
+            "in": "path",
+            "description": "Название неймспейса",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Неймспейс успешно удален",
+            "content": {}
+          },
+          "403": {
+            "description": "Этот пользователь не админ неймспейса",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Обновить информацию о неймспейсе",
+        "parameters": [
+          {
+            "name": "namespace_id",
+            "in": "path",
+            "description": "id неймспейса",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Название неймспейса"
+                  },
+                  "photo": {
+                    "type": "string",
+                    "description": "Картинка неймспейса",
+                    "format": "binary"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Описание неймспейса"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Неймспейс успешно обновлен",
+            "content": {}
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/{namespace_id}/{member_id}": {
+      "delete": {
+        "summary": "Исключить пользователя из неймспейса",
+        "parameters": [
+          {
+            "name": "namespace_id",
+            "in": "path",
+            "description": "id неймспейса",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "member_id",
+            "in": "path",
+            "description": "id пользователя",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Неймспейс успешно удален",
+            "content": {}
+          },
+          "403": {
+            "description": "Этот пользователь не админ неймспейса",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Внутренняя ошибка сервера",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/database.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/auth": {
       "post": {
         "summary": "Получить токен авторизации",
@@ -625,93 +772,6 @@
             }
           }
         }
-      },
-      "delete": {
-        "summary": "Удалить неймспейс",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "description": "Название неймспейса",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Неймспейс успешно удален",
-            "content": {}
-          },
-          "403": {
-            "description": "Этот пользователь не админ неймспейса",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/database.Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Внутренняя ошибка сервера",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/database.Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "summary": "Обновить информацию о неймспейсе",
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "description": "id неймспейса"
-                  },
-                  "title": {
-                    "type": "string",
-                    "description": "Название неймспейса"
-                  },
-                  "photo": {
-                    "type": "string",
-                    "description": "Картинка неймспейса",
-                    "format": "binary"
-                  },
-                  "description": {
-                    "type": "string",
-                    "description": "Описание неймспейса"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Неймспейс успешно обновлен",
-            "content": {}
-          },
-          "500": {
-            "description": "Внутренняя ошибка сервера",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/database.Error"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/api/namespace/{namespace_id}": {
@@ -1287,6 +1347,9 @@
           "data": {
             "type": "string"
           },
+          "files_count": {
+            "type": "integer"
+          },
           "id": {
             "type": "string"
           },
@@ -1294,9 +1357,6 @@
             "type": "string"
           },
           "order": {
-            "type": "integer"
-          },
-          "files_count": {
             "type": "integer"
           },
           "user": {
@@ -1513,9 +1573,10 @@
     },
     "securitySchemes": {
       "BearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+        "type": "apiKey",
+        "description": "Введите: Bearer {token}",
+        "name": "Authorization",
+        "in": "header"
       },
       "TmaAuth": {
         "type": "apiKey",
