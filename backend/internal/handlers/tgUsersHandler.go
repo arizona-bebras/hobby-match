@@ -61,7 +61,7 @@ func (h *TgUsersHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // RegisterUser
-// @Summary Проверить существование пользователя в бд
+// @Summary Записать пользователя в бд
 // @Produce json
 // @Param id body string true "tg id пользователя"
 // @Param username body string true "tg username пользователя"
@@ -214,7 +214,7 @@ func (h *TgUsersHandler) UpdateHideStatus(w http.ResponseWriter, r *http.Request
 }
 
 // DeleteUser
-// @Summary Скрыть/показывать анкету другим пользователям
+// @Summary Удалить анкету пользователя
 // @Produce json
 // @Param id query string true "id пользователя"
 // @Success 200 {object} nil
@@ -299,7 +299,7 @@ func (h *TgUsersHandler) EnterNamespace(w http.ResponseWriter, r *http.Request) 
 }
 
 // CreateNamespace
-// @Summary Записать пользоватея в неймспейс
+// @Summary Создать неймспейс из беседы
 // @Produce json
 // @Param data body TgEnterNamespaceData true "данные для записи пользователя"
 // @Success 200 {object} nil

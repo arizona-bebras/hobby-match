@@ -1,10 +1,7 @@
 package handlers
 
 import (
-	"crypto/rand"
-	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"io"
 	"log"
 	"net/http"
@@ -17,147 +14,21 @@ type NamespaceAdminHandler struct {
 	DB *gorm.DB
 }
 
-// CreateNamespace
-// @Summary Создать неймспейс
-// @Accept multipart/form-data
-// @Param title formData string true "Название неймспейса"
-// @Param photo formData file true "Картинка неймспейса"
-// @Param description formData string true "Описание неймспейса"
-// @Success 200 {object} CreatedNamespace "Неймспейс успешно создан"
-// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
-// @Router /api/namespace [post]
-func (h *NamespaceAdminHandler) CreateNamespace(w http.ResponseWriter, r *http.Request) {
-	tgId := r.Context().Value(database.AuthContextKey).(string)
-
-	r.ParseMultipartForm(FORM_SIZE_LIMIT)
-	title := r.PostFormValue("title")
-
-	picture, _, err := r.FormFile("photo")
-	if err != nil {
-		log.Printf("namesapce handler: failed to get file, %s", err.Error())
-		http.Error(
-			w,
-			database.JSONErr(
-				http.StatusInternalServerError,
-				fmt.Sprintf("namesapce handler: failed to get file, %s", err.Error()),
-			),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-	pictureBytes, err := io.ReadAll(picture)
-	if err != nil {
-		log.Printf("namespace handler: failed to read picture bytes: %s", err.Error())
-		http.Error(
-			w,
-			database.JSONErr(
-				http.StatusInternalServerError,
-				fmt.Sprintf("namespace handler: failed to read picture bytes: %s", err.Error()),
-			),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-
-	picture.Close()
-
-	description := r.PostFormValue("description")
-
-	namespaceId := uuid.NewString()
-
-	tx := h.DB.Begin()
-	err = tx.Table("namespaces").Create(database.Namespace{
-		Id:          namespaceId,
-		Title:       title,
-		Picture:     pictureBytes,
-		Description: description,
-		AdminId:     tgId,
-	}).Error
-	if err != nil {
-		tx.Rollback()
-		log.Println("namespace handler: failed to create namespace!")
-		http.Error(
-			w,
-			database.JSONErr(
-				http.StatusInternalServerError,
-				"namespace handler: failed to create namespace!",
-			),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-
-	inviteCode := rand.Text()
-	err = tx.Table("namespace_invite").Create(database.NamespaceInvite{
-		NamespaceId: namespaceId,
-		InviteCode:  inviteCode,
-	}).Error
-	if err != nil {
-		tx.Rollback()
-		log.Println("failed to create namespace invite code!")
-		http.Error(
-			w,
-			database.JSONErr(
-				http.StatusInternalServerError,
-				"failed to create namespace invite code!",
-			),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-	err = tx.Model(&database.Namespace{Id: namespaceId}).Omit("Members.*").Association("Members").Append(&database.User{Id: tgId})
-	if err != nil {
-		tx.Rollback()
-		log.Printf("namespace admin handler: failed to enter namespace, %v", err)
-		http.Error(
-			w,
-			database.JSONErr(
-				http.StatusInternalServerError,
-				fmt.Sprintf("namespace admin handler: failed to enter namespace, %v", err),
-			),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-	tx.Commit()
-
-	createdNamespace := CreatedNamespace{
-		NamespaceId: namespaceId,
-		InviteCode:  inviteCode,
-	}
-
-	JSONCreatedNamespace, err := json.Marshal(createdNamespace)
-	if err != nil {
-		log.Printf("namespace admin handler: failed to marshal response, %v", err)
-		http.Error(
-			w,
-			database.JSONErr(
-				http.StatusInternalServerError,
-				fmt.Sprintf("namespace admin handler: failed to marshal response, %v", err),
-			),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-
-	w.Write(JSONCreatedNamespace)
-}
-
 // UpdateNamespace
 // @Summary Обновить информацию о неймспейсе
 // @Accept multipart/form-data
-// @Param id formData string false "id неймспейса"
+// @Param namespace_id path string false "id неймспейса"
 // @Param title formData string false "Название неймспейса"
 // @Param photo formData file false "Картинка неймспейса"
 // @Param description formData string false "Описание неймспейса"
 // @Success 200 {object} nil "Неймспейс успешно обновлен"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
-// @Router /api/namespace [patch]
+// @Router /api/admin/{namespace_id} [patch]
 func (h *NamespaceAdminHandler) UpdateNamespace(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey).(string)
 
 	r.ParseMultipartForm(FORM_SIZE_LIMIT)
-	id := r.PostFormValue("id")
+	id := r.PathValue("namespace_id")
 
 	var namespace database.Namespace
 	err := h.DB.Table("namespaces").First(&namespace, "id = ?", id).Error
@@ -232,15 +103,15 @@ func (h *NamespaceAdminHandler) UpdateNamespace(w http.ResponseWriter, r *http.R
 
 // DeleteNamespace
 // @Summary Удалить неймспейс
-// @Param id query string true "Название неймспейса"
+// @Param namespace_id path string true "Название неймспейса"
 // @Success 200 {object} nil "Неймспейс успешно удален"
 // @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
 // @Failure 403 {object} database.Error "Этот пользователь не админ неймспейса"
-// @Router /api/namespace [delete]
+// @Router /api/admin/{namespace_id} [delete]
 func (h *NamespaceAdminHandler) DeleteNamespace(w http.ResponseWriter, r *http.Request) {
 	tgId := r.Context().Value(database.AuthContextKey)
 
-	id := r.URL.Query().Get("id")
+	id := r.PathValue("namespace_id")
 	var namespace database.Namespace
 	err := h.DB.Table("namespaces").First(&namespace, "id = ?", id).Error
 	if err != nil {
@@ -270,12 +141,69 @@ func (h *NamespaceAdminHandler) DeleteNamespace(w http.ResponseWriter, r *http.R
 
 	err = h.DB.Delete(namespace).Error
 	if err != nil {
-		log.Println("namespace handler: failed to delete namespace!")
+		log.Println("namespace admin handler: failed to delete namespace!")
 		http.Error(
 			w,
 			database.JSONErr(
 				http.StatusInternalServerError,
-				"namespace handler: failed to delete namespace!",
+				"namespace admin handler: failed to delete namespace!",
+			),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+}
+
+// KickNamespaceMember
+// @Summary Исключить пользователя из неймспейса
+// @Param namespace_id path string true "id неймспейса"
+// @Param member_id path string true "id пользователя"
+// @Success 200 {object} nil "Участник исключен"
+// @Failure 500 {object} database.Error "Внутренняя ошибка сервера"
+// @Failure 403 {object} database.Error "Этот пользователь не админ неймспейса"
+// @Router /api/admin/{namespace_id}/{member_id} [delete]
+func (h *NamespaceAdminHandler) KickNamespaceMember(w http.ResponseWriter, r *http.Request) {
+	tgId := r.Context().Value(database.AuthContextKey).(string)
+
+	namespaceId := r.PathValue("namespace_id")
+	memberId := r.PathValue("member_id")
+
+	var namespace database.Namespace
+	err := h.DB.Model(&database.Namespace{}).First(&namespace, "id = ?", namespaceId).Error
+	if err != nil {
+		log.Printf("namespace admin handler: failed to find namespace, %v", err)
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusInternalServerError,
+				fmt.Sprintf("namespace admin handler: failed to find namespace, %v", err),
+			),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	if namespace.AdminId != tgId {
+		log.Println("namespace admin handler: you are not an admin")
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusInternalServerError,
+				"namespace admin handler: you are not an admin",
+			),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	err = h.DB.Delete(database.UserNamespace{}, "user_id = ? AND namespace_id = ?", memberId, namespaceId).Error
+	if err != nil {
+		log.Printf("namespace admin handler: failed to kick member, %v", err)
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusInternalServerError,
+				fmt.Sprintf("namespace admin handler: failed to kick member, %v", err),
 			),
 			http.StatusInternalServerError,
 		)
@@ -284,21 +212,35 @@ func (h *NamespaceAdminHandler) DeleteNamespace(w http.ResponseWriter, r *http.R
 }
 
 func (h NamespaceAdminHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		h.CreateNamespace(w, r)
-	case http.MethodDelete:
-		h.DeleteNamespace(w, r)
-	case http.MethodPatch:
-		h.UpdateNamespace(w, r)
-	default:
+	if r.PathValue("member_id") == "" {
+		switch r.Method {
+		case http.MethodPatch:
+			h.UpdateNamespace(w ,r)
+		case http.MethodDelete:
+			h.DeleteNamespace(w, r)
+		default:
 		http.Error(
 			w,
 			database.JSONErr(
 				http.StatusMethodNotAllowed,
-				"namespace handler: method not allowed",
+				"namespace admin handler: metthod not allowed",
 			),
 			http.StatusMethodNotAllowed,
 		)
+		}
+	} else {
+		switch r.Method {
+		case http.MethodDelete:
+			h.KickNamespaceMember(w, r)
+		default:
+		http.Error(
+			w,
+			database.JSONErr(
+				http.StatusMethodNotAllowed,
+				"namespace admin handler: metthod not allowed",
+			),
+			http.StatusMethodNotAllowed,
+		)
+		}
 	}
 }

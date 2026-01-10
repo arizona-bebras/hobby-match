@@ -15,6 +15,118 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/admin/{namespace_id}": {
+            "delete": {
+                "summary": "Удалить неймспейс",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Название неймспейса",
+                        "name": "namespace_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Неймспейс успешно удален"
+                    },
+                    "403": {
+                        "description": "Этот пользователь не админ неймспейса",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "summary": "Обновить информацию о неймспейсе",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id неймспейса",
+                        "name": "namespace_id",
+                        "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Название неймспейса",
+                        "name": "title",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Картинка неймспейса",
+                        "name": "photo",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Описание неймспейса",
+                        "name": "description",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Неймспейс успешно обновлен"
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/{namespace_id}/{member_id}": {
+            "delete": {
+                "summary": "Исключить пользователя из неймспейса",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id неймспейса",
+                        "name": "namespace_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "id пользователя",
+                        "name": "member_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Участник исключен"
+                    },
+                    "403": {
+                        "description": "Этот пользователь не админ неймспейса",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/database.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth": {
             "post": {
                 "security": [
@@ -485,78 +597,6 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "delete": {
-                "summary": "Удалить неймспейс",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Название неймспейса",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Неймспейс успешно удален"
-                    },
-                    "403": {
-                        "description": "Этот пользователь не админ неймспейса",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "summary": "Обновить информацию о неймспейсе",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id неймспейса",
-                        "name": "id",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Название неймспейса",
-                        "name": "title",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "file",
-                        "description": "Картинка неймспейса",
-                        "name": "photo",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Описание неймспейса",
-                        "name": "description",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Неймспейс успешно обновлен"
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "$ref": "#/definitions/database.Error"
-                        }
-                    }
-                }
             }
         },
         "/api/namespace/{namespace_id}": {
@@ -762,7 +802,7 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Проверить существование пользователя в бд",
+                "summary": "Записать пользователя в бд",
                 "parameters": [
                     {
                         "description": "tg id пользователя",
@@ -808,7 +848,7 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Скрыть/показывать анкету другим пользователям",
+                "summary": "Удалить анкету пользователя",
                 "parameters": [
                     {
                         "type": "string",
@@ -892,7 +932,7 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Записать пользоватея в неймспейс",
+                "summary": "Создать неймспейс из беседы",
                 "parameters": [
                     {
                         "description": "данные для записи пользователя",

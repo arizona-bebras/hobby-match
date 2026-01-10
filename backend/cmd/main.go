@@ -129,11 +129,13 @@ func main() {
 	namespaceAdminHandler := handlers.NamespaceAdminHandler{
 		DB: dbConnection,
 	}
-	mux.Handle("/api/namespace", tgauth.AuthMiddleware(namespaceAdminHandler))
+	mux.Handle("/api/admin/{namespace_id}", tgauth.AuthMiddleware(namespaceAdminHandler))
+	mux.Handle("/api/admin/{namespace_id}/{member_id}", tgauth.AuthMiddleware(namespaceAdminHandler))
 
 	namespaceHandler := handlers.NamespaceHandler{
 		DB: dbConnection,
 	}
+	mux.Handle("/api/namespace", tgauth.AuthMiddleware(namespaceHandler))
 	mux.Handle("/api/namespace/{namespace_id}", tgauth.AuthMiddleware(namespaceHandler))
 	mux.Handle("/api/namespace/{namespace_id}/", tgauth.AuthMiddleware(namespaceHandler))
 
