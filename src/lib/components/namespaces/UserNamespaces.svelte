@@ -61,5 +61,11 @@
         <ArrowRight class="size-5" />
       </button>
     {/if}
+  {:else}
+    <div class="h-full flex items-center justify-center">
+      <p class="max-w-[250px] text-center text-slate-400">
+        Вы еще не состоите ни в одном неймспейсе.
+      </p>
+    </div>
   {/each}
 </div>
