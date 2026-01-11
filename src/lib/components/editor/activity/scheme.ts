@@ -12,6 +12,7 @@ export const scheme = z
             .number()
             .positive({ error: 'Класс не может быть отрицательным' })
             .lte(12, { error: 'Класс не может быть больше 11' }),
+          place: z.string({ error: 'Поле не должно быть пустым' }),
         }),
         z.object({
           type: z.literal('university'),
@@ -20,6 +21,7 @@ export const scheme = z
             .number()
             .positive({ error: 'Курс не может быть отрицательным' })
             .lte(7, { error: 'Курс не может быть больше 6' }),
+          place: z.string({ error: 'Поле не должно быть пустым' }),
         }),
       ])
 

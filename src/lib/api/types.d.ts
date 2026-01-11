@@ -4,6 +4,162 @@
  */
 
 export interface paths {
+    "/api/admin/{namespace_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Удалить неймспейс */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Название неймспейса */
+                    namespace_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Неймспейс успешно удален */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Этот пользователь не админ неймспейса */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Обновить информацию о неймспейсе */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description id неймспейса */
+                    namespace_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        /** @description Название неймспейса */
+                        title?: string;
+                        /**
+                         * Format: binary
+                         * @description Картинка неймспейса
+                         */
+                        photo?: string;
+                        /** @description Описание неймспейса */
+                        description?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Неймспейс успешно обновлен */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/admin/{namespace_id}/{member_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Исключить пользователя из неймспейса */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description id неймспейса */
+                    namespace_id: string;
+                    /** @description id пользователя */
+                    member_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Неймспейс успешно удален */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Этот пользователь не админ неймспейса */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+                /** @description Внутренняя ошибка сервера */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["database.Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth": {
         parameters: {
             query?: never;
@@ -698,92 +854,10 @@ export interface paths {
                 };
             };
         };
-        /** Удалить неймспейс */
-        delete: {
-            parameters: {
-                query: {
-                    /** @description Название неймспейса */
-                    id: string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Неймспейс успешно удален */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Этот пользователь не админ неймспейса */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "*/*": components["schemas"]["database.Error"];
-                    };
-                };
-                /** @description Внутренняя ошибка сервера */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "*/*": components["schemas"]["database.Error"];
-                    };
-                };
-            };
-        };
+        delete?: never;
         options?: never;
         head?: never;
-        /** Обновить информацию о неймспейсе */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "multipart/form-data": {
-                        /** @description id неймспейса */
-                        id?: string;
-                        /** @description Название неймспейса */
-                        title?: string;
-                        /**
-                         * Format: binary
-                         * @description Картинка неймспейса
-                         */
-                        photo?: string;
-                        /** @description Описание неймспейса */
-                        description?: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Неймспейс успешно обновлен */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Внутренняя ошибка сервера */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "*/*": components["schemas"]["database.Error"];
-                    };
-                };
-            };
-        };
+        patch?: never;
         trace?: never;
     };
     "/api/namespace/{namespace_id}": {
@@ -904,7 +978,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": string[];
+                        "application/json": components["schemas"]["handlers.PageData"][];
                     };
                 };
                 /** @description Внутренняя ошибка сервера */
@@ -1364,6 +1438,7 @@ export interface components {
         "database.Widget": {
             additionalData?: string;
             data?: string;
+            files_count?: number;
             id?: string;
             namespace?: string;
             order?: number;
@@ -1375,6 +1450,7 @@ export interface components {
         };
         /** @description Ответ на успешное создание неймспейса */
         "handlers.CreatedNamespace": {
+            invite_code?: string;
             namespace_id?: string;
         };
         /** @description Игры из steam профиля пользователя */

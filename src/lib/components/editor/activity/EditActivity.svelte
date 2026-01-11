@@ -33,6 +33,7 @@
     type: 'university',
     educationStage: 'bachelor',
     course: 2,
+    place: '',
   };
 
   const INITIAL_WORK_OBJ = {
@@ -220,23 +221,49 @@
                 </Form.Field>
               </div>
             </div>
-          {:else if $formData.education.type === 'school'}
-            <Form.Field {form} name="education.class">
+            <Form.Field {form} name="education.place">
               <Form.Control>
                 {#snippet children({ props })}
                   <Form.Label class="text-[14px] font-semibold"
-                    >КЛАСС</Form.Label
+                    >МЕСТО УЧЕБЫ</Form.Label
                   >
-                  <Input
-                    {...props}
-                    bind:value={$formData.education.class}
-                    type="number"
-                  />
+                  <Input {...props} bind:value={$formData.education.place} />
                 {/snippet}
               </Form.Control>
               <Form.Description />
               <Form.FieldErrors />
             </Form.Field>
+          {:else if $formData.education.type === 'school'}
+            <div class="flex gap-x-2">
+              <Form.Field {form} name="education.class">
+                <Form.Control>
+                  {#snippet children({ props })}
+                    <Form.Label class="text-[14px] font-semibold"
+                      >КЛАСС</Form.Label
+                    >
+                    <Input
+                      {...props}
+                      bind:value={$formData.education.class}
+                      type="number"
+                    />
+                  {/snippet}
+                </Form.Control>
+                <Form.Description />
+                <Form.FieldErrors />
+              </Form.Field>
+              <Form.Field {form} name="education.place">
+                <Form.Control>
+                  {#snippet children({ props })}
+                    <Form.Label class="text-[14px] font-semibold"
+                      >МЕСТО УЧЕБЫ</Form.Label
+                    >
+                    <Input {...props} bind:value={$formData.education.place} />
+                  {/snippet}
+                </Form.Control>
+                <Form.Description />
+                <Form.FieldErrors />
+              </Form.Field>
+            </div>
           {/if}
         {/if}
         {#if $formData.isWorker}

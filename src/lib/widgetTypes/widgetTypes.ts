@@ -159,11 +159,13 @@ export type Activity = {
     | {
         type: 'school';
         class: number;
+        place: string;
       }
     | {
         type: 'university';
         educationStage: 'bachelor' | 'master' | 'postgraduate';
         course: number;
+        place: string;
       };
   work: {
     company: string;

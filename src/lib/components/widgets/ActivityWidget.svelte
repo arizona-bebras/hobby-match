@@ -59,11 +59,14 @@
         <p class="text-xs font-semibold text-accent">ОБУЧЕНИЕ</p>
         {#if data.education.type === 'school'}
           <p class="font-semibold text-[14px] truncate">
-            Школа, <span>{data.education.class} класс</span>
+            Школа №{data.education.place},
+            <span>{data.education.class} класс</span>
           </p>
         {:else}
           <p class="font-semibold text-[14px] truncate">
-            {educationStages[data.education.educationStage]},
+            {data.education.place}, {educationStages[
+              data.education.educationStage
+            ]},
             <span>{data.education.course} курс</span>
           </p>
         {/if}
