@@ -54,7 +54,7 @@
     if (data?.personality_test) {
       markStageComplete('Тест');
     }
-    if (data?.interests) {
+    if (data!.interests!.length >= 1) {
       markStageComplete('Интересы');
     }
 
