@@ -10,6 +10,7 @@
   import { SvelteQueryDevtools } from '@tanstack/svelte-query-devtools';
   import NavBar from '$lib/components/NavBar.svelte';
   import { toast } from 'svelte-sonner';
+  import { hideFooter } from '$lib/storage/page';
 
   let { children } = $props();
   const queryClient = new QueryClient({
@@ -31,7 +32,9 @@
     >
       {@render children()}
     </div>
-    <NavBar />
+    {#if !hideFooter.current}
+      <NavBar />
+    {/if}
   </div>
   <SvelteQueryDevtools />
 </QueryClientProvider>

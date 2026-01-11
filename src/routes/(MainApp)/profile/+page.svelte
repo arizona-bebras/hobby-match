@@ -14,6 +14,7 @@
   import { goto } from '$app/navigation';
   import RenderEditWidget from '$lib/components/profile/RenderEditWidget.svelte';
   import { onMount } from 'svelte';
+  import { hideFooter } from '$lib/storage/page';
 
   let changeMode = $state(false);
 
@@ -47,6 +48,9 @@
   useTelegramButton(() => {
     changeMode = false;
     setTimeout(() => window.Telegram.WebApp.MainButton.hide(), 50);
+    window.Telegram.WebApp.MainButton.onClick(() => {
+      hideFooter.current = false;
+    });
   });
 
   let showWidgetMenu = $state(false);
@@ -82,6 +86,7 @@
           changeMode = !changeMode;
           window.Telegram.WebApp.MainButton.show();
           window.Telegram.WebApp.MainButton.text = 'Сохранить';
+          hideFooter.current = true;
         }}
         class="bg-accent size-12.5 fixed right-6.5 bottom-20 z-2 flex items-center justify-center rounded-xl"
       >
