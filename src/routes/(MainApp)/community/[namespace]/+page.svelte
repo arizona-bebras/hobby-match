@@ -1,5 +1,11 @@
 <script lang="ts">
-  import { ChevronRight, PencilLine, Share2 } from '@lucide/svelte';
+  import {
+    ChevronRight,
+    PencilLine,
+    Share2,
+    Trash2,
+    LogOut,
+  } from '@lucide/svelte';
   import UserNamespaces from '$lib/components/namespaces/UserNamespaces.svelte';
   import NamespaceMembersLst from '$lib/components/namespaces/NamespaceMembersLst.svelte';
   import { getCorrectForm } from '$lib/utils';
@@ -92,33 +98,67 @@
   />
   <div class="px-4 flex flex-col justify-start items-start w-full">
     <button
-      class="border-text-color/25 border-x-2 border-y-2 rounded-t-xl px-4 py-3
-    w-full flex justify-between"
+      class="border-text-color/25 border-2 px-4 py-3
+    w-full flex justify-between rounded-t-xl"
       onclick={() =>
         goto(`/view?namespaceId=${namespaceInfo.data?.namespace?.id}`)}
     >
       <p>Смотреть анкеты</p>
       <ChevronRight class="size-5" />
     </button>
+
+    <button
+      class="border-text-color/25 border-x-2 px-4 py-3
+    w-full flex justify-between"
+      onclick={() => (isShareOpen = !isShareOpen)}
+    >
+      <p>Поделиться</p>
+      <Share2 class="size-5" />
+    </button>
     {#if namespaceInfo.data?.namespace?.admin === userData.current.tg_user}
       <button
-        class="border-text-color/25 border-x-2 px-4 py-3
-    w-full flex justify-between"
-        onclick={() => (isShareOpen = !isShareOpen)}
+        class="border-text-color/25 border-x-2 border-t-2 px-4 py-3 w-full flex justify-between"
+        onclick={() => (isEditOpen = !isEditOpen)}
       >
-        <p>Поделиться</p>
-        <Share2 class="size-5" />
+        <p>Редактировать</p>
+        <PencilLine class="size-5" />
       </button>
     {/if}
     <button
-      class="border-text-color/25 border-x-2 border-b-2 rounded-b-xl {namespaceInfo
-        .data?.namespace?.admin === userData.current.tg_user
-        ? 'border-t-2'
-        : ''}  rounded-b-2 px-4 py-3 w-full flex justify-between mb-4"
-      onclick={() => (isEditOpen = !isEditOpen)}
+      class="border-text-color/25 border-2 rounded-b-xl px-4 py-3
+    w-full flex justify-between mb-4"
+      onclick={async () => {
+        if (
+          namespaceInfo.data?.namespace?.admin === userData.current?.tg_user
+        ) {
+          console.log('Выполняем удаление неймспейса');
+          await client.DELETE('/api/admin/{namespace_id}', {
+            params: {
+              path: {
+                namespace_id: namespaceInfo.data?.namespace?.id,
+              },
+            },
+          });
+        } else {
+          console.log('Выходим из неймспейса');
+          await client.DELETE('/api/namespace/{namespace_id}', {
+            params: {
+              path: {
+                namespace_id: namespaceInfo.data?.namespace?.id,
+              },
+            },
+          });
+        }
+        await goto('/community');
+      }}
     >
-      <p>Редактировать</p>
-      <PencilLine class="size-5" />
+      {#if namespaceInfo.data?.namespace?.admin === userData.current?.tg_user}
+        <p>Удалить</p>
+        <Trash2 class="size-5" />
+      {:else}
+        <p>Покинуть</p>
+        <LogOut class="size-5" />
+      {/if}
     </button>
     <p>Участники</p>
     <NamespaceMembersLst

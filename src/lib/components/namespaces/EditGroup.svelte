@@ -68,7 +68,12 @@
       if ($formData.photo) {
         requestBody.photo = $formData.photo;
       }
-      await client.PATCH('/api/namespace', {
+      await client.PATCH('/api/admin/{namespace_id}', {
+        params: {
+          path: {
+            namespace_id: namespaceData.id,
+          },
+        },
         body: requestBody,
         bodySerializer(body) {
           const fd = new FormData();
