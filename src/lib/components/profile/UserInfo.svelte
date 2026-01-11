@@ -28,7 +28,11 @@
 
 {#if !changeMode}
   <div class="font-extrabold text-[32px] mt-2 wrap-anywhere flex gap-1">
-    <span>{data.miniapp_name}, {data.age}</span>
+    <!--    data.age-->
+    <span
+      >{data.miniapp_name}, {new Date().getFullYear() -
+        new Date(data.birth_date).getFullYear()}</span
+    >
     <!--    <Zodiac />-->
     <!-- TODO: fix id -->
     {#if '' !== data.id}
