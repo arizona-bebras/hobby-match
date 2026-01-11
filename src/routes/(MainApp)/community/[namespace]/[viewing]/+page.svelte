@@ -90,11 +90,15 @@
   let scroll = new ScrollState({
     element: () => screenContainer,
   });
+  let isDataLoad = $state(false);
   window.Telegram.WebApp.MainButton.hide();
-  onMount(() => {
-    console.log(data.pageData);
-    if (data.pageData)
+  onMount(async () => {
+    console.log(data.pageData.data.widgets, typeof data.pageData.data);
+    if (data.pageData) {
       userData.current.last_viewed_profile = data.pageData.data.tg_user;
+      await serializeWidgetData();
+      isDataLoad = true;
+    }
   });
   // $effect(() => {
   //   if (profileData.isSuccess) {
@@ -104,9 +108,18 @@
   //     );
   //   }
   // });
+  async function serializeWidgetData() {
+    for (let widgetData of data!.pageData!.data!.widgets) {
+      widgetData.data = JSON.parse(widgetData.data);
+      if (widgetData.additionalData) {
+        widgetData.additionalData = JSON.parse(widgetData.additionalData);
+      }
+      console.log('Спаршенные данные:', widgetData);
+    }
+  }
 </script>
 
-{#if data.pageData}
+{#if data.pageData && isDataLoad}
   <div class="overflow-y-auto relative" bind:this={screenContainer}>
     <Questionnaire
       data={data.pageData.data}
