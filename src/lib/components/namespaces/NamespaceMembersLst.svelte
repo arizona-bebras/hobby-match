@@ -19,7 +19,7 @@
     $props();
 </script>
 
-<div class="overflow-y-auto h-[calc(100vh-390px)] w-full text-text-color">
+<div class="w-full text-text-color">
   {#each users as user, i (user.tg_user)}
     <MemberRow {user} {i} {adminId} {namespaceId} />
   {/each}
