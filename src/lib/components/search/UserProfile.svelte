@@ -4,7 +4,7 @@
   import { Heart } from '@lucide/svelte';
   import { plausible } from '../../../hooks.client.js';
   import type { PageData } from '$lib/questionnaireTypes/questionnaireTypes';
-
+  import WriteUserBtn from '$lib/components/search/WriteUserBtn.svelte';
   let {
     currentProfile,
     profileContainer = $bindable(),
@@ -39,4 +39,5 @@
   >
     <Questionnaire data={profile} isNamespaceProfile={true} />
   </div>
+  <WriteUserBtn username={profile.username} />
 {/key}

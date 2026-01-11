@@ -126,7 +126,7 @@
       isNamespaceProfile={true}
       {scroll}
     />
-    <WriteUserBtn />
+    <WriteUserBtn username={data.pageData?.data?.username} />
   </div>
 {:else}
   <div class="flex flex-col items-center items-center mt-5">

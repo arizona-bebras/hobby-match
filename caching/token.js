@@ -7,7 +7,7 @@ export async function authMiddleware(request, reply) {
       .send({ error: 'Missing or invalid Authorization header' });
   }
 
-  if (authHeader !== `Bearer ${process.env.SECRET_TOKEN}`) {
+  if (authHeader !== `Bearer SECRET`) {
     return reply.status(401).send({ error: 'Invalid token' });
   }
 }
