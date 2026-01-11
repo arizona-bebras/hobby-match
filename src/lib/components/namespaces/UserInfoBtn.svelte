@@ -44,20 +44,20 @@
         <p class="text-inactive text-sm">С нами с {testData.register_date}</p>
       </div>
     </div>
-    <div class="first:rounded-t-xl last:rounded-b-xl">
+    <div class="">
       <button
         onclick={() => goto(`/community/${'CheatExe)'}/${user.tg_user}`)}
-        class="flex justify-between border-2 border-text-color/25 rounded-t-xl border-b-0 px-4 py-3 items-center w-full"
+        class="flex justify-between border-2 only:rounded-b-xl border-text-color/25 rounded-t-xl px-4 py-3 items-center w-full"
       >
         <p class="">Смотреть анкету</p>
         <ArrowRight class="size-5" />
       </button>
-      <div
-        class="flex justify-between border-2 border-text-color/25 px-4 py-3 items-center"
-      >
-        <p class="w-full">Временно отстранить</p>
-        <AlarmClock class="size-5" />
-      </div>
+      <!--      <div-->
+      <!--        class="flex justify-between border-2 border-text-color/25 px-4 py-3 items-center"-->
+      <!--      >-->
+      <!--        <p class="w-full">Временно отстранить</p>-->
+      <!--        <AlarmClock class="size-5" />-->
+      <!--      </div>-->
       {#if user.tg_user === adminId}
         <button
           class="flex w-full justify-between border-2 border-text-color/25 rounded-b-xl border-t-0 px-4 py-3"
