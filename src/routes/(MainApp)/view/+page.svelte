@@ -43,7 +43,7 @@
         console.log('Опа! Загружаем новую страницу');
         currentProfile += 1;
         userData.current.last_viewed_profile =
-          offeredProfiles[currentProfile].tg_user;
+          offeredProfiles[currentProfile]?.tg_user;
         offeredProfiles.shift();
         liked = false;
       }

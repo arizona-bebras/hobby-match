@@ -24,7 +24,10 @@
   const {
     elementSize = $bindable(),
     offeredProfiles,
-  }: { elementSize: number; offeredProfiles: PageData[] } = $props();
+  }: {
+    elementSize: number;
+    offeredProfiles: PageData[];
+  } = $props();
 </script>
 
 <div
@@ -42,8 +45,7 @@
         class="rounded-full p-1 aspect-square object-cover max-w-15 max-h-15 mx-auto"
         style:width="{elementSize - 35}px"
         style:height="{elementSize - 35}px"
-        src={`${db}/api/files/users/${userData.current?.tg_user}/undefined
-`}
+        src={`${db}/api/files/users/${offeredProfiles[1]?.tg_user}/undefined`}
         alt="userImage"
       />
     {:else}
