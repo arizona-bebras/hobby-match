@@ -143,16 +143,6 @@
       bind:files={$file}
       accept="image/png, image/jpeg, image/svg+xml, image/gif, image/webp"
     />
-    <p class="self-center">или</p>
-    <button
-      type="button"
-      onclick={async () => {
-        // const tgPhotoFile = await fetch(`https://api.telegram.org/file/bot${BOT_TOKEN}/${tgImage}`)
-        $formData.user_photo = tgImage ?? '';
-      }}
-      class="w-full h-12 bg-accent rounded-xl text-white font-medium"
-      >Взять текущую фотографию из Telegram</button
-    >
     {#if previewSrc}
       <img
         src={await previewSrc}
