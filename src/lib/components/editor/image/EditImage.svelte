@@ -128,7 +128,6 @@
             {/each}
           {/if}
           {#each $formData.files as element, index}
-            <p>{2}</p>
             <div class="w-full h-auto bg-accent/45 rounded-2xl relative mb-4">
               <img
                 src={URL.createObjectURL(element)}
