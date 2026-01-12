@@ -59,7 +59,7 @@
       <!--        <p class="w-full">Временно отстранить</p>-->
       <!--        <AlarmClock class="size-5" />-->
       <!--      </div>-->
-      {#if userData.current.tg_user === adminId}
+      {#if userData.current.tg_user === adminId && user.tg_user !== adminId}
         <button
           class="flex w-full justify-between border-2 border-text-color/25 rounded-b-xl border-t-0 px-4 py-3 select-none"
           onclick={async () => {
