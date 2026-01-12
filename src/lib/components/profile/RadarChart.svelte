@@ -51,7 +51,7 @@
     <!--      >Showing total visitors for the last 6 months</Card.Description-->
     <!--    >-->
   </Card.Header>
-  <Card.Content class="px-2 flex-1">
+  <Card.Content class="px-2 flex-1 select-none">
     <Chart.Container
       config={chartConfig}
       class="mx-auto aspect-square max-h-[250px]"
