@@ -25,7 +25,7 @@
     minValue?: DateValue | CalendarDate;
     maxValue?: DateValue | CalendarDate;
   } = $props();
-  let dateValue = {
+  let dateValue = $state({
     get current(): DateValue {
       return value ? parseAbsolute(value, 'UTC') : today('UTC');
     },
@@ -33,7 +33,7 @@
       if (!val) return;
       value = val.toDate('UTC').toISOString();
     },
-  };
+  });
 </script>
 
 <Popover.Root>

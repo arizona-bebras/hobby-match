@@ -25,17 +25,19 @@
   const currentDate = today(getLocalTimeZone());
 
   const monthFmt = new DateFormatter('ru-RU', {
-    category: 'long',
+    month: 'long',
   });
 
   const monthOptions = Array.from({ length: 12 }, (_, i) => {
-    const month = currentDate.set({ category: i + 1 });
+    const month = currentDate.set({ month: i + 1 });
     return {
       value: month.month,
-      label: monthFmt.format(month.toDate(getLocalTimeZone())),
+      label: new Intl.DateTimeFormat('ru-RU', { month: 'long' }).format(
+        month.toDate(getLocalTimeZone()),
+      ),
     };
   });
-
+  console.log('Зарендеренные месяца:', monthOptions);
   const yearOptions = Array.from({ length: appendYears }, (_, i) => {
     const currentYear = new Date().getFullYear();
     return {
@@ -99,7 +101,9 @@ get along, so we shut typescript up by casting `value` to `never`.
         onValueChange={(v) => {
           if (!placeholder) return;
           if (v === `${placeholder.month}`) return;
-          placeholder = placeholder.set({ category: Number.parseInt(v) });
+          placeholder = placeholder.set({ month: Number.parseInt(v) });
+          console.log('Изменение placeholder', placeholder);
+          value.current();
         }}
       >
         <Select.Trigger class="w-[60%] border-0">
