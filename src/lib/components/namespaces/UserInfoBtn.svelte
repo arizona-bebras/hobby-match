@@ -5,6 +5,7 @@
   import { db } from '$lib';
   import client from '$lib/api/client';
   import { getQueryClientContext } from '@tanstack/svelte-query';
+  import { userData } from '$lib/storage/userData.svelte';
 
   let testData = {
     img: 'https://www.soyuz.ru/public/uploads/files/2/7480281/20220315190534af66e2c5d3.jpg',
@@ -58,7 +59,7 @@
       <!--        <p class="w-full">Временно отстранить</p>-->
       <!--        <AlarmClock class="size-5" />-->
       <!--      </div>-->
-      {#if user.tg_user === adminId}
+      {#if userData.current.tg_user === adminId}
         <button
           class="flex w-full justify-between border-2 border-text-color/25 rounded-b-xl border-t-0 px-4 py-3 select-none"
           onclick={async () => {
