@@ -246,7 +246,7 @@
       method="POST"
       enctype="multipart/form-data"
       use:enhance
-      class="space-y-6 max-h-[calc(100vh-110px)] overflow-y-auto"
+      class="space-y-6 max-h-[calc(100vh-110px)] overflow-y-auto text-text-color"
     >
       {#if currentStage === 1}
         <Form.Field {form} name="title">
