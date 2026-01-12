@@ -24,15 +24,22 @@
   //   text: pb.authStore.record!.user_info,
   // };
   console.log(data);
+  function getAge(dateString: string) {
+    let today = new Date();
+    let birthDate = new Date(dateString);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    let m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  }
 </script>
 
 {#if !changeMode}
   <div class="font-extrabold text-[32px] mt-2 wrap-anywhere flex gap-1">
     <!--    data.age-->
-    <span
-      >{data.miniapp_name}, {new Date().getFullYear() -
-        new Date(data.birth_date).getFullYear()}</span
-    >
+    <span>{data.miniapp_name}, {getAge(data.birth_date)}</span>
     <!--    <Zodiac />-->
     <!-- TODO: fix id -->
     {#if '' !== data.id}
