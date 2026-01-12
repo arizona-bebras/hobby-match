@@ -97,12 +97,13 @@
       alt="Картинка неймспейса"
       src={`${db}/api/files/namespaces/${namespaceInfo.data?.namespace?.id}/undefined?t=${Date.now()}
 `}
-      class="size-100 rounded-full object-cover absolute -top-[35%] z-0 opacity-60 blur-2xl"
+      class="size-100 rounded-full object-cover absolute -top-[35%] z-0 opacity-60 blur-2xl select-none
+"
     />
     <div class="px-4 flex flex-col justify-start items-start w-full">
       <button
         class="border-text-color/25 border-2 px-4 py-3
-    w-full flex justify-between rounded-t-xl"
+    w-full flex justify-between rounded-t-xl select-none"
         onclick={() =>
           goto(`/view?namespaceId=${namespaceInfo.data?.namespace?.id}`)}
       >
@@ -112,7 +113,7 @@
 
       <button
         class="border-text-color/25 border-x-2 px-4 py-3
-    w-full flex justify-between"
+    w-full flex justify-between select-none"
         onclick={() => (isShareOpen = !isShareOpen)}
       >
         <p>Поделиться</p>
@@ -120,7 +121,7 @@
       </button>
       {#if namespaceInfo.data?.namespace?.admin === userData.current.tg_user}
         <button
-          class="border-text-color/25 border-x-2 border-t-2 px-4 py-3 w-full flex justify-between"
+          class="border-text-color/25 border-x-2 border-t-2 px-4 py-3 w-full flex justify-between select-none"
           onclick={() => (isEditOpen = !isEditOpen)}
         >
           <p>Редактировать</p>
@@ -129,7 +130,7 @@
       {/if}
       <button
         class="border-text-color/25 border-2 rounded-b-xl px-4 py-3
-    w-full flex justify-between mb-4"
+    w-full flex justify-between mb-4 select-none"
         onclick={async () => {
           if (
             namespaceInfo.data?.namespace?.admin === userData.current?.tg_user

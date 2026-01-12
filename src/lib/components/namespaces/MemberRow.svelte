@@ -34,7 +34,7 @@
   bind:this={targetNode}
 >
   <button
-    class="flex items-center justify-between w-full"
+    class="flex items-center justify-between w-full select-none"
     onclick={() => (isSheetOpen = !isSheetOpen)}
   >
     <div class="flex gap-2.5 items-center">

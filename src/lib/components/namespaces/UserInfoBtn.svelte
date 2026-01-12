@@ -47,7 +47,7 @@
     <div class="">
       <button
         onclick={() => goto(`/community/${'CheatExe)'}/${user.tg_user}`)}
-        class="flex justify-between border-2 only:rounded-b-xl border-text-color/25 rounded-t-xl px-4 py-3 items-center w-full"
+        class="flex justify-between border-2 only:rounded-b-xl border-text-color/25 rounded-t-xl px-4 py-3 items-center w-full select-none"
       >
         <p class="">Смотреть анкету</p>
         <ArrowRight class="size-5" />
@@ -60,7 +60,7 @@
       <!--      </div>-->
       {#if user.tg_user === adminId}
         <button
-          class="flex w-full justify-between border-2 border-text-color/25 rounded-b-xl border-t-0 px-4 py-3"
+          class="flex w-full justify-between border-2 border-text-color/25 rounded-b-xl border-t-0 px-4 py-3 select-none"
           onclick={async () => {
             await client.DELETE(`/api/admin/${namespaceId}/${user.tg_user}`);
             open = false;

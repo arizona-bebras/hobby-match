@@ -28,7 +28,7 @@
     {#if namespace.title.toLowerCase().includes(searchFilter.toLowerCase())}
       <button
         onclick={() => goto(`/community/${namespace.id}`)}
-        class="flex py-1.5 items-center justify-between border-b-[2px] border-text-color/25 w-full"
+        class="flex py-1.5 items-center justify-between border-b-[2px] border-text-color/25 w-full select-none"
       >
         <div class="flex gap-2.5 items-center text-justify">
           <img

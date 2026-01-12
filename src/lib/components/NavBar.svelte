@@ -49,7 +49,8 @@
     {@const Icon = button.icon}
     {@const isActive = button.redirectTo.includes(currentPage)}
     <button
-      class="flex flex-col items-center py-2"
+      class="flex flex-col items-center py-2 select-none
+"
       onclick={() => goto(`/${button.redirectTo.at(-1)}`)}
     >
       <Icon class={isActive ? 'stroke-accent' : ''} />
