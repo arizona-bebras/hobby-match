@@ -24,7 +24,7 @@ load_dotenv('.env')
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 APP_URL = os.getenv("APP_URL")
-API_BASE_URL = os.gete`````````````````nv("API_BASE_URL")
+API_BASE_URL = os.getenv("API_BASE_URL")
 BOT_USERNAME= os.getenv("BOT_USERNAME")
 
 # Логирование для отладки
@@ -203,11 +203,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         text=("*Привет, я Shumi\\!* 👋\n\n" + 
               "Я помогу найти тебе новые знакомства\\.\n" + 
               ("Заполняй анкету и вперед к поискам\\!\n" if result == 200 else "Заходи в приложение и находи себе друзей\\!\n") + 
-              "Пригласи меня в группу и создай неймспейс с её участниками")
+              "\n🎯 *Создай неймспейс для своей группы\\!*\n" +
+              "Добавь меня в групповой чат, и я создам общую ленту для всех участников\\. " +
+              "Это отличный способ найти единомышленников среди знакомых\\!")
 
-    keyboard = InlineKeyboardMarkup.from_button(InlineKeyboardButton(
-        text="Открыть Shumi",
-        web_app=WebAppInfo(url=f"{APP_URL}/")))
+    keyboard_buttons = [
+        [InlineKeyboardButton(text="Открыть Shumi", web_app=WebAppInfo(url=f"{APP_URL}/"))],
+        [InlineKeyboardButton(text="➕ Добавить в группу", url=f"https://t.me/{context.bot.username}?startgroup=true")]
+    ]
+    keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
     await context.bot.set_chat_menu_button(
         chat_id=update.effective_chat.id, 
@@ -465,8 +469,8 @@ async def group_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await context.bot.send_photo(
                     chat_id=chat_id,
                     photo=qr_buffer,
-                    caption=f"✉️ Приглашение в неймспейс \"{chat.title}\"!\n\n🧑‍💻Скорее заходи и покажи себя миру!",
-                    reply_markup=inlineButton
+                    caption=f"✉️ Приглашение в неймспейс \"{chat.title}\"\\!\n\n🧑‍💻Скорее заходи и покажи себя миру\\!",
+                    reply_markup=inlineButton,
                     parse_mode=ParseMode.MARKDOWN_V2
                 )
             except Exception as e:
