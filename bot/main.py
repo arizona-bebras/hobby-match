@@ -24,7 +24,7 @@ load_dotenv('.env')
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 APP_URL = os.getenv("APP_URL")
-API_BASE_URL = os.getenv("API_BASE_URL")
+API_BASE_URL = os.gete`````````````````nv("API_BASE_URL")
 BOT_USERNAME= os.getenv("BOT_USERNAME")
 
 # Логирование для отладки
@@ -465,7 +465,8 @@ async def group_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await context.bot.send_photo(
                     chat_id=chat_id,
                     photo=qr_buffer,
-                    caption=f"🔗 QR\\-код для приглашения в неймспейс\n\nУчастники могут отсканировать его для быстрого входа\\!",
+                    caption=f"✉️ Приглашение в неймспейс \"{chat.title}\"!\n\n🧑‍💻Скорее заходи и покажи себя миру!",
+                    reply_markup=inlineButton
                     parse_mode=ParseMode.MARKDOWN_V2
                 )
             except Exception as e:
