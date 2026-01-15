@@ -6,6 +6,7 @@ from typing import Any
 from dotenv import load_dotenv
 import aiohttp
 from aiohttp import FormData
+import qrcode
 from telegram import Update, WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton, MenuButtonWebApp
 from telegram.constants import ParseMode
 from telegram.ext import (
@@ -134,6 +135,37 @@ class ApiClient:
         except Exception as e:
             logger.error(f"API Error: {e}")
             return 500, None
+
+
+# --- Helper Functions ---
+
+def generate_qr_code(bot_username: str, namespace_id: str) -> io.BytesIO:
+    """
+    Генерирует QR-код для приглашения в неймспейс
+    Возвращает BytesIO объект с PNG изображением
+    """
+    # Формируем URL для deep linking в боте
+    invite_url = f"https://t.me/{bot_username}?start={namespace_id}"
+    
+    # Создаем QR-код
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(invite_url)
+    qr.make(fit=True)
+    
+    # Создаем изображение
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    # Сохраняем в BytesIO
+    qr_buffer = io.BytesIO()
+    img.save(qr_buffer, 'PNG')
+    qr_buffer.seek(0)
+    
+    return qr_buffer
 
 
 # --- Хендлеры ---
@@ -426,6 +458,18 @@ async def group_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 parse_mode=ParseMode.MARKDOWN_V2,
                 reply_markup=inlineButton
             )
+            
+            # Генерируем и отправляем QR-код
+            try:
+                qr_buffer = generate_qr_code(context.bot.username, ns_id)
+                await context.bot.send_photo(
+                    chat_id=chat_id,
+                    photo=qr_buffer,
+                    caption=f"🔗 QR\\-код для приглашения в неймспейс\n\nУчастники могут отсканировать его для быстрого входа\\!",
+                    parse_mode=ParseMode.MARKDOWN_V2
+                )
+            except Exception as e:
+                logger.error(f"Ошибка при генерации/отправке QR-кода: {e}")
         else:
             await query.edit_message_text("❌ Ошибка при создании неймспейса на сервере.")
         
