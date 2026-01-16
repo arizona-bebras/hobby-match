@@ -196,8 +196,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             "user_id": str(tg_id),
             "namespace_id": namespace_id
         })
-        if result != 200:
-            await update.message.reply_text("Не удалось зайти в неймспейс. Попробуйте позже.")
+        # if result != 200:
+            # await update.message.reply_text("Не удалось зайти в неймспейс. Попробуйте позже.")
         text = "*Привет, я Shumi\\!* 👋\n\n" + "Я помогу найти тебе новые знакомства\\.\n" + "Заполняй анкету и вперед к поискам\\!\nТы уже приглашен в неймспейс\\!\n"
     else:
         text=("*Привет, я Shumi\\!* 👋\n\n" + 
